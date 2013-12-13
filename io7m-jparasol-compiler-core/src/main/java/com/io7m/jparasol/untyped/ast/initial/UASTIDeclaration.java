@@ -27,7 +27,45 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
 {
   public static enum Type
   {
+    UASTID_VALUE,
     UASTID_VALUE_LOCAL
+  }
+
+  public static final class UASTIDValue<S extends UASTIStatus> extends
+    UASTIDeclaration<S>
+  {
+    private final @Nonnull Option<UASTITypePath> ascription;
+    private final @Nonnull UASTIExpression<S>    expression;
+    private final @Nonnull TokenIdentifierLower  name;
+
+    @SuppressWarnings("synthetic-access") public UASTIDValue(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull Option<UASTITypePath> ascription,
+      final @Nonnull UASTIExpression<S> expression)
+      throws ConstraintError
+    {
+      super(Type.UASTID_VALUE);
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.ascription =
+        Constraints.constrainNotNull(ascription, "Ascription");
+      this.expression =
+        Constraints.constrainNotNull(expression, "Expression");
+    }
+
+    public @Nonnull Option<UASTITypePath> getAscription()
+    {
+      return this.ascription;
+    }
+
+    public @Nonnull UASTIExpression<S> getExpression()
+    {
+      return this.expression;
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
   }
 
   public static final class UASTIDValueLocal<S extends UASTIStatus> extends

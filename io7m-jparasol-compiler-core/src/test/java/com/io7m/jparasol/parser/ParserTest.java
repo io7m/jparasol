@@ -29,6 +29,7 @@ import com.io7m.jaux.functional.Option.Some;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
@@ -99,6 +100,126 @@ public class ParserTest
     final UASTITypePath r = p.declarationTypePath();
     Assert.assertTrue(r.getModule().isNone());
     Assert.assertEquals("y", r.getName().getActual());
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public
+    void
+    testDValueNotOK_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("value K = 23");
+    p.declarationValue();
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public
+    void
+    testDValueNotOK_1()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("value k.K = 23");
+    p.declarationValue();
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public
+    void
+    testDValueNotOK_2()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p =
+      ParserTest.makeStringInternalParser("value k : f.G = 23");
+    p.declarationValue();
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public
+    void
+    testDValueNotOK_3()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p =
+      ParserTest.makeStringInternalParser("value k : F.G = 23");
+    p.declarationValue();
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public
+    void
+    testDValueNotOK_4()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("value k : G = 23");
+    p.declarationValue();
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test public void testDValueOK_0()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("value k = 23");
+    final UASTIDValue<UASTIStatusUnchecked> r = p.declarationValue();
+    Assert.assertEquals("k", r.getName().getActual());
+    Assert.assertTrue(r.getAscription().isNone());
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
+      .getExpression()).getValue().intValue());
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test public void testDValueOK_1()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p =
+      ParserTest.makeStringInternalParser("value k : integer = 23");
+    final UASTIDValue<UASTIStatusUnchecked> r = p.declarationValue();
+    Assert.assertEquals("k", r.getName().getActual());
+    Assert.assertTrue(r.getAscription().isSome());
+
+    final UASTITypePath path =
+      ((Option.Some<UASTITypePath>) r.getAscription()).value;
+    Assert.assertTrue(path.getModule().isNone());
+    Assert.assertEquals("integer", path.getName().getActual());
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
+      .getExpression()).getValue().intValue());
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test public void testDValueOK_2()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p =
+      ParserTest.makeStringInternalParser("value k : P.integer = 23");
+    final UASTIDValue<UASTIStatusUnchecked> r = p.declarationValue();
+    Assert.assertEquals("k", r.getName().getActual());
+    Assert.assertTrue(r.getAscription().isSome());
+
+    final UASTITypePath path =
+      ((Option.Some<UASTITypePath>) r.getAscription()).value;
+    Assert.assertTrue(path.getModule().isSome());
+    final Some<TokenIdentifierUpper> module =
+      (Option.Some<TokenIdentifierUpper>) path.getModule();
+    Assert.assertEquals("P", module.value.getActual());
+
+    Assert.assertEquals("integer", path.getName().getActual());
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
+      .getExpression()).getValue().intValue());
   }
 
   @SuppressWarnings({ "static-method" }) @Test public

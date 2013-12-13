@@ -37,6 +37,7 @@ import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
 import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
 import com.io7m.jparasol.lexer.Token.TokenLiteralReal;
 import com.io7m.jparasol.lexer.Token.Type;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
@@ -122,6 +123,45 @@ public final class Parser
         return new UASTITypePath(Option.some(module), name);
       }
 
+      // $CASES-OMITTED$
+      default:
+        throw new UnreachableCodeException();
+    }
+  }
+
+  public @Nonnull UASTIDValue<UASTIStatusUnchecked> declarationValue()
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_VALUE);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this
+      .parserExpectOneOf(new Type[] { Type.TOKEN_COLON, Type.TOKEN_EQUALS });
+
+    switch (this.token.getType()) {
+      case TOKEN_COLON:
+      {
+        this.parserConsumeExact(Type.TOKEN_COLON);
+        final UASTITypePath path = this.declarationTypePath();
+        this.parserConsumeExact(Type.TOKEN_EQUALS);
+        return new UASTIDValue<UASTIStatusUnchecked>(
+          name,
+          Option.some(path),
+          this.expression());
+      }
+      case TOKEN_EQUALS:
+      {
+        this.parserConsumeExact(Type.TOKEN_EQUALS);
+        final Option<UASTITypePath> none = Option.none();
+        return new UASTIDValue<UASTIStatusUnchecked>(
+          name,
+          none,
+          this.expression());
+      }
       // $CASES-OMITTED$
       default:
         throw new UnreachableCodeException();
