@@ -24,6 +24,7 @@ import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jparasol.ModulePath;
+import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
@@ -158,6 +159,10 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     }
   }
 
+  /**
+   * Import declarations.
+   */
+
   public static final class UASTIDImport<S extends UASTIStatus> extends
     UASTIDeclaration<S>
   {
@@ -181,6 +186,28 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     public @Nonnull Option<TokenIdentifierUpper> getRename()
     {
       return this.rename;
+    }
+  }
+
+  /**
+   * Import declarations.
+   */
+
+  public static final class UASTIDPackage<S extends UASTIStatus> extends
+    UASTIDeclaration<S>
+  {
+    private final @Nonnull PackagePath path;
+
+    public UASTIDPackage(
+      final @Nonnull PackagePath path)
+      throws ConstraintError
+    {
+      this.path = Constraints.constrainNotNull(path, "Path");
+    }
+
+    public @Nonnull PackagePath getPath()
+    {
+      return this.path;
     }
   }
 

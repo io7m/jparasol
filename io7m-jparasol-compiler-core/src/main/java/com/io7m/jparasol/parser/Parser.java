@@ -44,6 +44,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgu
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDType;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
@@ -240,6 +241,17 @@ public final class Parser
           path,
           name), none);
     }
+  }
+
+  public @Nonnull UASTIDPackage<UASTIStatusUnchecked> declarationPackage()
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_PACKAGE);
+    return new UASTIDPackage<UASTIStatusUnchecked>(
+      this.declarationPackagePath());
   }
 
   private @Nonnull PackagePath declarationPackagePath()

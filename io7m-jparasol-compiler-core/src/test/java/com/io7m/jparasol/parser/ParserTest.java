@@ -27,6 +27,7 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Option.Some;
 import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.PackagePathFlat;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
@@ -34,6 +35,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgu
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
@@ -215,6 +217,19 @@ public class ParserTest
     final Some<TokenIdentifierUpper> some =
       (Option.Some<TokenIdentifierUpper>) r.getRename();
     Assert.assertEquals("K", some.value.getActual());
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test public void testDPackageOK_0()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("package x.y.z");
+
+    final UASTIDPackage<UASTIStatusUnchecked> r = p.declarationPackage();
+    final PackagePathFlat flat = PackagePathFlat.fromPackagePath(r.getPath());
+    Assert.assertEquals("x.y.z", flat.getActual());
   }
 
   @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public
