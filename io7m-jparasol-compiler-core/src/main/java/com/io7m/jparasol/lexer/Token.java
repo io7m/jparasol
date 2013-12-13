@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 
-abstract class Token
+public abstract class Token
 {
   public static final class TokenAs extends Token
   {
@@ -311,6 +311,11 @@ abstract class Token
       return true;
     }
 
+    public @Nonnull String getActual()
+    {
+      return this.text;
+    }
+
     @Override public int hashCode()
     {
       final int prime = 31;
@@ -360,6 +365,11 @@ abstract class Token
         return false;
       }
       return true;
+    }
+
+    public @Nonnull String getActual()
+    {
+      return this.text;
     }
 
     @Override public int hashCode()
@@ -503,17 +513,17 @@ abstract class Token
       return true;
     }
 
+    public boolean getValue()
+    {
+      return this.value;
+    }
+
     @Override public int hashCode()
     {
       final int prime = 31;
       int result = super.hashCode();
       result = (prime * result) + (this.value ? 1231 : 1237);
       return result;
-    }
-
-    boolean isValue()
-    {
-      return this.value;
     }
 
     @Override public String toString()
@@ -526,7 +536,13 @@ abstract class Token
     }
   }
 
-  public static final class TokenLiteralIntegerDecimal extends Token
+  public interface TokenLiteralInteger
+  {
+    public @Nonnull BigDecimal getValue();
+  }
+
+  public static final class TokenLiteralIntegerDecimal extends Token implements
+    TokenLiteralInteger
   {
     public static @Nonnull TokenLiteralIntegerDecimal newIntegerDecimal(
       final @Nonnull File file,
@@ -571,7 +587,7 @@ abstract class Token
       return true;
     }
 
-    @Nonnull BigDecimal getValue()
+    @Override public @Nonnull BigDecimal getValue()
     {
       return this.value;
     }
@@ -638,7 +654,7 @@ abstract class Token
       return true;
     }
 
-    @Nonnull BigDecimal getValue()
+    public @Nonnull BigDecimal getValue()
     {
       return this.value;
     }
@@ -1086,7 +1102,17 @@ abstract class Token
     return true;
   }
 
-  public @Nonnull Type getType()
+  public @Nonnull final File getFile()
+  {
+    return this.file;
+  }
+
+  public @Nonnull final Position getPosition()
+  {
+    return this.position;
+  }
+
+  public @Nonnull final Type getType()
   {
     return this.type;
   }
