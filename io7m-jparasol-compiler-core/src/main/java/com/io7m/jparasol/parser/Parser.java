@@ -41,6 +41,9 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunction;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDType;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
@@ -204,6 +207,32 @@ public final class Parser
     return args;
   }
 
+  public @Nonnull UASTIDType<UASTIStatusUnchecked> declarationType()
+    throws ConstraintError,
+      ParserError,
+      IOException,
+      LexerError
+  {
+    this.parserConsumeExact(Type.TOKEN_TYPE);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_IS);
+    this.parserExpectOneOf(new Type[] { Type.TOKEN_RECORD });
+
+    switch (this.token.getType()) {
+      case TOKEN_RECORD:
+        this.parserConsumeExact(Type.TOKEN_RECORD);
+        final List<UASTIDTypeRecordField<UASTIStatusUnchecked>> fields =
+          this.declarationTypeRecordFields();
+        this.parserExpectExact(Type.TOKEN_END);
+        return new UASTIDTypeRecord<UASTIStatusUnchecked>(name, fields);
+        // $CASES-OMITTED$
+      default:
+        throw new UnreachableCodeException();
+    }
+  }
+
   public @Nonnull UASTITypePath declarationTypePath()
     throws ParserError,
       IOException,
@@ -237,6 +266,50 @@ public final class Parser
       default:
         throw new UnreachableCodeException();
     }
+  }
+
+  private @Nonnull
+    UASTIDTypeRecordField<UASTIStatusUnchecked>
+    declarationTypeRecordField()
+      throws ConstraintError,
+        ParserError,
+        IOException,
+        LexerError
+  {
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_COLON);
+    final UASTITypePath type = this.declarationTypePath();
+    return new UASTIDTypeRecordField<UASTIStatusUnchecked>(name, type);
+  }
+
+  private @Nonnull
+    List<UASTIDTypeRecordField<UASTIStatusUnchecked>>
+    declarationTypeRecordFields()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    final ArrayList<UASTIDTypeRecordField<UASTIStatusUnchecked>> args =
+      new ArrayList<UASTIDTypeRecordField<UASTIStatusUnchecked>>();
+    args.add(this.declarationTypeRecordField());
+
+    boolean done = false;
+    while (done == false) {
+      switch (this.token.getType()) {
+        case TOKEN_COMMA:
+          this.parserConsumeExact(Type.TOKEN_COMMA);
+          args.add(this.declarationTypeRecordField());
+          break;
+        // $CASES-OMITTED$
+        default:
+          done = true;
+      }
+    }
+
+    return args;
   }
 
   public @Nonnull UASTIDValue<UASTIStatusUnchecked> declarationValue()

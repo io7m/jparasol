@@ -62,6 +62,10 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     }
   }
 
+  /**
+   * Fully defined functions.
+   */
+
   public static final class UASTIDFunctionDefined<S extends UASTIStatus> extends
     UASTIDFunction<S>
   {
@@ -104,6 +108,10 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
       return this.return_type;
     }
   }
+
+  /**
+   * Functions with external declarations (private FFI).
+   */
 
   public static final class UASTIDFunctionExternal<S extends UASTIStatus> extends
     UASTIDFunction<S>
@@ -158,6 +166,75 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
 
   }
 
+  /**
+   * The type of type declarations.
+   */
+
+  public static abstract class UASTIDType<S extends UASTIStatus> extends
+    UASTIDeclaration<S>
+  {
+
+  }
+
+  /**
+   * Record declarations.
+   */
+
+  public static final class UASTIDTypeRecord<S extends UASTIStatus> extends
+    UASTIDType<S>
+  {
+    private final @Nonnull List<UASTIDTypeRecordField<S>> fields;
+    private final @Nonnull TokenIdentifierLower           name;
+
+    public UASTIDTypeRecord(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull List<UASTIDTypeRecordField<S>> fields)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.fields = Constraints.constrainNotNull(fields, "Fields");
+    }
+
+    public @Nonnull List<UASTIDTypeRecordField<S>> getFields()
+    {
+      return this.fields;
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+  }
+
+  public static final class UASTIDTypeRecordField<S extends UASTIStatus>
+  {
+    private final @Nonnull TokenIdentifierLower name;
+    private final @Nonnull UASTITypePath        type;
+
+    public UASTIDTypeRecordField(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.type = Constraints.constrainNotNull(type, "Type");
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull UASTITypePath getType()
+    {
+      return this.type;
+    }
+  }
+
+  /**
+   * Value declarations.
+   */
+
   public static final class UASTIDValue<S extends UASTIStatus> extends
     UASTIDTerm<S>
   {
@@ -193,6 +270,10 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
       return this.name;
     }
   }
+
+  /**
+   * Local value declarations (let).
+   */
 
   public static final class UASTIDValueLocal<S extends UASTIStatus> extends
     UASTIDTerm<S>
