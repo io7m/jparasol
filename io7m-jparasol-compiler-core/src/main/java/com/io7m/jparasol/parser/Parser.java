@@ -63,7 +63,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProject
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
-import com.io7m.jparasol.untyped.ast.initial.UASTIStatusUnchecked;
+import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
 
@@ -105,7 +105,7 @@ public final class Parser
     this.token = lexer.token();
   }
 
-  public @Nonnull UASTIDFunction<UASTIStatusUnchecked> declarationFunction()
+  public @Nonnull UASTIDFunction<UASTIUnchecked> declarationFunction()
     throws ParserError,
       IOException,
       LexerError,
@@ -116,7 +116,7 @@ public final class Parser
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
     this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
 
-    final List<UASTIDFunctionArgument<UASTIStatusUnchecked>> args =
+    final List<UASTIDFunctionArgument<UASTIUnchecked>> args =
       this.declarationFunctionArguments();
 
     this.parserConsumeExact(Type.TOKEN_COLON);
@@ -135,7 +135,7 @@ public final class Parser
           this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
           final TokenIdentifierLower ext = (TokenIdentifierLower) this.token;
           this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-          return new UASTIDFunctionExternal<UASTIStatusUnchecked>(
+          return new UASTIDFunctionExternal<UASTIUnchecked>(
             name,
             args,
             type,
@@ -147,7 +147,7 @@ public final class Parser
          * result in an error.
          */
 
-        return new UASTIDFunctionDefined<UASTIStatusUnchecked>(
+        return new UASTIDFunctionDefined<UASTIUnchecked>(
           name,
           args,
           type,
@@ -155,7 +155,7 @@ public final class Parser
 
         // $CASES-OMITTED$
       default:
-        return new UASTIDFunctionDefined<UASTIStatusUnchecked>(
+        return new UASTIDFunctionDefined<UASTIUnchecked>(
           name,
           args,
           type,
@@ -164,7 +164,7 @@ public final class Parser
   }
 
   private @Nonnull
-    UASTIDFunctionArgument<UASTIStatusUnchecked>
+    UASTIDFunctionArgument<UASTIUnchecked>
     declarationFunctionArgument()
       throws ParserError,
         ConstraintError,
@@ -175,13 +175,13 @@ public final class Parser
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
     this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
     this.parserConsumeExact(Type.TOKEN_COLON);
-    return new UASTIDFunctionArgument<UASTIStatusUnchecked>(
+    return new UASTIDFunctionArgument<UASTIUnchecked>(
       name,
       this.declarationTypePath());
   }
 
   private @Nonnull
-    List<UASTIDFunctionArgument<UASTIStatusUnchecked>>
+    List<UASTIDFunctionArgument<UASTIUnchecked>>
     declarationFunctionArguments()
       throws ParserError,
         IOException,
@@ -190,8 +190,8 @@ public final class Parser
   {
     this.parserConsumeExact(Type.TOKEN_ROUND_LEFT);
 
-    final ArrayList<UASTIDFunctionArgument<UASTIStatusUnchecked>> args =
-      new ArrayList<UASTIDFunctionArgument<UASTIStatusUnchecked>>();
+    final ArrayList<UASTIDFunctionArgument<UASTIUnchecked>> args =
+      new ArrayList<UASTIDFunctionArgument<UASTIUnchecked>>();
     args.add(this.declarationFunctionArgument());
 
     boolean done = false;
@@ -211,7 +211,7 @@ public final class Parser
     return args;
   }
 
-  public @Nonnull UASTIDImport<UASTIStatusUnchecked> declarationImport()
+  public @Nonnull UASTIDImport<UASTIUnchecked> declarationImport()
     throws ParserError,
       IOException,
       LexerError,
@@ -230,27 +230,27 @@ public final class Parser
         this.parserExpectExact(Type.TOKEN_IDENTIFIER_UPPER);
         final TokenIdentifierUpper rename = (TokenIdentifierUpper) this.token;
         this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
-        return new UASTIDImport<UASTIStatusUnchecked>(new ModulePath(
+        return new UASTIDImport<UASTIUnchecked>(new ModulePath(
           path,
           name), Option.some(rename));
       }
       // $CASES-OMITTED$
       default:
         final None<TokenIdentifierUpper> none = Option.none();
-        return new UASTIDImport<UASTIStatusUnchecked>(new ModulePath(
+        return new UASTIDImport<UASTIUnchecked>(new ModulePath(
           path,
           name), none);
     }
   }
 
-  public @Nonnull UASTIDPackage<UASTIStatusUnchecked> declarationPackage()
+  public @Nonnull UASTIDPackage<UASTIUnchecked> declarationPackage()
     throws ParserError,
       IOException,
       LexerError,
       ConstraintError
   {
     this.parserConsumeExact(Type.TOKEN_PACKAGE);
-    return new UASTIDPackage<UASTIStatusUnchecked>(
+    return new UASTIDPackage<UASTIUnchecked>(
       this.declarationPackagePath());
   }
 
@@ -291,7 +291,7 @@ public final class Parser
     return new PackagePath(components);
   }
 
-  public @Nonnull UASTIDType<UASTIStatusUnchecked> declarationType()
+  public @Nonnull UASTIDType<UASTIUnchecked> declarationType()
     throws ConstraintError,
       ParserError,
       IOException,
@@ -307,10 +307,10 @@ public final class Parser
     switch (this.token.getType()) {
       case TOKEN_RECORD:
         this.parserConsumeExact(Type.TOKEN_RECORD);
-        final List<UASTIDTypeRecordField<UASTIStatusUnchecked>> fields =
+        final List<UASTIDTypeRecordField<UASTIUnchecked>> fields =
           this.declarationTypeRecordFields();
         this.parserExpectExact(Type.TOKEN_END);
-        return new UASTIDTypeRecord<UASTIStatusUnchecked>(name, fields);
+        return new UASTIDTypeRecord<UASTIUnchecked>(name, fields);
         // $CASES-OMITTED$
       default:
         throw new UnreachableCodeException();
@@ -353,7 +353,7 @@ public final class Parser
   }
 
   private @Nonnull
-    UASTIDTypeRecordField<UASTIStatusUnchecked>
+    UASTIDTypeRecordField<UASTIUnchecked>
     declarationTypeRecordField()
       throws ConstraintError,
         ParserError,
@@ -365,19 +365,19 @@ public final class Parser
     this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
     this.parserConsumeExact(Type.TOKEN_COLON);
     final UASTITypePath type = this.declarationTypePath();
-    return new UASTIDTypeRecordField<UASTIStatusUnchecked>(name, type);
+    return new UASTIDTypeRecordField<UASTIUnchecked>(name, type);
   }
 
   private @Nonnull
-    List<UASTIDTypeRecordField<UASTIStatusUnchecked>>
+    List<UASTIDTypeRecordField<UASTIUnchecked>>
     declarationTypeRecordFields()
       throws ParserError,
         IOException,
         LexerError,
         ConstraintError
   {
-    final ArrayList<UASTIDTypeRecordField<UASTIStatusUnchecked>> args =
-      new ArrayList<UASTIDTypeRecordField<UASTIStatusUnchecked>>();
+    final ArrayList<UASTIDTypeRecordField<UASTIUnchecked>> args =
+      new ArrayList<UASTIDTypeRecordField<UASTIUnchecked>>();
     args.add(this.declarationTypeRecordField());
 
     boolean done = false;
@@ -396,7 +396,7 @@ public final class Parser
     return args;
   }
 
-  public @Nonnull UASTIDValue<UASTIStatusUnchecked> declarationValue()
+  public @Nonnull UASTIDValue<UASTIUnchecked> declarationValue()
     throws ParserError,
       IOException,
       LexerError,
@@ -415,7 +415,7 @@ public final class Parser
         this.parserConsumeExact(Type.TOKEN_COLON);
         final UASTITypePath path = this.declarationTypePath();
         this.parserConsumeExact(Type.TOKEN_EQUALS);
-        return new UASTIDValue<UASTIStatusUnchecked>(
+        return new UASTIDValue<UASTIUnchecked>(
           name,
           Option.some(path),
           this.expression());
@@ -424,7 +424,7 @@ public final class Parser
       {
         this.parserConsumeExact(Type.TOKEN_EQUALS);
         final Option<UASTITypePath> none = Option.none();
-        return new UASTIDValue<UASTIStatusUnchecked>(
+        return new UASTIDValue<UASTIUnchecked>(
           name,
           none,
           this.expression());
@@ -436,7 +436,7 @@ public final class Parser
   }
 
   private @Nonnull
-    UASTIDValueLocal<UASTIStatusUnchecked>
+    UASTIDValueLocal<UASTIUnchecked>
     declarationValueLocal()
       throws ParserError,
         IOException,
@@ -456,7 +456,7 @@ public final class Parser
         this.parserConsumeExact(Type.TOKEN_COLON);
         final UASTITypePath path = this.declarationTypePath();
         this.parserConsumeExact(Type.TOKEN_EQUALS);
-        return new UASTIDValueLocal<UASTIStatusUnchecked>(
+        return new UASTIDValueLocal<UASTIUnchecked>(
           name,
           Option.some(path),
           this.expression());
@@ -465,7 +465,7 @@ public final class Parser
       {
         this.parserConsumeExact(Type.TOKEN_EQUALS);
         final Option<UASTITypePath> none = Option.none();
-        return new UASTIDValueLocal<UASTIStatusUnchecked>(
+        return new UASTIDValueLocal<UASTIUnchecked>(
           name,
           none,
           this.expression());
@@ -477,15 +477,15 @@ public final class Parser
   }
 
   public @Nonnull
-    List<UASTIDValueLocal<UASTIStatusUnchecked>>
+    List<UASTIDValueLocal<UASTIUnchecked>>
     declarationValueLocals()
       throws ParserError,
         IOException,
         LexerError,
         ConstraintError
   {
-    final List<UASTIDValueLocal<UASTIStatusUnchecked>> values =
-      new ArrayList<UASTIDValueLocal<UASTIStatusUnchecked>>();
+    final List<UASTIDValueLocal<UASTIUnchecked>> values =
+      new ArrayList<UASTIDValueLocal<UASTIUnchecked>>();
     values.add(this.declarationValueLocal());
     this.parserConsumeExact(Type.TOKEN_SEMICOLON);
 
@@ -540,7 +540,7 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIExpression<UASTIStatusUnchecked> expression()
+  public @Nonnull UASTIExpression<UASTIUnchecked> expression()
     throws ParserError,
       IOException,
       LexerError,
@@ -550,7 +550,7 @@ public final class Parser
   }
 
   public @Nonnull
-    List<UASTIExpression<UASTIStatusUnchecked>>
+    List<UASTIExpression<UASTIUnchecked>>
     expressionApplicationArguments()
       throws ParserError,
         IOException,
@@ -558,8 +558,8 @@ public final class Parser
         ConstraintError
   {
     this.parserConsumeExact(Type.TOKEN_ROUND_LEFT);
-    final ArrayList<UASTIExpression<UASTIStatusUnchecked>> arguments =
-      new ArrayList<UASTIExpression<UASTIStatusUnchecked>>();
+    final ArrayList<UASTIExpression<UASTIUnchecked>> arguments =
+      new ArrayList<UASTIExpression<UASTIUnchecked>>();
     arguments.add(this.expression());
 
     boolean done = false;
@@ -580,22 +580,22 @@ public final class Parser
     return arguments;
   }
 
-  public @Nonnull UASTIEBoolean<UASTIStatusUnchecked> expressionBoolean()
+  public @Nonnull UASTIEBoolean<UASTIUnchecked> expressionBoolean()
     throws ConstraintError,
       ParserError,
       IOException,
       LexerError
   {
     this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
-    final UASTIEBoolean<UASTIStatusUnchecked> t =
-      new UASTIEBoolean<UASTIStatusUnchecked>(
+    final UASTIEBoolean<UASTIUnchecked> t =
+      new UASTIEBoolean<UASTIUnchecked>(
         (TokenLiteralBoolean) this.token);
     this.parserConsumeAny();
     return t;
   }
 
   public @Nonnull
-    UASTIEConditional<UASTIStatusUnchecked>
+    UASTIEConditional<UASTIUnchecked>
     expressionConditional()
       throws ParserError,
         ConstraintError,
@@ -603,30 +603,30 @@ public final class Parser
         LexerError
   {
     this.parserConsumeExact(Type.TOKEN_IF);
-    final UASTIExpression<UASTIStatusUnchecked> econd = this.expression();
+    final UASTIExpression<UASTIUnchecked> econd = this.expression();
     this.parserConsumeExact(Type.TOKEN_THEN);
-    final UASTIExpression<UASTIStatusUnchecked> eleft = this.expression();
+    final UASTIExpression<UASTIUnchecked> eleft = this.expression();
     this.parserConsumeExact(Type.TOKEN_ELSE);
-    final UASTIExpression<UASTIStatusUnchecked> eright = this.expression();
+    final UASTIExpression<UASTIUnchecked> eright = this.expression();
     this.parserConsumeExact(Type.TOKEN_END);
-    return new UASTIEConditional<UASTIStatusUnchecked>(econd, eleft, eright);
+    return new UASTIEConditional<UASTIUnchecked>(econd, eleft, eright);
   }
 
-  public @Nonnull UASTIEInteger<UASTIStatusUnchecked> expressionInteger()
+  public @Nonnull UASTIEInteger<UASTIUnchecked> expressionInteger()
     throws ParserError,
       ConstraintError,
       IOException,
       LexerError
   {
     this.parserExpectExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
-    final UASTIEInteger<UASTIStatusUnchecked> t =
-      new UASTIEInteger<UASTIStatusUnchecked>(
+    final UASTIEInteger<UASTIUnchecked> t =
+      new UASTIEInteger<UASTIUnchecked>(
         (TokenLiteralInteger) this.token);
     this.parserConsumeAny();
     return t;
   }
 
-  public @Nonnull UASTIELet<UASTIStatusUnchecked> expressionLet()
+  public @Nonnull UASTIELet<UASTIUnchecked> expressionLet()
     throws ParserError,
       ConstraintError,
       IOException,
@@ -635,15 +635,15 @@ public final class Parser
     this.parserExpectExact(Type.TOKEN_LET);
     final TokenLet let = (TokenLet) this.token;
     this.parserConsumeExact(Type.TOKEN_LET);
-    final List<UASTIDValueLocal<UASTIStatusUnchecked>> bindings =
+    final List<UASTIDValueLocal<UASTIUnchecked>> bindings =
       this.declarationValueLocals();
     this.parserConsumeExact(Type.TOKEN_IN);
-    final UASTIExpression<UASTIStatusUnchecked> body = this.expression();
+    final UASTIExpression<UASTIUnchecked> body = this.expression();
     this.parserConsumeExact(Type.TOKEN_END);
-    return new UASTIELet<UASTIStatusUnchecked>(let, bindings, body);
+    return new UASTIELet<UASTIUnchecked>(let, bindings, body);
   }
 
-  public @Nonnull UASTIENew<UASTIStatusUnchecked> expressionNew()
+  public @Nonnull UASTIENew<UASTIUnchecked> expressionNew()
     throws ParserError,
       IOException,
       LexerError,
@@ -651,13 +651,13 @@ public final class Parser
   {
     this.parserConsumeExact(Type.TOKEN_NEW);
     final UASTITypePath path = this.declarationTypePath();
-    return new UASTIENew<UASTIStatusUnchecked>(
+    return new UASTIENew<UASTIUnchecked>(
       path,
       this.expressionApplicationArguments());
   }
 
-  private @Nonnull UASTIExpression<UASTIStatusUnchecked> expressionPost(
-    final @Nonnull UASTIExpression<UASTIStatusUnchecked> e)
+  private @Nonnull UASTIExpression<UASTIUnchecked> expressionPost(
+    final @Nonnull UASTIExpression<UASTIUnchecked> e)
     throws ParserError,
       IOException,
       LexerError,
@@ -674,7 +674,7 @@ public final class Parser
     }
   }
 
-  private @Nonnull UASTIExpression<UASTIStatusUnchecked> expressionPre()
+  private @Nonnull UASTIExpression<UASTIUnchecked> expressionPre()
     throws ParserError,
       ConstraintError,
       IOException,
@@ -716,20 +716,20 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIEReal<UASTIStatusUnchecked> expressionReal()
+  public @Nonnull UASTIEReal<UASTIUnchecked> expressionReal()
     throws ParserError,
       ConstraintError,
       IOException,
       LexerError
   {
     this.parserExpectExact(Type.TOKEN_LITERAL_REAL);
-    final UASTIEReal<UASTIStatusUnchecked> t =
-      new UASTIEReal<UASTIStatusUnchecked>((TokenLiteralReal) this.token);
+    final UASTIEReal<UASTIUnchecked> t =
+      new UASTIEReal<UASTIUnchecked>((TokenLiteralReal) this.token);
     this.parserConsumeAny();
     return t;
   }
 
-  public @Nonnull UASTIERecord<UASTIStatusUnchecked> expressionRecord()
+  public @Nonnull UASTIERecord<UASTIUnchecked> expressionRecord()
     throws ParserError,
       IOException,
       LexerError,
@@ -738,18 +738,18 @@ public final class Parser
     this.parserConsumeExact(Type.TOKEN_RECORD);
     final UASTITypePath path = this.declarationTypePath();
     this.parserConsumeExact(Type.TOKEN_CURLY_LEFT);
-    final List<UASTIRecordFieldAssignment<UASTIStatusUnchecked>> fields =
-      new ArrayList<UASTIRecordFieldAssignment<UASTIStatusUnchecked>>();
+    final List<UASTIRecordFieldAssignment<UASTIUnchecked>> fields =
+      new ArrayList<UASTIRecordFieldAssignment<UASTIUnchecked>>();
     fields.add(this.expressionRecordFieldAssignment());
     this.expressionRecordActual(fields);
     this.parserConsumeExact(Type.TOKEN_CURLY_RIGHT);
-    return new UASTIERecord<UASTIStatusUnchecked>(path, fields);
+    return new UASTIERecord<UASTIUnchecked>(path, fields);
   }
 
   private
     void
     expressionRecordActual(
-      final @Nonnull List<UASTIRecordFieldAssignment<UASTIStatusUnchecked>> fields)
+      final @Nonnull List<UASTIRecordFieldAssignment<UASTIUnchecked>> fields)
       throws ParserError,
         IOException,
         LexerError,
@@ -768,7 +768,7 @@ public final class Parser
   }
 
   private @Nonnull
-    UASTIRecordFieldAssignment<UASTIStatusUnchecked>
+    UASTIRecordFieldAssignment<UASTIUnchecked>
     expressionRecordFieldAssignment()
       throws ConstraintError,
         ParserError,
@@ -779,15 +779,15 @@ public final class Parser
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
     this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
     this.parserConsumeExact(Type.TOKEN_EQUALS);
-    return new UASTIRecordFieldAssignment<UASTIStatusUnchecked>(
+    return new UASTIRecordFieldAssignment<UASTIUnchecked>(
       name,
       this.expression());
   }
 
   private @Nonnull
-    UASTIERecordProjection<UASTIStatusUnchecked>
+    UASTIERecordProjection<UASTIUnchecked>
     expressionRecordProjection(
-      final @Nonnull UASTIExpression<UASTIStatusUnchecked> e)
+      final @Nonnull UASTIExpression<UASTIUnchecked> e)
       throws ConstraintError,
         ParserError,
         IOException,
@@ -795,16 +795,16 @@ public final class Parser
   {
     this.parserConsumeExact(Type.TOKEN_DOT);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
-    final UASTIERecordProjection<UASTIStatusUnchecked> r =
-      new UASTIERecordProjection<UASTIStatusUnchecked>(
+    final UASTIERecordProjection<UASTIUnchecked> r =
+      new UASTIERecordProjection<UASTIUnchecked>(
         e,
         (TokenIdentifierLower) this.token);
     this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
     return r;
   }
 
-  private UASTIESwizzle<UASTIStatusUnchecked> expressionSwizzle(
-    final @Nonnull UASTIExpression<UASTIStatusUnchecked> e)
+  private UASTIESwizzle<UASTIUnchecked> expressionSwizzle(
+    final @Nonnull UASTIExpression<UASTIUnchecked> e)
     throws ParserError,
       IOException,
       LexerError,
@@ -829,7 +829,7 @@ public final class Parser
     }
 
     this.parserConsumeExact(Type.TOKEN_SQUARE_RIGHT);
-    return new UASTIESwizzle<UASTIStatusUnchecked>(e, fields);
+    return new UASTIESwizzle<UASTIUnchecked>(e, fields);
   }
 
   private @Nonnull TokenIdentifierLower expressionSwizzleField()
@@ -845,7 +845,7 @@ public final class Parser
   }
 
   public @Nonnull
-    UASTIExpression<UASTIStatusUnchecked>
+    UASTIExpression<UASTIUnchecked>
     expressionVariableOrApplication()
       throws ParserError,
         IOException,
@@ -855,12 +855,12 @@ public final class Parser
     final UASTIValuePath path = this.declarationValuePath();
     switch (this.token.getType()) {
       case TOKEN_ROUND_LEFT:
-        return new UASTIEApplication<UASTIStatusUnchecked>(
+        return new UASTIEApplication<UASTIUnchecked>(
           path,
           this.expressionApplicationArguments());
         // $CASES-OMITTED$
       default:
-        return new UASTIEVariable<UASTIStatusUnchecked>(path);
+        return new UASTIEVariable<UASTIUnchecked>(path);
     }
   }
 

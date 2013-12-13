@@ -52,7 +52,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProject
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
-import com.io7m.jparasol.untyped.ast.initial.UASTIStatusUnchecked;
+import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
 
@@ -92,14 +92,14 @@ public class ParserTest
       ParserTest
         .makeStringInternalParser("function f (x : integer, y : Example.t) : integer = external xyz");
 
-    final UASTIDFunctionExternal<UASTIStatusUnchecked> r =
-      (UASTIDFunctionExternal<UASTIStatusUnchecked>) p.declarationFunction();
+    final UASTIDFunctionExternal<UASTIUnchecked> r =
+      (UASTIDFunctionExternal<UASTIUnchecked>) p.declarationFunction();
     Assert.assertEquals("f", r.getName().getActual());
     Assert.assertEquals(2, r.getArguments().size());
 
-    final UASTIDFunctionArgument<UASTIStatusUnchecked> arg0 =
+    final UASTIDFunctionArgument<UASTIUnchecked> arg0 =
       r.getArguments().get(0);
-    final UASTIDFunctionArgument<UASTIStatusUnchecked> arg1 =
+    final UASTIDFunctionArgument<UASTIUnchecked> arg1 =
       r.getArguments().get(1);
 
     Assert.assertEquals("x", arg0.getName().getActual());
@@ -137,14 +137,14 @@ public class ParserTest
     final Parser p =
       ParserTest
         .makeStringInternalParser("function f (x : integer, y : Example.t) : integer = 23");
-    final UASTIDFunctionDefined<UASTIStatusUnchecked> r =
-      (UASTIDFunctionDefined<UASTIStatusUnchecked>) p.declarationFunction();
+    final UASTIDFunctionDefined<UASTIUnchecked> r =
+      (UASTIDFunctionDefined<UASTIUnchecked>) p.declarationFunction();
     Assert.assertEquals("f", r.getName().getActual());
     Assert.assertEquals(2, r.getArguments().size());
 
-    final UASTIDFunctionArgument<UASTIStatusUnchecked> arg0 =
+    final UASTIDFunctionArgument<UASTIUnchecked> arg0 =
       r.getArguments().get(0);
-    final UASTIDFunctionArgument<UASTIStatusUnchecked> arg1 =
+    final UASTIDFunctionArgument<UASTIUnchecked> arg1 =
       r.getArguments().get(1);
 
     Assert.assertEquals("x", arg0.getName().getActual());
@@ -154,7 +154,7 @@ public class ParserTest
       .getType()
       .getModule()).value.getActual());
     Assert.assertEquals("t", arg1.getType().getName().getActual());
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) r
       .getBody()).getValue().intValue());
   }
 
@@ -166,7 +166,7 @@ public class ParserTest
   {
     final Parser p = ParserTest.makeStringInternalParser("import x.y.z.M");
 
-    final UASTIDImport<UASTIStatusUnchecked> r = p.declarationImport();
+    final UASTIDImport<UASTIUnchecked> r = p.declarationImport();
     final ModulePathFlat flat = ModulePathFlat.fromModulePath(r.getPath());
     Assert.assertEquals("x.y.z.M", flat.getActual());
     Assert.assertTrue(r.getRename().isNone());
@@ -181,7 +181,7 @@ public class ParserTest
     final Parser p =
       ParserTest.makeStringInternalParser("import x.y.z.M as K");
 
-    final UASTIDImport<UASTIStatusUnchecked> r = p.declarationImport();
+    final UASTIDImport<UASTIUnchecked> r = p.declarationImport();
     final ModulePathFlat flat = ModulePathFlat.fromModulePath(r.getPath());
     Assert.assertEquals("x.y.z.M", flat.getActual());
     Assert.assertTrue(r.getRename().isSome());
@@ -197,7 +197,7 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("import M");
-    final UASTIDImport<UASTIStatusUnchecked> r = p.declarationImport();
+    final UASTIDImport<UASTIUnchecked> r = p.declarationImport();
     final ModulePathFlat flat = ModulePathFlat.fromModulePath(r.getPath());
     Assert.assertEquals("M", flat.getActual());
     Assert.assertTrue(r.getRename().isNone());
@@ -210,7 +210,7 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("import M as K");
-    final UASTIDImport<UASTIStatusUnchecked> r = p.declarationImport();
+    final UASTIDImport<UASTIUnchecked> r = p.declarationImport();
     final ModulePathFlat flat = ModulePathFlat.fromModulePath(r.getPath());
     Assert.assertEquals("M", flat.getActual());
     Assert.assertTrue(r.getRename().isSome());
@@ -227,7 +227,7 @@ public class ParserTest
   {
     final Parser p = ParserTest.makeStringInternalParser("package x.y.z");
 
-    final UASTIDPackage<UASTIStatusUnchecked> r = p.declarationPackage();
+    final UASTIDPackage<UASTIUnchecked> r = p.declarationPackage();
     final PackagePathFlat flat = PackagePathFlat.fromPackagePath(r.getPath());
     Assert.assertEquals("x.y.z", flat.getActual());
   }
@@ -254,14 +254,14 @@ public class ParserTest
       ParserTest
         .makeStringParser("type t is record x : integer, y : Z.integer end");
 
-    final UASTIDTypeRecord<UASTIStatusUnchecked> r =
-      (UASTIDTypeRecord<UASTIStatusUnchecked>) p.declarationType();
+    final UASTIDTypeRecord<UASTIUnchecked> r =
+      (UASTIDTypeRecord<UASTIUnchecked>) p.declarationType();
     Assert.assertEquals("t", r.getName().getActual());
     Assert.assertEquals(2, r.getFields().size());
 
-    final UASTIDTypeRecordField<UASTIStatusUnchecked> arg0 =
+    final UASTIDTypeRecordField<UASTIUnchecked> arg0 =
       r.getFields().get(0);
-    final UASTIDTypeRecordField<UASTIStatusUnchecked> arg1 =
+    final UASTIDTypeRecordField<UASTIUnchecked> arg1 =
       r.getFields().get(1);
 
     Assert.assertEquals("x", arg0.getName().getActual());
@@ -373,10 +373,10 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("value k = 23");
-    final UASTIDValue<UASTIStatusUnchecked> r = p.declarationValue();
+    final UASTIDValue<UASTIUnchecked> r = p.declarationValue();
     Assert.assertEquals("k", r.getName().getActual());
     Assert.assertTrue(r.getAscription().isNone());
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) r
       .getExpression()).getValue().intValue());
   }
 
@@ -388,7 +388,7 @@ public class ParserTest
   {
     final Parser p =
       ParserTest.makeStringInternalParser("value k : integer = 23");
-    final UASTIDValue<UASTIStatusUnchecked> r = p.declarationValue();
+    final UASTIDValue<UASTIUnchecked> r = p.declarationValue();
     Assert.assertEquals("k", r.getName().getActual());
     Assert.assertTrue(r.getAscription().isSome());
 
@@ -396,7 +396,7 @@ public class ParserTest
       ((Option.Some<UASTITypePath>) r.getAscription()).value;
     Assert.assertTrue(path.getModule().isNone());
     Assert.assertEquals("integer", path.getName().getActual());
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) r
       .getExpression()).getValue().intValue());
   }
 
@@ -408,7 +408,7 @@ public class ParserTest
   {
     final Parser p =
       ParserTest.makeStringInternalParser("value k : P.integer = 23");
-    final UASTIDValue<UASTIStatusUnchecked> r = p.declarationValue();
+    final UASTIDValue<UASTIUnchecked> r = p.declarationValue();
     Assert.assertEquals("k", r.getName().getActual());
     Assert.assertTrue(r.getAscription().isSome());
 
@@ -420,7 +420,7 @@ public class ParserTest
     Assert.assertEquals("P", module.value.getActual());
 
     Assert.assertEquals("integer", path.getName().getActual());
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) r
       .getExpression()).getValue().intValue());
   }
 
@@ -498,20 +498,20 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("Y.x (1, 2, 3)");
-    final UASTIEApplication<UASTIStatusUnchecked> r =
-      (UASTIEApplication<UASTIStatusUnchecked>) p
+    final UASTIEApplication<UASTIUnchecked> r =
+      (UASTIEApplication<UASTIUnchecked>) p
         .expressionVariableOrApplication();
     Assert.assertTrue(r.getName().getModule().isSome());
     Assert.assertEquals("x", r.getName().getName().getActual());
     Assert.assertEquals(3, r.getArguments().size());
 
-    Assert.assertEquals(1, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(1, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(0)).getValue().intValue());
-    Assert.assertEquals(2, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(2, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(1)).getValue().intValue());
-    Assert.assertEquals(3, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(3, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(2)).getValue().intValue());
   }
@@ -523,20 +523,20 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("x (1, 2, 3)");
-    final UASTIEApplication<UASTIStatusUnchecked> r =
-      (UASTIEApplication<UASTIStatusUnchecked>) p
+    final UASTIEApplication<UASTIUnchecked> r =
+      (UASTIEApplication<UASTIUnchecked>) p
         .expressionVariableOrApplication();
     Assert.assertTrue(r.getName().getModule().isNone());
     Assert.assertEquals("x", r.getName().getName().getActual());
     Assert.assertEquals(3, r.getArguments().size());
 
-    Assert.assertEquals(1, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(1, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(0)).getValue().intValue());
-    Assert.assertEquals(2, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(2, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(1)).getValue().intValue());
-    Assert.assertEquals(3, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(3, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(2)).getValue().intValue());
   }
@@ -562,7 +562,7 @@ public class ParserTest
         ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("true");
-    final UASTIEBoolean<UASTIStatusUnchecked> r = p.expressionBoolean();
+    final UASTIEBoolean<UASTIUnchecked> r = p.expressionBoolean();
     Assert.assertEquals(true, r.getValue());
   }
 
@@ -575,7 +575,7 @@ public class ParserTest
         ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("false");
-    final UASTIEBoolean<UASTIStatusUnchecked> r = p.expressionBoolean();
+    final UASTIEBoolean<UASTIUnchecked> r = p.expressionBoolean();
     Assert.assertEquals(false, r.getValue());
   }
 
@@ -587,8 +587,8 @@ public class ParserTest
   {
     final Parser p =
       ParserTest.makeStringInternalParser("if true then 23 else 24 end");
-    final UASTIEConditional<UASTIStatusUnchecked> r =
-      (UASTIEConditional<UASTIStatusUnchecked>) p.expression();
+    final UASTIEConditional<UASTIUnchecked> r =
+      (UASTIEConditional<UASTIUnchecked>) p.expression();
     Assert.assertTrue(r.getCondition() instanceof UASTIEBoolean<?>);
     Assert.assertTrue(r.getLeft() instanceof UASTIEInteger<?>);
     Assert.assertTrue(r.getRight() instanceof UASTIEInteger<?>);
@@ -620,7 +620,7 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("23");
-    final UASTIEInteger<UASTIStatusUnchecked> r = p.expressionInteger();
+    final UASTIEInteger<UASTIUnchecked> r = p.expressionInteger();
     Assert.assertEquals(BigDecimal.valueOf(23), r.getValue());
   }
 
@@ -672,20 +672,20 @@ public class ParserTest
     final Parser p =
       ParserTest
         .makeStringInternalParser("let value k : integer = 23; in 24 end");
-    final UASTIELet<UASTIStatusUnchecked> r =
-      (UASTIELet<UASTIStatusUnchecked>) p.expression();
+    final UASTIELet<UASTIUnchecked> r =
+      (UASTIELet<UASTIUnchecked>) p.expression();
 
     Assert.assertEquals(1, r.getBindings().size());
-    final UASTIDValueLocal<UASTIStatusUnchecked> first =
+    final UASTIDValueLocal<UASTIUnchecked> first =
       r.getBindings().get(0);
 
     final Option<UASTITypePath> asc = first.getAscription();
     Assert.assertTrue(asc.isSome());
     final Some<UASTITypePath> some = (Option.Some<UASTITypePath>) asc;
     Assert.assertEquals("integer", some.value.getName().getActual());
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) first
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) first
       .getExpression()).getValue().intValue());
-    Assert.assertEquals(24, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(24, ((UASTIEInteger<UASTIUnchecked>) r
       .getBody()).getValue().intValue());
   }
 
@@ -697,17 +697,17 @@ public class ParserTest
   {
     final Parser p =
       ParserTest.makeStringInternalParser("let value k = 23; in 24 end");
-    final UASTIELet<UASTIStatusUnchecked> r =
-      (UASTIELet<UASTIStatusUnchecked>) p.expression();
+    final UASTIELet<UASTIUnchecked> r =
+      (UASTIELet<UASTIUnchecked>) p.expression();
 
     Assert.assertEquals(1, r.getBindings().size());
-    final UASTIDValueLocal<UASTIStatusUnchecked> first =
+    final UASTIDValueLocal<UASTIUnchecked> first =
       r.getBindings().get(0);
     final Option<UASTITypePath> asc = first.getAscription();
     Assert.assertTrue(asc.isNone());
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) first
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) first
       .getExpression()).getValue().intValue());
-    Assert.assertEquals(24, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(24, ((UASTIEInteger<UASTIUnchecked>) r
       .getBody()).getValue().intValue());
   }
 
@@ -720,28 +720,28 @@ public class ParserTest
     final Parser p =
       ParserTest
         .makeStringInternalParser("let value k = 23; value z = 25; in 24 end");
-    final UASTIELet<UASTIStatusUnchecked> r =
-      (UASTIELet<UASTIStatusUnchecked>) p.expression();
+    final UASTIELet<UASTIUnchecked> r =
+      (UASTIELet<UASTIUnchecked>) p.expression();
 
     Assert.assertEquals(2, r.getBindings().size());
 
     {
-      final UASTIDValueLocal<UASTIStatusUnchecked> b = r.getBindings().get(0);
+      final UASTIDValueLocal<UASTIUnchecked> b = r.getBindings().get(0);
       final Option<UASTITypePath> asc = b.getAscription();
       Assert.assertTrue(asc.isNone());
-      Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) b
+      Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) b
         .getExpression()).getValue().intValue());
     }
 
     {
-      final UASTIDValueLocal<UASTIStatusUnchecked> b = r.getBindings().get(1);
+      final UASTIDValueLocal<UASTIUnchecked> b = r.getBindings().get(1);
       final Option<UASTITypePath> asc = b.getAscription();
       Assert.assertTrue(asc.isNone());
-      Assert.assertEquals(25, ((UASTIEInteger<UASTIStatusUnchecked>) b
+      Assert.assertEquals(25, ((UASTIEInteger<UASTIUnchecked>) b
         .getExpression()).getValue().intValue());
     }
 
-    Assert.assertEquals(24, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(24, ((UASTIEInteger<UASTIUnchecked>) r
       .getBody()).getValue().intValue());
   }
 
@@ -788,19 +788,19 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("new Y.x (1, 2, 3)");
-    final UASTIENew<UASTIStatusUnchecked> r =
-      (UASTIENew<UASTIStatusUnchecked>) p.expression();
+    final UASTIENew<UASTIUnchecked> r =
+      (UASTIENew<UASTIUnchecked>) p.expression();
     Assert.assertTrue(r.getName().getModule().isSome());
     Assert.assertEquals("x", r.getName().getName().getActual());
     Assert.assertEquals(3, r.getArguments().size());
 
-    Assert.assertEquals(1, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(1, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(0)).getValue().intValue());
-    Assert.assertEquals(2, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(2, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(1)).getValue().intValue());
-    Assert.assertEquals(3, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(3, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(2)).getValue().intValue());
   }
@@ -812,19 +812,19 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("new x (1, 2, 3)");
-    final UASTIENew<UASTIStatusUnchecked> r =
-      (UASTIENew<UASTIStatusUnchecked>) p.expression();
+    final UASTIENew<UASTIUnchecked> r =
+      (UASTIENew<UASTIUnchecked>) p.expression();
     Assert.assertTrue(r.getName().getModule().isNone());
     Assert.assertEquals("x", r.getName().getName().getActual());
     Assert.assertEquals(3, r.getArguments().size());
 
-    Assert.assertEquals(1, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(1, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(0)).getValue().intValue());
-    Assert.assertEquals(2, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(2, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(1)).getValue().intValue());
-    Assert.assertEquals(3, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(3, ((UASTIEInteger<UASTIUnchecked>) r
       .getArguments()
       .get(2)).getValue().intValue());
   }
@@ -848,8 +848,8 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("23.0");
-    final UASTIEReal<UASTIStatusUnchecked> r =
-      (UASTIEReal<UASTIStatusUnchecked>) p.expression();
+    final UASTIEReal<UASTIUnchecked> r =
+      (UASTIEReal<UASTIUnchecked>) p.expression();
     Assert.assertEquals(BigDecimal.valueOf(23.0), r.getValue());
   }
 
@@ -861,19 +861,19 @@ public class ParserTest
   {
     final Parser p =
       ParserTest.makeStringInternalParser("record t { a = 23, b = 17 }");
-    final UASTIERecord<UASTIStatusUnchecked> r =
-      (UASTIERecord<UASTIStatusUnchecked>) p.expression();
+    final UASTIERecord<UASTIUnchecked> r =
+      (UASTIERecord<UASTIUnchecked>) p.expression();
     Assert.assertEquals("t", r.getTypePath().getName().getActual());
     Assert.assertEquals(2, r.getAssignments().size());
-    final UASTIRecordFieldAssignment<UASTIStatusUnchecked> as0 =
+    final UASTIRecordFieldAssignment<UASTIUnchecked> as0 =
       r.getAssignments().get(0);
     Assert.assertEquals("a", as0.getName().getActual());
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) as0
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) as0
       .getExpression()).getValue().intValue());
-    final UASTIRecordFieldAssignment<UASTIStatusUnchecked> as1 =
+    final UASTIRecordFieldAssignment<UASTIUnchecked> as1 =
       r.getAssignments().get(1);
     Assert.assertEquals("b", as1.getName().getActual());
-    Assert.assertEquals(17, ((UASTIEInteger<UASTIStatusUnchecked>) as1
+    Assert.assertEquals(17, ((UASTIEInteger<UASTIUnchecked>) as1
       .getExpression()).getValue().intValue());
   }
 
@@ -886,11 +886,11 @@ public class ParserTest
         ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("x.y");
-    final UASTIERecordProjection<UASTIStatusUnchecked> r =
-      (UASTIERecordProjection<UASTIStatusUnchecked>) p.expression();
+    final UASTIERecordProjection<UASTIUnchecked> r =
+      (UASTIERecordProjection<UASTIUnchecked>) p.expression();
 
-    final UASTIEVariable<UASTIStatusUnchecked> var =
-      (UASTIEVariable<UASTIStatusUnchecked>) r.getExpression();
+    final UASTIEVariable<UASTIUnchecked> var =
+      (UASTIEVariable<UASTIUnchecked>) r.getExpression();
     Assert.assertEquals("x", var.getName().getName().getActual());
     Assert.assertEquals("y", r.getField().getActual());
   }
@@ -904,11 +904,11 @@ public class ParserTest
         ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("P.x.y");
-    final UASTIERecordProjection<UASTIStatusUnchecked> r =
-      (UASTIERecordProjection<UASTIStatusUnchecked>) p.expression();
+    final UASTIERecordProjection<UASTIUnchecked> r =
+      (UASTIERecordProjection<UASTIUnchecked>) p.expression();
 
-    final UASTIEVariable<UASTIStatusUnchecked> var =
-      (UASTIEVariable<UASTIStatusUnchecked>) r.getExpression();
+    final UASTIEVariable<UASTIUnchecked> var =
+      (UASTIEVariable<UASTIUnchecked>) r.getExpression();
 
     Assert.assertEquals("P", ((Option.Some<TokenIdentifierUpper>) var
       .getName()
@@ -960,10 +960,10 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("23 [x y z]");
-    final UASTIESwizzle<UASTIStatusUnchecked> r =
-      (UASTIESwizzle<UASTIStatusUnchecked>) p.expression();
+    final UASTIESwizzle<UASTIUnchecked> r =
+      (UASTIESwizzle<UASTIUnchecked>) p.expression();
 
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) r
       .getExpression()).getValue().intValue());
     Assert.assertEquals(3, r.getFields().size());
     Assert.assertEquals("x", r.getFields().get(0).getActual());
@@ -978,10 +978,10 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("23 [x]");
-    final UASTIESwizzle<UASTIStatusUnchecked> r =
-      (UASTIESwizzle<UASTIStatusUnchecked>) p.expression();
+    final UASTIESwizzle<UASTIUnchecked> r =
+      (UASTIESwizzle<UASTIUnchecked>) p.expression();
 
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) r
       .getExpression()).getValue().intValue());
     Assert.assertEquals(1, r.getFields().size());
     Assert.assertEquals("x", r.getFields().get(0).getActual());
@@ -995,13 +995,13 @@ public class ParserTest
   {
     final Parser p =
       ParserTest.makeStringInternalParser("23 [x y z] [z y x]");
-    final UASTIESwizzle<UASTIStatusUnchecked> r =
-      (UASTIESwizzle<UASTIStatusUnchecked>) p.expression();
+    final UASTIESwizzle<UASTIUnchecked> r =
+      (UASTIESwizzle<UASTIUnchecked>) p.expression();
 
-    final UASTIESwizzle<UASTIStatusUnchecked> inner =
-      (UASTIESwizzle<UASTIStatusUnchecked>) r.getExpression();
+    final UASTIESwizzle<UASTIUnchecked> inner =
+      (UASTIESwizzle<UASTIUnchecked>) r.getExpression();
 
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) inner
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) inner
       .getExpression()).getValue().intValue());
 
     Assert.assertEquals(3, inner.getFields().size());
@@ -1022,8 +1022,8 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("x");
-    final UASTIEVariable<UASTIStatusUnchecked> r =
-      (UASTIEVariable<UASTIStatusUnchecked>) p.expression();
+    final UASTIEVariable<UASTIUnchecked> r =
+      (UASTIEVariable<UASTIUnchecked>) p.expression();
     Assert.assertTrue(r.getName().getModule().isNone());
     Assert.assertEquals("x", r.getName().getName().getActual());
   }
@@ -1035,8 +1035,8 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("Y.x");
-    final UASTIEVariable<UASTIStatusUnchecked> r =
-      (UASTIEVariable<UASTIStatusUnchecked>) p.expression();
+    final UASTIEVariable<UASTIUnchecked> r =
+      (UASTIEVariable<UASTIUnchecked>) p.expression();
     Assert.assertTrue(r.getName().getModule().isSome());
     Assert.assertEquals("x", r.getName().getName().getActual());
   }

@@ -16,7 +16,7 @@
 
 package com.io7m.jparasol.untyped.ast.initial;
 
-public interface UASTIStatusUnchecked extends UASTIStatus
+public interface UASTIChecked extends UASTIStatus
 {
   // No value-level representation.
 }
