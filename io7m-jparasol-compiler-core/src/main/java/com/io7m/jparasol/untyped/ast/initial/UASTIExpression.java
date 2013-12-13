@@ -33,33 +33,17 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 
 public abstract class UASTIExpression<S extends UASTIStatus>
 {
-  public static enum Type
-  {
-    UASTIE_APPLICATION,
-    UASTIE_BOOLEAN,
-    UASTIE_CONDITIONAL,
-    UASTIE_INTEGER,
-    UASTIE_LET,
-    UASTIE_NEW,
-    UASTIE_REAL,
-    UASTIE_RECORD,
-    UASTIE_RECORD_PROJECTION,
-    UASTIE_SWIZZLE,
-    UASTIE_VARIABLE
-  }
-
   public static final class UASTIEApplication<S extends UASTIStatus> extends
     UASTIExpression<S>
   {
     private final @Nonnull List<UASTIExpression<S>> arguments;
     private final @Nonnull UASTIValuePath           name;
 
-    @SuppressWarnings("synthetic-access") public UASTIEApplication(
+    public UASTIEApplication(
       final @Nonnull UASTIValuePath name,
       final @Nonnull List<UASTIExpression<S>> arguments)
       throws ConstraintError
     {
-      super(Type.UASTIE_APPLICATION);
       this.name = Constraints.constrainNotNull(name, "Name");
       this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
     }
@@ -80,11 +64,10 @@ public abstract class UASTIExpression<S extends UASTIStatus>
   {
     private final @Nonnull TokenLiteralBoolean token;
 
-    @SuppressWarnings("synthetic-access") public UASTIEBoolean(
+    public UASTIEBoolean(
       final @Nonnull Token.TokenLiteralBoolean token)
       throws ConstraintError
     {
-      super(Type.UASTIE_BOOLEAN);
       this.token = Constraints.constrainNotNull(token, "Token");
     }
 
@@ -106,13 +89,12 @@ public abstract class UASTIExpression<S extends UASTIStatus>
     private final @Nonnull UASTIExpression<S> left;
     private final @Nonnull UASTIExpression<S> right;
 
-    @SuppressWarnings("synthetic-access") public UASTIEConditional(
+    public UASTIEConditional(
       final @Nonnull UASTIExpression<S> condition,
       final @Nonnull UASTIExpression<S> left,
       final @Nonnull UASTIExpression<S> right)
       throws ConstraintError
     {
-      super(Type.UASTIE_CONDITIONAL);
       this.condition = Constraints.constrainNotNull(condition, "Condition");
       this.left = Constraints.constrainNotNull(left, "Left");
       this.right = Constraints.constrainNotNull(right, "Right");
@@ -139,11 +121,10 @@ public abstract class UASTIExpression<S extends UASTIStatus>
   {
     private final @Nonnull TokenLiteralInteger token;
 
-    @SuppressWarnings("synthetic-access") public UASTIEInteger(
+    public UASTIEInteger(
       final @Nonnull Token.TokenLiteralInteger token)
       throws ConstraintError
     {
-      super(Type.UASTIE_INTEGER);
       this.token = Constraints.constrainNotNull(token, "Token");
     }
 
@@ -165,13 +146,12 @@ public abstract class UASTIExpression<S extends UASTIStatus>
     private final @Nonnull UASTIExpression<S>        body;
     private final @Nonnull TokenLet                  token;
 
-    @SuppressWarnings("synthetic-access") public UASTIELet(
+    public UASTIELet(
       final @Nonnull TokenLet token,
       final @Nonnull List<UASTIDeclaration.UASTIDValueLocal<S>> bindings,
       final @Nonnull UASTIExpression<S> body)
       throws ConstraintError
     {
-      super(Type.UASTIE_LET);
       this.token = Constraints.constrainNotNull(token, "Token");
       this.bindings = Constraints.constrainNotNull(bindings, "Bindings");
       this.body = Constraints.constrainNotNull(body, "Body");
@@ -199,12 +179,11 @@ public abstract class UASTIExpression<S extends UASTIStatus>
     private final @Nonnull List<UASTIExpression<S>> arguments;
     private final @Nonnull UASTITypePath            name;
 
-    @SuppressWarnings("synthetic-access") public UASTIENew(
+    public UASTIENew(
       final @Nonnull UASTITypePath name,
       final @Nonnull List<UASTIExpression<S>> arguments)
       throws ConstraintError
     {
-      super(Type.UASTIE_NEW);
       this.name = Constraints.constrainNotNull(name, "Name");
       this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
     }
@@ -225,11 +204,10 @@ public abstract class UASTIExpression<S extends UASTIStatus>
   {
     private final @Nonnull TokenLiteralReal token;
 
-    @SuppressWarnings("synthetic-access") public UASTIEReal(
+    public UASTIEReal(
       final @Nonnull Token.TokenLiteralReal token)
       throws ConstraintError
     {
-      super(Type.UASTIE_REAL);
       this.token = Constraints.constrainNotNull(token, "Token");
     }
 
@@ -250,12 +228,11 @@ public abstract class UASTIExpression<S extends UASTIStatus>
     private final @Nonnull List<UASTIRecordFieldAssignment<S>> assignments;
     private final @Nonnull UASTITypePath                       type_path;
 
-    @SuppressWarnings("synthetic-access") public UASTIERecord(
+    public UASTIERecord(
       final @Nonnull UASTITypePath type_path,
       final @Nonnull List<UASTIRecordFieldAssignment<S>> assignments)
       throws ConstraintError
     {
-      super(Type.UASTIE_RECORD);
       this.type_path = Constraints.constrainNotNull(type_path, "Type path");
       this.assignments =
         Constraints.constrainNotNull(assignments, "Assignments");
@@ -278,12 +255,11 @@ public abstract class UASTIExpression<S extends UASTIStatus>
     private final @Nonnull UASTIExpression<S>   expression;
     private final @Nonnull TokenIdentifierLower field;
 
-    @SuppressWarnings("synthetic-access") public UASTIERecordProjection(
+    public UASTIERecordProjection(
       final @Nonnull UASTIExpression<S> expression,
       final @Nonnull TokenIdentifierLower field)
       throws ConstraintError
     {
-      super(Type.UASTIE_RECORD_PROJECTION);
       this.expression =
         Constraints.constrainNotNull(expression, "Expression");
       this.field = Constraints.constrainNotNull(field, "Field");
@@ -306,12 +282,11 @@ public abstract class UASTIExpression<S extends UASTIStatus>
     private final @Nonnull UASTIExpression<S>         expression;
     private final @Nonnull List<TokenIdentifierLower> fields;
 
-    @SuppressWarnings("synthetic-access") public UASTIESwizzle(
+    public UASTIESwizzle(
       final @Nonnull UASTIExpression<S> expression,
       final @Nonnull List<TokenIdentifierLower> fields)
       throws ConstraintError
     {
-      super(Type.UASTIE_SWIZZLE);
       this.expression =
         Constraints.constrainNotNull(expression, "Expression");
       this.fields = Constraints.constrainNotNull(fields, "Fields");
@@ -333,11 +308,10 @@ public abstract class UASTIExpression<S extends UASTIStatus>
   {
     private final @Nonnull UASTIValuePath name;
 
-    @SuppressWarnings("synthetic-access") public UASTIEVariable(
+    public UASTIEVariable(
       final @Nonnull UASTIValuePath name)
       throws ConstraintError
     {
-      super(Type.UASTIE_VARIABLE);
       this.name = Constraints.constrainNotNull(name, "Name");
     }
 
@@ -371,19 +345,5 @@ public abstract class UASTIExpression<S extends UASTIStatus>
     {
       return this.name;
     }
-  }
-
-  private final @Nonnull Type type;
-
-  private UASTIExpression(
-    final @Nonnull Type type)
-    throws ConstraintError
-  {
-    this.type = Constraints.constrainNotNull(type, "Type");
-  }
-
-  public @Nonnull Type getType()
-  {
-    return this.type;
   }
 }

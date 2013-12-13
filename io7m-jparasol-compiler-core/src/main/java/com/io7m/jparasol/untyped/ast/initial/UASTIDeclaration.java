@@ -16,6 +16,8 @@
 
 package com.io7m.jparasol.untyped.ast.initial;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
@@ -25,26 +27,150 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
 public abstract class UASTIDeclaration<S extends UASTIStatus>
 {
-  public static enum Type
+  /**
+   * The type of function declarations.
+   */
+
+  public static abstract class UASTIDFunction<S extends UASTIStatus> extends
+    UASTIDTerm<S>
   {
-    UASTID_VALUE,
-    UASTID_VALUE_LOCAL
+
+  }
+
+  public static final class UASTIDFunctionArgument<S extends UASTIStatus>
+  {
+    private final @Nonnull TokenIdentifierLower name;
+    private final @Nonnull UASTITypePath        type;
+
+    public UASTIDFunctionArgument(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.type = Constraints.constrainNotNull(type, "Type");
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull UASTITypePath getType()
+    {
+      return this.type;
+    }
+  }
+
+  public static final class UASTIDFunctionDefined<S extends UASTIStatus> extends
+    UASTIDFunction<S>
+  {
+    private final @Nonnull List<UASTIDFunctionArgument<S>> arguments;
+    private final @Nonnull UASTIExpression<S>              body;
+    private final @Nonnull TokenIdentifierLower            name;
+    private final @Nonnull UASTITypePath                   return_type;
+
+    public UASTIDFunctionDefined(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull List<UASTIDFunctionArgument<S>> arguments,
+      final @Nonnull UASTITypePath return_type,
+      final @Nonnull UASTIExpression<S> body)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+      this.return_type =
+        Constraints.constrainNotNull(return_type, "Return type");
+      this.body = Constraints.constrainNotNull(body, "Body");
+    }
+
+    public @Nonnull List<UASTIDFunctionArgument<S>> getArguments()
+    {
+      return this.arguments;
+    }
+
+    public @Nonnull UASTIExpression<S> getBody()
+    {
+      return this.body;
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull UASTITypePath getReturn_type()
+    {
+      return this.return_type;
+    }
+  }
+
+  public static final class UASTIDFunctionExternal<S extends UASTIStatus> extends
+    UASTIDFunction<S>
+  {
+    private final @Nonnull List<UASTIDFunctionArgument<S>> arguments;
+    private final @Nonnull TokenIdentifierLower            external;
+    private final @Nonnull TokenIdentifierLower            name;
+    private final @Nonnull UASTITypePath                   return_type;
+
+    public UASTIDFunctionExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull List<UASTIDFunctionArgument<S>> arguments,
+      final @Nonnull UASTITypePath return_type,
+      final @Nonnull TokenIdentifierLower external)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+      this.return_type =
+        Constraints.constrainNotNull(return_type, "Return type");
+      this.external = Constraints.constrainNotNull(external, "External");
+    }
+
+    public @Nonnull List<UASTIDFunctionArgument<S>> getArguments()
+    {
+      return this.arguments;
+    }
+
+    public @Nonnull TokenIdentifierLower getExternal()
+    {
+      return this.external;
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull UASTITypePath getReturn_type()
+    {
+      return this.return_type;
+    }
+  }
+
+  /**
+   * The type of term declarations.
+   */
+
+  public static abstract class UASTIDTerm<S extends UASTIStatus> extends
+    UASTIDeclaration<S>
+  {
+
   }
 
   public static final class UASTIDValue<S extends UASTIStatus> extends
-    UASTIDeclaration<S>
+    UASTIDTerm<S>
   {
     private final @Nonnull Option<UASTITypePath> ascription;
     private final @Nonnull UASTIExpression<S>    expression;
     private final @Nonnull TokenIdentifierLower  name;
 
-    @SuppressWarnings("synthetic-access") public UASTIDValue(
+    public UASTIDValue(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull Option<UASTITypePath> ascription,
       final @Nonnull UASTIExpression<S> expression)
       throws ConstraintError
     {
-      super(Type.UASTID_VALUE);
       this.name = Constraints.constrainNotNull(name, "Name");
       this.ascription =
         Constraints.constrainNotNull(ascription, "Ascription");
@@ -69,19 +195,18 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
   }
 
   public static final class UASTIDValueLocal<S extends UASTIStatus> extends
-    UASTIDeclaration<S>
+    UASTIDTerm<S>
   {
     private final @Nonnull Option<UASTITypePath> ascription;
     private final @Nonnull UASTIExpression<S>    expression;
     private final @Nonnull TokenIdentifierLower  name;
 
-    @SuppressWarnings("synthetic-access") public UASTIDValueLocal(
+    public UASTIDValueLocal(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull Option<UASTITypePath> ascription,
       final @Nonnull UASTIExpression<S> expression)
       throws ConstraintError
     {
-      super(Type.UASTID_VALUE_LOCAL);
       this.name = Constraints.constrainNotNull(name, "Name");
       this.ascription =
         Constraints.constrainNotNull(ascription, "Ascription");
@@ -103,19 +228,5 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     {
       return this.name;
     }
-  }
-
-  private final @Nonnull Type type;
-
-  private UASTIDeclaration(
-    final @Nonnull Type type)
-    throws ConstraintError
-  {
-    this.type = Constraints.constrainNotNull(type, "Type");
-  }
-
-  public @Nonnull Type getType()
-  {
-    return this.type;
   }
 }

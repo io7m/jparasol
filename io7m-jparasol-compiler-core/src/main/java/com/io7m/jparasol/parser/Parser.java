@@ -37,6 +37,10 @@ import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
 import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
 import com.io7m.jparasol.lexer.Token.TokenLiteralReal;
 import com.io7m.jparasol.lexer.Token.Type;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunction;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
@@ -92,6 +96,112 @@ public final class Parser
     this.lexer = Constraints.constrainNotNull(lexer, "Lexer");
     this.message = new StringBuilder();
     this.token = lexer.token();
+  }
+
+  public @Nonnull UASTIDFunction<UASTIStatusUnchecked> declarationFunction()
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_FUNCTION);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+
+    final List<UASTIDFunctionArgument<UASTIStatusUnchecked>> args =
+      this.declarationFunctionArguments();
+
+    this.parserConsumeExact(Type.TOKEN_COLON);
+    final UASTITypePath type = this.declarationTypePath();
+    this.parserConsumeExact(Type.TOKEN_EQUALS);
+
+    switch (this.token.getType()) {
+      case TOKEN_EXTERNAL:
+
+        /**
+         * If parsing an "internal" unit, then allow "external" functions.
+         */
+
+        if (this.internal) {
+          this.parserConsumeExact(Type.TOKEN_EXTERNAL);
+          this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+          final TokenIdentifierLower ext = (TokenIdentifierLower) this.token;
+          this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+          return new UASTIDFunctionExternal<UASTIStatusUnchecked>(
+            name,
+            args,
+            type,
+            ext);
+        }
+
+        /**
+         * Otherwise, attempt to parse "external" as an expression, which will
+         * result in an error.
+         */
+
+        return new UASTIDFunctionDefined<UASTIStatusUnchecked>(
+          name,
+          args,
+          type,
+          this.expression());
+
+        // $CASES-OMITTED$
+      default:
+        return new UASTIDFunctionDefined<UASTIStatusUnchecked>(
+          name,
+          args,
+          type,
+          this.expression());
+    }
+  }
+
+  private @Nonnull
+    UASTIDFunctionArgument<UASTIStatusUnchecked>
+    declarationFunctionArgument()
+      throws ParserError,
+        ConstraintError,
+        IOException,
+        LexerError
+  {
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_COLON);
+    return new UASTIDFunctionArgument<UASTIStatusUnchecked>(
+      name,
+      this.declarationTypePath());
+  }
+
+  private @Nonnull
+    List<UASTIDFunctionArgument<UASTIStatusUnchecked>>
+    declarationFunctionArguments()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_ROUND_LEFT);
+
+    final ArrayList<UASTIDFunctionArgument<UASTIStatusUnchecked>> args =
+      new ArrayList<UASTIDFunctionArgument<UASTIStatusUnchecked>>();
+    args.add(this.declarationFunctionArgument());
+
+    boolean done = false;
+    while (done == false) {
+      switch (this.token.getType()) {
+        case TOKEN_COMMA:
+          this.parserConsumeExact(Type.TOKEN_COMMA);
+          args.add(this.declarationFunctionArgument());
+          break;
+        // $CASES-OMITTED$
+        default:
+          done = true;
+      }
+    }
+
+    this.parserConsumeExact(Type.TOKEN_ROUND_RIGHT);
+    return args;
   }
 
   public @Nonnull UASTITypePath declarationTypePath()

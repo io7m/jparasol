@@ -29,6 +29,9 @@ import com.io7m.jaux.functional.Option.Some;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
@@ -837,5 +840,83 @@ public class ParserTest
       (UASTIEVariable<UASTIStatusUnchecked>) p.expression();
     Assert.assertTrue(r.getName().getModule().isSome());
     Assert.assertEquals("x", r.getName().getName().getActual());
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test public
+    void
+    testDFunctionOK_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p =
+      ParserTest
+        .makeStringInternalParser("function f (x : integer, y : Example.t) : integer = 23");
+    final UASTIDFunctionDefined<UASTIStatusUnchecked> r =
+      (UASTIDFunctionDefined<UASTIStatusUnchecked>) p.declarationFunction();
+    Assert.assertEquals("f", r.getName().getActual());
+    Assert.assertEquals(2, r.getArguments().size());
+
+    final UASTIDFunctionArgument<UASTIStatusUnchecked> arg0 =
+      r.getArguments().get(0);
+    final UASTIDFunctionArgument<UASTIStatusUnchecked> arg1 =
+      r.getArguments().get(1);
+
+    Assert.assertEquals("x", arg0.getName().getActual());
+    Assert.assertEquals("integer", arg0.getType().getName().getActual());
+    Assert.assertEquals("y", arg1.getName().getActual());
+    Assert.assertEquals("Example", ((Option.Some<TokenIdentifierUpper>) arg1
+      .getType()
+      .getModule()).value.getActual());
+    Assert.assertEquals("t", arg1.getType().getName().getActual());
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
+      .getBody()).getValue().intValue());
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public
+    void
+    testDFunctionNotExternal_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p =
+      ParserTest
+        .makeStringParser("function f (x : integer, y : Example.t) : integer = external xyz");
+    p.declarationFunction();
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test public
+    void
+    testDFunctionExternal_1()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p =
+      ParserTest
+        .makeStringInternalParser("function f (x : integer, y : Example.t) : integer = external xyz");
+
+    final UASTIDFunctionExternal<UASTIStatusUnchecked> r =
+      (UASTIDFunctionExternal<UASTIStatusUnchecked>) p.declarationFunction();
+    Assert.assertEquals("f", r.getName().getActual());
+    Assert.assertEquals(2, r.getArguments().size());
+
+    final UASTIDFunctionArgument<UASTIStatusUnchecked> arg0 =
+      r.getArguments().get(0);
+    final UASTIDFunctionArgument<UASTIStatusUnchecked> arg1 =
+      r.getArguments().get(1);
+
+    Assert.assertEquals("x", arg0.getName().getActual());
+    Assert.assertEquals("integer", arg0.getType().getName().getActual());
+    Assert.assertEquals("y", arg1.getName().getActual());
+    Assert.assertEquals("Example", ((Option.Some<TokenIdentifierUpper>) arg1
+      .getType()
+      .getModule()).value.getActual());
+    Assert.assertEquals("t", arg1.getType().getName().getActual());
+    Assert.assertEquals("xyz", r.getExternal().getActual());
   }
 }
