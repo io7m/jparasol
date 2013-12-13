@@ -14,21 +14,36 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.lexer;
+package com.io7m.jparasol;
+
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public final class Position
-{
-  private final int column;
-  private final int line;
+import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-  Position(
-    final int line,
-    final int column)
+public final class PackagePathFlat
+{
+  public static @Nonnull PackagePathFlat fromPackagePath(
+    final @Nonnull PackagePath path)
   {
-    this.line = line;
-    this.column = column;
+    final List<TokenIdentifierLower> c = path.getComponents();
+    final StringBuilder s = new StringBuilder();
+    for (int index = 0; index < c.size(); ++index) {
+      s.append(c.get(index).getActual());
+      if ((index + 1) < c.size()) {
+        s.append(".");
+      }
+    }
+    return new PackagePathFlat(s.toString());
+  }
+
+  private final @Nonnull String actual;
+
+  private PackagePathFlat(
+    final @Nonnull String actual)
+  {
+    this.actual = actual;
   }
 
   @Override public boolean equals(
@@ -43,31 +58,32 @@ public final class Position
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    final Position other = (Position) obj;
-    if (this.column != other.column) {
-      return false;
-    }
-    if (this.line != other.line) {
+    final PackagePathFlat other = (PackagePathFlat) obj;
+    if (!this.actual.equals(other.actual)) {
       return false;
     }
     return true;
+  }
+
+  public @Nonnull String getActual()
+  {
+    return this.actual;
   }
 
   @Override public int hashCode()
   {
     final int prime = 31;
     int result = 1;
-    result = (prime * result) + this.column;
-    result = (prime * result) + this.line;
+    result = (prime * result) + this.actual.hashCode();
     return result;
   }
 
-  @Override public @Nonnull String toString()
+  @Override public String toString()
   {
     final StringBuilder builder = new StringBuilder();
-    builder.append(this.line);
-    builder.append(":");
-    builder.append(this.column);
+    builder.append("[PackagePathFlat ");
+    builder.append(this.actual);
+    builder.append("]");
     return builder.toString();
   }
 }

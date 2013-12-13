@@ -26,12 +26,14 @@ import org.junit.Test;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Option.Some;
+import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
@@ -152,6 +154,67 @@ public class ParserTest
     Assert.assertEquals("t", arg1.getType().getName().getActual());
     Assert.assertEquals(23, ((UASTIEInteger<UASTIStatusUnchecked>) r
       .getBody()).getValue().intValue());
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test public void testDImportOK_0()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("import x.y.z.M");
+
+    final UASTIDImport<UASTIStatusUnchecked> r = p.declarationImport();
+    final ModulePathFlat flat = ModulePathFlat.fromModulePath(r.getPath());
+    Assert.assertEquals("x.y.z.M", flat.getActual());
+    Assert.assertTrue(r.getRename().isNone());
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test public void testDImportOK_1()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p =
+      ParserTest.makeStringInternalParser("import x.y.z.M as K");
+
+    final UASTIDImport<UASTIStatusUnchecked> r = p.declarationImport();
+    final ModulePathFlat flat = ModulePathFlat.fromModulePath(r.getPath());
+    Assert.assertEquals("x.y.z.M", flat.getActual());
+    Assert.assertTrue(r.getRename().isSome());
+    final Some<TokenIdentifierUpper> some =
+      (Option.Some<TokenIdentifierUpper>) r.getRename();
+    Assert.assertEquals("K", some.value.getActual());
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test public void testDImportOK_2()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("import M");
+    final UASTIDImport<UASTIStatusUnchecked> r = p.declarationImport();
+    final ModulePathFlat flat = ModulePathFlat.fromModulePath(r.getPath());
+    Assert.assertEquals("M", flat.getActual());
+    Assert.assertTrue(r.getRename().isNone());
+  }
+
+  @SuppressWarnings({ "static-method" }) @Test public void testDImportOK_3()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("import M as K");
+    final UASTIDImport<UASTIStatusUnchecked> r = p.declarationImport();
+    final ModulePathFlat flat = ModulePathFlat.fromModulePath(r.getPath());
+    Assert.assertEquals("M", flat.getActual());
+    Assert.assertTrue(r.getRename().isSome());
+    final Some<TokenIdentifierUpper> some =
+      (Option.Some<TokenIdentifierUpper>) r.getRename();
+    Assert.assertEquals("K", some.value.getActual());
   }
 
   @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public

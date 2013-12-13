@@ -23,7 +23,9 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Option;
+import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
 public abstract class UASTIDeclaration<S extends UASTIStatus>
 {
@@ -103,7 +105,7 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
       return this.name;
     }
 
-    public @Nonnull UASTITypePath getReturn_type()
+    public @Nonnull UASTITypePath getReturnType()
     {
       return this.return_type;
     }
@@ -150,9 +152,35 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
       return this.name;
     }
 
-    public @Nonnull UASTITypePath getReturn_type()
+    public @Nonnull UASTITypePath getReturnType()
     {
       return this.return_type;
+    }
+  }
+
+  public static final class UASTIDImport<S extends UASTIStatus> extends
+    UASTIDeclaration<S>
+  {
+    private final @Nonnull ModulePath                   path;
+    private final @Nonnull Option<TokenIdentifierUpper> rename;
+
+    public UASTIDImport(
+      final @Nonnull ModulePath path,
+      final @Nonnull Option<TokenIdentifierUpper> rename)
+      throws ConstraintError
+    {
+      this.path = Constraints.constrainNotNull(path, "Path");
+      this.rename = Constraints.constrainNotNull(rename, "Rename");
+    }
+
+    public @Nonnull ModulePath getPath()
+    {
+      return this.path;
+    }
+
+    public @Nonnull Option<TokenIdentifierUpper> getRename()
+    {
+      return this.rename;
     }
   }
 

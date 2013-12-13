@@ -14,21 +14,27 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.lexer;
+package com.io7m.jparasol;
 
 import javax.annotation.Nonnull;
 
-public final class Position
-{
-  private final int column;
-  private final int line;
+import com.io7m.jaux.Constraints;
+import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
-  Position(
-    final int line,
-    final int column)
+public final class ModulePath
+{
+  private final @Nonnull TokenIdentifierUpper name;
+  private final @Nonnull PackagePath          package_path;
+
+  public ModulePath(
+    final @Nonnull PackagePath package_path,
+    final @Nonnull TokenIdentifierUpper name)
+    throws ConstraintError
   {
-    this.line = line;
-    this.column = column;
+    this.package_path =
+      Constraints.constrainNotNull(package_path, "Package path");
+    this.name = Constraints.constrainNotNull(name, "Module name");
   }
 
   @Override public boolean equals(
@@ -43,31 +49,33 @@ public final class Position
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    final Position other = (Position) obj;
-    if (this.column != other.column) {
+    final ModulePath other = (ModulePath) obj;
+    if (!this.name.equals(other.name)) {
       return false;
     }
-    if (this.line != other.line) {
+    if (!this.package_path.equals(other.package_path)) {
       return false;
     }
     return true;
+  }
+
+  public @Nonnull TokenIdentifierUpper getName()
+  {
+    return this.name;
+  }
+
+  public @Nonnull PackagePath getPackagePath()
+  {
+    return this.package_path;
   }
 
   @Override public int hashCode()
   {
     final int prime = 31;
     int result = 1;
-    result = (prime * result) + this.column;
-    result = (prime * result) + this.line;
+    result = (prime * result) + this.name.hashCode();
+    result = (prime * result) + this.package_path.hashCode();
     return result;
   }
 
-  @Override public @Nonnull String toString()
-  {
-    final StringBuilder builder = new StringBuilder();
-    builder.append(this.line);
-    builder.append(":");
-    builder.append(this.column);
-    return builder.toString();
-  }
 }

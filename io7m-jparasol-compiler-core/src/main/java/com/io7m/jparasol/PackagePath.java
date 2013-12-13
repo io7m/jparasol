@@ -14,21 +14,26 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.lexer;
+package com.io7m.jparasol;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public final class Position
-{
-  private final int column;
-  private final int line;
+import com.io7m.jaux.Constraints;
+import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-  Position(
-    final int line,
-    final int column)
+public final class PackagePath
+{
+  private final @Nonnull List<TokenIdentifierLower> components;
+
+  public PackagePath(
+    final @Nonnull List<TokenIdentifierLower> components)
+    throws ConstraintError
   {
-    this.line = line;
-    this.column = column;
+    this.components = Constraints.constrainNotNull(components, "Components");
   }
 
   @Override public boolean equals(
@@ -43,31 +48,32 @@ public final class Position
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    final Position other = (Position) obj;
-    if (this.column != other.column) {
-      return false;
-    }
-    if (this.line != other.line) {
+    final PackagePath other = (PackagePath) obj;
+    if (!this.components.equals(other.components)) {
       return false;
     }
     return true;
+  }
+
+  public @Nonnull List<TokenIdentifierLower> getComponents()
+  {
+    return Collections.unmodifiableList(this.components);
   }
 
   @Override public int hashCode()
   {
     final int prime = 31;
     int result = 1;
-    result = (prime * result) + this.column;
-    result = (prime * result) + this.line;
+    result = (prime * result) + this.components.hashCode();
     return result;
   }
 
-  @Override public @Nonnull String toString()
+  @Override public String toString()
   {
     final StringBuilder builder = new StringBuilder();
-    builder.append(this.line);
-    builder.append(":");
-    builder.append(this.column);
+    builder.append("[PackagePath components=");
+    builder.append(this.components);
+    builder.append("]");
     return builder.toString();
   }
 }

@@ -14,21 +14,33 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.lexer;
+package com.io7m.jparasol;
 
 import javax.annotation.Nonnull;
 
-public final class Position
+public final class ModulePathFlat
 {
-  private final int column;
-  private final int line;
-
-  Position(
-    final int line,
-    final int column)
+  public static @Nonnull ModulePathFlat fromModulePath(
+    final @Nonnull ModulePath path)
   {
-    this.line = line;
-    this.column = column;
+    final StringBuilder s = new StringBuilder();
+    final String p =
+      PackagePathFlat.fromPackagePath(path.getPackagePath()).getActual();
+
+    if (p.isEmpty() == false) {
+      s.append(p);
+      s.append(".");
+    }
+    s.append(path.getName().getActual());
+    return new ModulePathFlat(s.toString());
+  }
+
+  private final @Nonnull String actual;
+
+  private ModulePathFlat(
+    final @Nonnull String actual)
+  {
+    this.actual = actual;
   }
 
   @Override public boolean equals(
@@ -43,31 +55,32 @@ public final class Position
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    final Position other = (Position) obj;
-    if (this.column != other.column) {
-      return false;
-    }
-    if (this.line != other.line) {
+    final ModulePathFlat other = (ModulePathFlat) obj;
+    if (!this.actual.equals(other.actual)) {
       return false;
     }
     return true;
+  }
+
+  public @Nonnull String getActual()
+  {
+    return this.actual;
   }
 
   @Override public int hashCode()
   {
     final int prime = 31;
     int result = 1;
-    result = (prime * result) + this.column;
-    result = (prime * result) + this.line;
+    result = (prime * result) + this.actual.hashCode();
     return result;
   }
 
-  @Override public @Nonnull String toString()
+  @Override public String toString()
   {
     final StringBuilder builder = new StringBuilder();
-    builder.append(this.line);
-    builder.append(":");
-    builder.append(this.column);
+    builder.append("[ModulePathFlat ");
+    builder.append(this.actual);
+    builder.append("]");
     return builder.toString();
   }
 }

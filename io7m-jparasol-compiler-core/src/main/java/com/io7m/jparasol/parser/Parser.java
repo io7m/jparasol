@@ -27,6 +27,8 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Option.None;
+import com.io7m.jparasol.ModulePath;
+import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token;
@@ -41,6 +43,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunction;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDType;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
@@ -205,6 +208,75 @@ public final class Parser
 
     this.parserConsumeExact(Type.TOKEN_ROUND_RIGHT);
     return args;
+  }
+
+  public @Nonnull UASTIDImport<UASTIStatusUnchecked> declarationImport()
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_IMPORT);
+    final PackagePath path = this.declarationPackagePath();
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_UPPER);
+    final TokenIdentifierUpper name = (TokenIdentifierUpper) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
+
+    switch (this.token.getType()) {
+      case TOKEN_AS:
+      {
+        this.parserConsumeExact(Type.TOKEN_AS);
+        this.parserExpectExact(Type.TOKEN_IDENTIFIER_UPPER);
+        final TokenIdentifierUpper rename = (TokenIdentifierUpper) this.token;
+        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
+        return new UASTIDImport<UASTIStatusUnchecked>(new ModulePath(
+          path,
+          name), Option.some(rename));
+      }
+      // $CASES-OMITTED$
+      default:
+        final None<TokenIdentifierUpper> none = Option.none();
+        return new UASTIDImport<UASTIStatusUnchecked>(new ModulePath(
+          path,
+          name), none);
+    }
+  }
+
+  private @Nonnull PackagePath declarationPackagePath()
+    throws ConstraintError,
+      ParserError,
+      IOException,
+      LexerError
+  {
+    final ArrayList<TokenIdentifierLower> components =
+      new ArrayList<TokenIdentifierLower>();
+
+    boolean done = false;
+    while (done == false) {
+      switch (this.token.getType()) {
+        case TOKEN_IDENTIFIER_LOWER:
+        {
+          components.add((TokenIdentifierLower) this.token);
+          this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+          switch (this.token.getType()) {
+            case TOKEN_DOT:
+              this.parserConsumeExact(Type.TOKEN_DOT);
+              break;
+            // $CASES-OMITTED$
+            default:
+              done = true;
+              break;
+          }
+          break;
+        }
+        // $CASES-OMITTED$
+        default:
+          done = true;
+          break;
+      }
+    }
+
+    return new PackagePath(components);
   }
 
   public @Nonnull UASTIDType<UASTIStatusUnchecked> declarationType()
@@ -822,8 +894,7 @@ public final class Parser
     throws ParserError,
       ConstraintError
   {
-    for (int index = 0; index < types.length; ++index) {
-      final Type want = types[index];
+    for (final Type want : types) {
       if (this.token.getType() == want) {
         return;
       }
