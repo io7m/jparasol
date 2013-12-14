@@ -321,6 +321,9 @@ public final class Parser
     final List<UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>> assigns =
       new ArrayList<UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>>();
 
+    assigns.add(this.declarationFragmentShaderOutputAssignment());
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
     for (;;) {
       switch (this.token.getType()) {
         case TOKEN_OUT:
@@ -1176,6 +1179,9 @@ public final class Parser
   {
     final List<UASTIDShaderVertexOutputAssignment<UASTIUnchecked>> assigns =
       new ArrayList<UASTIDShaderVertexOutputAssignment<UASTIUnchecked>>();
+
+    assigns.add(this.declarationVertexShaderOutputAssignment());
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
 
     for (;;) {
       switch (this.token.getType()) {
