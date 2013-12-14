@@ -45,6 +45,12 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefi
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexInput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutputAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameter;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameters;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDType;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
@@ -63,8 +69,8 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProject
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
-import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
+import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
 
 public final class Parser
@@ -230,16 +236,16 @@ public final class Parser
         this.parserExpectExact(Type.TOKEN_IDENTIFIER_UPPER);
         final TokenIdentifierUpper rename = (TokenIdentifierUpper) this.token;
         this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
-        return new UASTIDImport<UASTIUnchecked>(new ModulePath(
-          path,
-          name), Option.some(rename));
+        return new UASTIDImport<UASTIUnchecked>(
+          new ModulePath(path, name),
+          Option.some(rename));
       }
       // $CASES-OMITTED$
       default:
         final None<TokenIdentifierUpper> none = Option.none();
-        return new UASTIDImport<UASTIUnchecked>(new ModulePath(
-          path,
-          name), none);
+        return new UASTIDImport<UASTIUnchecked>(
+          new ModulePath(path, name),
+          none);
     }
   }
 
@@ -250,8 +256,7 @@ public final class Parser
       ConstraintError
   {
     this.parserConsumeExact(Type.TOKEN_PACKAGE);
-    return new UASTIDPackage<UASTIUnchecked>(
-      this.declarationPackagePath());
+    return new UASTIDPackage<UASTIUnchecked>(this.declarationPackagePath());
   }
 
   private @Nonnull PackagePath declarationPackagePath()
@@ -424,10 +429,7 @@ public final class Parser
       {
         this.parserConsumeExact(Type.TOKEN_EQUALS);
         final Option<UASTITypePath> none = Option.none();
-        return new UASTIDValue<UASTIUnchecked>(
-          name,
-          none,
-          this.expression());
+        return new UASTIDValue<UASTIUnchecked>(name, none, this.expression());
       }
       // $CASES-OMITTED$
       default:
@@ -435,13 +437,11 @@ public final class Parser
     }
   }
 
-  private @Nonnull
-    UASTIDValueLocal<UASTIUnchecked>
-    declarationValueLocal()
-      throws ParserError,
-        IOException,
-        LexerError,
-        ConstraintError
+  private @Nonnull UASTIDValueLocal<UASTIUnchecked> declarationValueLocal()
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
   {
     this.parserConsumeExact(Type.TOKEN_VALUE);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -540,6 +540,227 @@ public final class Parser
     }
   }
 
+  public @Nonnull
+    UASTIDShaderVertex<UASTIUnchecked>
+    declarationVertexShader()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_VERTEX);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_IS);
+
+    final List<UASTIDShaderVertexParameters<UASTIUnchecked>> decls =
+      this.declarationVertexShaderParameterDeclarations();
+
+    final List<UASTIDShaderVertexInput<UASTIUnchecked>> inputs =
+      new ArrayList<UASTIDShaderVertexInput<UASTIUnchecked>>();
+    final List<UASTIDShaderVertexOutput<UASTIUnchecked>> outputs =
+      new ArrayList<UASTIDShaderVertexOutput<UASTIUnchecked>>();
+    final List<UASTIDShaderVertexParameter<UASTIUnchecked>> parameters =
+      new ArrayList<UASTIDShaderVertexParameter<UASTIUnchecked>>();
+
+    for (int index = 0; index < decls.size(); ++index) {
+      final UASTIDShaderVertexParameters<UASTIUnchecked> d = decls.get(index);
+      if (d instanceof UASTIDShaderVertexInput<?>) {
+        inputs.add((UASTIDShaderVertexInput<UASTIUnchecked>) d);
+        continue;
+      }
+      if (d instanceof UASTIDShaderVertexOutput<?>) {
+        outputs.add((UASTIDShaderVertexOutput<UASTIUnchecked>) d);
+        continue;
+      }
+      if (d instanceof UASTIDShaderVertexParameter<?>) {
+        parameters.add((UASTIDShaderVertexParameter<UASTIUnchecked>) d);
+        continue;
+      }
+    }
+
+    this.parserExpectOneOf(new Type[] { Type.TOKEN_WITH, Type.TOKEN_AS });
+
+    final List<UASTIDValueLocal<UASTIUnchecked>> values;
+    switch (this.token.getType()) {
+      case TOKEN_WITH:
+      {
+        this.parserConsumeExact(Type.TOKEN_WITH);
+        values = this.declarationValueLocals();
+        break;
+      }
+      // $CASES-OMITTED$
+      default:
+      {
+        values = new ArrayList<UASTIDValueLocal<UASTIUnchecked>>();
+        break;
+      }
+    }
+
+    this.parserConsumeExact(Type.TOKEN_AS);
+    final List<UASTIDShaderVertexOutputAssignment<UASTIUnchecked>> assigns =
+      this.declarationVertexShaderOutputAssignments();
+    this.parserConsumeExact(Type.TOKEN_END);
+
+    return new UASTIDShaderVertex<UASTIUnchecked>(
+      name,
+      inputs,
+      outputs,
+      parameters,
+      values,
+      assigns);
+  }
+
+  public
+    UASTIDShaderVertexInput<UASTIUnchecked>
+    declarationVertexShaderInput()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_IN);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_COLON);
+    return new UASTIDShaderVertexInput<UASTIUnchecked>(
+      name,
+      this.declarationTypePath());
+  }
+
+  public
+    UASTIDShaderVertexOutput<UASTIUnchecked>
+    declarationVertexShaderOutput()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_OUT);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_COLON);
+    return new UASTIDShaderVertexOutput<UASTIUnchecked>(
+      name,
+      this.declarationTypePath());
+  }
+
+  private @Nonnull
+    UASTIDShaderVertexOutputAssignment<UASTIUnchecked>
+    declarationVertexShaderOutputAssignment()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_OUT);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_EQUALS);
+    final UASTIEVariable<UASTIUnchecked> value =
+      new UASTIEVariable<UASTIUnchecked>(this.declarationValuePath());
+    return new UASTIDShaderVertexOutputAssignment<UASTIUnchecked>(name, value);
+  }
+
+  private @Nonnull
+    List<UASTIDShaderVertexOutputAssignment<UASTIUnchecked>>
+    declarationVertexShaderOutputAssignments()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    final List<UASTIDShaderVertexOutputAssignment<UASTIUnchecked>> assigns =
+      new ArrayList<UASTIDShaderVertexOutputAssignment<UASTIUnchecked>>();
+
+    for (;;) {
+      switch (this.token.getType()) {
+        case TOKEN_OUT:
+          assigns.add(this.declarationVertexShaderOutputAssignment());
+          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          break;
+        // $CASES-OMITTED$
+        default:
+          return assigns;
+      }
+    }
+  }
+
+  public @Nonnull
+    UASTIDShaderVertexParameter<UASTIUnchecked>
+    declarationVertexShaderParameter()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_PARAMETER);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_COLON);
+    return new UASTIDShaderVertexParameter<UASTIUnchecked>(
+      name,
+      this.declarationTypePath());
+  }
+
+  private @Nonnull
+    UASTIDShaderVertexParameters<UASTIUnchecked>
+    declarationVertexShaderParameterDeclaration()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserExpectOneOf(new Type[] {
+      Type.TOKEN_IN,
+      Type.TOKEN_OUT,
+      Type.TOKEN_PARAMETER });
+
+    switch (this.token.getType()) {
+      case TOKEN_IN:
+        return this.declarationVertexShaderInput();
+      case TOKEN_OUT:
+        return this.declarationVertexShaderOutput();
+      case TOKEN_PARAMETER:
+        return this.declarationVertexShaderParameter();
+        // $CASES-OMITTED$
+      default:
+        throw new UnreachableCodeException();
+    }
+  }
+
+  private @Nonnull
+    List<UASTIDShaderVertexParameters<UASTIUnchecked>>
+    declarationVertexShaderParameterDeclarations()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    final List<UASTIDShaderVertexParameters<UASTIUnchecked>> declarations =
+      new ArrayList<UASTIDShaderVertexParameters<UASTIUnchecked>>();
+
+    for (;;) {
+      switch (this.token.getType()) {
+        case TOKEN_IN:
+        case TOKEN_OUT:
+        case TOKEN_PARAMETER:
+          declarations
+            .add(this.declarationVertexShaderParameterDeclaration());
+          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          break;
+        // $CASES-OMITTED$
+        default:
+          return declarations;
+      }
+    }
+  }
+
   public @Nonnull UASTIExpression<UASTIUnchecked> expression()
     throws ParserError,
       IOException,
@@ -588,19 +809,16 @@ public final class Parser
   {
     this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
     final UASTIEBoolean<UASTIUnchecked> t =
-      new UASTIEBoolean<UASTIUnchecked>(
-        (TokenLiteralBoolean) this.token);
+      new UASTIEBoolean<UASTIUnchecked>((TokenLiteralBoolean) this.token);
     this.parserConsumeAny();
     return t;
   }
 
-  public @Nonnull
-    UASTIEConditional<UASTIUnchecked>
-    expressionConditional()
-      throws ParserError,
-        ConstraintError,
-        IOException,
-        LexerError
+  public @Nonnull UASTIEConditional<UASTIUnchecked> expressionConditional()
+    throws ParserError,
+      ConstraintError,
+      IOException,
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_IF);
     final UASTIExpression<UASTIUnchecked> econd = this.expression();
@@ -620,8 +838,7 @@ public final class Parser
   {
     this.parserExpectExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
     final UASTIEInteger<UASTIUnchecked> t =
-      new UASTIEInteger<UASTIUnchecked>(
-        (TokenLiteralInteger) this.token);
+      new UASTIEInteger<UASTIUnchecked>((TokenLiteralInteger) this.token);
     this.parserConsumeAny();
     return t;
   }
@@ -746,14 +963,12 @@ public final class Parser
     return new UASTIERecord<UASTIUnchecked>(path, fields);
   }
 
-  private
-    void
-    expressionRecordActual(
-      final @Nonnull List<UASTIRecordFieldAssignment<UASTIUnchecked>> fields)
-      throws ParserError,
-        IOException,
-        LexerError,
-        ConstraintError
+  private void expressionRecordActual(
+    final @Nonnull List<UASTIRecordFieldAssignment<UASTIUnchecked>> fields)
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
   {
     switch (this.token.getType()) {
       case TOKEN_COMMA:

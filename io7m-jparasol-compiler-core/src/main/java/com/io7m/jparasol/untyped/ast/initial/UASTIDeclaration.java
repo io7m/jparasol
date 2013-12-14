@@ -22,11 +22,13 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jaux.UnimplementedCodeException;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 
 public abstract class UASTIDeclaration<S extends UASTIStatus>
 {
@@ -208,6 +210,191 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     public @Nonnull PackagePath getPath()
     {
       return this.path;
+    }
+  }
+
+  /**
+   * The type of shader declarations.
+   */
+
+  public static abstract class UASTIDShader<S extends UASTIStatus> extends
+    UASTIDeclaration<S>
+  {
+    private final @Nonnull TokenIdentifierLower name;
+
+    protected UASTIDShader(
+      final @Nonnull TokenIdentifierLower name)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    public final @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+  }
+
+  public static final class UASTIDShaderFragment<S extends UASTIStatus> extends
+    UASTIDShader<S>
+  {
+    public UASTIDShaderFragment(
+      final @Nonnull TokenIdentifierLower name)
+      throws ConstraintError
+    {
+      super(name);
+      throw new UnimplementedCodeException();
+    }
+  }
+
+  public static final class UASTIDShaderProgram<S extends UASTIStatus> extends
+    UASTIDShader<S>
+  {
+    public UASTIDShaderProgram(
+      final @Nonnull TokenIdentifierLower name)
+      throws ConstraintError
+    {
+      super(name);
+      throw new UnimplementedCodeException();
+    }
+  }
+
+  public static final class UASTIDShaderVertex<S extends UASTIStatus> extends
+    UASTIDShader<S>
+  {
+    private final @Nonnull List<UASTIDShaderVertexInput<S>>            inputs;
+    private final @Nonnull List<UASTIDShaderVertexOutput<S>>           outputs;
+    private final @Nonnull List<UASTIDShaderVertexParameter<S>>        parameters;
+    private final @Nonnull List<UASTIDValueLocal<S>>                   values;
+    private final @Nonnull List<UASTIDShaderVertexOutputAssignment<S>> writes;
+
+    public UASTIDShaderVertex(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull List<UASTIDShaderVertexInput<S>> inputs,
+      final @Nonnull List<UASTIDShaderVertexOutput<S>> outputs,
+      final @Nonnull List<UASTIDShaderVertexParameter<S>> parameters,
+      final @Nonnull List<UASTIDValueLocal<S>> values,
+      final @Nonnull List<UASTIDShaderVertexOutputAssignment<S>> writes)
+      throws ConstraintError
+    {
+      super(name);
+      this.inputs = Constraints.constrainNotNull(inputs, "Inputs");
+      this.outputs = Constraints.constrainNotNull(outputs, "Outputs");
+      this.parameters =
+        Constraints.constrainNotNull(parameters, "Parameters");
+      this.values = Constraints.constrainNotNull(values, "Values");
+      this.writes = Constraints.constrainNotNull(writes, "Writes");
+    }
+
+    public @Nonnull List<UASTIDShaderVertexInput<S>> getInputs()
+    {
+      return this.inputs;
+    }
+
+    public @Nonnull List<UASTIDShaderVertexOutput<S>> getOutputs()
+    {
+      return this.outputs;
+    }
+
+    public @Nonnull List<UASTIDShaderVertexParameter<S>> getParameters()
+    {
+      return this.parameters;
+    }
+
+    public @Nonnull List<UASTIDValueLocal<S>> getValues()
+    {
+      return this.values;
+    }
+
+    public @Nonnull List<UASTIDShaderVertexOutputAssignment<S>> getWrites()
+    {
+      return this.writes;
+    }
+  }
+
+  public static final class UASTIDShaderVertexInput<S extends UASTIStatus> extends
+    UASTIDShaderVertexParameters<S>
+  {
+    public UASTIDShaderVertexInput(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+  }
+
+  public static final class UASTIDShaderVertexOutput<S extends UASTIStatus> extends
+    UASTIDShaderVertexParameters<S>
+  {
+    public UASTIDShaderVertexOutput(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+  }
+
+  public static final class UASTIDShaderVertexOutputAssignment<S extends UASTIStatus>
+  {
+    private final @Nonnull TokenIdentifierLower name;
+    private final @Nonnull UASTIEVariable<S>    variable;
+
+    public UASTIDShaderVertexOutputAssignment(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTIEVariable<S> variable)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.variable = Constraints.constrainNotNull(variable, "Variable");
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull UASTIEVariable<S> getVariable()
+    {
+      return this.variable;
+    }
+  }
+
+  public static final class UASTIDShaderVertexParameter<S extends UASTIStatus> extends
+    UASTIDShaderVertexParameters<S>
+  {
+    public UASTIDShaderVertexParameter(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+  }
+
+  public static abstract class UASTIDShaderVertexParameters<S extends UASTIStatus>
+  {
+    private final @Nonnull TokenIdentifierLower name;
+    private final @Nonnull UASTITypePath        type;
+
+    UASTIDShaderVertexParameters(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.type = Constraints.constrainNotNull(type, "Type");
+    }
+
+    public final @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public final @Nonnull UASTITypePath getType()
+    {
+      return this.type;
     }
   }
 

@@ -18,6 +18,7 @@ package com.io7m.jparasol.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 
 import org.junit.Assert;
@@ -36,6 +37,10 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefi
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexInput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameter;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
@@ -52,12 +57,38 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProject
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
-import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
+import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
 
 public class ParserTest
 {
+  @SuppressWarnings("resource") static Parser makeResourceInternalParser(
+    final String name)
+    throws IOException,
+      LexerError,
+      ConstraintError
+  {
+    final InputStream is =
+      ParserTest.class.getResourceAsStream("/com/io7m/jparasol/parser/"
+        + name);
+    final Lexer lexer = new Lexer(is);
+    return Parser.newInternalParser(lexer);
+  }
+
+  @SuppressWarnings("resource") static Parser makeResourceParser(
+    final String name)
+    throws IOException,
+      LexerError,
+      ConstraintError
+  {
+    final InputStream is =
+      ParserTest.class.getResourceAsStream("/com/io7m/jparasol/parser/"
+        + name);
+    final Lexer lexer = new Lexer(is);
+    return Parser.newParser(lexer);
+  }
+
   static Parser makeStringInternalParser(
     final String text)
     throws IOException,
@@ -154,8 +185,9 @@ public class ParserTest
       .getType()
       .getModule()).value.getActual());
     Assert.assertEquals("t", arg1.getType().getName().getActual());
-    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) r
-      .getBody()).getValue().intValue());
+    Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) r.getBody())
+      .getValue()
+      .intValue());
   }
 
   @SuppressWarnings({ "static-method" }) @Test public void testDImportOK_0()
@@ -259,10 +291,8 @@ public class ParserTest
     Assert.assertEquals("t", r.getName().getActual());
     Assert.assertEquals(2, r.getFields().size());
 
-    final UASTIDTypeRecordField<UASTIUnchecked> arg0 =
-      r.getFields().get(0);
-    final UASTIDTypeRecordField<UASTIUnchecked> arg1 =
-      r.getFields().get(1);
+    final UASTIDTypeRecordField<UASTIUnchecked> arg0 = r.getFields().get(0);
+    final UASTIDTypeRecordField<UASTIUnchecked> arg1 = r.getFields().get(1);
 
     Assert.assertEquals("x", arg0.getName().getActual());
     Assert.assertEquals("integer", arg0.getType().getName().getActual());
@@ -455,6 +485,84 @@ public class ParserTest
     Assert.assertEquals("y", r.getName().getActual());
   }
 
+  @SuppressWarnings("static-method") @Test public void testDVertexShader_0()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testDVertexShader0.p");
+    final UASTIDShaderVertex<UASTIUnchecked> r = p.declarationVertexShader();
+    Assert.assertEquals("v", r.getName().getActual());
+    Assert.assertEquals(1, r.getParameters().size());
+    Assert.assertEquals(2, r.getInputs().size());
+    Assert.assertEquals(2, r.getOutputs().size());
+    Assert.assertEquals(1, r.getValues().size());
+    Assert.assertEquals(2, r.getWrites().size());
+  }
+
+  @SuppressWarnings("static-method") @Test public void testDVertexShader_1()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testDVertexShader1.p");
+    final UASTIDShaderVertex<UASTIUnchecked> r = p.declarationVertexShader();
+    Assert.assertEquals("v", r.getName().getActual());
+    Assert.assertEquals(1, r.getParameters().size());
+    Assert.assertEquals(2, r.getInputs().size());
+    Assert.assertEquals(2, r.getOutputs().size());
+    Assert.assertEquals(0, r.getValues().size());
+    Assert.assertEquals(2, r.getWrites().size());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testDVertexShaderInput_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("in x : integer");
+    final UASTIDShaderVertexInput<UASTIUnchecked> r =
+      p.declarationVertexShaderInput();
+    Assert.assertEquals("x", r.getName().getActual());
+    Assert.assertEquals("integer", r.getType().getName().getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testDVertexShaderOutput_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("out x : integer");
+    final UASTIDShaderVertexOutput<UASTIUnchecked> r =
+      p.declarationVertexShaderOutput();
+    Assert.assertEquals("x", r.getName().getActual());
+    Assert.assertEquals("integer", r.getType().getName().getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testDVertexShaderParameter_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p =
+      ParserTest.makeStringInternalParser("parameter x : integer");
+    final UASTIDShaderVertexParameter<UASTIUnchecked> r =
+      p.declarationVertexShaderParameter();
+    Assert.assertEquals("x", r.getName().getActual());
+    Assert.assertEquals("integer", r.getType().getName().getActual());
+  }
+
   @SuppressWarnings("static-method") @Test(expected = ParserError.class) public
     void
     testEApplicationNotOK_0()
@@ -499,8 +607,7 @@ public class ParserTest
   {
     final Parser p = ParserTest.makeStringInternalParser("Y.x (1, 2, 3)");
     final UASTIEApplication<UASTIUnchecked> r =
-      (UASTIEApplication<UASTIUnchecked>) p
-        .expressionVariableOrApplication();
+      (UASTIEApplication<UASTIUnchecked>) p.expressionVariableOrApplication();
     Assert.assertTrue(r.getName().getModule().isSome());
     Assert.assertEquals("x", r.getName().getName().getActual());
     Assert.assertEquals(3, r.getArguments().size());
@@ -524,8 +631,7 @@ public class ParserTest
   {
     final Parser p = ParserTest.makeStringInternalParser("x (1, 2, 3)");
     final UASTIEApplication<UASTIUnchecked> r =
-      (UASTIEApplication<UASTIUnchecked>) p
-        .expressionVariableOrApplication();
+      (UASTIEApplication<UASTIUnchecked>) p.expressionVariableOrApplication();
     Assert.assertTrue(r.getName().getModule().isNone());
     Assert.assertEquals("x", r.getName().getName().getActual());
     Assert.assertEquals(3, r.getArguments().size());
@@ -676,8 +782,7 @@ public class ParserTest
       (UASTIELet<UASTIUnchecked>) p.expression();
 
     Assert.assertEquals(1, r.getBindings().size());
-    final UASTIDValueLocal<UASTIUnchecked> first =
-      r.getBindings().get(0);
+    final UASTIDValueLocal<UASTIUnchecked> first = r.getBindings().get(0);
 
     final Option<UASTITypePath> asc = first.getAscription();
     Assert.assertTrue(asc.isSome());
@@ -685,8 +790,9 @@ public class ParserTest
     Assert.assertEquals("integer", some.value.getName().getActual());
     Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) first
       .getExpression()).getValue().intValue());
-    Assert.assertEquals(24, ((UASTIEInteger<UASTIUnchecked>) r
-      .getBody()).getValue().intValue());
+    Assert.assertEquals(24, ((UASTIEInteger<UASTIUnchecked>) r.getBody())
+      .getValue()
+      .intValue());
   }
 
   @SuppressWarnings("static-method") @Test public void testELetOK_1()
@@ -701,14 +807,14 @@ public class ParserTest
       (UASTIELet<UASTIUnchecked>) p.expression();
 
     Assert.assertEquals(1, r.getBindings().size());
-    final UASTIDValueLocal<UASTIUnchecked> first =
-      r.getBindings().get(0);
+    final UASTIDValueLocal<UASTIUnchecked> first = r.getBindings().get(0);
     final Option<UASTITypePath> asc = first.getAscription();
     Assert.assertTrue(asc.isNone());
     Assert.assertEquals(23, ((UASTIEInteger<UASTIUnchecked>) first
       .getExpression()).getValue().intValue());
-    Assert.assertEquals(24, ((UASTIEInteger<UASTIUnchecked>) r
-      .getBody()).getValue().intValue());
+    Assert.assertEquals(24, ((UASTIEInteger<UASTIUnchecked>) r.getBody())
+      .getValue()
+      .intValue());
   }
 
   @SuppressWarnings("static-method") @Test public void testELetOK_2()
@@ -741,8 +847,9 @@ public class ParserTest
         .getExpression()).getValue().intValue());
     }
 
-    Assert.assertEquals(24, ((UASTIEInteger<UASTIUnchecked>) r
-      .getBody()).getValue().intValue());
+    Assert.assertEquals(24, ((UASTIEInteger<UASTIUnchecked>) r.getBody())
+      .getValue()
+      .intValue());
   }
 
   @SuppressWarnings("static-method") @Test(expected = ParserError.class) public
