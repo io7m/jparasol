@@ -23,7 +23,7 @@ public final class Position
   private final int column;
   private final int line;
 
-  Position(
+  public Position(
     final int line,
     final int column)
   {
