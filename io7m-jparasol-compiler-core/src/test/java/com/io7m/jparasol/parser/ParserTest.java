@@ -37,6 +37,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgu
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentInput;
@@ -69,6 +70,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
+import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
 
 public class ParserTest
@@ -469,6 +471,33 @@ public class ParserTest
     Assert.assertEquals("K", some.value.getActual());
   }
 
+  @SuppressWarnings("static-method") @Test public void testDModule_0()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testDModule0.p");
+    final UASTIDModule<UASTIUnchecked> m = p.declarationModule();
+    Assert.assertEquals("M", m.getName().getActual());
+
+    Assert.assertEquals(2, m.getImports().size());
+    Assert.assertEquals("K", m
+      .getImports()
+      .get(0)
+      .getPath()
+      .getName()
+      .getActual());
+    Assert.assertEquals("Q", m
+      .getImports()
+      .get(1)
+      .getPath()
+      .getName()
+      .getActual());
+
+    Assert.assertEquals(6, m.getDeclarations().size());
+  }
+
   @SuppressWarnings({ "static-method" }) @Test public void testDPackageOK_0()
     throws IOException,
       LexerError,
@@ -590,6 +619,24 @@ public class ParserTest
     final UASTITypePath r = p.declarationTypePath();
     Assert.assertTrue(r.getModule().isNone());
     Assert.assertEquals("y", r.getName().getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public void testDUnit_0()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testDUnit0.p");
+    final UASTIUnit<UASTIUnchecked> u = p.unit();
+    Assert.assertEquals(
+      "com.io7m.example",
+      PackagePathFlat
+        .fromPackagePath(u.getPackageName().getPath())
+        .getActual());
+    Assert.assertEquals(2, u.getModules().size());
+    Assert.assertEquals("M", u.getModules().get(0).getName().getActual());
+    Assert.assertEquals("N", u.getModules().get(1).getName().getActual());
   }
 
   @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public

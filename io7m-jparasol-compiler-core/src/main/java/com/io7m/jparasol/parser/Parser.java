@@ -46,6 +46,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgu
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShader;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragment;
@@ -69,6 +70,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDeclarationModuleLevel;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
@@ -85,6 +87,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAss
 import com.io7m.jparasol.untyped.ast.initial.UASTIShaderPath;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
+import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
 
 public final class Parser
@@ -540,6 +543,126 @@ public final class Parser
     }
   }
 
+  public @Nonnull List<UASTIDImport<UASTIUnchecked>> declarationImports()
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
+  {
+    final ArrayList<UASTIDImport<UASTIUnchecked>> imports =
+      new ArrayList<UASTIDImport<UASTIUnchecked>>();
+
+    for (;;) {
+      switch (this.token.getType()) {
+        case TOKEN_IMPORT:
+          imports.add(this.declarationImport());
+          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          break;
+        // $CASES-OMITTED$
+        default:
+          return imports;
+      }
+    }
+  }
+
+  public @Nonnull UASTIDModule<UASTIUnchecked> declarationModule()
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_MODULE);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_UPPER);
+    final TokenIdentifierUpper name = (TokenIdentifierUpper) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
+    this.parserConsumeExact(Type.TOKEN_IS);
+
+    final List<UASTIDImport<UASTIUnchecked>> imports =
+      this.declarationImports();
+    final List<UASTIDeclarationModuleLevel<UASTIUnchecked>> declarations =
+      this.declarationModuleLevels();
+
+    this.parserConsumeExact(Type.TOKEN_END);
+    return new UASTIDModule<UASTIUnchecked>(name, imports, declarations);
+  }
+
+  public @Nonnull
+    UASTIDeclarationModuleLevel<UASTIUnchecked>
+    declarationModuleLevel()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserExpectOneOf(new Type[] {
+      Type.TOKEN_VALUE,
+      Type.TOKEN_FUNCTION,
+      Type.TOKEN_TYPE,
+      Type.TOKEN_SHADER });
+
+    switch (this.token.getType()) {
+      case TOKEN_VALUE:
+        return this.declarationValue();
+      case TOKEN_FUNCTION:
+        return this.declarationFunction();
+      case TOKEN_TYPE:
+        return this.declarationType();
+      case TOKEN_SHADER:
+        return this.declarationShader();
+        // $CASES-OMITTED$
+      default:
+        throw new UnreachableCodeException();
+    }
+  }
+
+  public @Nonnull
+    List<UASTIDeclarationModuleLevel<UASTIUnchecked>>
+    declarationModuleLevels()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    final ArrayList<UASTIDeclarationModuleLevel<UASTIUnchecked>> decls =
+      new ArrayList<UASTIDeclarationModuleLevel<UASTIUnchecked>>();
+
+    for (;;) {
+      switch (this.token.getType()) {
+        case TOKEN_VALUE:
+        case TOKEN_FUNCTION:
+        case TOKEN_TYPE:
+        case TOKEN_SHADER:
+          decls.add(this.declarationModuleLevel());
+          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          break;
+        // $CASES-OMITTED$
+        default:
+          return decls;
+      }
+    }
+  }
+
+  public @Nonnull List<UASTIDModule<UASTIUnchecked>> declarationModules()
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
+  {
+    final List<UASTIDModule<UASTIUnchecked>> modules =
+      new ArrayList<UASTIDModule<UASTIUnchecked>>();
+    for (;;) {
+      switch (this.token.getType()) {
+        case TOKEN_MODULE:
+          modules.add(this.declarationModule());
+          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          break;
+        // $CASES-OMITTED$
+        default:
+          return modules;
+      }
+    }
+  }
+
   public @Nonnull UASTIDPackage<UASTIUnchecked> declarationPackage()
     throws ParserError,
       IOException,
@@ -691,7 +814,7 @@ public final class Parser
         this.parserConsumeExact(Type.TOKEN_RECORD);
         final List<UASTIDTypeRecordField<UASTIUnchecked>> fields =
           this.declarationTypeRecordFields();
-        this.parserExpectExact(Type.TOKEN_END);
+        this.parserConsumeExact(Type.TOKEN_END);
         return new UASTIDTypeRecord<UASTIUnchecked>(name, fields);
         // $CASES-OMITTED$
       default:
@@ -1547,5 +1670,18 @@ public final class Parser
       default:
         break;
     }
+  }
+
+  public @Nonnull UASTIUnit<UASTIUnchecked> unit()
+    throws ConstraintError,
+      ParserError,
+      IOException,
+      LexerError
+  {
+    final UASTIDPackage<UASTIUnchecked> pack = this.declarationPackage();
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+    final List<UASTIDModule<UASTIUnchecked>> modules =
+      this.declarationModules();
+    return new UASTIUnit<UASTIUnchecked>(this.lexer.getFile(), pack, modules);
   }
 }

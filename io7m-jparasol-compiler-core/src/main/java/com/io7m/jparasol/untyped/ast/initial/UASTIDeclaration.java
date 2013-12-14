@@ -33,13 +33,43 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 public abstract class UASTIDeclaration<S extends UASTIStatus>
 {
   /**
+   * The type of local declarations.
+   */
+
+  public static abstract class UASTIDeclarationLocalLevel<S extends UASTIStatus> extends
+    UASTIDeclaration<S>
+  {
+    // Nothing
+  }
+
+  /**
+   * The type of module-level declarations.
+   */
+
+  public static abstract class UASTIDeclarationModuleLevel<S extends UASTIStatus> extends
+    UASTIDeclaration<S>
+  {
+    // Nothing
+  }
+
+  /**
+   * The type of unit-level declarations.
+   */
+
+  public static abstract class UASTIDeclarationUnitLevel<S extends UASTIStatus> extends
+    UASTIDeclaration<S>
+  {
+    // Nothing
+  }
+
+  /**
    * The type of function declarations.
    */
 
   public static abstract class UASTIDFunction<S extends UASTIStatus> extends
     UASTIDTerm<S>
   {
-
+    // Nothing
   }
 
   public static final class UASTIDFunctionArgument<S extends UASTIStatus>
@@ -192,6 +222,45 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
   }
 
   /**
+   * Module declarations.
+   */
+
+  public static final class UASTIDModule<S extends UASTIStatus> extends
+    UASTIDeclarationUnitLevel<S>
+  {
+    private final @Nonnull List<UASTIDeclarationModuleLevel<S>> declarations;
+    private final @Nonnull List<UASTIDImport<S>>                imports;
+    private final @Nonnull TokenIdentifierUpper                 name;
+
+    public UASTIDModule(
+      final @Nonnull TokenIdentifierUpper name,
+      final @Nonnull List<UASTIDImport<S>> imports,
+      final @Nonnull List<UASTIDeclarationModuleLevel<S>> declarations)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.imports = Constraints.constrainNotNull(imports, "Imports");
+      this.declarations =
+        Constraints.constrainNotNull(declarations, "Declarations");
+    }
+
+    public @Nonnull List<UASTIDeclarationModuleLevel<S>> getDeclarations()
+    {
+      return this.declarations;
+    }
+
+    public @Nonnull List<UASTIDImport<S>> getImports()
+    {
+      return this.imports;
+    }
+
+    public @Nonnull TokenIdentifierUpper getName()
+    {
+      return this.name;
+    }
+  }
+
+  /**
    * Import declarations.
    */
 
@@ -218,7 +287,7 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
    */
 
   public static abstract class UASTIDShader<S extends UASTIStatus> extends
-    UASTIDeclaration<S>
+    UASTIDeclarationModuleLevel<S>
   {
     private final @Nonnull TokenIdentifierLower name;
 
@@ -302,7 +371,7 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
 
   public static abstract class UASTIDShaderFragmentLocal<S extends UASTIStatus>
   {
-
+    // Nothing
   }
 
   public static final class UASTIDShaderFragmentLocalDiscard<S extends UASTIStatus> extends
@@ -608,9 +677,19 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
    */
 
   public static abstract class UASTIDTerm<S extends UASTIStatus> extends
-    UASTIDeclaration<S>
+    UASTIDeclarationModuleLevel<S>
   {
+    // Nothing
+  }
 
+  /**
+   * The type of local term declarations.
+   */
+
+  public static abstract class UASTIDTermLocal<S extends UASTIStatus> extends
+    UASTIDeclarationModuleLevel<S>
+  {
+    // Nothing
   }
 
   /**
@@ -618,9 +697,9 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
    */
 
   public static abstract class UASTIDType<S extends UASTIStatus> extends
-    UASTIDeclaration<S>
+    UASTIDeclarationModuleLevel<S>
   {
-
+    // Nothing
   }
 
   /**
@@ -723,7 +802,7 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
    */
 
   public static final class UASTIDValueLocal<S extends UASTIStatus> extends
-    UASTIDTerm<S>
+    UASTIDTermLocal<S>
   {
     private final @Nonnull Option<UASTITypePath> ascription;
     private final @Nonnull UASTIExpression<S>    expression;
