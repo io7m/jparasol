@@ -22,10 +22,10 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnimplementedCodeException;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.PackagePath;
+import com.io7m.jparasol.lexer.Token.TokenDiscard;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
@@ -238,24 +238,229 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
   public static final class UASTIDShaderFragment<S extends UASTIStatus> extends
     UASTIDShader<S>
   {
+    private final @Nonnull List<UASTIDShaderFragmentInput<S>>            inputs;
+    private final @Nonnull List<UASTIDShaderFragmentLocal<S>>            locals;
+    private final @Nonnull List<UASTIDShaderFragmentOutput<S>>           outputs;
+    private final @Nonnull List<UASTIDShaderFragmentParameter<S>>        parameters;
+    private final @Nonnull List<UASTIDShaderFragmentOutputAssignment<S>> writes;
+
     public UASTIDShaderFragment(
-      final @Nonnull TokenIdentifierLower name)
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull List<UASTIDShaderFragmentInput<S>> inputs,
+      final @Nonnull List<UASTIDShaderFragmentOutput<S>> outputs,
+      final @Nonnull List<UASTIDShaderFragmentParameter<S>> parameters,
+      final @Nonnull List<UASTIDShaderFragmentLocal<S>> locals,
+      final @Nonnull List<UASTIDShaderFragmentOutputAssignment<S>> writes)
       throws ConstraintError
     {
       super(name);
-      throw new UnimplementedCodeException();
+      this.inputs = Constraints.constrainNotNull(inputs, "Inputs");
+      this.outputs = Constraints.constrainNotNull(outputs, "Outputs");
+      this.parameters =
+        Constraints.constrainNotNull(parameters, "Parameters");
+      this.locals = Constraints.constrainNotNull(locals, "Locals");
+      this.writes = Constraints.constrainNotNull(writes, "Writes");
+    }
+
+    public @Nonnull List<UASTIDShaderFragmentInput<S>> getInputs()
+    {
+      return this.inputs;
+    }
+
+    public @Nonnull List<UASTIDShaderFragmentLocal<S>> getLocals()
+    {
+      return this.locals;
+    }
+
+    public @Nonnull List<UASTIDShaderFragmentOutput<S>> getOutputs()
+    {
+      return this.outputs;
+    }
+
+    public @Nonnull List<UASTIDShaderFragmentParameter<S>> getParameters()
+    {
+      return this.parameters;
+    }
+
+    public @Nonnull List<UASTIDShaderFragmentOutputAssignment<S>> getWrites()
+    {
+      return this.writes;
+    }
+  }
+
+  public static final class UASTIDShaderFragmentInput<S extends UASTIStatus> extends
+    UASTIDShaderFragmentParameters<S>
+  {
+    public UASTIDShaderFragmentInput(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+  }
+
+  public static abstract class UASTIDShaderFragmentLocal<S extends UASTIStatus>
+  {
+
+  }
+
+  public static final class UASTIDShaderFragmentLocalDiscard<S extends UASTIStatus> extends
+    UASTIDShaderFragmentLocal<S>
+  {
+    private final @Nonnull TokenDiscard       discard;
+    private final @Nonnull UASTIExpression<S> expression;
+
+    public UASTIDShaderFragmentLocalDiscard(
+      final TokenDiscard discard,
+      final UASTIExpression<S> expression)
+      throws ConstraintError
+    {
+      this.discard = Constraints.constrainNotNull(discard, "Discard");
+      this.expression =
+        Constraints.constrainNotNull(expression, "Expression");
+    }
+
+    public @Nonnull TokenDiscard getDiscard()
+    {
+      return this.discard;
+    }
+
+    public @Nonnull UASTIExpression<S> getExpression()
+    {
+      return this.expression;
+    }
+  }
+
+  public static final class UASTIDShaderFragmentLocalValue<S extends UASTIStatus> extends
+    UASTIDShaderFragmentLocal<S>
+  {
+    private final @Nonnull UASTIDValueLocal<S> value;
+
+    public UASTIDShaderFragmentLocalValue(
+      final @Nonnull UASTIDValueLocal<S> value)
+      throws ConstraintError
+    {
+      this.value = Constraints.constrainNotNull(value, "Value");
+    }
+
+    public @Nonnull UASTIDValueLocal<S> getValue()
+    {
+      return this.value;
+    }
+  }
+
+  public static final class UASTIDShaderFragmentOutput<S extends UASTIStatus> extends
+    UASTIDShaderFragmentParameters<S>
+  {
+    private final int index;
+
+    public UASTIDShaderFragmentOutput(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type,
+      final int index)
+      throws ConstraintError
+    {
+      super(name, type);
+      this.index =
+        Constraints.constrainRange(index, 0, Integer.MAX_VALUE, "Index");
+    }
+
+    public int getIndex()
+    {
+      return this.index;
+    }
+  }
+
+  public static final class UASTIDShaderFragmentOutputAssignment<S extends UASTIStatus>
+  {
+    private final @Nonnull TokenIdentifierLower name;
+    private final @Nonnull UASTIEVariable<S>    variable;
+
+    public UASTIDShaderFragmentOutputAssignment(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTIEVariable<S> variable)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.variable = Constraints.constrainNotNull(variable, "Variable");
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull UASTIEVariable<S> getVariable()
+    {
+      return this.variable;
+    }
+  }
+
+  public static final class UASTIDShaderFragmentParameter<S extends UASTIStatus> extends
+    UASTIDShaderFragmentParameters<S>
+  {
+    public UASTIDShaderFragmentParameter(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+  }
+
+  public static abstract class UASTIDShaderFragmentParameters<S extends UASTIStatus>
+  {
+    private final @Nonnull TokenIdentifierLower name;
+    private final @Nonnull UASTITypePath        type;
+
+    UASTIDShaderFragmentParameters(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.type = Constraints.constrainNotNull(type, "Type");
+    }
+
+    public final @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public final @Nonnull UASTITypePath getType()
+    {
+      return this.type;
     }
   }
 
   public static final class UASTIDShaderProgram<S extends UASTIStatus> extends
     UASTIDShader<S>
   {
+    private final @Nonnull UASTIShaderPath fragment_shader;
+    private final @Nonnull UASTIShaderPath vertex_shader;
+
     public UASTIDShaderProgram(
-      final @Nonnull TokenIdentifierLower name)
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTIShaderPath vertex_shader,
+      final @Nonnull UASTIShaderPath fragment_shader)
       throws ConstraintError
     {
       super(name);
-      throw new UnimplementedCodeException();
+      this.vertex_shader =
+        Constraints.constrainNotNull(vertex_shader, "Vertex shader");
+      this.fragment_shader =
+        Constraints.constrainNotNull(fragment_shader, "Fragment shader");
+    }
+
+    public @Nonnull UASTIShaderPath getFragmentShader()
+    {
+      return this.fragment_shader;
+    }
+
+    public @Nonnull UASTIShaderPath getVertexShader()
+    {
+      return this.vertex_shader;
     }
   }
 

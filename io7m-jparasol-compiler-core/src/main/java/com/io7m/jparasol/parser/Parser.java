@@ -32,11 +32,13 @@ import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token;
+import com.io7m.jparasol.lexer.Token.TokenDiscard;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.lexer.Token.TokenLet;
 import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
 import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
+import com.io7m.jparasol.lexer.Token.TokenLiteralIntegerDecimal;
 import com.io7m.jparasol.lexer.Token.TokenLiteralReal;
 import com.io7m.jparasol.lexer.Token.Type;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunction;
@@ -45,6 +47,17 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefi
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShader;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentInput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalDiscard;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalValue;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentParameter;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentParameters;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgram;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexInput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
@@ -69,6 +82,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProject
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIShaderPath;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
@@ -109,6 +123,283 @@ public final class Parser
     this.lexer = Constraints.constrainNotNull(lexer, "Lexer");
     this.message = new StringBuilder();
     this.token = lexer.token();
+  }
+
+  public @Nonnull
+    UASTIDShaderFragment<UASTIUnchecked>
+    declarationFragmentShader()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_FRAGMENT);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_IS);
+
+    final List<UASTIDShaderFragmentParameters<UASTIUnchecked>> decls =
+      this.declarationFragmentShaderParameterDeclarations();
+
+    final List<UASTIDShaderFragmentInput<UASTIUnchecked>> inputs =
+      new ArrayList<UASTIDShaderFragmentInput<UASTIUnchecked>>();
+    final List<UASTIDShaderFragmentOutput<UASTIUnchecked>> outputs =
+      new ArrayList<UASTIDShaderFragmentOutput<UASTIUnchecked>>();
+    final List<UASTIDShaderFragmentParameter<UASTIUnchecked>> parameters =
+      new ArrayList<UASTIDShaderFragmentParameter<UASTIUnchecked>>();
+
+    for (int index = 0; index < decls.size(); ++index) {
+      final UASTIDShaderFragmentParameters<UASTIUnchecked> d =
+        decls.get(index);
+      if (d instanceof UASTIDShaderFragmentInput<?>) {
+        inputs.add((UASTIDShaderFragmentInput<UASTIUnchecked>) d);
+        continue;
+      }
+      if (d instanceof UASTIDShaderFragmentOutput<?>) {
+        outputs.add((UASTIDShaderFragmentOutput<UASTIUnchecked>) d);
+        continue;
+      }
+      if (d instanceof UASTIDShaderFragmentParameter<?>) {
+        parameters.add((UASTIDShaderFragmentParameter<UASTIUnchecked>) d);
+        continue;
+      }
+    }
+
+    this.parserExpectOneOf(new Type[] { Type.TOKEN_WITH, Type.TOKEN_AS });
+
+    final List<UASTIDShaderFragmentLocal<UASTIUnchecked>> values;
+    switch (this.token.getType()) {
+      case TOKEN_WITH:
+      {
+        this.parserConsumeExact(Type.TOKEN_WITH);
+        values = this.declarationFragmentShaderLocals();
+        break;
+      }
+      // $CASES-OMITTED$
+      default:
+      {
+        values = new ArrayList<UASTIDShaderFragmentLocal<UASTIUnchecked>>();
+        break;
+      }
+    }
+
+    this.parserConsumeExact(Type.TOKEN_AS);
+    final List<UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>> assigns =
+      this.declarationFragmentShaderOutputAssignments();
+    this.parserConsumeExact(Type.TOKEN_END);
+
+    return new UASTIDShaderFragment<UASTIUnchecked>(
+      name,
+      inputs,
+      outputs,
+      parameters,
+      values,
+      assigns);
+  }
+
+  public
+    UASTIDShaderFragmentInput<UASTIUnchecked>
+    declarationFragmentShaderInput()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_IN);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_COLON);
+    return new UASTIDShaderFragmentInput<UASTIUnchecked>(
+      name,
+      this.declarationTypePath());
+  }
+
+  public @Nonnull
+    UASTIDShaderFragmentLocalDiscard<UASTIUnchecked>
+    declarationFragmentShaderLocalDiscard()
+      throws ParserError,
+        ConstraintError,
+        IOException,
+        LexerError
+  {
+    this.parserExpectExact(Type.TOKEN_DISCARD);
+    final TokenDiscard discard = (TokenDiscard) this.token;
+    this.parserConsumeExact(Type.TOKEN_DISCARD);
+    this.parserConsumeExact(Type.TOKEN_ROUND_LEFT);
+    final UASTIExpression<UASTIUnchecked> expr = this.expression();
+    this.parserConsumeExact(Type.TOKEN_ROUND_RIGHT);
+    return new UASTIDShaderFragmentLocalDiscard<UASTIUnchecked>(discard, expr);
+  }
+
+  public
+    List<UASTIDShaderFragmentLocal<UASTIUnchecked>>
+    declarationFragmentShaderLocals()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    final ArrayList<UASTIDShaderFragmentLocal<UASTIUnchecked>> locals =
+      new ArrayList<UASTIDShaderFragmentLocal<UASTIUnchecked>>();
+
+    for (;;) {
+      switch (this.token.getType()) {
+        case TOKEN_VALUE:
+          locals.add(new UASTIDShaderFragmentLocalValue<UASTIUnchecked>(this
+            .declarationValueLocal()));
+          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          break;
+        case TOKEN_DISCARD:
+          locals.add(this.declarationFragmentShaderLocalDiscard());
+          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          break;
+        // $CASES-OMITTED$
+        default:
+          return locals;
+      }
+    }
+  }
+
+  public
+    UASTIDShaderFragmentOutput<UASTIUnchecked>
+    declarationFragmentShaderOutput()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_OUT);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_COLON);
+    final UASTITypePath type = this.declarationTypePath();
+    this.parserConsumeExact(Type.TOKEN_AS);
+    this.parserExpectExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
+    final TokenLiteralIntegerDecimal index =
+      (TokenLiteralIntegerDecimal) this.token;
+    this.parserConsumeExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
+
+    return new UASTIDShaderFragmentOutput<UASTIUnchecked>(name, type, index
+      .getValue()
+      .intValue());
+  }
+
+  public @Nonnull
+    UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>
+    declarationFragmentShaderOutputAssignment()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_OUT);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_EQUALS);
+    final UASTIEVariable<UASTIUnchecked> value =
+      new UASTIEVariable<UASTIUnchecked>(this.declarationValuePath());
+    return new UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>(
+      name,
+      value);
+  }
+
+  public @Nonnull
+    List<UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>>
+    declarationFragmentShaderOutputAssignments()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    final List<UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>> assigns =
+      new ArrayList<UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>>();
+
+    for (;;) {
+      switch (this.token.getType()) {
+        case TOKEN_OUT:
+          assigns.add(this.declarationFragmentShaderOutputAssignment());
+          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          break;
+        // $CASES-OMITTED$
+        default:
+          return assigns;
+      }
+    }
+  }
+
+  public @Nonnull
+    UASTIDShaderFragmentParameter<UASTIUnchecked>
+    declarationFragmentShaderParameter()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_PARAMETER);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_COLON);
+    return new UASTIDShaderFragmentParameter<UASTIUnchecked>(
+      name,
+      this.declarationTypePath());
+  }
+
+  public @Nonnull
+    UASTIDShaderFragmentParameters<UASTIUnchecked>
+    declarationFragmentShaderParameterDeclaration()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserExpectOneOf(new Type[] {
+      Type.TOKEN_IN,
+      Type.TOKEN_OUT,
+      Type.TOKEN_PARAMETER });
+
+    switch (this.token.getType()) {
+      case TOKEN_IN:
+        return this.declarationFragmentShaderInput();
+      case TOKEN_OUT:
+        return this.declarationFragmentShaderOutput();
+      case TOKEN_PARAMETER:
+        return this.declarationFragmentShaderParameter();
+        // $CASES-OMITTED$
+      default:
+        throw new UnreachableCodeException();
+    }
+  }
+
+  public @Nonnull
+    List<UASTIDShaderFragmentParameters<UASTIUnchecked>>
+    declarationFragmentShaderParameterDeclarations()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    final List<UASTIDShaderFragmentParameters<UASTIUnchecked>> declarations =
+      new ArrayList<UASTIDShaderFragmentParameters<UASTIUnchecked>>();
+
+    for (;;) {
+      switch (this.token.getType()) {
+        case TOKEN_IN:
+        case TOKEN_OUT:
+        case TOKEN_PARAMETER:
+          declarations.add(this
+            .declarationFragmentShaderParameterDeclaration());
+          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          break;
+        // $CASES-OMITTED$
+        default:
+          return declarations;
+      }
+    }
   }
 
   public @Nonnull UASTIDFunction<UASTIUnchecked> declarationFunction()
@@ -169,7 +460,7 @@ public final class Parser
     }
   }
 
-  private @Nonnull
+  public @Nonnull
     UASTIDFunctionArgument<UASTIUnchecked>
     declarationFunctionArgument()
       throws ParserError,
@@ -186,7 +477,7 @@ public final class Parser
       this.declarationTypePath());
   }
 
-  private @Nonnull
+  public @Nonnull
     List<UASTIDFunctionArgument<UASTIUnchecked>>
     declarationFunctionArguments()
       throws ParserError,
@@ -259,7 +550,7 @@ public final class Parser
     return new UASTIDPackage<UASTIUnchecked>(this.declarationPackagePath());
   }
 
-  private @Nonnull PackagePath declarationPackagePath()
+  public @Nonnull PackagePath declarationPackagePath()
     throws ConstraintError,
       ParserError,
       IOException,
@@ -294,6 +585,92 @@ public final class Parser
     }
 
     return new PackagePath(components);
+  }
+
+  public @Nonnull
+    UASTIDShaderProgram<UASTIUnchecked>
+    declarationProgramShader()
+      throws ParserError,
+        IOException,
+        LexerError,
+        ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_PROGRAM);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_IS);
+
+    this.parserConsumeExact(Type.TOKEN_VERTEX);
+    final UASTIShaderPath vertex = this.declarationShaderPath();
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
+    this.parserConsumeExact(Type.TOKEN_FRAGMENT);
+    final UASTIShaderPath fragment = this.declarationShaderPath();
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
+    this.parserConsumeExact(Type.TOKEN_END);
+    return new UASTIDShaderProgram<UASTIUnchecked>(name, vertex, fragment);
+  }
+
+  public @Nonnull UASTIDShader<UASTIUnchecked> declarationShader()
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_SHADER);
+    this.parserExpectOneOf(new Type[] {
+      Type.TOKEN_VERTEX,
+      Type.TOKEN_FRAGMENT,
+      Type.TOKEN_PROGRAM });
+
+    switch (this.token.getType()) {
+      case TOKEN_VERTEX:
+        return this.declarationVertexShader();
+      case TOKEN_FRAGMENT:
+        return this.declarationFragmentShader();
+      case TOKEN_PROGRAM:
+        return this.declarationProgramShader();
+        // $CASES-OMITTED$
+      default:
+        throw new UnreachableCodeException();
+    }
+  }
+
+  public @Nonnull UASTIShaderPath declarationShaderPath()
+    throws ParserError,
+      IOException,
+      LexerError,
+      ConstraintError
+  {
+    this.parserExpectOneOf(new Type[] {
+      Type.TOKEN_IDENTIFIER_LOWER,
+      Type.TOKEN_IDENTIFIER_UPPER });
+
+    switch (this.token.getType()) {
+      case TOKEN_IDENTIFIER_LOWER:
+      {
+        final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        final None<TokenIdentifierUpper> none = Option.none();
+        return new UASTIShaderPath(none, name);
+      }
+      case TOKEN_IDENTIFIER_UPPER:
+      {
+        final TokenIdentifierUpper module = (TokenIdentifierUpper) this.token;
+        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
+        this.parserConsumeExact(Type.TOKEN_DOT);
+        this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+        final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        return new UASTIShaderPath(Option.some(module), name);
+      }
+
+      // $CASES-OMITTED$
+      default:
+        throw new UnreachableCodeException();
+    }
   }
 
   public @Nonnull UASTIDType<UASTIUnchecked> declarationType()
@@ -357,7 +734,7 @@ public final class Parser
     }
   }
 
-  private @Nonnull
+  public @Nonnull
     UASTIDTypeRecordField<UASTIUnchecked>
     declarationTypeRecordField()
       throws ConstraintError,
@@ -373,7 +750,7 @@ public final class Parser
     return new UASTIDTypeRecordField<UASTIUnchecked>(name, type);
   }
 
-  private @Nonnull
+  public @Nonnull
     List<UASTIDTypeRecordField<UASTIUnchecked>>
     declarationTypeRecordFields()
       throws ParserError,
@@ -437,7 +814,7 @@ public final class Parser
     }
   }
 
-  private @Nonnull UASTIDValueLocal<UASTIUnchecked> declarationValueLocal()
+  public @Nonnull UASTIDValueLocal<UASTIUnchecked> declarationValueLocal()
     throws ParserError,
       IOException,
       LexerError,
@@ -648,7 +1025,7 @@ public final class Parser
       this.declarationTypePath());
   }
 
-  private @Nonnull
+  public @Nonnull
     UASTIDShaderVertexOutputAssignment<UASTIUnchecked>
     declarationVertexShaderOutputAssignment()
       throws ParserError,
@@ -666,7 +1043,7 @@ public final class Parser
     return new UASTIDShaderVertexOutputAssignment<UASTIUnchecked>(name, value);
   }
 
-  private @Nonnull
+  public @Nonnull
     List<UASTIDShaderVertexOutputAssignment<UASTIUnchecked>>
     declarationVertexShaderOutputAssignments()
       throws ParserError,
@@ -708,7 +1085,7 @@ public final class Parser
       this.declarationTypePath());
   }
 
-  private @Nonnull
+  public @Nonnull
     UASTIDShaderVertexParameters<UASTIUnchecked>
     declarationVertexShaderParameterDeclaration()
       throws ParserError,
@@ -734,7 +1111,7 @@ public final class Parser
     }
   }
 
-  private @Nonnull
+  public @Nonnull
     List<UASTIDShaderVertexParameters<UASTIUnchecked>>
     declarationVertexShaderParameterDeclarations()
       throws ParserError,
@@ -982,7 +1359,7 @@ public final class Parser
     }
   }
 
-  private @Nonnull
+  public @Nonnull
     UASTIRecordFieldAssignment<UASTIUnchecked>
     expressionRecordFieldAssignment()
       throws ConstraintError,
@@ -999,7 +1376,7 @@ public final class Parser
       this.expression());
   }
 
-  private @Nonnull
+  public @Nonnull
     UASTIERecordProjection<UASTIUnchecked>
     expressionRecordProjection(
       final @Nonnull UASTIExpression<UASTIUnchecked> e)
@@ -1018,7 +1395,7 @@ public final class Parser
     return r;
   }
 
-  private UASTIESwizzle<UASTIUnchecked> expressionSwizzle(
+  public UASTIESwizzle<UASTIUnchecked> expressionSwizzle(
     final @Nonnull UASTIExpression<UASTIUnchecked> e)
     throws ParserError,
       IOException,
@@ -1047,7 +1424,7 @@ public final class Parser
     return new UASTIESwizzle<UASTIUnchecked>(e, fields);
   }
 
-  private @Nonnull TokenIdentifierLower expressionSwizzleField()
+  public @Nonnull TokenIdentifierLower expressionSwizzleField()
     throws ParserError,
       ConstraintError,
       IOException,
@@ -1079,7 +1456,7 @@ public final class Parser
     }
   }
 
-  private void parserConsumeAny()
+  protected void parserConsumeAny()
     throws IOException,
       LexerError,
       ConstraintError
@@ -1087,7 +1464,7 @@ public final class Parser
     this.token = this.lexer.token();
   }
 
-  private void parserConsumeExact(
+  protected void parserConsumeExact(
     final @Nonnull Token.Type type)
     throws ParserError,
       ConstraintError,
@@ -1098,7 +1475,7 @@ public final class Parser
     this.parserConsumeAny();
   }
 
-  private void parserExpectExact(
+  protected void parserExpectExact(
     final @Nonnull Token.Type type)
     throws ParserError,
       ConstraintError
@@ -1116,7 +1493,7 @@ public final class Parser
     }
   }
 
-  private void parserExpectOneOf(
+  protected void parserExpectOneOf(
     final @Nonnull Token.Type types[])
     throws ParserError,
       ConstraintError

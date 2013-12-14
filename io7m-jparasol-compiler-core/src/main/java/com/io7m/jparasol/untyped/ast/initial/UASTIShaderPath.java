@@ -26,7 +26,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
 /**
- * A path to a type.
+ * A path to a shader.
  */
 
 public final class UASTIShaderPath

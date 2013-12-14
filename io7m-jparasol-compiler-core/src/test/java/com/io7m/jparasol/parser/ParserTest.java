@@ -32,14 +32,24 @@ import com.io7m.jparasol.PackagePathFlat;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.Token.Type;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentInput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalDiscard;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalValue;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentParameter;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgram;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexInput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutputAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameter;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
@@ -109,6 +119,214 @@ public class ParserTest
     final ByteArrayInputStream bs = new ByteArrayInputStream(text.getBytes());
     final Lexer lexer = new Lexer(bs);
     return Parser.newParser(lexer);
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testDFragmentShader_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testDFragmentShader0.p");
+    final UASTIDShaderFragment<UASTIUnchecked> r =
+      p.declarationFragmentShader();
+    Assert.assertEquals("f", r.getName().getActual());
+
+    Assert.assertEquals(1, r.getParameters().size());
+    {
+      final UASTIDShaderFragmentParameter<UASTIUnchecked> rp =
+        r.getParameters().get(0);
+      Assert.assertEquals("x", rp.getName().getActual());
+      Assert.assertTrue(rp.getType().getModule().isNone());
+      Assert.assertEquals("integer", rp.getType().getName().getActual());
+    }
+
+    Assert.assertEquals(2, r.getInputs().size());
+    {
+      final UASTIDShaderFragmentInput<UASTIUnchecked> ri0 =
+        r.getInputs().get(0);
+      Assert.assertEquals("mmv", ri0.getName().getActual());
+      Assert.assertTrue(ri0.getType().getModule().isNone());
+      Assert.assertEquals("matrix_4x4f", ri0.getType().getName().getActual());
+
+      final UASTIDShaderFragmentInput<UASTIUnchecked> ri1 =
+        r.getInputs().get(1);
+      Assert.assertEquals("in_pos", ri1.getName().getActual());
+      Assert.assertTrue(ri1.getType().getModule().isNone());
+      Assert.assertEquals("vector_4f", ri1.getType().getName().getActual());
+    }
+
+    Assert.assertEquals(2, r.getOutputs().size());
+    {
+      final UASTIDShaderFragmentOutput<UASTIUnchecked> ro0 =
+        r.getOutputs().get(0);
+      Assert.assertEquals("out_pos", ro0.getName().getActual());
+      Assert.assertEquals(0, ro0.getIndex());
+      Assert.assertEquals("vector_4f", ro0.getType().getName().getActual());
+
+      final UASTIDShaderFragmentOutput<UASTIUnchecked> ro1 =
+        r.getOutputs().get(1);
+      Assert.assertEquals("out_pos2", ro1.getName().getActual());
+      Assert.assertEquals(1, ro1.getIndex());
+      Assert.assertEquals("vector_4f", ro1.getType().getName().getActual());
+    }
+
+    Assert.assertEquals(2, r.getLocals().size());
+    {
+      final UASTIDShaderFragmentLocalValue<UASTIUnchecked> rl0 =
+        (UASTIDShaderFragmentLocalValue<UASTIUnchecked>) r.getLocals().get(0);
+      Assert.assertEquals("pp", rl0.getValue().getName().getActual());
+      Assert.assertTrue(rl0.getValue().getAscription().isNone());
+
+      @SuppressWarnings("unused") final UASTIDShaderFragmentLocalDiscard<UASTIUnchecked> rl1 =
+        (UASTIDShaderFragmentLocalDiscard<UASTIUnchecked>) r.getLocals().get(
+          1);
+    }
+
+    Assert.assertEquals(2, r.getWrites().size());
+    {
+      final UASTIDShaderFragmentOutputAssignment<UASTIUnchecked> w0 =
+        r.getWrites().get(0);
+      Assert.assertEquals("out_pos", w0.getName().getActual());
+      Assert.assertEquals("pp", w0
+        .getVariable()
+        .getName()
+        .getName()
+        .getActual());
+
+      final UASTIDShaderFragmentOutputAssignment<UASTIUnchecked> w1 =
+        r.getWrites().get(1);
+      Assert.assertEquals("out_pos2", w1.getName().getActual());
+      Assert.assertEquals("pp", w1
+        .getVariable()
+        .getName()
+        .getName()
+        .getActual());
+    }
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testDFragmentShader_1()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testDFragmentShader1.p");
+    final UASTIDShaderFragment<UASTIUnchecked> r =
+      p.declarationFragmentShader();
+    Assert.assertEquals("f", r.getName().getActual());
+
+    Assert.assertEquals(1, r.getParameters().size());
+    {
+      final UASTIDShaderFragmentParameter<UASTIUnchecked> rp =
+        r.getParameters().get(0);
+      Assert.assertEquals("x", rp.getName().getActual());
+      Assert.assertTrue(rp.getType().getModule().isNone());
+      Assert.assertEquals("integer", rp.getType().getName().getActual());
+    }
+
+    Assert.assertEquals(2, r.getInputs().size());
+    {
+      final UASTIDShaderFragmentInput<UASTIUnchecked> ri0 =
+        r.getInputs().get(0);
+      Assert.assertEquals("mmv", ri0.getName().getActual());
+      Assert.assertTrue(ri0.getType().getModule().isNone());
+      Assert.assertEquals("matrix_4x4f", ri0.getType().getName().getActual());
+
+      final UASTIDShaderFragmentInput<UASTIUnchecked> ri1 =
+        r.getInputs().get(1);
+      Assert.assertEquals("in_pos", ri1.getName().getActual());
+      Assert.assertTrue(ri1.getType().getModule().isNone());
+      Assert.assertEquals("vector_4f", ri1.getType().getName().getActual());
+    }
+
+    Assert.assertEquals(2, r.getOutputs().size());
+    {
+      final UASTIDShaderFragmentOutput<UASTIUnchecked> ro0 =
+        r.getOutputs().get(0);
+      Assert.assertEquals("out_pos", ro0.getName().getActual());
+      Assert.assertEquals(0, ro0.getIndex());
+      Assert.assertEquals("vector_4f", ro0.getType().getName().getActual());
+
+      final UASTIDShaderFragmentOutput<UASTIUnchecked> ro1 =
+        r.getOutputs().get(1);
+      Assert.assertEquals("out_pos2", ro1.getName().getActual());
+      Assert.assertEquals(1, ro1.getIndex());
+      Assert.assertEquals("vector_4f", ro1.getType().getName().getActual());
+    }
+
+    Assert.assertEquals(2, r.getWrites().size());
+    {
+      final UASTIDShaderFragmentOutputAssignment<UASTIUnchecked> w0 =
+        r.getWrites().get(0);
+      Assert.assertEquals("out_pos", w0.getName().getActual());
+      Assert.assertEquals("in_pos", w0
+        .getVariable()
+        .getName()
+        .getName()
+        .getActual());
+
+      final UASTIDShaderFragmentOutputAssignment<UASTIUnchecked> w1 =
+        r.getWrites().get(1);
+      Assert.assertEquals("out_pos2", w1.getName().getActual());
+      Assert.assertEquals("in_pos", w1
+        .getVariable()
+        .getName()
+        .getName()
+        .getActual());
+    }
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testDFragmentShaderInput_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("in x : integer");
+    final UASTIDShaderFragmentInput<UASTIUnchecked> r =
+      p.declarationFragmentShaderInput();
+    Assert.assertEquals("x", r.getName().getActual());
+    Assert.assertEquals("integer", r.getType().getName().getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testDFragmentShaderOutput_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p =
+      ParserTest.makeStringInternalParser("out x : integer as 23");
+    final UASTIDShaderFragmentOutput<UASTIUnchecked> r =
+      p.declarationFragmentShaderOutput();
+    Assert.assertEquals("x", r.getName().getActual());
+    Assert.assertEquals("integer", r.getType().getName().getActual());
+    Assert.assertEquals(23, r.getIndex());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testDFragmentShaderParameter_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p =
+      ParserTest.makeStringInternalParser("parameter x : integer");
+    final UASTIDShaderFragmentParameter<UASTIUnchecked> r =
+      p.declarationFragmentShaderParameter();
+    Assert.assertEquals("x", r.getName().getActual());
+    Assert.assertEquals("integer", r.getType().getName().getActual());
   }
 
   @SuppressWarnings({ "static-method" }) @Test public
@@ -264,6 +482,21 @@ public class ParserTest
     Assert.assertEquals("x.y.z", flat.getActual());
   }
 
+  @SuppressWarnings("static-method") @Test public void testDProgramShader_0()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testDProgramShader0.p");
+    final UASTIDShaderProgram<UASTIUnchecked> r =
+      p.declarationProgramShader();
+
+    Assert.assertEquals("p", r.getName().getActual());
+    Assert.assertEquals("x", r.getVertexShader().getName().getActual());
+    Assert.assertEquals("y", r.getFragmentShader().getName().getActual());
+  }
+
   @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public
     void
     testDRecordNotOK_0()
@@ -301,6 +534,31 @@ public class ParserTest
       .getType()
       .getModule()).value.getActual());
     Assert.assertEquals("integer", arg1.getType().getName().getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public void testDShader_0()
+    throws IOException,
+      LexerError,
+      ConstraintError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testDShader0.p");
+
+    final UASTIDShaderFragment<UASTIUnchecked> r0 =
+      (UASTIDShaderFragment<UASTIUnchecked>) p.declarationShader();
+    p.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
+    final UASTIDShaderVertex<UASTIUnchecked> r1 =
+      (UASTIDShaderVertex<UASTIUnchecked>) p.declarationShader();
+    p.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
+    final UASTIDShaderProgram<UASTIUnchecked> r2 =
+      (UASTIDShaderProgram<UASTIUnchecked>) p.declarationShader();
+    p.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
+    Assert.assertEquals("f", r0.getName().getActual());
+    Assert.assertEquals("v", r1.getName().getActual());
+    Assert.assertEquals("p", r2.getName().getActual());
   }
 
   @SuppressWarnings({ "static-method" }) @Test public
@@ -494,11 +752,71 @@ public class ParserTest
     final Parser p = ParserTest.makeResourceParser("testDVertexShader0.p");
     final UASTIDShaderVertex<UASTIUnchecked> r = p.declarationVertexShader();
     Assert.assertEquals("v", r.getName().getActual());
+
     Assert.assertEquals(1, r.getParameters().size());
+    {
+      final UASTIDShaderVertexParameter<UASTIUnchecked> rp =
+        r.getParameters().get(0);
+      Assert.assertEquals("x", rp.getName().getActual());
+      Assert.assertTrue(rp.getType().getModule().isNone());
+      Assert.assertEquals("integer", rp.getType().getName().getActual());
+    }
+
     Assert.assertEquals(2, r.getInputs().size());
+    {
+      final UASTIDShaderVertexInput<UASTIUnchecked> ri0 =
+        r.getInputs().get(0);
+      Assert.assertEquals("mmv", ri0.getName().getActual());
+      Assert.assertTrue(ri0.getType().getModule().isNone());
+      Assert.assertEquals("matrix_4x4f", ri0.getType().getName().getActual());
+
+      final UASTIDShaderVertexInput<UASTIUnchecked> ri1 =
+        r.getInputs().get(1);
+      Assert.assertEquals("in_pos", ri1.getName().getActual());
+      Assert.assertTrue(ri1.getType().getModule().isNone());
+      Assert.assertEquals("vector_4f", ri1.getType().getName().getActual());
+    }
+
     Assert.assertEquals(2, r.getOutputs().size());
+    {
+      final UASTIDShaderVertexOutput<UASTIUnchecked> ro0 =
+        r.getOutputs().get(0);
+      Assert.assertEquals("out_pos", ro0.getName().getActual());
+      Assert.assertEquals("vector_4f", ro0.getType().getName().getActual());
+
+      final UASTIDShaderVertexOutput<UASTIUnchecked> ro1 =
+        r.getOutputs().get(1);
+      Assert.assertEquals("out_pos2", ro1.getName().getActual());
+      Assert.assertEquals("vector_4f", ro1.getType().getName().getActual());
+    }
+
     Assert.assertEquals(1, r.getValues().size());
+    {
+      final UASTIDValueLocal<UASTIUnchecked> rl0 = r.getValues().get(0);
+      Assert.assertEquals("pp", rl0.getName().getActual());
+      Assert.assertTrue(rl0.getAscription().isNone());
+    }
+
     Assert.assertEquals(2, r.getWrites().size());
+    {
+      final UASTIDShaderVertexOutputAssignment<UASTIUnchecked> w0 =
+        r.getWrites().get(0);
+      Assert.assertEquals("out_pos", w0.getName().getActual());
+      Assert.assertEquals("pp", w0
+        .getVariable()
+        .getName()
+        .getName()
+        .getActual());
+
+      final UASTIDShaderVertexOutputAssignment<UASTIUnchecked> w1 =
+        r.getWrites().get(1);
+      Assert.assertEquals("out_pos2", w1.getName().getActual());
+      Assert.assertEquals("pp", w1
+        .getVariable()
+        .getName()
+        .getName()
+        .getActual());
+    }
   }
 
   @SuppressWarnings("static-method") @Test public void testDVertexShader_1()
@@ -510,11 +828,66 @@ public class ParserTest
     final Parser p = ParserTest.makeResourceParser("testDVertexShader1.p");
     final UASTIDShaderVertex<UASTIUnchecked> r = p.declarationVertexShader();
     Assert.assertEquals("v", r.getName().getActual());
+
     Assert.assertEquals(1, r.getParameters().size());
+    {
+      final UASTIDShaderVertexParameter<UASTIUnchecked> rp =
+        r.getParameters().get(0);
+      Assert.assertEquals("x", rp.getName().getActual());
+      Assert.assertTrue(rp.getType().getModule().isNone());
+      Assert.assertEquals("integer", rp.getType().getName().getActual());
+    }
+
     Assert.assertEquals(2, r.getInputs().size());
+    {
+      final UASTIDShaderVertexInput<UASTIUnchecked> ri0 =
+        r.getInputs().get(0);
+      Assert.assertEquals("mmv", ri0.getName().getActual());
+      Assert.assertTrue(ri0.getType().getModule().isNone());
+      Assert.assertEquals("matrix_4x4f", ri0.getType().getName().getActual());
+
+      final UASTIDShaderVertexInput<UASTIUnchecked> ri1 =
+        r.getInputs().get(1);
+      Assert.assertEquals("in_pos", ri1.getName().getActual());
+      Assert.assertTrue(ri1.getType().getModule().isNone());
+      Assert.assertEquals("vector_4f", ri1.getType().getName().getActual());
+    }
+
     Assert.assertEquals(2, r.getOutputs().size());
+    {
+      final UASTIDShaderVertexOutput<UASTIUnchecked> ro0 =
+        r.getOutputs().get(0);
+      Assert.assertEquals("out_pos", ro0.getName().getActual());
+      Assert.assertEquals("vector_4f", ro0.getType().getName().getActual());
+
+      final UASTIDShaderVertexOutput<UASTIUnchecked> ro1 =
+        r.getOutputs().get(1);
+      Assert.assertEquals("out_pos2", ro1.getName().getActual());
+      Assert.assertEquals("vector_4f", ro1.getType().getName().getActual());
+    }
+
     Assert.assertEquals(0, r.getValues().size());
+
     Assert.assertEquals(2, r.getWrites().size());
+    {
+      final UASTIDShaderVertexOutputAssignment<UASTIUnchecked> w0 =
+        r.getWrites().get(0);
+      Assert.assertEquals("out_pos", w0.getName().getActual());
+      Assert.assertEquals("in_pos", w0
+        .getVariable()
+        .getName()
+        .getName()
+        .getActual());
+
+      final UASTIDShaderVertexOutputAssignment<UASTIUnchecked> w1 =
+        r.getWrites().get(1);
+      Assert.assertEquals("out_pos2", w1.getName().getActual());
+      Assert.assertEquals("in_pos", w1
+        .getVariable()
+        .getName()
+        .getName()
+        .getActual());
+    }
   }
 
   @SuppressWarnings("static-method") @Test public
