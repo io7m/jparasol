@@ -278,11 +278,25 @@ public abstract class Token
     }
   }
 
-  public static final class TokenIdentifierLower extends Token
+  public static abstract class TokenIdentifier extends Token
+  {
+    @SuppressWarnings("synthetic-access") protected TokenIdentifier(
+      final @Nonnull Type type,
+      final @Nonnull File file,
+      final @Nonnull Position position)
+      throws ConstraintError
+    {
+      super(type, file, position);
+    }
+
+    public abstract @Nonnull String getActual();
+  }
+
+  public static final class TokenIdentifierLower extends TokenIdentifier
   {
     private final @Nonnull String text;
 
-    @SuppressWarnings("synthetic-access") public TokenIdentifierLower(
+    public TokenIdentifierLower(
       final @Nonnull File file,
       final @Nonnull Position position,
       final @Nonnull String text)
@@ -311,7 +325,7 @@ public abstract class Token
       return true;
     }
 
-    public @Nonnull String getActual()
+    @Override public @Nonnull String getActual()
     {
       return this.text;
     }
@@ -334,11 +348,11 @@ public abstract class Token
     }
   }
 
-  public static final class TokenIdentifierUpper extends Token
+  public static final class TokenIdentifierUpper extends TokenIdentifier
   {
     private final @Nonnull String text;
 
-    @SuppressWarnings("synthetic-access") public TokenIdentifierUpper(
+    public TokenIdentifierUpper(
       final @Nonnull File file,
       final @Nonnull Position position,
       final @Nonnull String text)
@@ -367,7 +381,7 @@ public abstract class Token
       return true;
     }
 
-    public @Nonnull String getActual()
+    @Override public @Nonnull String getActual()
     {
       return this.text;
     }
