@@ -20,29 +20,24 @@ import java.io.File;
 
 import javax.annotation.Nonnull;
 
-import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.CompilerError;
 
-public final class LexerError extends Exception
+public final class LexerError extends CompilerError
 {
-  private static final long       serialVersionUID;
+  private static final long serialVersionUID;
 
   static {
     serialVersionUID = 260713896414675714L;
   }
 
-  private final @Nonnull File     file;
-  private final @Nonnull Position position;
-
   public LexerError(
     final @Nonnull Exception cause,
     final @Nonnull File file,
     final @Nonnull Position position)
     throws ConstraintError
   {
-    super(cause);
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
+    super(cause, file, position);
   }
 
   public LexerError(
@@ -52,9 +47,7 @@ public final class LexerError extends Exception
     final @Nonnull Position position)
     throws ConstraintError
   {
-    super(message, cause);
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
+    super(cause, message, file, position);
   }
 
   public LexerError(
@@ -63,18 +56,6 @@ public final class LexerError extends Exception
     final @Nonnull Position position)
     throws ConstraintError
   {
-    super(message);
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
-  }
-
-  public @Nonnull File getFile()
-  {
-    return this.file;
-  }
-
-  public @Nonnull Position getPosition()
-  {
-    return this.position;
+    super(message, file, position);
   }
 }

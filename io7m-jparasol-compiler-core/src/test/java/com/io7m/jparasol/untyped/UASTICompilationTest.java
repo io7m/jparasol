@@ -122,4 +122,17 @@ public class UASTICompilationTest
     units.add(UASTICompilationTest.parseResource("parser/testDUnit0.p"));
     UASTICompilation.fromUnits(units);
   }
+
+  @SuppressWarnings("static-method") @Test(expected = UnitCombinerError.class) public
+    void
+    testBadPackage()
+      throws UnitCombinerError,
+        ConstraintError
+  {
+    final ArrayList<UASTIUnit<UASTIUnchecked>> units =
+      new ArrayList<UASTIUnit<UASTIUnchecked>>();
+    units.add(UASTICompilationTest
+      .parseResource("untyped/restricted_name/restricted-name-000.p"));
+    UASTICompilation.fromUnits(units);
+  }
 }

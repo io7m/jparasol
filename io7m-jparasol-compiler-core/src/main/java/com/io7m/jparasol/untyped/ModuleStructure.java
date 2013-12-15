@@ -16,10 +16,72 @@
 
 package com.io7m.jparasol.untyped;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 
+import com.io7m.jaux.Constraints;
+import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jaux.functional.Option;
+import com.io7m.jaux.functional.Option.Some;
 import com.io7m.jlog.Log;
+import com.io7m.jparasol.ModulePath;
+import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.NameRestrictions;
+import com.io7m.jparasol.NameRestrictions.NameRestrictionsException;
+import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.untyped.ast.initial.UASTIChecked;
+import com.io7m.jparasol.untyped.ast.initial.UASTICompilation;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDRecordVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShader;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentInput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalDiscard;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalValue;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentParameter;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderParameters;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgram;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexInput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexLocalValue;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutputAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameter;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTerm;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDType;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEInteger;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIELet;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIENew;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEReal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecord;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProjection;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpressionVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTIFragmentShaderVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTIFunctionVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTILocalLevelVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTIModuleLevelVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
+import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderVisitor;
 
 /**
  * Reject insane modules. Specifically, reject:
@@ -110,17 +172,936 @@ import com.io7m.jparasol.NameRestrictions;
 
 public final class ModuleStructure
 {
-  public static @Nonnull ModuleStructure newModuleStructureChecker(
-    final @Nonnull Log log)
+  private static class ExpressionChecker implements
+    UASTIExpressionVisitor<UASTIUnchecked, ModuleStructureError>
   {
-    return new ModuleStructure(log);
+    public ExpressionChecker()
+    {
+      // TODO Auto-generated constructor stub
+    }
+
+    @Override public void expressionVisitApplication(
+      final @Nonnull UASTIEApplication<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitBoolean(
+      final @Nonnull UASTIEBoolean<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitConditional(
+      final @Nonnull UASTIEConditional<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitInteger(
+      final @Nonnull UASTIEInteger<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitLet(
+      final @Nonnull UASTIELet<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      final LocalChecker c = new LocalChecker();
+      for (final UASTIDValueLocal<UASTIUnchecked> b : e.getBindings()) {
+        b.localVisitableAccept(c);
+      }
+    }
+
+    @Override public void expressionVisitNew(
+      final @Nonnull UASTIENew<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitReal(
+      final @Nonnull UASTIEReal<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitRecord(
+      final @Nonnull UASTIERecord<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        final HashMap<String, UASTIRecordFieldAssignment<UASTIUnchecked>> fields =
+          new HashMap<String, UASTIRecordFieldAssignment<UASTIUnchecked>>();
+
+        for (final UASTIRecordFieldAssignment<UASTIUnchecked> f : e
+          .getAssignments()) {
+          final String name = f.getName().getActual();
+
+          NameRestrictions.checkRestrictedExceptional(f.getName());
+
+          if (fields.containsKey(name)) {
+            throw ModuleStructureError.moduleRecordExpressionFieldDuplicate(
+              f,
+              fields.get(name));
+          }
+
+          f
+            .getExpression()
+            .expressionVisitableAccept(new ExpressionChecker());
+          fields.put(name, f);
+        }
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+
+    @Override public void expressionVisitRecordProjection(
+      final @Nonnull UASTIERecordProjection<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitSwizzle(
+      final @Nonnull UASTIESwizzle<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitVariable(
+      final @Nonnull UASTIEVariable<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        NameRestrictions.checkRestrictedExceptional(e.getName().getName());
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
   }
 
-  private final @Nonnull Log log;
+  private static class FragmentShaderChecker implements
+    UASTIFragmentShaderVisitor<UASTIUnchecked, ModuleStructureError>
+  {
+    private final @Nonnull HashMap<String, UASTIDShaderFragmentLocalValue<UASTIUnchecked>>       locals;
+    private final @Nonnull HashMap<String, UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>> output_assignments;
+    private final @Nonnull HashMap<Integer, UASTIDShaderFragmentOutput<UASTIUnchecked>>          output_indices;
+    private int                                                                                  output_max;
+    private final @Nonnull HashMap<String, UASTIDShaderFragmentOutput<UASTIUnchecked>>           outputs;
+    private final @Nonnull HashMap<String, UASTIDShaderParameters<UASTIUnchecked>>               parameters;
+    private final @Nonnull UASTIDShaderFragment<UASTIUnchecked>                                  shader;
 
-  public ModuleStructure(
+    public FragmentShaderChecker(
+      final @Nonnull UASTIDShaderFragment<UASTIUnchecked> shader)
+    {
+      this.shader = shader;
+      this.locals =
+        new HashMap<String, UASTIDShaderFragmentLocalValue<UASTIUnchecked>>();
+      this.parameters =
+        new HashMap<String, UASTIDShaderParameters<UASTIUnchecked>>();
+      this.outputs =
+        new HashMap<String, UASTIDShaderFragmentOutput<UASTIUnchecked>>();
+      this.output_assignments =
+        new HashMap<String, UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>>();
+      this.output_max = -1;
+      this.output_indices =
+        new HashMap<Integer, UASTIDShaderFragmentOutput<UASTIUnchecked>>();
+    }
+
+    private void addOutputAssignment(
+      final UASTIDShaderFragmentOutputAssignment<UASTIUnchecked> a)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      final String name = a.getName().getActual();
+      if (this.output_assignments.containsKey(name)) {
+        throw ModuleStructureError.moduleShaderOutputAssignmentDuplicate(
+          a.getName(),
+          this.output_assignments.get(name).getName());
+      }
+
+      a.getVariable().expressionVisitableAccept(new ExpressionChecker());
+      this.output_assignments.put(name, a);
+    }
+
+    private void addShaderParameter(
+      final UASTIDShaderParameters<UASTIUnchecked> p)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        NameRestrictions.checkRestrictedExceptional(p.getName());
+
+        final String name = p.getName().getActual();
+        if (this.parameters.containsKey(name)) {
+          throw ModuleStructureError.moduleShaderParameterDuplicate(
+            p,
+            this.parameters.get(name));
+        }
+        this.parameters.put(name, p);
+
+        if (p instanceof UASTIDShaderFragmentOutput) {
+          final UASTIDShaderFragmentOutput<UASTIUnchecked> out =
+            (UASTIDShaderFragmentOutput<UASTIUnchecked>) p;
+
+          if (out.getIndex() < 0) {
+            throw ModuleStructureError.moduleShaderOutputIndexInvalid(out);
+          }
+
+          this.output_max = Math.max(out.getIndex(), this.output_max);
+
+          final Integer current_index = Integer.valueOf(out.getIndex());
+          if (this.output_indices.containsKey(current_index)) {
+            throw ModuleStructureError.moduleShaderOutputIndexDuplicate(
+              out,
+              this.output_indices.get(current_index));
+          }
+
+          this.output_indices.put(current_index, out);
+          this.outputs.put(name, out);
+        }
+
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+
+    public void check()
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.checkOutputAssignmentsComplete();
+      this.checkOutputsContinuous();
+    }
+
+    public void checkOutputAssignmentsComplete()
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      for (final String p : this.outputs.keySet()) {
+        final UASTIDShaderFragmentOutput<UASTIUnchecked> output =
+          this.outputs.get(p);
+        if (this.output_assignments.containsKey(p) == false) {
+          throw ModuleStructureError
+            .moduleShaderOutputAssignmentMissing(output.getName());
+        }
+      }
+    }
+
+    public void checkOutputsContinuous()
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      for (int index = 0; index <= this.output_max; ++index) {
+        if (this.output_indices.containsKey(Integer.valueOf(index)) == false) {
+          throw ModuleStructureError.moduleShaderOutputIndexMissing(
+            this.shader,
+            this.output_indices,
+            index);
+        }
+      }
+    }
+
+    @Override public void fragmentShaderVisit(
+      final @Nonnull UASTIDShaderFragment<UASTIUnchecked> f)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void fragmentShaderVisitInput(
+      final @Nonnull UASTIDShaderFragmentInput<UASTIUnchecked> i)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShaderParameter(i);
+    }
+
+    @Override public void fragmentShaderVisitLocalDiscard(
+      final @Nonnull UASTIDShaderFragmentLocalDiscard<UASTIUnchecked> d)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      d.getExpression().expressionVisitableAccept(new ExpressionChecker());
+    }
+
+    @Override public void fragmentShaderVisitLocalValue(
+      final @Nonnull UASTIDShaderFragmentLocalValue<UASTIUnchecked> v)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        NameRestrictions.checkRestrictedExceptional(v.getValue().getName());
+
+        final String name = v.getValue().getName().getActual();
+        if (this.locals.containsKey(name)) {
+          throw ModuleStructureError.moduleShaderLocalConflict(
+            v.getValue(),
+            this.locals.get(name).getValue());
+        }
+        this.locals.put(name, v);
+
+        v
+          .getValue()
+          .getExpression()
+          .expressionVisitableAccept(new ExpressionChecker());
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+
+    @Override public void fragmentShaderVisitOutput(
+      final @Nonnull UASTIDShaderFragmentOutput<UASTIUnchecked> o)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShaderParameter(o);
+    }
+
+    @Override public void fragmentShaderVisitOutputAssignment(
+      final @Nonnull UASTIDShaderFragmentOutputAssignment<UASTIUnchecked> a)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addOutputAssignment(a);
+    }
+
+    @Override public void fragmentShaderVisitParameter(
+      final @Nonnull UASTIDShaderFragmentParameter<UASTIUnchecked> p)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShaderParameter(p);
+    }
+  }
+
+  private static class FunctionChecker implements
+    UASTIFunctionVisitor<UASTIUnchecked, ModuleStructureError>
+  {
+    private final HashMap<String, UASTIDFunctionArgument<UASTIUnchecked>> args;
+
+    public FunctionChecker()
+    {
+      this.args =
+        new HashMap<String, UASTIDFunctionArgument<UASTIUnchecked>>();
+    }
+
+    @Override public void functionVisitDefined(
+      final @Nonnull UASTIDFunctionDefined<UASTIUnchecked> f)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        for (final UASTIDFunctionArgument<UASTIUnchecked> a : f
+          .getArguments()) {
+          final String name = a.getName().getActual();
+
+          NameRestrictions.checkRestrictedExceptional(a.getName());
+          if (this.args.containsKey(name)) {
+            throw ModuleStructureError.moduleFunctionArgumentDuplicate(
+              a,
+              this.args.get(name));
+          }
+          this.args.put(name, a);
+        }
+
+        f.getBody().expressionVisitableAccept(new ExpressionChecker());
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+
+    @Override public void functionVisitExternal(
+      final @Nonnull UASTIDFunctionExternal<UASTIUnchecked> f)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        for (final UASTIDFunctionArgument<UASTIUnchecked> a : f
+          .getArguments()) {
+          final String name = a.getName().getActual();
+
+          NameRestrictions.checkRestrictedExceptional(a.getName());
+          if (this.args.containsKey(name)) {
+            throw ModuleStructureError.moduleFunctionArgumentDuplicate(
+              a,
+              this.args.get(name));
+          }
+          this.args.put(name, a);
+        }
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+  }
+
+  private static class LocalChecker implements
+    UASTILocalLevelVisitor<UASTIUnchecked, ModuleStructureError>
+  {
+    private final @Nonnull HashMap<String, UASTIDValueLocal<UASTIUnchecked>> values;
+
+    public LocalChecker()
+    {
+      this.values = new HashMap<String, UASTIDValueLocal<UASTIUnchecked>>();
+    }
+
+    @Override public void localVisitValueLocal(
+      final @Nonnull UASTIDValueLocal<UASTIUnchecked> v)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        final String name = v.getName().getActual();
+        NameRestrictions.checkRestrictedExceptional(v.getName());
+
+        if (this.values.containsKey(name)) {
+          throw ModuleStructureError.moduleShaderLocalConflict(
+            v,
+            this.values.get(name));
+        }
+        this.values.put(name, v);
+
+        v.getExpression().expressionVisitableAccept(new ExpressionChecker());
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+  }
+
+  private static class ModuleChecker implements
+    UASTIModuleLevelVisitor<UASTIUnchecked, ModuleStructureError>
+  {
+    private final @Nonnull ModulePath                                            current_path;
+    private final @Nonnull ModulePathFlat                                        current_path_flat;
+    private final @Nonnull HashMap<ModulePathFlat, UASTIDImport<UASTIUnchecked>> imported_modules;
+    private final @Nonnull HashMap<String, UASTIDImport<UASTIUnchecked>>         imported_names;
+    private final @Nonnull HashMap<String, UASTIDImport<UASTIUnchecked>>         imported_renames;
+    private final @Nonnull Log                                                   log;
+    private final @Nonnull HashMap<String, UASTIDShader<UASTIUnchecked>>         shaders;
+    private final @Nonnull HashMap<String, UASTIDTerm<UASTIUnchecked>>           terms;
+    private final @Nonnull HashMap<String, UASTIDType<UASTIUnchecked>>           types;
+
+    public ModuleChecker(
+      final @Nonnull ModulePath path,
+      final @Nonnull UASTIDModule<UASTIUnchecked> module,
+      final @Nonnull Log log)
+    {
+      this.log = log;
+      this.current_path = path;
+      this.current_path_flat = ModulePathFlat.fromModulePath(path);
+
+      this.imported_modules =
+        new HashMap<ModulePathFlat, UASTIDImport<UASTIUnchecked>>();
+      this.imported_names =
+        new HashMap<String, UASTIDImport<UASTIUnchecked>>();
+      this.imported_renames =
+        new HashMap<String, UASTIDImport<UASTIUnchecked>>();
+
+      this.terms = new HashMap<String, UASTIDTerm<UASTIUnchecked>>();
+      this.types = new HashMap<String, UASTIDType<UASTIUnchecked>>();
+      this.shaders = new HashMap<String, UASTIDShader<UASTIUnchecked>>();
+    }
+
+    private void addImport(
+      final @Nonnull UASTIDImport<UASTIUnchecked> i)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        final ModulePath path = i.getPath();
+        final ModulePathFlat flat = ModulePathFlat.fromModulePath(path);
+
+        if (flat.equals(this.current_path_flat)) {
+          throw ModuleStructureError.moduleImportsSelf(i);
+        }
+
+        if (this.imported_modules.containsKey(flat)) {
+          final UASTIDImport<UASTIUnchecked> original =
+            this.imported_modules.get(flat);
+          throw ModuleStructureError.moduleImportDuplicate(i, original);
+        }
+
+        final Option<TokenIdentifierUpper> rename_opt = i.getRename();
+        final TokenIdentifierUpper import_name = path.getName();
+
+        if (rename_opt.isSome()) {
+          final TokenIdentifierUpper rename =
+            ((Some<TokenIdentifierUpper>) rename_opt).value;
+
+          NameRestrictions.checkRestrictedExceptional(rename);
+          if (import_name.getActual().equals(rename.getActual())) {
+            throw ModuleStructureError.moduleImportRedundantRename(i);
+          }
+
+          if (this.imported_names.containsKey(rename.getActual())) {
+            if (this.imported_renames.containsKey(rename.getActual())) {
+              throw ModuleStructureError.moduleRenameRenameConflict(
+                i,
+                this.imported_renames.get(rename.getActual()));
+            }
+            throw ModuleStructureError.moduleRenameImportConflict(
+              i,
+              this.imported_names.get(rename.getActual()));
+          }
+
+          this.imported_modules.put(flat, i);
+          this.imported_names.put(rename.getActual(), i);
+          this.imported_renames.put(rename.getActual(), i);
+
+        } else {
+
+          final String name = i.getPath().getName().getActual();
+          if (this.imported_names.containsKey(name)) {
+            if (this.imported_renames.containsKey(name)) {
+              throw ModuleStructureError.moduleImportRenameConflict(
+                i,
+                this.imported_renames.get(name));
+            }
+            throw ModuleStructureError.moduleImportImportConflict(
+              i,
+              this.imported_names.get(name));
+          }
+
+          this.imported_modules.put(flat, i);
+          this.imported_names.put(name, i);
+        }
+      } catch (final NameRestrictionsException e) {
+        throw new ModuleStructureError(e);
+      }
+    }
+
+    private void addShader(
+      final @Nonnull UASTIDShader<UASTIUnchecked> shader)
+      throws ConstraintError,
+        ModuleStructureError
+    {
+      try {
+        final TokenIdentifierLower token = shader.getName();
+
+        this.log.debug(String.format(
+          "Adding shader %s at %s",
+          token.getActual(),
+          token.getPosition()));
+
+        final String name = token.getActual();
+        NameRestrictions.checkRestrictedExceptional(token);
+
+        if (this.shaders.containsKey(name)) {
+          final UASTIDShader<UASTIUnchecked> original =
+            this.shaders.get(name);
+          throw ModuleStructureError.moduleShaderConflict(shader, original);
+        }
+
+        this.shaders.put(name, shader);
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+
+    private void addTerm(
+      final @Nonnull UASTIDTerm<UASTIUnchecked> term)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        final TokenIdentifierLower token = term.getName();
+
+        this.log.debug(String.format(
+          "Adding term %s at %s",
+          token.getActual(),
+          token.getPosition()));
+
+        final String name = token.getActual();
+        NameRestrictions.checkRestrictedExceptional(token);
+
+        if (this.terms.containsKey(name)) {
+          final UASTIDTerm<UASTIUnchecked> original = this.terms.get(name);
+          throw ModuleStructureError.moduleTermConflict(term, original);
+        }
+
+        this.terms.put(name, term);
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+
+    private void addType(
+      final @Nonnull UASTIDType<UASTIUnchecked> type)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        final TokenIdentifierLower token = type.getName();
+
+        this.log.debug(String.format(
+          "Adding type %s at %s",
+          token.getActual(),
+          token.getPosition()));
+
+        NameRestrictions.checkRestrictedExceptional(token);
+
+        final String name = token.getActual();
+        if (this.types.containsKey(name)) {
+          final UASTIDType<UASTIUnchecked> original = this.types.get(name);
+          throw ModuleStructureError.moduleTypeConflict(type, original);
+        }
+
+        this.types.put(name, type);
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+
+    @Override public void moduleVisitFragmentShader(
+      final @Nonnull UASTIDShaderFragment<UASTIUnchecked> f)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShader(f);
+      final FragmentShaderChecker c = new FragmentShaderChecker(f);
+      f.fragmentShaderVisitableAccept(c);
+      c.check();
+    }
+
+    @Override public void moduleVisitFunctionDefined(
+      final @Nonnull UASTIDFunctionDefined<UASTIUnchecked> f)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addTerm(f);
+      f.functionVisitableAccept(new FunctionChecker());
+    }
+
+    @Override public void moduleVisitFunctionExternal(
+      final @Nonnull UASTIDFunctionExternal<UASTIUnchecked> f)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addTerm(f);
+      f.functionVisitableAccept(new FunctionChecker());
+    }
+
+    @Override public void moduleVisitImport(
+      final @Nonnull UASTIDImport<UASTIUnchecked> i)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addImport(i);
+    }
+
+    @Override public void moduleVisitModule(
+      final @Nonnull UASTIDModule<UASTIUnchecked> m)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        NameRestrictions.checkRestrictedExceptional(m.getName());
+
+        final List<TokenIdentifierLower> c =
+          this.current_path.getPackagePath().getComponents();
+        for (final TokenIdentifierLower pc : c) {
+          NameRestrictions.checkRestrictedExceptional(pc);
+        }
+
+      } catch (final NameRestrictionsException e) {
+        throw new ModuleStructureError(e);
+      }
+    }
+
+    @Override public void moduleVisitProgramShader(
+      final @Nonnull UASTIDShaderProgram<UASTIUnchecked> p)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShader(p);
+    }
+
+    @Override public void moduleVisitTypeRecord(
+      final @Nonnull UASTIDTypeRecord<UASTIUnchecked> r)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addType(r);
+      r.recordTypeVisitableAccept(new RecordTypeChecker());
+    }
+
+    @Override public void moduleVisitValue(
+      final @Nonnull UASTIDValue<UASTIUnchecked> v)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addTerm(v);
+      v.getExpression().expressionVisitableAccept(new ExpressionChecker());
+    }
+
+    @Override public void moduleVisitVertexShader(
+      final @Nonnull UASTIDShaderVertex<UASTIUnchecked> v)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShader(v);
+      final VertexShaderChecker c = new VertexShaderChecker(v);
+      v.vertexShaderVisitableAccept(c);
+      c.check();
+    }
+  }
+
+  private static class RecordTypeChecker implements
+    UASTIDRecordVisitor<UASTIUnchecked, ModuleStructureError>
+  {
+    private final @Nonnull HashMap<String, UASTIDTypeRecordField<UASTIUnchecked>> fields;
+
+    public RecordTypeChecker()
+    {
+      this.fields =
+        new HashMap<String, UASTIDTypeRecordField<UASTIUnchecked>>();
+    }
+
+    @Override public void recordTypeVisit(
+      final @Nonnull UASTIDTypeRecord<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void recordTypeVisitField(
+      final @Nonnull UASTIDTypeRecordField<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      final String name = e.getName().getActual();
+      if (this.fields.containsKey(name)) {
+        throw ModuleStructureError.moduleRecordFieldDuplicate(
+          e,
+          this.fields.get(name));
+      }
+      this.fields.put(name, e);
+    }
+  }
+
+  private static class VertexShaderChecker implements
+    UASTIVertexShaderVisitor<UASTIUnchecked, ModuleStructureError>
+  {
+    private final @Nonnull HashMap<String, UASTIDShaderVertexLocalValue<UASTIUnchecked>>       locals;
+    private final @Nonnull HashMap<String, UASTIDShaderVertexOutputAssignment<UASTIUnchecked>> output_assignments;
+    private final @Nonnull HashMap<String, UASTIDShaderVertexOutput<UASTIUnchecked>>           outputs;
+    private final @Nonnull HashMap<String, UASTIDShaderParameters<UASTIUnchecked>>             parameters;
+    private final @Nonnull UASTIDShaderVertex<UASTIUnchecked>                                  shader;
+
+    public VertexShaderChecker(
+      final @Nonnull UASTIDShaderVertex<UASTIUnchecked> shader)
+    {
+      this.shader = shader;
+      this.locals =
+        new HashMap<String, UASTIDShaderVertexLocalValue<UASTIUnchecked>>();
+      this.parameters =
+        new HashMap<String, UASTIDShaderParameters<UASTIUnchecked>>();
+      this.outputs =
+        new HashMap<String, UASTIDShaderVertexOutput<UASTIUnchecked>>();
+      this.output_assignments =
+        new HashMap<String, UASTIDShaderVertexOutputAssignment<UASTIUnchecked>>();
+    }
+
+    private void addOutputAssignment(
+      final UASTIDShaderVertexOutputAssignment<UASTIUnchecked> a)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      final String name = a.getName().getActual();
+      if (this.output_assignments.containsKey(name)) {
+        throw ModuleStructureError.moduleShaderOutputAssignmentDuplicate(
+          a.getName(),
+          this.output_assignments.get(name).getName());
+      }
+      a.getVariable().expressionVisitableAccept(new ExpressionChecker());
+      this.output_assignments.put(name, a);
+    }
+
+    private void addShaderParameter(
+      final UASTIDShaderParameters<UASTIUnchecked> p)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        NameRestrictions.checkRestrictedExceptional(p.getName());
+
+        final String name = p.getName().getActual();
+        if (this.parameters.containsKey(name)) {
+          throw ModuleStructureError.moduleShaderParameterDuplicate(
+            p,
+            this.parameters.get(name));
+        }
+        this.parameters.put(name, p);
+
+        if (p instanceof UASTIDShaderVertexOutput) {
+          final UASTIDShaderVertexOutput<UASTIUnchecked> out =
+            (UASTIDShaderVertexOutput<UASTIUnchecked>) p;
+          this.outputs.put(out.getName().getActual(), out);
+        }
+
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+
+    public void check()
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.checkOutputAssignmentsComplete();
+    }
+
+    public void checkOutputAssignmentsComplete()
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      for (final String p : this.outputs.keySet()) {
+        final UASTIDShaderVertexOutput<UASTIUnchecked> output =
+          this.outputs.get(p);
+        if (this.output_assignments.containsKey(p) == false) {
+          throw ModuleStructureError
+            .moduleShaderOutputAssignmentMissing(output.getName());
+        }
+      }
+    }
+
+    @Override public void vertexShaderVisit(
+      final @Nonnull UASTIDShaderVertex<UASTIUnchecked> f)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public void vertexShaderVisitInput(
+      final @Nonnull UASTIDShaderVertexInput<UASTIUnchecked> i)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShaderParameter(i);
+    }
+
+    @Override public void vertexShaderVisitLocalValue(
+      final @Nonnull UASTIDShaderVertexLocalValue<UASTIUnchecked> v)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        NameRestrictions.checkRestrictedExceptional(v.getValue().getName());
+
+        final String name = v.getValue().getName().getActual();
+        if (this.locals.containsKey(name)) {
+          throw ModuleStructureError.moduleShaderLocalConflict(
+            v.getValue(),
+            this.locals.get(name).getValue());
+        }
+        this.locals.put(name, v);
+
+        v
+          .getValue()
+          .getExpression()
+          .expressionVisitableAccept(new ExpressionChecker());
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+
+    @Override public void vertexShaderVisitOutput(
+      final @Nonnull UASTIDShaderVertexOutput<UASTIUnchecked> o)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShaderParameter(o);
+    }
+
+    @Override public void vertexShaderVisitOutputAssignment(
+      final @Nonnull UASTIDShaderVertexOutputAssignment<UASTIUnchecked> a)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addOutputAssignment(a);
+    }
+
+    @Override public void vertexShaderVisitParameter(
+      final @Nonnull UASTIDShaderVertexParameter<UASTIUnchecked> p)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShaderParameter(p);
+    }
+  }
+
+  public static @Nonnull ModuleStructure newModuleStructureChecker(
+    final @Nonnull UASTICompilation<UASTIUnchecked> compilation,
     final @Nonnull Log log)
+    throws ConstraintError
+  {
+    return new ModuleStructure(compilation, log);
+  }
+
+  @SuppressWarnings("unchecked") private static
+    UASTICompilation<UASTIChecked>
+    unsafeBrandChecked(
+      final UASTICompilation<UASTIUnchecked> c)
+  {
+    final Object x = c;
+    return (UASTICompilation<UASTIChecked>) x;
+  }
+
+  private final @Nonnull UASTICompilation<UASTIUnchecked> compilation;
+  private final @Nonnull Log                              log;
+
+  private ModuleStructure(
+    final @Nonnull UASTICompilation<UASTIUnchecked> compilation,
+    final @Nonnull Log log)
+    throws ConstraintError
   {
     this.log = new Log(log, "module-structure");
+    this.compilation =
+      Constraints.constrainNotNull(compilation, "Compilation");
+  }
+
+  public @Nonnull UASTICompilation<UASTIChecked> check()
+    throws ConstraintError,
+      ModuleStructureError
+  {
+    final Map<ModulePathFlat, UASTIDModule<UASTIUnchecked>> modules =
+      this.compilation.getModules();
+    final Map<ModulePathFlat, ModulePath> paths = this.compilation.getPaths();
+
+    for (final ModulePathFlat path : modules.keySet()) {
+      this.log.debug(String.format("Checking module: %s", path.getActual()));
+
+      final UASTIDModule<UASTIUnchecked> module = modules.get(path);
+      assert module != null;
+
+      module.moduleVisitableAccept(new ModuleChecker(
+        paths.get(path),
+        module,
+        this.log));
+    }
+
+    return ModuleStructure.unsafeBrandChecked(this.compilation);
   }
 }

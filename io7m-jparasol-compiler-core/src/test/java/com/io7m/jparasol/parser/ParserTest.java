@@ -49,6 +49,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragme
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgram;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexInput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexLocalValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutputAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameter;
@@ -839,9 +840,10 @@ public class ParserTest
 
     Assert.assertEquals(1, r.getValues().size());
     {
-      final UASTIDValueLocal<UASTIUnchecked> rl0 = r.getValues().get(0);
-      Assert.assertEquals("pp", rl0.getName().getActual());
-      Assert.assertTrue(rl0.getAscription().isNone());
+      final UASTIDShaderVertexLocalValue<UASTIUnchecked> rl0 =
+        r.getValues().get(0);
+      Assert.assertEquals("pp", rl0.getValue().getName().getActual());
+      Assert.assertTrue(rl0.getValue().getAscription().isNone());
     }
 
     Assert.assertEquals(2, r.getWrites().size());

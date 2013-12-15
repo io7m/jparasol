@@ -38,7 +38,7 @@ public final class NameRestrictions
     NAME_RESTRICTED_PREFIX_GL_UPPER
   }
 
-  public static class NameRestrictionsException extends Exception
+  public static class NameRestrictionsException extends CompilerError
   {
     private static final long              serialVersionUID;
 
@@ -55,9 +55,12 @@ public final class NameRestrictions
       final @Nonnull String message)
       throws ConstraintError
     {
-      super(message);
+      super(
+        message,
+        Constraints.constrainNotNull(token, "Token").getFile(),
+        token.getPosition());
       this.code = Constraints.constrainNotNull(code, "Code");
-      this.token = Constraints.constrainNotNull(token, "Token");
+      this.token = token;
     }
 
     public @Nonnull NameRestricted getCode()

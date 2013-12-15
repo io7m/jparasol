@@ -61,6 +61,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragme
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgram;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexInput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexLocalValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutputAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameter;
@@ -1106,12 +1107,21 @@ public final class Parser
       this.declarationVertexShaderOutputAssignments();
     this.parserConsumeExact(Type.TOKEN_END);
 
+    final List<UASTIDShaderVertexLocalValue<UASTIUnchecked>> actual_locals =
+      new ArrayList<UASTIDShaderVertexLocalValue<UASTIUnchecked>>(
+        values.size());
+    for (int index = 0; index < values.size(); ++index) {
+      actual_locals.add(
+        index,
+        new UASTIDShaderVertexLocalValue<UASTIUnchecked>(values.get(index)));
+    }
+
     return new UASTIDShaderVertex<UASTIUnchecked>(
       name,
       inputs,
       outputs,
       parameters,
-      values,
+      actual_locals,
       assigns);
   }
 

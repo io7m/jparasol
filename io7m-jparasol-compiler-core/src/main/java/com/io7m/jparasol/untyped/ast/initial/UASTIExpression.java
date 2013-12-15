@@ -31,7 +31,8 @@ import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
 import com.io7m.jparasol.lexer.Token.TokenLiteralReal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 
-public abstract class UASTIExpression<S extends UASTIStatus>
+public abstract class UASTIExpression<S extends UASTIStatus> implements
+  UASTIExpressionVisitable<S>
 {
   public static final class UASTIEApplication<S extends UASTIStatus> extends
     UASTIExpression<S>
@@ -46,6 +47,20 @@ public abstract class UASTIExpression<S extends UASTIStatus>
     {
       this.name = Constraints.constrainNotNull(name, "Name");
       this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+    }
+
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitApplication(this);
+      for (final UASTIExpression<S> a : this.arguments) {
+        a.expressionVisitableAccept(v);
+      }
     }
 
     public @Nonnull List<UASTIExpression<S>> getArguments()
@@ -69,6 +84,17 @@ public abstract class UASTIExpression<S extends UASTIStatus>
       throws ConstraintError
     {
       this.token = Constraints.constrainNotNull(token, "Token");
+    }
+
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitBoolean(this);
     }
 
     public @Nonnull TokenLiteralBoolean getToken()
@@ -100,6 +126,20 @@ public abstract class UASTIExpression<S extends UASTIStatus>
       this.right = Constraints.constrainNotNull(right, "Right");
     }
 
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitConditional(this);
+      this.condition.expressionVisitableAccept(v);
+      this.left.expressionVisitableAccept(v);
+      this.right.expressionVisitableAccept(v);
+    }
+
     public @Nonnull UASTIExpression<S> getCondition()
     {
       return this.condition;
@@ -128,6 +168,17 @@ public abstract class UASTIExpression<S extends UASTIStatus>
       this.token = Constraints.constrainNotNull(token, "Token");
     }
 
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitInteger(this);
+    }
+
     public @Nonnull TokenLiteralInteger getToken()
     {
       return this.token;
@@ -148,13 +199,25 @@ public abstract class UASTIExpression<S extends UASTIStatus>
 
     public UASTIELet(
       final @Nonnull TokenLet token,
-      final @Nonnull List<UASTIDeclaration.UASTIDValueLocal<S>> bindings,
+      final @Nonnull List<UASTIDValueLocal<S>> bindings,
       final @Nonnull UASTIExpression<S> body)
       throws ConstraintError
     {
       this.token = Constraints.constrainNotNull(token, "Token");
       this.bindings = Constraints.constrainNotNull(bindings, "Bindings");
       this.body = Constraints.constrainNotNull(body, "Body");
+    }
+
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitLet(this);
+      this.body.expressionVisitableAccept(v);
     }
 
     public @Nonnull List<UASTIDValueLocal<S>> getBindings()
@@ -188,6 +251,20 @@ public abstract class UASTIExpression<S extends UASTIStatus>
       this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
     }
 
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitNew(this);
+      for (final UASTIExpression<S> b : this.arguments) {
+        b.expressionVisitableAccept(v);
+      }
+    }
+
     public @Nonnull List<UASTIExpression<S>> getArguments()
     {
       return this.arguments;
@@ -209,6 +286,17 @@ public abstract class UASTIExpression<S extends UASTIStatus>
       throws ConstraintError
     {
       this.token = Constraints.constrainNotNull(token, "Token");
+    }
+
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitReal(this);
     }
 
     public @Nonnull TokenLiteralReal getToken()
@@ -238,6 +326,17 @@ public abstract class UASTIExpression<S extends UASTIStatus>
         Constraints.constrainNotNull(assignments, "Assignments");
     }
 
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitRecord(this);
+    }
+
     public @Nonnull List<UASTIRecordFieldAssignment<S>> getAssignments()
     {
       return this.assignments;
@@ -263,6 +362,18 @@ public abstract class UASTIExpression<S extends UASTIStatus>
       this.expression =
         Constraints.constrainNotNull(expression, "Expression");
       this.field = Constraints.constrainNotNull(field, "Field");
+    }
+
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitRecordProjection(this);
+      this.expression.expressionVisitableAccept(v);
     }
 
     public @Nonnull UASTIExpression<S> getExpression()
@@ -292,6 +403,18 @@ public abstract class UASTIExpression<S extends UASTIStatus>
       this.fields = Constraints.constrainNotNull(fields, "Fields");
     }
 
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitSwizzle(this);
+      this.expression.expressionVisitableAccept(v);
+    }
+
     public @Nonnull UASTIExpression<S> getExpression()
     {
       return this.expression;
@@ -313,6 +436,17 @@ public abstract class UASTIExpression<S extends UASTIStatus>
       throws ConstraintError
     {
       this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    @Override public
+      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
+      void
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.expressionVisitVariable(this);
     }
 
     public @Nonnull UASTIValuePath getName()

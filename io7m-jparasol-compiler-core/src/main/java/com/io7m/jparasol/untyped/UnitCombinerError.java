@@ -20,18 +20,22 @@ import java.io.File;
 
 import javax.annotation.Nonnull;
 
+import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.CompilerError;
+import com.io7m.jparasol.NameRestrictions.NameRestrictionsException;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 
-public final class UnitCombinerError extends Exception
+public final class UnitCombinerError extends CompilerError
 {
   private static final long serialVersionUID = 5359160308099372566L;
 
   public static UnitCombinerError duplicateModule(
     final @Nonnull UASTIDModule<UASTIUnchecked> original,
     final @Nonnull UASTIDModule<UASTIUnchecked> current)
+    throws ConstraintError
   {
     final TokenIdentifierUpper cn = current.getName();
     final StringBuilder m = new StringBuilder();
@@ -48,26 +52,19 @@ public final class UnitCombinerError extends Exception
     return new UnitCombinerError(cn.getFile(), cn.getPosition(), m.toString());
   }
 
-  private final @Nonnull File     file;
-  private final @Nonnull Position position;
-
   private UnitCombinerError(
     final @Nonnull File file,
     final @Nonnull Position position,
     final @Nonnull String message)
+    throws ConstraintError
   {
-    super(message);
-    this.file = file;
-    this.position = position;
+    super(message, file, position);
   }
 
-  public @Nonnull File getFile()
+  public UnitCombinerError(
+    final @Nonnull NameRestrictionsException x)
+    throws ConstraintError
   {
-    return this.file;
-  }
-
-  public @Nonnull Position getPosition()
-  {
-    return this.position;
+    super(x, x.getMessage(), x.getFile(), x.getPosition());
   }
 }
