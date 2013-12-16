@@ -16,6 +16,7 @@
 
 package com.io7m.jparasol.untyped.ast.initial;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -134,14 +135,20 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIFunctionVisitor<S, E>>
-      void
+      <A, B, E extends Throwable, V extends UASTIFunctionVisitor<A, B, S, E>>
+      A
       functionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.functionVisitDefined(this);
+      v.functionVisitDefinedPre(this);
+      final List<B> args = new ArrayList<B>();
+      for (final UASTIDFunctionArgument<S> a : this.arguments) {
+        final B x = v.functionVisitArgument(a);
+        args.add(x);
+      }
+      return v.functionVisitDefined(args, this);
     }
 
     public @Nonnull List<UASTIDFunctionArgument<S>> getArguments()
@@ -203,14 +210,20 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIFunctionVisitor<S, E>>
-      void
+      <A, B, E extends Throwable, V extends UASTIFunctionVisitor<A, B, S, E>>
+      A
       functionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.functionVisitExternal(this);
+      v.functionVisitExternalPre(this);
+      final List<B> args = new ArrayList<B>();
+      for (final UASTIDFunctionArgument<S> a : this.arguments) {
+        final B x = v.functionVisitArgument(a);
+        args.add(x);
+      }
+      return v.functionVisitExternal(args, this);
     }
 
     public @Nonnull List<UASTIDFunctionArgument<S>> getArguments()
@@ -1075,22 +1088,26 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIDRecordVisitor<S, E>>
-      void
+      <A, B, E extends Throwable, V extends UASTIDRecordVisitor<A, B, S, E>>
+      A
       recordTypeVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.recordTypeVisit(this);
+      v.recordTypeVisitPre(this);
+
+      final List<B> new_fields = new ArrayList<B>();
       for (final UASTIDTypeRecordField<S> f : this.fields) {
-        f.recordTypeVisitableAccept(v);
+        final B x = v.recordTypeVisitField(f);
+        new_fields.add(x);
       }
+
+      return v.recordTypeVisit(new_fields, this);
     }
   }
 
-  public static final class UASTIDTypeRecordField<S extends UASTIStatus> implements
-    UASTIDRecordVisitable<S>
+  public static final class UASTIDTypeRecordField<S extends UASTIStatus>
   {
     private final @Nonnull TokenIdentifierLower name;
     private final @Nonnull UASTITypePath        type;
@@ -1112,17 +1129,6 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     public @Nonnull UASTITypePath getType()
     {
       return this.type;
-    }
-
-    @Override public
-      <E extends Throwable, V extends UASTIDRecordVisitor<S, E>>
-      void
-      recordTypeVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
-    {
-      v.recordTypeVisitField(this);
     }
   }
 
@@ -1217,14 +1223,14 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     }
 
     @Override public
-      <E extends Throwable, V extends UASTILocalLevelVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTILocalLevelVisitor<A, S, E>>
+      A
       localVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.localVisitValueLocal(this);
+      return v.localVisitValueLocal(this);
     }
   }
 }

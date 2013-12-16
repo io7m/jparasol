@@ -23,8 +23,8 @@ import com.io7m.jaux.Constraints.ConstraintError;
 public interface UASTILocalLevelVisitable<S extends UASTIStatus>
 {
   public
-    <E extends Throwable, V extends UASTILocalLevelVisitor<S, E>>
-    void
+    <A, E extends Throwable, V extends UASTILocalLevelVisitor<A, S, E>>
+    A
     localVisitableAccept(
       final @Nonnull V v)
       throws E,

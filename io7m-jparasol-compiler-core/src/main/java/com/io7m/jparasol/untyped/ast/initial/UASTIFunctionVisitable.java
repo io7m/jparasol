@@ -23,8 +23,8 @@ import com.io7m.jaux.Constraints.ConstraintError;
 public interface UASTIFunctionVisitable<S extends UASTIStatus>
 {
   public
-    <E extends Throwable, V extends UASTIFunctionVisitor<S, E>>
-    void
+    <A, B, E extends Throwable, V extends UASTIFunctionVisitor<A, B, S, E>>
+    A
     functionVisitableAccept(
       final @Nonnull V v)
       throws E,

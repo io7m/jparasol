@@ -23,8 +23,8 @@ import com.io7m.jaux.Constraints.ConstraintError;
 public interface UASTIDRecordVisitable<S extends UASTIStatus>
 {
   public
-    <E extends Throwable, V extends UASTIDRecordVisitor<S, E>>
-    void
+    <A, B, E extends Throwable, V extends UASTIDRecordVisitor<A, B, S, E>>
+    A
     recordTypeVisitableAccept(
       final @Nonnull V v)
       throws E,

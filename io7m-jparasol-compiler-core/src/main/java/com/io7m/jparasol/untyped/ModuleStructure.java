@@ -26,6 +26,7 @@ import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Option.Some;
+import com.io7m.jaux.functional.Unit;
 import com.io7m.jlog.Log;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
@@ -63,6 +64,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
@@ -173,14 +175,23 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderVisitor;
 public final class ModuleStructure
 {
   private static class ExpressionChecker implements
-    UASTIExpressionVisitor<UASTIUnchecked, ModuleStructureError>
+    UASTIExpressionVisitor<Unit, UASTIUnchecked, ModuleStructureError>
   {
     public ExpressionChecker()
     {
-      // TODO Auto-generated constructor stub
+      // Nothing
     }
 
-    @Override public void expressionVisitApplication(
+    @Override public <B> Unit expressionVisitApplication(
+      final @Nonnull List<B> arguments,
+      final @Nonnull UASTIEApplication<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      return Unit.unit();
+    }
+
+    @Override public void expressionVisitApplicationPre(
       final @Nonnull UASTIEApplication<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -188,15 +199,26 @@ public final class ModuleStructure
       // Nothing
     }
 
-    @Override public void expressionVisitBoolean(
+    @Override public Unit expressionVisitBoolean(
       final @Nonnull UASTIEBoolean<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
     {
-      // Nothing
+      return Unit.unit();
     }
 
-    @Override public void expressionVisitConditional(
+    @Override public <A> Unit expressionVisitConditional(
+      final @Nonnull A condition,
+      final @Nonnull A left,
+      final @Nonnull A right,
+      final @Nonnull UASTIEConditional<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      return Unit.unit();
+    }
+
+    @Override public void expressionVisitConditionalPre(
       final @Nonnull UASTIEConditional<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -204,15 +226,16 @@ public final class ModuleStructure
       // Nothing
     }
 
-    @Override public void expressionVisitInteger(
+    @Override public Unit expressionVisitInteger(
       final @Nonnull UASTIEInteger<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
     {
-      // Nothing
+      return Unit.unit();
     }
 
-    @Override public void expressionVisitLet(
+    @Override public <A> Unit expressionVisitLet(
+      final @Nonnull A body,
       final @Nonnull UASTIELet<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -221,9 +244,27 @@ public final class ModuleStructure
       for (final UASTIDValueLocal<UASTIUnchecked> b : e.getBindings()) {
         b.localVisitableAccept(c);
       }
+      return Unit.unit();
     }
 
-    @Override public void expressionVisitNew(
+    @Override public void expressionVisitLetPre(
+      final @Nonnull UASTIELet<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public <A> Unit expressionVisitNew(
+      final @Nonnull List<A> args,
+      final @Nonnull UASTIENew<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      return Unit.unit();
+    }
+
+    @Override public void expressionVisitNewPre(
       final @Nonnull UASTIENew<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -231,15 +272,15 @@ public final class ModuleStructure
       // Nothing
     }
 
-    @Override public void expressionVisitReal(
+    @Override public Unit expressionVisitReal(
       final @Nonnull UASTIEReal<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
     {
-      // Nothing
+      return Unit.unit();
     }
 
-    @Override public void expressionVisitRecord(
+    @Override public Unit expressionVisitRecord(
       final @Nonnull UASTIERecord<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -260,17 +301,30 @@ public final class ModuleStructure
               fields.get(name));
           }
 
-          f
-            .getExpression()
-            .expressionVisitableAccept(new ExpressionChecker());
+          final UASTIExpression<UASTIUnchecked> r = f.getExpression();
+          final ExpressionChecker ec = new ExpressionChecker();
+          @SuppressWarnings("unused") final Unit rx =
+            r.expressionVisitableAccept(ec);
+
           fields.put(name, f);
         }
+
+        return Unit.unit();
       } catch (final NameRestrictionsException x) {
         throw new ModuleStructureError(x);
       }
     }
 
-    @Override public void expressionVisitRecordProjection(
+    @Override public <A> Unit expressionVisitRecordProjection(
+      final @Nonnull A body,
+      final @Nonnull UASTIERecordProjection<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      return Unit.unit();
+    }
+
+    @Override public void expressionVisitRecordProjectionPre(
       final @Nonnull UASTIERecordProjection<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -278,7 +332,16 @@ public final class ModuleStructure
       // Nothing
     }
 
-    @Override public void expressionVisitSwizzle(
+    @Override public <A> Unit expressionVisitSwizzle(
+      final @Nonnull A body,
+      final @Nonnull UASTIESwizzle<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      return Unit.unit();
+    }
+
+    @Override public void expressionVisitSwizzlePre(
       final @Nonnull UASTIESwizzle<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -286,13 +349,14 @@ public final class ModuleStructure
       // Nothing
     }
 
-    @Override public void expressionVisitVariable(
+    @Override public Unit expressionVisitVariable(
       final @Nonnull UASTIEVariable<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
     {
       try {
         NameRestrictions.checkRestrictedExceptional(e.getName().getName());
+        return Unit.unit();
       } catch (final NameRestrictionsException x) {
         throw new ModuleStructureError(x);
       }
@@ -339,7 +403,8 @@ public final class ModuleStructure
           this.output_assignments.get(name).getName());
       }
 
-      a.getVariable().expressionVisitableAccept(new ExpressionChecker());
+      final ExpressionChecker ec = new ExpressionChecker();
+      a.getVariable().expressionVisitableAccept(ec);
       this.output_assignments.put(name, a);
     }
 
@@ -461,10 +526,8 @@ public final class ModuleStructure
         }
         this.locals.put(name, v);
 
-        v
-          .getValue()
-          .getExpression()
-          .expressionVisitableAccept(new ExpressionChecker());
+        final ExpressionChecker ec = new ExpressionChecker();
+        v.getValue().getExpression().expressionVisitableAccept(ec);
       } catch (final NameRestrictionsException x) {
         throw new ModuleStructureError(x);
       }
@@ -496,7 +559,7 @@ public final class ModuleStructure
   }
 
   private static class FunctionChecker implements
-    UASTIFunctionVisitor<UASTIUnchecked, ModuleStructureError>
+    UASTIFunctionVisitor<Unit, Unit, UASTIUnchecked, ModuleStructureError>
   {
     private final HashMap<String, UASTIDFunctionArgument<UASTIUnchecked>> args;
 
@@ -506,57 +569,65 @@ public final class ModuleStructure
         new HashMap<String, UASTIDFunctionArgument<UASTIUnchecked>>();
     }
 
-    @Override public void functionVisitDefined(
+    @Override public Unit functionVisitArgument(
+      final @Nonnull UASTIDFunctionArgument<UASTIUnchecked> a)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      try {
+        final String name = a.getName().getActual();
+
+        NameRestrictions.checkRestrictedExceptional(a.getName());
+        if (this.args.containsKey(name)) {
+          throw ModuleStructureError.moduleFunctionArgumentDuplicate(
+            a,
+            this.args.get(name));
+        }
+        this.args.put(name, a);
+        return Unit.unit();
+      } catch (final NameRestrictionsException x) {
+        throw new ModuleStructureError(x);
+      }
+    }
+
+    @Override public Unit functionVisitDefined(
+      final @Nonnull List<Unit> arguments,
       final @Nonnull UASTIDFunctionDefined<UASTIUnchecked> f)
       throws ModuleStructureError,
         ConstraintError
     {
-      try {
-        for (final UASTIDFunctionArgument<UASTIUnchecked> a : f
-          .getArguments()) {
-          final String name = a.getName().getActual();
-
-          NameRestrictions.checkRestrictedExceptional(a.getName());
-          if (this.args.containsKey(name)) {
-            throw ModuleStructureError.moduleFunctionArgumentDuplicate(
-              a,
-              this.args.get(name));
-          }
-          this.args.put(name, a);
-        }
-
-        f.getBody().expressionVisitableAccept(new ExpressionChecker());
-      } catch (final NameRestrictionsException x) {
-        throw new ModuleStructureError(x);
-      }
+      final ExpressionChecker ec = new ExpressionChecker();
+      return f.getBody().expressionVisitableAccept(ec);
     }
 
-    @Override public void functionVisitExternal(
+    @Override public void functionVisitDefinedPre(
+      final @Nonnull UASTIDFunctionDefined<UASTIUnchecked> f)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
+    }
+
+    @Override public Unit functionVisitExternal(
+      final @Nonnull List<Unit> arguments,
       final @Nonnull UASTIDFunctionExternal<UASTIUnchecked> f)
       throws ModuleStructureError,
         ConstraintError
     {
-      try {
-        for (final UASTIDFunctionArgument<UASTIUnchecked> a : f
-          .getArguments()) {
-          final String name = a.getName().getActual();
+      return Unit.unit();
+    }
 
-          NameRestrictions.checkRestrictedExceptional(a.getName());
-          if (this.args.containsKey(name)) {
-            throw ModuleStructureError.moduleFunctionArgumentDuplicate(
-              a,
-              this.args.get(name));
-          }
-          this.args.put(name, a);
-        }
-      } catch (final NameRestrictionsException x) {
-        throw new ModuleStructureError(x);
-      }
+    @Override public void functionVisitExternalPre(
+      final @Nonnull UASTIDFunctionExternal<UASTIUnchecked> f)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
     }
   }
 
   private static class LocalChecker implements
-    UASTILocalLevelVisitor<UASTIUnchecked, ModuleStructureError>
+    UASTILocalLevelVisitor<Unit, UASTIUnchecked, ModuleStructureError>
   {
     private final @Nonnull HashMap<String, UASTIDValueLocal<UASTIUnchecked>> values;
 
@@ -565,7 +636,7 @@ public final class ModuleStructure
       this.values = new HashMap<String, UASTIDValueLocal<UASTIUnchecked>>();
     }
 
-    @Override public void localVisitValueLocal(
+    @Override public Unit localVisitValueLocal(
       final @Nonnull UASTIDValueLocal<UASTIUnchecked> v)
       throws ModuleStructureError,
         ConstraintError
@@ -581,7 +652,9 @@ public final class ModuleStructure
         }
         this.values.put(name, v);
 
-        v.getExpression().expressionVisitableAccept(new ExpressionChecker());
+        final ExpressionChecker ec = new ExpressionChecker();
+        v.getExpression().expressionVisitableAccept(ec);
+        return Unit.unit();
       } catch (final NameRestrictionsException x) {
         throw new ModuleStructureError(x);
       }
@@ -867,7 +940,7 @@ public final class ModuleStructure
   }
 
   private static class RecordTypeChecker implements
-    UASTIDRecordVisitor<UASTIUnchecked, ModuleStructureError>
+    UASTIDRecordVisitor<Unit, Unit, UASTIUnchecked, ModuleStructureError>
   {
     private final @Nonnull HashMap<String, UASTIDTypeRecordField<UASTIUnchecked>> fields;
 
@@ -877,15 +950,16 @@ public final class ModuleStructure
         new HashMap<String, UASTIDTypeRecordField<UASTIUnchecked>>();
     }
 
-    @Override public void recordTypeVisit(
+    @Override public Unit recordTypeVisit(
+      final @Nonnull List<Unit> u_fields,
       final @Nonnull UASTIDTypeRecord<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
     {
-      // Nothing
+      return Unit.unit();
     }
 
-    @Override public void recordTypeVisitField(
+    @Override public Unit recordTypeVisitField(
       final @Nonnull UASTIDTypeRecordField<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -897,6 +971,15 @@ public final class ModuleStructure
           this.fields.get(name));
       }
       this.fields.put(name, e);
+      return Unit.unit();
+    }
+
+    @Override public void recordTypeVisitPre(
+      final @Nonnull UASTIDTypeRecord<UASTIUnchecked> e)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
     }
   }
 

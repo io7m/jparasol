@@ -17,6 +17,7 @@
 package com.io7m.jparasol.untyped.ast.initial;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -50,17 +51,21 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitApplication(this);
+      v.expressionVisitApplicationPre(this);
+
+      final List<A> args = new ArrayList<A>();
       for (final UASTIExpression<S> a : this.arguments) {
-        a.expressionVisitableAccept(v);
+        final A x = a.expressionVisitableAccept(v);
+        args.add(x);
       }
+      return v.expressionVisitApplication(args, this);
     }
 
     public @Nonnull List<UASTIExpression<S>> getArguments()
@@ -87,14 +92,14 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitBoolean(this);
+      return v.expressionVisitBoolean(this);
     }
 
     public @Nonnull TokenLiteralBoolean getToken()
@@ -127,17 +132,18 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitConditional(this);
-      this.condition.expressionVisitableAccept(v);
-      this.left.expressionVisitableAccept(v);
-      this.right.expressionVisitableAccept(v);
+      v.expressionVisitConditionalPre(this);
+      final A c = this.condition.expressionVisitableAccept(v);
+      final A l = this.left.expressionVisitableAccept(v);
+      final A r = this.right.expressionVisitableAccept(v);
+      return v.expressionVisitConditional(c, l, r, this);
     }
 
     public @Nonnull UASTIExpression<S> getCondition()
@@ -169,14 +175,14 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitInteger(this);
+      return v.expressionVisitInteger(this);
     }
 
     public @Nonnull TokenLiteralInteger getToken()
@@ -209,15 +215,16 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitLet(this);
-      this.body.expressionVisitableAccept(v);
+      v.expressionVisitLetPre(this);
+      final A x = this.body.expressionVisitableAccept(v);
+      return v.expressionVisitLet(x, this);
     }
 
     public @Nonnull List<UASTIDValueLocal<S>> getBindings()
@@ -252,17 +259,19 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitNew(this);
+      final List<A> args = new ArrayList<A>();
       for (final UASTIExpression<S> b : this.arguments) {
-        b.expressionVisitableAccept(v);
+        final A x = b.expressionVisitableAccept(v);
+        args.add(x);
       }
+      return v.expressionVisitNew(args, this);
     }
 
     public @Nonnull List<UASTIExpression<S>> getArguments()
@@ -289,14 +298,14 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitReal(this);
+      return v.expressionVisitReal(this);
     }
 
     public @Nonnull TokenLiteralReal getToken()
@@ -327,14 +336,14 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitRecord(this);
+      return v.expressionVisitRecord(this);
     }
 
     public @Nonnull List<UASTIRecordFieldAssignment<S>> getAssignments()
@@ -365,15 +374,16 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitRecordProjection(this);
-      this.expression.expressionVisitableAccept(v);
+      v.expressionVisitRecordProjectionPre(this);
+      final A x = this.expression.expressionVisitableAccept(v);
+      return v.expressionVisitRecordProjection(x, this);
     }
 
     public @Nonnull UASTIExpression<S> getExpression()
@@ -404,15 +414,16 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitSwizzle(this);
-      this.expression.expressionVisitableAccept(v);
+      v.expressionVisitSwizzlePre(this);
+      final A x = this.expression.expressionVisitableAccept(v);
+      return v.expressionVisitSwizzle(x, this);
     }
 
     public @Nonnull UASTIExpression<S> getExpression()
@@ -439,14 +450,14 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <E extends Throwable, V extends UASTIExpressionVisitor<S, E>>
-      void
+      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitVariable(this);
+      return v.expressionVisitVariable(this);
     }
 
     public @Nonnull UASTIValuePath getName()

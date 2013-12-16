@@ -16,20 +16,28 @@
 
 package com.io7m.jparasol.untyped.ast.initial;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 
-public interface UASTIDRecordVisitor<S extends UASTIStatus, E extends Throwable>
+public interface UASTIDRecordVisitor<A, B, S extends UASTIStatus, E extends Throwable>
 {
-  public void recordTypeVisit(
+  public void recordTypeVisitPre(
     final @Nonnull UASTIDTypeRecord<S> e)
     throws E,
       ConstraintError;
 
-  public void recordTypeVisitField(
+  public A recordTypeVisit(
+    final @Nonnull List<B> fields,
+    final @Nonnull UASTIDTypeRecord<S> e)
+    throws E,
+      ConstraintError;
+
+  public B recordTypeVisitField(
     final @Nonnull UASTIDTypeRecordField<S> e)
     throws E,
       ConstraintError;
