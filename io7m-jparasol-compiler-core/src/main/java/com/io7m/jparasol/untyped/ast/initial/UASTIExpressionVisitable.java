@@ -23,7 +23,7 @@ import com.io7m.jaux.Constraints.ConstraintError;
 public interface UASTIExpressionVisitable<S extends UASTIStatus>
 {
   public
-    <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+    <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
     A
     expressionVisitableAccept(
       final @Nonnull V v)

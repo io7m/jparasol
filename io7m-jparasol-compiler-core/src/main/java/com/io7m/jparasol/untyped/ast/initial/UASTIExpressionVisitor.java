@@ -33,10 +33,10 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProject
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 
-public interface UASTIExpressionVisitor<A, S extends UASTIStatus, E extends Throwable>
+public interface UASTIExpressionVisitor<A, L, S extends UASTIStatus, E extends Throwable>
 {
-  public <B> A expressionVisitApplication(
-    final @Nonnull List<B> arguments,
+  public A expressionVisitApplication(
+    final @Nonnull List<A> arguments,
     final @Nonnull UASTIEApplication<S> e)
     throws E,
       ConstraintError;
@@ -51,10 +51,10 @@ public interface UASTIExpressionVisitor<A, S extends UASTIStatus, E extends Thro
     throws E,
       ConstraintError;
 
-  public <B> A expressionVisitConditional(
-    final @Nonnull B condition,
-    final @Nonnull B left,
-    final @Nonnull B right,
+  public A expressionVisitConditional(
+    final @Nonnull A condition,
+    final @Nonnull A left,
+    final @Nonnull A right,
     final @Nonnull UASTIEConditional<S> e)
     throws E,
       ConstraintError;
@@ -69,19 +69,20 @@ public interface UASTIExpressionVisitor<A, S extends UASTIStatus, E extends Thro
     throws E,
       ConstraintError;
 
-  public <B> A expressionVisitLet(
-    final @Nonnull B body,
+  public A expressionVisitLet(
+    final @Nonnull List<L> bindings,
+    final @Nonnull A body,
     final @Nonnull UASTIELet<S> e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitLetPre(
+  public @Nonnull UASTILocalLevelVisitor<L, S, E> expressionVisitLetPre(
     final @Nonnull UASTIELet<S> e)
     throws E,
       ConstraintError;
 
-  public <B> A expressionVisitNew(
-    final @Nonnull List<B> arguments,
+  public A expressionVisitNew(
+    final @Nonnull List<A> arguments,
     final @Nonnull UASTIENew<S> e)
     throws E,
       ConstraintError;
@@ -101,8 +102,8 @@ public interface UASTIExpressionVisitor<A, S extends UASTIStatus, E extends Thro
     throws E,
       ConstraintError;
 
-  public <B> A expressionVisitRecordProjection(
-    final @Nonnull B body,
+  public A expressionVisitRecordProjection(
+    final @Nonnull A body,
     final @Nonnull UASTIERecordProjection<S> e)
     throws E,
       ConstraintError;
@@ -112,8 +113,8 @@ public interface UASTIExpressionVisitor<A, S extends UASTIStatus, E extends Thro
     throws E,
       ConstraintError;
 
-  public <B> A expressionVisitSwizzle(
-    final @Nonnull B body,
+  public A expressionVisitSwizzle(
+    final @Nonnull A body,
     final @Nonnull UASTIESwizzle<S> e)
     throws E,
       ConstraintError;

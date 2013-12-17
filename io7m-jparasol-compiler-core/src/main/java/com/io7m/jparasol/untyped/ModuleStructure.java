@@ -78,10 +78,12 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpressionVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTIFragmentShaderLocalVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTIFragmentShaderVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTIFunctionVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTILocalLevelVisitor;
-import com.io7m.jparasol.untyped.ast.initial.UASTIModuleLevelVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTIModuleLevelDeclarationVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTIModuleVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderVisitor;
 
@@ -175,15 +177,15 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderVisitor;
 public final class ModuleStructure
 {
   private static class ExpressionChecker implements
-    UASTIExpressionVisitor<Unit, UASTIUnchecked, ModuleStructureError>
+    UASTIExpressionVisitor<Unit, Unit, UASTIUnchecked, ModuleStructureError>
   {
     public ExpressionChecker()
     {
       // Nothing
     }
 
-    @Override public <B> Unit expressionVisitApplication(
-      final @Nonnull List<B> arguments,
+    @Override public Unit expressionVisitApplication(
+      final @Nonnull List<Unit> arguments,
       final @Nonnull UASTIEApplication<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -207,10 +209,10 @@ public final class ModuleStructure
       return Unit.unit();
     }
 
-    @Override public <A> Unit expressionVisitConditional(
-      final @Nonnull A condition,
-      final @Nonnull A left,
-      final @Nonnull A right,
+    @Override public Unit expressionVisitConditional(
+      final @Nonnull Unit condition,
+      final @Nonnull Unit left,
+      final @Nonnull Unit right,
       final @Nonnull UASTIEConditional<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -234,29 +236,26 @@ public final class ModuleStructure
       return Unit.unit();
     }
 
-    @Override public <A> Unit expressionVisitLet(
-      final @Nonnull A body,
+    @Override public Unit expressionVisitLet(
+      final @Nonnull List<Unit> bindings,
+      final @Nonnull Unit body,
       final @Nonnull UASTIELet<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
     {
-      final LocalChecker c = new LocalChecker();
-      for (final UASTIDValueLocal<UASTIUnchecked> b : e.getBindings()) {
-        b.localVisitableAccept(c);
-      }
       return Unit.unit();
     }
 
-    @Override public void expressionVisitLetPre(
+    @Override public LocalChecker expressionVisitLetPre(
       final @Nonnull UASTIELet<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
     {
-      // Nothing
+      return new LocalChecker();
     }
 
-    @Override public <A> Unit expressionVisitNew(
-      final @Nonnull List<A> args,
+    @Override public Unit expressionVisitNew(
+      final @Nonnull List<Unit> args,
       final @Nonnull UASTIENew<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -315,8 +314,8 @@ public final class ModuleStructure
       }
     }
 
-    @Override public <A> Unit expressionVisitRecordProjection(
-      final @Nonnull A body,
+    @Override public Unit expressionVisitRecordProjection(
+      final @Nonnull Unit body,
       final @Nonnull UASTIERecordProjection<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -332,8 +331,8 @@ public final class ModuleStructure
       // Nothing
     }
 
-    @Override public <A> Unit expressionVisitSwizzle(
-      final @Nonnull A body,
+    @Override public Unit expressionVisitSwizzle(
+      final @Nonnull Unit body,
       final @Nonnull UASTIESwizzle<UASTIUnchecked> e)
       throws ModuleStructureError,
         ConstraintError
@@ -364,7 +363,7 @@ public final class ModuleStructure
   }
 
   private static class FragmentShaderChecker implements
-    UASTIFragmentShaderVisitor<UASTIUnchecked, ModuleStructureError>
+    UASTIFragmentShaderVisitor<Unit, Unit, Unit, Unit, UASTIUnchecked, ModuleStructureError>
   {
     private final @Nonnull HashMap<String, UASTIDShaderFragmentLocalValue<UASTIUnchecked>>       locals;
     private final @Nonnull HashMap<String, UASTIDShaderFragmentOutputAssignment<UASTIUnchecked>> output_assignments;
@@ -486,31 +485,85 @@ public final class ModuleStructure
       }
     }
 
-    @Override public void fragmentShaderVisit(
-      final @Nonnull UASTIDShaderFragment<UASTIUnchecked> f)
+    @Override public Unit fragmentShaderVisit(
+      final @Nonnull List<Unit> in_parameters,
+      final @Nonnull List<Unit> in_locals,
+      final @Nonnull List<Unit> in_output_assignments,
+      final UASTIDShaderFragment<UASTIUnchecked> f)
       throws ModuleStructureError,
         ConstraintError
     {
-      // Nothing
+      return Unit.unit();
     }
 
-    @Override public void fragmentShaderVisitInput(
+    @Override public Unit fragmentShaderVisitInput(
       final @Nonnull UASTIDShaderFragmentInput<UASTIUnchecked> i)
       throws ModuleStructureError,
         ConstraintError
     {
       this.addShaderParameter(i);
+      return Unit.unit();
     }
 
-    @Override public void fragmentShaderVisitLocalDiscard(
+    @Override public Unit fragmentShaderVisitOutput(
+      final @Nonnull UASTIDShaderFragmentOutput<UASTIUnchecked> o)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShaderParameter(o);
+      return Unit.unit();
+    }
+
+    @Override public Unit fragmentShaderVisitOutputAssignment(
+      final @Nonnull UASTIDShaderFragmentOutputAssignment<UASTIUnchecked> a)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addOutputAssignment(a);
+      return Unit.unit();
+    }
+
+    @Override public Unit fragmentShaderVisitParameter(
+      final @Nonnull UASTIDShaderFragmentParameter<UASTIUnchecked> p)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addShaderParameter(p);
+      return Unit.unit();
+    }
+
+    @Override public
+      UASTIFragmentShaderLocalVisitor<Unit, UASTIUnchecked, ModuleStructureError>
+      fragmentShaderVisitPre(
+        final UASTIDShaderFragment<UASTIUnchecked> f)
+        throws ModuleStructureError,
+          ConstraintError
+    {
+      return new FragmentShaderLocalChecker();
+    }
+  }
+
+  private static class FragmentShaderLocalChecker implements
+    UASTIFragmentShaderLocalVisitor<Unit, UASTIUnchecked, ModuleStructureError>
+  {
+    private final @Nonnull HashMap<String, UASTIDShaderFragmentLocalValue<UASTIUnchecked>> locals;
+
+    public FragmentShaderLocalChecker()
+    {
+      this.locals =
+        new HashMap<String, UASTIDShaderFragmentLocalValue<UASTIUnchecked>>();
+    }
+
+    @Override public Unit fragmentShaderVisitLocalDiscard(
       final @Nonnull UASTIDShaderFragmentLocalDiscard<UASTIUnchecked> d)
       throws ModuleStructureError,
         ConstraintError
     {
       d.getExpression().expressionVisitableAccept(new ExpressionChecker());
+      return Unit.unit();
     }
 
-    @Override public void fragmentShaderVisitLocalValue(
+    @Override public Unit fragmentShaderVisitLocalValue(
       final @Nonnull UASTIDShaderFragmentLocalValue<UASTIUnchecked> v)
       throws ModuleStructureError,
         ConstraintError
@@ -528,33 +581,10 @@ public final class ModuleStructure
 
         final ExpressionChecker ec = new ExpressionChecker();
         v.getValue().getExpression().expressionVisitableAccept(ec);
+        return Unit.unit();
       } catch (final NameRestrictionsException x) {
         throw new ModuleStructureError(x);
       }
-    }
-
-    @Override public void fragmentShaderVisitOutput(
-      final @Nonnull UASTIDShaderFragmentOutput<UASTIUnchecked> o)
-      throws ModuleStructureError,
-        ConstraintError
-    {
-      this.addShaderParameter(o);
-    }
-
-    @Override public void fragmentShaderVisitOutputAssignment(
-      final @Nonnull UASTIDShaderFragmentOutputAssignment<UASTIUnchecked> a)
-      throws ModuleStructureError,
-        ConstraintError
-    {
-      this.addOutputAssignment(a);
-    }
-
-    @Override public void fragmentShaderVisitParameter(
-      final @Nonnull UASTIDShaderFragmentParameter<UASTIUnchecked> p)
-      throws ModuleStructureError,
-        ConstraintError
-    {
-      this.addShaderParameter(p);
     }
   }
 
@@ -662,7 +692,7 @@ public final class ModuleStructure
   }
 
   private static class ModuleChecker implements
-    UASTIModuleLevelVisitor<UASTIUnchecked, ModuleStructureError>
+    UASTIModuleVisitor<Unit, Unit, Unit, UASTIUnchecked, ModuleStructureError>
   {
     private final @Nonnull ModulePath                                            current_path;
     private final @Nonnull ModulePathFlat                                        current_path_flat;
@@ -676,7 +706,6 @@ public final class ModuleStructure
 
     public ModuleChecker(
       final @Nonnull ModulePath path,
-      final @Nonnull UASTIDModule<UASTIUnchecked> module,
       final @Nonnull Log log)
     {
       this.log = log;
@@ -763,6 +792,70 @@ public final class ModuleStructure
       }
     }
 
+    @Override public Unit moduleVisit(
+      final @Nonnull List<Unit> imports,
+      final @Nonnull List<Unit> declarations,
+      final @Nonnull UASTIDModule<UASTIUnchecked> m)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      return Unit.unit();
+    }
+
+    @Override public Unit moduleVisitImport(
+      final @Nonnull UASTIDImport<UASTIUnchecked> i)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      this.addImport(i);
+      return Unit.unit();
+    }
+
+    @Override public
+      UASTIModuleLevelDeclarationVisitor<Unit, UASTIUnchecked, ModuleStructureError>
+      moduleVisitPre(
+        final @Nonnull UASTIDModule<UASTIUnchecked> m)
+        throws ModuleStructureError,
+          ConstraintError
+    {
+      try {
+        NameRestrictions.checkRestrictedExceptional(m.getName());
+
+        final List<TokenIdentifierLower> c =
+          this.current_path.getPackagePath().getComponents();
+        for (final TokenIdentifierLower pc : c) {
+          NameRestrictions.checkRestrictedExceptional(pc);
+        }
+
+        return new ModuleDeclarationChecker(this.current_path, this.log);
+      } catch (final NameRestrictionsException e) {
+        throw new ModuleStructureError(e);
+      }
+    }
+  }
+
+  private static class ModuleDeclarationChecker implements
+    UASTIModuleLevelDeclarationVisitor<Unit, UASTIUnchecked, ModuleStructureError>
+  {
+    private final @Nonnull ModulePath                                    current_path;
+    private final @Nonnull ModulePathFlat                                current_path_flat;
+    private final @Nonnull Log                                           log;
+    private final @Nonnull HashMap<String, UASTIDShader<UASTIUnchecked>> shaders;
+    private final @Nonnull HashMap<String, UASTIDTerm<UASTIUnchecked>>   terms;
+    private final @Nonnull HashMap<String, UASTIDType<UASTIUnchecked>>   types;
+
+    public ModuleDeclarationChecker(
+      final @Nonnull ModulePath path,
+      final @Nonnull Log log)
+    {
+      this.log = log;
+      this.current_path = path;
+      this.current_path_flat = ModulePathFlat.fromModulePath(path);
+      this.terms = new HashMap<String, UASTIDTerm<UASTIUnchecked>>();
+      this.types = new HashMap<String, UASTIDType<UASTIUnchecked>>();
+      this.shaders = new HashMap<String, UASTIDShader<UASTIUnchecked>>();
+    }
+
     private void addShader(
       final @Nonnull UASTIDShader<UASTIUnchecked> shader)
       throws ConstraintError,
@@ -845,7 +938,7 @@ public final class ModuleStructure
       }
     }
 
-    @Override public void moduleVisitFragmentShader(
+    @Override public Unit moduleVisitFragmentShader(
       final @Nonnull UASTIDShaderFragment<UASTIUnchecked> f)
       throws ModuleStructureError,
         ConstraintError
@@ -854,80 +947,59 @@ public final class ModuleStructure
       final FragmentShaderChecker c = new FragmentShaderChecker(f);
       f.fragmentShaderVisitableAccept(c);
       c.check();
+      return Unit.unit();
     }
 
-    @Override public void moduleVisitFunctionDefined(
+    @Override public Unit moduleVisitFunctionDefined(
       final @Nonnull UASTIDFunctionDefined<UASTIUnchecked> f)
       throws ModuleStructureError,
         ConstraintError
     {
       this.addTerm(f);
       f.functionVisitableAccept(new FunctionChecker());
+      return Unit.unit();
     }
 
-    @Override public void moduleVisitFunctionExternal(
+    @Override public Unit moduleVisitFunctionExternal(
       final @Nonnull UASTIDFunctionExternal<UASTIUnchecked> f)
       throws ModuleStructureError,
         ConstraintError
     {
       this.addTerm(f);
       f.functionVisitableAccept(new FunctionChecker());
+      return Unit.unit();
     }
 
-    @Override public void moduleVisitImport(
-      final @Nonnull UASTIDImport<UASTIUnchecked> i)
-      throws ModuleStructureError,
-        ConstraintError
-    {
-      this.addImport(i);
-    }
-
-    @Override public void moduleVisitModule(
-      final @Nonnull UASTIDModule<UASTIUnchecked> m)
-      throws ModuleStructureError,
-        ConstraintError
-    {
-      try {
-        NameRestrictions.checkRestrictedExceptional(m.getName());
-
-        final List<TokenIdentifierLower> c =
-          this.current_path.getPackagePath().getComponents();
-        for (final TokenIdentifierLower pc : c) {
-          NameRestrictions.checkRestrictedExceptional(pc);
-        }
-
-      } catch (final NameRestrictionsException e) {
-        throw new ModuleStructureError(e);
-      }
-    }
-
-    @Override public void moduleVisitProgramShader(
+    @Override public Unit moduleVisitProgramShader(
       final @Nonnull UASTIDShaderProgram<UASTIUnchecked> p)
       throws ModuleStructureError,
         ConstraintError
     {
       this.addShader(p);
+      return Unit.unit();
     }
 
-    @Override public void moduleVisitTypeRecord(
+    @Override public Unit moduleVisitTypeRecord(
       final @Nonnull UASTIDTypeRecord<UASTIUnchecked> r)
       throws ModuleStructureError,
         ConstraintError
     {
       this.addType(r);
       r.recordTypeVisitableAccept(new RecordTypeChecker());
+      return Unit.unit();
     }
 
-    @Override public void moduleVisitValue(
+    @Override public Unit moduleVisitValue(
       final @Nonnull UASTIDValue<UASTIUnchecked> v)
       throws ModuleStructureError,
         ConstraintError
     {
       this.addTerm(v);
       v.getExpression().expressionVisitableAccept(new ExpressionChecker());
+      return Unit.unit();
     }
 
-    @Override public void moduleVisitVertexShader(
+    @Override public Unit moduleVisitVertexShader(
       final @Nonnull UASTIDShaderVertex<UASTIUnchecked> v)
       throws ModuleStructureError,
         ConstraintError
@@ -936,6 +1008,7 @@ public final class ModuleStructure
       final VertexShaderChecker c = new VertexShaderChecker(v);
       v.vertexShaderVisitableAccept(c);
       c.check();
+      return Unit.unit();
     }
   }
 
@@ -984,7 +1057,7 @@ public final class ModuleStructure
   }
 
   private static class VertexShaderChecker implements
-    UASTIVertexShaderVisitor<UASTIUnchecked, ModuleStructureError>
+    UASTIVertexShaderVisitor<Unit, Unit, Unit, Unit, UASTIUnchecked, ModuleStructureError>
   {
     private final @Nonnull HashMap<String, UASTIDShaderVertexLocalValue<UASTIUnchecked>>       locals;
     private final @Nonnull HashMap<String, UASTIDShaderVertexOutputAssignment<UASTIUnchecked>> output_assignments;
@@ -1069,69 +1142,83 @@ public final class ModuleStructure
       }
     }
 
-    @Override public void vertexShaderVisit(
-      final @Nonnull UASTIDShaderVertex<UASTIUnchecked> f)
+    @Override public Unit vertexShaderVisit(
+      final @Nonnull List<Unit> r_parameters,
+      final @Nonnull List<Unit> r_locals,
+      final @Nonnull List<Unit> r_output_assignments,
+      final @Nonnull UASTIDShaderVertex<UASTIUnchecked> v)
       throws ModuleStructureError,
         ConstraintError
     {
-      // Nothing
+      return Unit.unit();
     }
 
-    @Override public void vertexShaderVisitInput(
+    @Override public Unit vertexShaderVisitInput(
       final @Nonnull UASTIDShaderVertexInput<UASTIUnchecked> i)
       throws ModuleStructureError,
         ConstraintError
     {
       this.addShaderParameter(i);
+      return Unit.unit();
     }
 
-    @Override public void vertexShaderVisitLocalValue(
-      final @Nonnull UASTIDShaderVertexLocalValue<UASTIUnchecked> v)
+    @Override public Unit vertexShaderVisitLocal(
+      final @Nonnull UASTIDShaderVertexLocalValue<UASTIUnchecked> l)
       throws ModuleStructureError,
         ConstraintError
     {
       try {
-        NameRestrictions.checkRestrictedExceptional(v.getValue().getName());
+        NameRestrictions.checkRestrictedExceptional(l.getValue().getName());
 
-        final String name = v.getValue().getName().getActual();
+        final String name = l.getValue().getName().getActual();
         if (this.locals.containsKey(name)) {
           throw ModuleStructureError.moduleShaderLocalConflict(
-            v.getValue(),
+            l.getValue(),
             this.locals.get(name).getValue());
         }
-        this.locals.put(name, v);
+        this.locals.put(name, l);
 
-        v
-          .getValue()
-          .getExpression()
-          .expressionVisitableAccept(new ExpressionChecker());
+        final ExpressionChecker ec = new ExpressionChecker();
+        l.getValue().getExpression().expressionVisitableAccept(ec);
+        return Unit.unit();
       } catch (final NameRestrictionsException x) {
         throw new ModuleStructureError(x);
       }
     }
 
-    @Override public void vertexShaderVisitOutput(
+    @Override public Unit vertexShaderVisitOutput(
       final @Nonnull UASTIDShaderVertexOutput<UASTIUnchecked> o)
       throws ModuleStructureError,
         ConstraintError
     {
       this.addShaderParameter(o);
+      return Unit.unit();
     }
 
-    @Override public void vertexShaderVisitOutputAssignment(
+    @Override public Unit vertexShaderVisitOutputAssignment(
       final @Nonnull UASTIDShaderVertexOutputAssignment<UASTIUnchecked> a)
       throws ModuleStructureError,
         ConstraintError
     {
       this.addOutputAssignment(a);
+      return Unit.unit();
     }
 
-    @Override public void vertexShaderVisitParameter(
+    @Override public Unit vertexShaderVisitParameter(
       final @Nonnull UASTIDShaderVertexParameter<UASTIUnchecked> p)
       throws ModuleStructureError,
         ConstraintError
     {
       this.addShaderParameter(p);
+      return Unit.unit();
+    }
+
+    @Override public void vertexShaderVisitPre(
+      final @Nonnull UASTIDShaderVertex<UASTIUnchecked> v)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      // Nothing
     }
   }
 
@@ -1181,7 +1268,6 @@ public final class ModuleStructure
 
       module.moduleVisitableAccept(new ModuleChecker(
         paths.get(path),
-        module,
         this.log));
     }
 

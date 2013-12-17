@@ -16,17 +16,30 @@
 
 package com.io7m.jparasol.untyped.ast.initial;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 
-public interface UASTIModuleLevelVisitable<S extends UASTIStatus>
+public interface UASTIModuleVisitor<M, I, D, S extends UASTIStatus, E extends Throwable>
 {
-  public
-    <E extends Throwable, V extends UASTIModuleLevelVisitor<S, E>>
-    void
-    moduleVisitableAccept(
-      final @Nonnull V v)
-      throws E,
-        ConstraintError;
+  public UASTIModuleLevelDeclarationVisitor<D, S, E> moduleVisitPre(
+    final @Nonnull UASTIDModule<S> m)
+    throws E,
+      ConstraintError;
+
+  public M moduleVisit(
+    final @Nonnull List<I> imports,
+    final @Nonnull List<D> declarations,
+    final @Nonnull UASTIDModule<S> m)
+    throws E,
+      ConstraintError;
+
+  public I moduleVisitImport(
+    final @Nonnull UASTIDImport<S> i)
+    throws E,
+      ConstraintError;
 }

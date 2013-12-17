@@ -16,6 +16,8 @@
 
 package com.io7m.jparasol.untyped.ast.initial;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
@@ -26,34 +28,42 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutputAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameter;
 
-public interface UASTIVertexShaderVisitor<S extends UASTIStatus, E extends Throwable>
+public interface UASTIVertexShaderVisitor<VS, P, L, O, S extends UASTIStatus, E extends Throwable>
 {
-  public void vertexShaderVisit(
+  public void vertexShaderVisitPre(
     final @Nonnull UASTIDShaderVertex<S> v)
     throws E,
       ConstraintError;
 
-  public void vertexShaderVisitInput(
+  public VS vertexShaderVisit(
+    final @Nonnull List<P> parameters,
+    final @Nonnull List<L> locals,
+    final @Nonnull List<O> output_assignments,
+    final @Nonnull UASTIDShaderVertex<S> v)
+    throws E,
+      ConstraintError;
+
+  public P vertexShaderVisitInput(
     final @Nonnull UASTIDShaderVertexInput<S> i)
     throws E,
       ConstraintError;
 
-  public void vertexShaderVisitLocalValue(
-    final @Nonnull UASTIDShaderVertexLocalValue<S> v)
+  public L vertexShaderVisitLocal(
+    final @Nonnull UASTIDShaderVertexLocalValue<S> l)
     throws E,
       ConstraintError;
 
-  public void vertexShaderVisitOutput(
+  public P vertexShaderVisitOutput(
     final @Nonnull UASTIDShaderVertexOutput<S> o)
     throws E,
       ConstraintError;
 
-  public void vertexShaderVisitOutputAssignment(
+  public O vertexShaderVisitOutputAssignment(
     final @Nonnull UASTIDShaderVertexOutputAssignment<S> a)
     throws E,
       ConstraintError;
 
-  public void vertexShaderVisitParameter(
+  public P vertexShaderVisitParameter(
     final @Nonnull UASTIDShaderVertexParameter<S> p)
     throws E,
       ConstraintError;

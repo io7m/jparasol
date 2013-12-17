@@ -21,57 +21,45 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgram;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 
-public interface UASTIModuleLevelVisitor<S extends UASTIStatus, E extends Throwable>
+public interface UASTIModuleLevelDeclarationVisitor<D, S extends UASTIStatus, E extends Throwable>
 {
-  public void moduleVisitFragmentShader(
+  public D moduleVisitFragmentShader(
     final @Nonnull UASTIDShaderFragment<S> f)
     throws E,
       ConstraintError;
 
-  public void moduleVisitFunctionDefined(
+  public D moduleVisitFunctionDefined(
     final @Nonnull UASTIDFunctionDefined<S> f)
     throws E,
       ConstraintError;
 
-  public void moduleVisitFunctionExternal(
+  public D moduleVisitFunctionExternal(
     final @Nonnull UASTIDFunctionExternal<S> f)
     throws E,
       ConstraintError;
 
-  public void moduleVisitImport(
-    final @Nonnull UASTIDImport<S> i)
-    throws E,
-      ConstraintError;
-
-  public void moduleVisitModule(
-    final @Nonnull UASTIDModule<S> m)
-    throws E,
-      ConstraintError;
-
-  public void moduleVisitProgramShader(
+  public D moduleVisitProgramShader(
     final @Nonnull UASTIDShaderProgram<S> p)
     throws E,
       ConstraintError;
 
-  public void moduleVisitTypeRecord(
+  public D moduleVisitTypeRecord(
     final @Nonnull UASTIDTypeRecord<S> r)
     throws E,
       ConstraintError;
 
-  public void moduleVisitValue(
+  public D moduleVisitValue(
     final @Nonnull UASTIDValue<S> v)
     throws E,
       ConstraintError;
 
-  public void moduleVisitVertexShader(
+  public D moduleVisitVertexShader(
     final @Nonnull UASTIDShaderVertex<S> f)
     throws E,
       ConstraintError;

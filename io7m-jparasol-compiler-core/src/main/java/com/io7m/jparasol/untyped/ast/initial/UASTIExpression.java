@@ -51,7 +51,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)
@@ -92,7 +92,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)
@@ -132,7 +132,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)
@@ -175,7 +175,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)
@@ -215,16 +215,24 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitLetPre(this);
+      final UASTILocalLevelVisitor<L, S, E> bv =
+        v.expressionVisitLetPre(this);
+
+      final ArrayList<L> r_bindings = new ArrayList<L>();
+      for (final UASTIDValueLocal<S> b : this.bindings) {
+        final L rb = bv.localVisitValueLocal(b);
+        r_bindings.add(rb);
+      }
+
       final A x = this.body.expressionVisitableAccept(v);
-      return v.expressionVisitLet(x, this);
+      return v.expressionVisitLet(r_bindings, x, this);
     }
 
     public @Nonnull List<UASTIDValueLocal<S>> getBindings()
@@ -259,7 +267,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)
@@ -298,7 +306,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)
@@ -336,7 +344,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)
@@ -374,7 +382,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)
@@ -414,7 +422,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)
@@ -450,7 +458,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIExpressionVisitor<A, S, E>>
+      <A, L, E extends Throwable, V extends UASTIExpressionVisitor<A, L, S, E>>
       A
       expressionVisitableAccept(
         final @Nonnull V v)

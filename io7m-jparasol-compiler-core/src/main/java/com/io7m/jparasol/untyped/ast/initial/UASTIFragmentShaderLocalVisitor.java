@@ -19,14 +19,18 @@ package com.io7m.jparasol.untyped.ast.initial;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalDiscard;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalValue;
 
-public interface UASTIUnitLevelVisitable<S extends UASTIStatus>
+public interface UASTIFragmentShaderLocalVisitor<L, S extends UASTIStatus, E extends Throwable>
 {
-  public
-    <A, E extends Throwable, V extends UASTIUnitLevelVisitor<A, S, E>>
-    A
-    unitVisitableAccept(
-      final @Nonnull V v)
-      throws E,
-        ConstraintError;
+  public L fragmentShaderVisitLocalDiscard(
+    final @Nonnull UASTIDShaderFragmentLocalDiscard<S> d)
+    throws E,
+      ConstraintError;
+
+  public L fragmentShaderVisitLocalValue(
+    final @Nonnull UASTIDShaderFragmentLocalValue<S> v)
+    throws E,
+      ConstraintError;
 }
