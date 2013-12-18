@@ -510,7 +510,7 @@ public abstract class UASTUDeclaration
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderFragmentInput ");
-      builder.append(this.name);
+      builder.append(this.name.show());
       builder.append("]");
       return builder.toString();
     }
@@ -552,8 +552,6 @@ public abstract class UASTUDeclaration
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderFragmentLocalDiscard ");
-      builder.append(this.discard);
-      builder.append(" ");
       builder.append(this.expression);
       builder.append("]");
       return builder.toString();
@@ -618,7 +616,7 @@ public abstract class UASTUDeclaration
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderFragmentOutput ");
-      builder.append(this.name);
+      builder.append(this.name.getActual());
       builder.append(" ");
       builder.append(this.index);
       builder.append("]");
@@ -899,7 +897,7 @@ public abstract class UASTUDeclaration
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderVertexOutput ");
-      builder.append(this.name);
+      builder.append(this.name.getActual());
       builder.append("]");
       return builder.toString();
     }
@@ -1128,7 +1126,7 @@ public abstract class UASTUDeclaration
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDValue ");
-      builder.append(this.name);
+      builder.append(this.name.getActual());
       builder.append(" ");
       builder.append(this.ascription
         .map(new Function<UASTUTypePath, String>() {
