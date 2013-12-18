@@ -28,7 +28,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifier;
 
 public final class NameRestrictions
 {
-  static enum NameRestricted
+  public static enum NameRestricted
   {
     NAME_OK,
     NAME_RESTRICTED_CONTAINS_DOUBLE_UNDERSCORE,

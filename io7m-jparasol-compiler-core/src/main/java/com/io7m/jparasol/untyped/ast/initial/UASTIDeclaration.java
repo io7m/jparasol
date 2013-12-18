@@ -447,41 +447,53 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     }
 
     @Override public
-      <F, P, L, O, E extends Throwable, V extends UASTIFragmentShaderVisitor<F, P, L, O, S, E>>
+      <F, PI, PP, PO, L, O, E extends Throwable, V extends UASTIFragmentShaderVisitor<F, PI, PP, PO, L, O, S, E>>
       F
       fragmentShaderVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      final UASTIFragmentShaderLocalVisitor<L, S, E> lv =
-        v.fragmentShaderVisitPre(this);
-
-      final List<P> r_parameters = new ArrayList<P>();
+      final List<PI> r_inputs = new ArrayList<PI>();
       for (final UASTIDShaderFragmentInput<S> i : this.inputs) {
-        final P ri = v.fragmentShaderVisitInput(i);
-        r_parameters.add(ri);
+        final PI ri = v.fragmentShaderVisitInput(i);
+        r_inputs.add(ri);
       }
+
+      final List<PO> r_outputs = new ArrayList<PO>();
       for (final UASTIDShaderFragmentOutput<S> o : this.outputs) {
-        final P ro = v.fragmentShaderVisitOutput(o);
-        r_parameters.add(ro);
+        final PO ro = v.fragmentShaderVisitOutput(o);
+        r_outputs.add(ro);
       }
+
+      final List<PP> r_parameters = new ArrayList<PP>();
       for (final UASTIDShaderFragmentParameter<S> p : this.parameters) {
-        final P rp = v.fragmentShaderVisitParameter(p);
+        final PP rp = v.fragmentShaderVisitParameter(p);
         r_parameters.add(rp);
       }
+
+      final UASTIFragmentShaderLocalVisitor<L, S, E> lv =
+        v.fragmentShaderVisitLocalsPre();
+
       final ArrayList<L> r_locals = new ArrayList<L>();
       for (final UASTIDShaderFragmentLocal<S> l : this.locals) {
         final L rl = l.fragmentShaderLocalVisitableAccept(lv);
         r_locals.add(rl);
       }
+
       final ArrayList<O> r_assigns = new ArrayList<O>();
       for (final UASTIDShaderFragmentOutputAssignment<S> w : this.writes) {
         final O rw = v.fragmentShaderVisitOutputAssignment(w);
         r_assigns.add(rw);
       }
 
-      return v.fragmentShaderVisit(r_parameters, r_locals, r_assigns, this);
+      return v.fragmentShaderVisit(
+        r_inputs,
+        r_parameters,
+        r_outputs,
+        r_locals,
+        r_assigns,
+        this);
     }
 
     public @Nonnull List<UASTIDShaderFragmentInput<S>> getInputs()
@@ -751,7 +763,7 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     private final @Nonnull List<UASTIDShaderVertexInput<S>>            inputs;
     private final @Nonnull List<UASTIDShaderVertexOutput<S>>           outputs;
     private final @Nonnull List<UASTIDShaderVertexParameter<S>>        parameters;
-    private final @Nonnull List<UASTIDShaderVertexLocalValue<S>>       values;
+    private final @Nonnull List<UASTIDShaderVertexLocalValue<S>>       locals;
     private final @Nonnull List<UASTIDShaderVertexOutputAssignment<S>> writes;
 
     public UASTIDShaderVertex(
@@ -759,7 +771,7 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
       final @Nonnull List<UASTIDShaderVertexInput<S>> inputs,
       final @Nonnull List<UASTIDShaderVertexOutput<S>> outputs,
       final @Nonnull List<UASTIDShaderVertexParameter<S>> parameters,
-      final @Nonnull List<UASTIDShaderVertexLocalValue<S>> values,
+      final @Nonnull List<UASTIDShaderVertexLocalValue<S>> locals,
       final @Nonnull List<UASTIDShaderVertexOutputAssignment<S>> writes)
       throws ConstraintError
     {
@@ -768,7 +780,7 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
       this.outputs = Constraints.constrainNotNull(outputs, "Outputs");
       this.parameters =
         Constraints.constrainNotNull(parameters, "Parameters");
-      this.values = Constraints.constrainNotNull(values, "Values");
+      this.locals = Constraints.constrainNotNull(locals, "Values");
       this.writes = Constraints.constrainNotNull(writes, "Writes");
     }
 
@@ -787,9 +799,9 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
       return this.parameters;
     }
 
-    public @Nonnull List<UASTIDShaderVertexLocalValue<S>> getValues()
+    public @Nonnull List<UASTIDShaderVertexLocalValue<S>> getLocals()
     {
-      return this.values;
+      return this.locals;
     }
 
     public @Nonnull List<UASTIDShaderVertexOutputAssignment<S>> getWrites()
@@ -809,32 +821,37 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
     }
 
     @Override public
-      <VS, P, L, O, E extends Throwable, V extends UASTIVertexShaderVisitor<VS, P, L, O, S, E>>
+      <VS, PI, PP, PO, L, O, E extends Throwable, V extends UASTIVertexShaderVisitor<VS, PI, PP, PO, L, O, S, E>>
       VS
       vertexShaderVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.vertexShaderVisitPre(this);
-
-      final List<P> r_parameters = new ArrayList<P>();
+      final List<PI> r_inputs = new ArrayList<PI>();
       for (final UASTIDShaderVertexInput<S> i : this.inputs) {
-        final P ri = v.vertexShaderVisitInput(i);
-        r_parameters.add(ri);
+        final PI ri = v.vertexShaderVisitInput(i);
+        r_inputs.add(ri);
       }
+
+      final List<PO> r_outputs = new ArrayList<PO>();
       for (final UASTIDShaderVertexOutput<S> o : this.outputs) {
-        final P ro = v.vertexShaderVisitOutput(o);
-        r_parameters.add(ro);
+        final PO ro = v.vertexShaderVisitOutput(o);
+        r_outputs.add(ro);
       }
+
+      final List<PP> r_parameters = new ArrayList<PP>();
       for (final UASTIDShaderVertexParameter<S> p : this.parameters) {
-        final P rp = v.vertexShaderVisitParameter(p);
+        final PP rp = v.vertexShaderVisitParameter(p);
         r_parameters.add(rp);
       }
 
+      final UASTIVertexShaderLocalVisitor<L, S, E> lv =
+        v.vertexShaderVisitLocalsPre();
+
       final ArrayList<L> r_locals = new ArrayList<L>();
-      for (final UASTIDShaderVertexLocalValue<S> l : this.values) {
-        final L rl = v.vertexShaderVisitLocal(l);
+      for (final UASTIDShaderVertexLocalValue<S> l : this.locals) {
+        final L rl = lv.vertexShaderVisitLocalValue(l);
         r_locals.add(rl);
       }
 
@@ -844,7 +861,13 @@ public abstract class UASTIDeclaration<S extends UASTIStatus>
         r_assigns.add(rw);
       }
 
-      return v.vertexShaderVisit(r_parameters, r_locals, r_assigns, this);
+      return v.vertexShaderVisit(
+        r_inputs,
+        r_parameters,
+        r_outputs,
+        r_locals,
+        r_assigns,
+        this);
     }
   }
 

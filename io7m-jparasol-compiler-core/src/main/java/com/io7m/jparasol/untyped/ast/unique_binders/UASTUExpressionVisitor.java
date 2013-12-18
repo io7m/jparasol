@@ -16,6 +16,8 @@
 
 package com.io7m.jparasol.untyped.ast.unique_binders;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
@@ -31,59 +33,98 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecord
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUESwizzle;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
 
-public interface UASTUExpressionVisitor<E extends Throwable>
+public interface UASTUExpressionVisitor<A, L, E extends Throwable>
 {
-  public void expressionVisitApplication(
+  public A expressionVisitApplication(
+    final @Nonnull List<A> arguments,
     final @Nonnull UASTUEApplication e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitBoolean(
+  public void expressionVisitApplicationPre(
+    final @Nonnull UASTUEApplication e)
+    throws E,
+      ConstraintError;
+
+  public A expressionVisitBoolean(
     final @Nonnull UASTUEBoolean e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitConditional(
+  public A expressionVisitConditional(
+    final @Nonnull A condition,
+    final @Nonnull A left,
+    final @Nonnull A right,
     final @Nonnull UASTUEConditional e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitInteger(
+  public void expressionVisitConditionalPre(
+    final @Nonnull UASTUEConditional e)
+    throws E,
+      ConstraintError;
+
+  public A expressionVisitInteger(
     final @Nonnull UASTUEInteger e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitLet(
+  public A expressionVisitLet(
+    final @Nonnull List<L> bindings,
+    final @Nonnull A body,
     final @Nonnull UASTUELet e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitNew(
+  public @Nonnull UASTULocalLevelVisitor<L, E> expressionVisitLetPre(
+    final @Nonnull UASTUELet e)
+    throws E,
+      ConstraintError;
+
+  public A expressionVisitNew(
+    final @Nonnull List<A> arguments,
     final @Nonnull UASTUENew e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitReal(
+  public void expressionVisitNewPre(
+    final @Nonnull UASTUENew e)
+    throws E,
+      ConstraintError;
+
+  public A expressionVisitReal(
     final @Nonnull UASTUEReal e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitRecord(
+  public A expressionVisitRecord(
     final @Nonnull UASTUERecord e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitRecordProjection(
+  public A expressionVisitRecordProjection(
+    final @Nonnull A body,
     final @Nonnull UASTUERecordProjection e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitSwizzle(
+  public void expressionVisitRecordProjectionPre(
+    final @Nonnull UASTUERecordProjection e)
+    throws E,
+      ConstraintError;
+
+  public A expressionVisitSwizzle(
+    final @Nonnull A body,
     final @Nonnull UASTUESwizzle e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitVariable(
+  public void expressionVisitSwizzlePre(
+    final @Nonnull UASTUESwizzle e)
+    throws E,
+      ConstraintError;
+
+  public A expressionVisitVariable(
     final @Nonnull UASTUEVariable e)
     throws E,
       ConstraintError;

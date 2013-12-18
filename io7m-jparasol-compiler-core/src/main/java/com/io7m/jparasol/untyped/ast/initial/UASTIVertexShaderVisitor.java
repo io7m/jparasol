@@ -23,47 +23,44 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexInput;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexLocalValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutputAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameter;
 
-public interface UASTIVertexShaderVisitor<VS, P, L, O, S extends UASTIStatus, E extends Throwable>
+public interface UASTIVertexShaderVisitor<VS, PI, PP, PO, L, O, S extends UASTIStatus, E extends Throwable>
 {
-  public void vertexShaderVisitPre(
-    final @Nonnull UASTIDShaderVertex<S> v)
-    throws E,
-      ConstraintError;
-
-  public VS vertexShaderVisit(
-    final @Nonnull List<P> parameters,
+  public @Nonnull VS vertexShaderVisit(
+    final @Nonnull List<PI> inputs,
+    final @Nonnull List<PP> parameters,
+    final @Nonnull List<PO> outputs,
     final @Nonnull List<L> locals,
     final @Nonnull List<O> output_assignments,
     final @Nonnull UASTIDShaderVertex<S> v)
     throws E,
       ConstraintError;
 
-  public P vertexShaderVisitInput(
+  public @Nonnull PI vertexShaderVisitInput(
     final @Nonnull UASTIDShaderVertexInput<S> i)
     throws E,
       ConstraintError;
 
-  public L vertexShaderVisitLocal(
-    final @Nonnull UASTIDShaderVertexLocalValue<S> l)
-    throws E,
-      ConstraintError;
+  public @Nonnull
+    UASTIVertexShaderLocalVisitor<L, S, E>
+    vertexShaderVisitLocalsPre()
+      throws E,
+        ConstraintError;
 
-  public P vertexShaderVisitOutput(
+  public @Nonnull PO vertexShaderVisitOutput(
     final @Nonnull UASTIDShaderVertexOutput<S> o)
     throws E,
       ConstraintError;
 
-  public O vertexShaderVisitOutputAssignment(
+  public @Nonnull O vertexShaderVisitOutputAssignment(
     final @Nonnull UASTIDShaderVertexOutputAssignment<S> a)
     throws E,
       ConstraintError;
 
-  public P vertexShaderVisitParameter(
+  public @Nonnull PP vertexShaderVisitParameter(
     final @Nonnull UASTIDShaderVertexParameter<S> p)
     throws E,
       ConstraintError;

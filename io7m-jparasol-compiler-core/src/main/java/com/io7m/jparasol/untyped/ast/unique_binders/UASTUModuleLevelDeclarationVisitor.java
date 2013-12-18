@@ -19,48 +19,48 @@ package com.io7m.jparasol.untyped.ast.unique_binders;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionDefined;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragment;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentInput;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentLocalDiscard;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentLocalValue;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutput;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutputAssignment;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentParameter;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderProgram;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertex;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecord;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValue;
 
-public interface UASTUFragmentShaderVisitor<E extends Throwable>
+public interface UASTUModuleLevelDeclarationVisitor<D, E extends Throwable>
 {
-  public void fragmentShaderVisit(
+  public @Nonnull D moduleVisitFragmentShader(
     final @Nonnull UASTUDShaderFragment f)
     throws E,
       ConstraintError;
 
-  public void fragmentShaderVisitInput(
-    final @Nonnull UASTUDShaderFragmentInput i)
+  public @Nonnull D moduleVisitFunctionDefined(
+    final @Nonnull UASTUDFunctionDefined f)
     throws E,
       ConstraintError;
 
-  public void fragmentShaderVisitLocalDiscard(
-    final @Nonnull UASTUDShaderFragmentLocalDiscard d)
+  public @Nonnull D moduleVisitFunctionExternal(
+    final @Nonnull UASTUDFunctionExternal f)
     throws E,
       ConstraintError;
 
-  public void fragmentShaderVisitLocalValue(
-    final @Nonnull UASTUDShaderFragmentLocalValue v)
+  public @Nonnull D moduleVisitProgramShader(
+    final @Nonnull UASTUDShaderProgram p)
     throws E,
       ConstraintError;
 
-  public void fragmentShaderVisitOutput(
-    final @Nonnull UASTUDShaderFragmentOutput o)
+  public @Nonnull D moduleVisitTypeRecord(
+    final @Nonnull UASTUDTypeRecord r)
     throws E,
       ConstraintError;
 
-  public void fragmentShaderVisitOutputAssignment(
-    final @Nonnull UASTUDShaderFragmentOutputAssignment a)
+  public @Nonnull D moduleVisitValue(
+    final @Nonnull UASTUDValue v)
     throws E,
       ConstraintError;
 
-  public void fragmentShaderVisitParameter(
-    final @Nonnull UASTUDShaderFragmentParameter p)
+  public @Nonnull D moduleVisitVertexShader(
+    final @Nonnull UASTUDShaderVertex f)
     throws E,
       ConstraintError;
 }

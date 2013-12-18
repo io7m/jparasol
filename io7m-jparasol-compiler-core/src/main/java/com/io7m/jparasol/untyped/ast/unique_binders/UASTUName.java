@@ -28,25 +28,42 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
 public abstract class UASTUName
 {
+  /**
+   * A name that refers to something built-in (such as a built-in name for a
+   * shader input or output).
+   */
+
   public static final class UASTUNameBuiltIn extends UASTUName
   {
     private final @Nonnull TokenIdentifierLower actual;
 
     public UASTUNameBuiltIn(
-      final @Nonnull File file,
-      final @Nonnull Position position,
       final @Nonnull TokenIdentifierLower actual)
       throws ConstraintError
     {
-      super(file, position);
-      this.actual = Constraints.constrainNotNull(actual, "Actual");
+      super(
+        Constraints.constrainNotNull(actual, "Actual").getFile(),
+        Constraints.constrainNotNull(actual, "Actual").getPosition());
+      this.actual = actual;
     }
 
     public @Nonnull TokenIdentifierLower getActual()
     {
       return this.actual;
     }
+
+    @Override public String show()
+    {
+      final StringBuilder s = new StringBuilder();
+      s.append("*");
+      s.append(this.actual.getActual());
+      return s.toString();
+    }
   }
+
+  /**
+   * A fully qualified name.
+   */
 
   public static final class UASTUNameGlobal extends UASTUName
   {
@@ -54,15 +71,15 @@ public abstract class UASTUName
     private final @Nonnull TokenIdentifierLower name;
 
     public UASTUNameGlobal(
-      final @Nonnull File file,
-      final @Nonnull Position position,
       final @Nonnull TokenIdentifierUpper module,
-      final @Nonnull TokenIdentifierLower name)
+      final @Nonnull TokenIdentifierLower actual)
       throws ConstraintError
     {
-      super(file, position);
+      super(
+        Constraints.constrainNotNull(actual, "Actual").getFile(),
+        Constraints.constrainNotNull(actual, "Actual").getPosition());
       this.module = Constraints.constrainNotNull(module, "Module");
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = actual;
     }
 
     public final @Nonnull TokenIdentifierUpper getModule()
@@ -74,7 +91,21 @@ public abstract class UASTUName
     {
       return this.name;
     }
+
+    @Override public String show()
+    {
+      final StringBuilder s = new StringBuilder();
+      s.append("$");
+      s.append(this.module.getActual());
+      s.append(".");
+      s.append(this.name.getActual());
+      return s.toString();
+    }
   }
+
+  /**
+   * A name that refers to a local variable.
+   */
 
   public static final class UASTUNameLocal extends UASTUName
   {
@@ -82,13 +113,13 @@ public abstract class UASTUName
     private final @Nonnull TokenIdentifierLower original;
 
     public UASTUNameLocal(
-      final @Nonnull File file,
-      final @Nonnull Position position,
       final @Nonnull TokenIdentifierLower original,
       final @Nonnull String name)
       throws ConstraintError
     {
-      super(file, position);
+      super(
+        Constraints.constrainNotNull(original, "Original").getFile(),
+        Constraints.constrainNotNull(original, "Original").getPosition());
       this.original = Constraints.constrainNotNull(original, "Original");
       this.name = Constraints.constrainNotNull(name, "Name");
     }
@@ -102,25 +133,45 @@ public abstract class UASTUName
     {
       return this.original;
     }
+
+    @Override public String show()
+    {
+      final StringBuilder s = new StringBuilder();
+      s.append("&");
+      s.append(this.name);
+      return s.toString();
+    }
   }
+
+  /**
+   * A name that refers to something at module level in the current module.
+   */
 
   public static final class UASTUNameModuleLevel extends UASTUName
   {
     private final @Nonnull TokenIdentifierLower actual;
 
     public UASTUNameModuleLevel(
-      final @Nonnull File file,
-      final @Nonnull Position position,
       final @Nonnull TokenIdentifierLower actual)
       throws ConstraintError
     {
-      super(file, position);
-      this.actual = Constraints.constrainNotNull(actual, "Actual");
+      super(
+        Constraints.constrainNotNull(actual, "Actual").getFile(),
+        Constraints.constrainNotNull(actual, "Actual").getPosition());
+      this.actual = actual;
     }
 
     public @Nonnull TokenIdentifierLower getActual()
     {
       return this.actual;
+    }
+
+    @Override public String show()
+    {
+      final StringBuilder s = new StringBuilder();
+      s.append("%");
+      s.append(this.actual.getActual());
+      return s.toString();
     }
   }
 
@@ -145,4 +196,6 @@ public abstract class UASTUName
   {
     return this.position;
   }
+
+  public abstract @Nonnull String show();
 }

@@ -19,18 +19,14 @@ package com.io7m.jparasol.untyped.ast.unique_binders;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionDefined;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionExternal;
 
-public interface UASTUFunctionVisitor<E extends Throwable>
+public interface UASTUModuleLevelDeclarationVisitable
 {
-  public void functionVisitDefined(
-    final @Nonnull UASTUDFunctionDefined f)
-    throws E,
-      ConstraintError;
-
-  public void functionVisitExternal(
-    final @Nonnull UASTUDFunctionExternal f)
-    throws E,
-      ConstraintError;
+  public
+    <A, E extends Throwable, V extends UASTUModuleLevelDeclarationVisitor<A, E>>
+    A
+    moduleLevelVisitableAccept(
+      final @Nonnull V v)
+      throws E,
+        ConstraintError;
 }

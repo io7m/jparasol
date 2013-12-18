@@ -14,23 +14,19 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.untyped.ast.unique_binders;
+package com.io7m.jparasol.untyped.ast.initial;
 
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecord;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecordField;
 
-public interface UASTUDRecordVisitor<E extends Throwable>
+public interface UASTIVertexShaderLocalVisitable<S extends UASTIStatus>
 {
-  public void recordTypeVisit(
-    final @Nonnull UASTUDTypeRecord e)
-    throws E,
-      ConstraintError;
-
-  public void recordTypeVisitField(
-    final @Nonnull UASTUDTypeRecordField e)
-    throws E,
-      ConstraintError;
+  public
+    <L, E extends Throwable, V extends UASTIVertexShaderLocalVisitor<L, S, E>>
+    L
+    vertexShaderLocalVisitableAccept(
+      final @Nonnull V v)
+      throws E,
+        ConstraintError;
 }

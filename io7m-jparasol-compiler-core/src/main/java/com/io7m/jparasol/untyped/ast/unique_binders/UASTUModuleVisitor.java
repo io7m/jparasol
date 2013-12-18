@@ -16,17 +16,30 @@
 
 package com.io7m.jparasol.untyped.ast.unique_binders;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDImport;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDModule;
 
-public interface UASTUFragmentShaderVisitable
+public interface UASTUModuleVisitor<M, I, D, E extends Throwable>
 {
-  public
-    <E extends Throwable, V extends UASTUFragmentShaderVisitor<E>>
-    void
-    fragmentShaderVisitableAccept(
-      final @Nonnull V v)
-      throws E,
-        ConstraintError;
+  public UASTUModuleLevelDeclarationVisitor<D, E> moduleVisitPre(
+    final @Nonnull UASTUDModule m)
+    throws E,
+      ConstraintError;
+
+  public M moduleVisit(
+    final @Nonnull List<I> imports,
+    final @Nonnull List<D> declarations,
+    final @Nonnull UASTUDModule m)
+    throws E,
+      ConstraintError;
+
+  public I moduleVisitImport(
+    final @Nonnull UASTUDImport i)
+    throws E,
+      ConstraintError;
 }

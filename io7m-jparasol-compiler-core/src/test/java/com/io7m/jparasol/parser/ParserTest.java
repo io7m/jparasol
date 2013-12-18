@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -838,10 +839,10 @@ public class ParserTest
       Assert.assertEquals("vector_4f", ro1.getType().getName().getActual());
     }
 
-    Assert.assertEquals(1, r.getValues().size());
+    Assert.assertEquals(1, r.getLocals().size());
     {
       final UASTIDShaderVertexLocalValue<UASTIUnchecked> rl0 =
-        r.getValues().get(0);
+        r.getLocals().get(0);
       Assert.assertEquals("pp", rl0.getValue().getName().getActual());
       Assert.assertTrue(rl0.getValue().getAscription().isNone());
     }
@@ -915,7 +916,7 @@ public class ParserTest
       Assert.assertEquals("vector_4f", ro1.getType().getName().getActual());
     }
 
-    Assert.assertEquals(0, r.getValues().size());
+    Assert.assertEquals(0, r.getLocals().size());
 
     Assert.assertEquals(2, r.getWrites().size());
     {
@@ -1149,7 +1150,7 @@ public class ParserTest
   {
     final Parser p = ParserTest.makeStringInternalParser("23");
     final UASTIEInteger<UASTIUnchecked> r = p.expressionInteger();
-    Assert.assertEquals(BigDecimal.valueOf(23), r.getValue());
+    Assert.assertEquals(BigInteger.valueOf(23), r.getValue());
   }
 
   @SuppressWarnings("static-method") @Test(expected = ParserError.class) public

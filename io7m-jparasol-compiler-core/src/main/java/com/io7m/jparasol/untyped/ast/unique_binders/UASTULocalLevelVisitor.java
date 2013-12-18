@@ -21,9 +21,9 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
 
-public interface UASTULocalLevelVisitor<E extends Throwable>
+public interface UASTULocalLevelVisitor<A, E extends Throwable>
 {
-  public void localVisitValueLocal(
+  public A localVisitValueLocal(
     final @Nonnull UASTUDValueLocal v)
     throws E,
       ConstraintError;

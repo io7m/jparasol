@@ -40,7 +40,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
 
 public final class ModuleStructureTest
 {
-  private static UASTICompilation<UASTIChecked> check(
+  static UASTICompilation<UASTIChecked> check(
     final String names[])
     throws ConstraintError,
       ModuleStructureError
@@ -52,7 +52,7 @@ public final class ModuleStructureTest
     return c.check();
   }
 
-  private static boolean checkExists(
+  static boolean checkExists(
     final @Nonnull String name)
   {
     final URL r =
@@ -60,7 +60,7 @@ public final class ModuleStructureTest
     return r != null;
   }
 
-  private static UASTICompilation<UASTIChecked> checkInternal(
+  static UASTICompilation<UASTIChecked> checkInternal(
     final String names[])
     throws ConstraintError,
       ModuleStructureError
@@ -72,7 +72,7 @@ public final class ModuleStructureTest
     return c.check();
   }
 
-  private static void checkMustFailWithCode(
+  static void checkMustFailWithCode(
     final String[] names,
     final ModuleStructureError.Code code)
     throws ConstraintError,
@@ -94,7 +94,7 @@ public final class ModuleStructureTest
     }
   }
 
-  private static void checkMustFailWithCodeInternal(
+  static void checkMustFailWithCodeInternal(
     final String[] names,
     final ModuleStructureError.Code code)
     throws ConstraintError,
@@ -116,7 +116,7 @@ public final class ModuleStructureTest
     }
   }
 
-  private static UASTICompilation<UASTIUnchecked> parseAndCombine(
+  static UASTICompilation<UASTIUnchecked> parseAndCombine(
     final String names[])
   {
     try {
@@ -128,7 +128,7 @@ public final class ModuleStructureTest
     }
   }
 
-  private static UASTICompilation<UASTIUnchecked> parseAndCombineInternal(
+  static UASTICompilation<UASTIUnchecked> parseAndCombineInternal(
     final String names[])
   {
     try {

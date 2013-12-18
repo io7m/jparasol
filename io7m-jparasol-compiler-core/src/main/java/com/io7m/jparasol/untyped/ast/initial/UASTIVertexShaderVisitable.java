@@ -23,7 +23,7 @@ import com.io7m.jaux.Constraints.ConstraintError;
 public interface UASTIVertexShaderVisitable<S extends UASTIStatus>
 {
   public
-    <VS, P, L, O, E extends Throwable, V extends UASTIVertexShaderVisitor<VS, P, L, O, S, E>>
+    <VS, PI, PP, PO, L, O, E extends Throwable, V extends UASTIVertexShaderVisitor<VS, PI, PP, PO, L, O, S, E>>
     VS
     vertexShaderVisitableAccept(
       final @Nonnull V v)

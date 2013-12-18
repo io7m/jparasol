@@ -16,21 +16,38 @@
 
 package com.io7m.jparasol.untyped.ast.unique_binders;
 
+import java.util.Collections;
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 
+import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.ModulePath;
+import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDModule;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDPackage;
 
-public interface UASTUUnitLevelVisitor<E extends Throwable>
+public final class UASTUCompilation
 {
-  public void unitVisitModule(
-    final @Nonnull UASTUDModule m)
-    throws E,
-      ConstraintError;
+  private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
+  private final @Nonnull Map<ModulePathFlat, ModulePath>   paths;
 
-  public void unitVisitPackage(
-    final @Nonnull UASTUDPackage p)
-    throws E,
-      ConstraintError;
+  public UASTUCompilation(
+    final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
+    final @Nonnull Map<ModulePathFlat, ModulePath> paths)
+    throws ConstraintError
+  {
+    this.modules = Constraints.constrainNotNull(modules, "Modules");
+    this.paths = Constraints.constrainNotNull(paths, "Paths");
+  }
+
+  public @Nonnull Map<ModulePathFlat, UASTUDModule> getModules()
+  {
+    return Collections.unmodifiableMap(this.modules);
+  }
+
+  public @Nonnull Map<ModulePathFlat, ModulePath> getPaths()
+  {
+    return Collections.unmodifiableMap(this.paths);
+  }
 }

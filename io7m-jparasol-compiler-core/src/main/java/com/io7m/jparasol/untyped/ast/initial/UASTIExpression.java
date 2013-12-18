@@ -17,6 +17,7 @@
 package com.io7m.jparasol.untyped.ast.initial;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +60,6 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
           ConstraintError
     {
       v.expressionVisitApplicationPre(this);
-
       final List<A> args = new ArrayList<A>();
       for (final UASTIExpression<S> a : this.arguments) {
         final A x = a.expressionVisitableAccept(v);
@@ -190,7 +190,7 @@ public abstract class UASTIExpression<S extends UASTIStatus> implements
       return this.token;
     }
 
-    public @Nonnull BigDecimal getValue()
+    public @Nonnull BigInteger getValue()
     {
       return this.token.getValue();
     }
