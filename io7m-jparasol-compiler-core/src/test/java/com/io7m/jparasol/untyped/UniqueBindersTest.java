@@ -24,6 +24,7 @@ import com.io7m.jparasol.TestUtilities;
 import com.io7m.jparasol.untyped.ast.initial.UASTIChecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTICompilation;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDModule;
 
 public final class UniqueBindersTest
 {
@@ -93,5 +94,9 @@ public final class UniqueBindersTest
   {
     final UASTUCompilation r =
       UniqueBindersTest.uniqueInternal(new String[] { "all.p" });
+
+    for (final UASTUDModule m : r.getModules().values()) {
+      System.out.println(m);
+    }
   }
 }

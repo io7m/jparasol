@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jaux.functional.Function;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.PackagePath;
@@ -105,6 +106,17 @@ public abstract class UASTUDeclaration
     {
       return this.type;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDFunctionArgument ");
+      builder.append(this.name.show());
+      builder.append(" ");
+      builder.append(this.type.show());
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   /**
@@ -150,6 +162,21 @@ public abstract class UASTUDeclaration
     public @Nonnull UASTUTypePath getReturnType()
     {
       return this.return_type;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDFunctionDefined ");
+      builder.append(this.name.getActual());
+      builder.append(" ");
+      builder.append(this.arguments);
+      builder.append(" ");
+      builder.append(this.return_type.show());
+      builder.append(" ");
+      builder.append(this.body);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -197,6 +224,21 @@ public abstract class UASTUDeclaration
     {
       return this.return_type;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDFunctionExternal ");
+      builder.append(this.name.getActual());
+      builder.append(" ");
+      builder.append(this.arguments);
+      builder.append(" ");
+      builder.append(this.return_type.show());
+      builder.append(" ");
+      builder.append(this.external.getActual());
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   /**
@@ -225,6 +267,17 @@ public abstract class UASTUDeclaration
     public @Nonnull Option<TokenIdentifierUpper> getRename()
     {
       return this.rename;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDImport ");
+      builder.append(this.path);
+      builder.append(" ");
+      builder.append(this.rename);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -264,6 +317,53 @@ public abstract class UASTUDeclaration
     {
       return this.name;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDModule ");
+      builder.append(this.name.getActual());
+      builder.append("\n");
+
+      if (this.imports.isEmpty()) {
+        builder.append("  []\n");
+      } else {
+        for (int index = 0; index < this.imports.size(); ++index) {
+          if (index == 0) {
+            builder.append("  [");
+          } else {
+            builder.append("  ");
+          }
+          builder.append(this.imports.get(index));
+          if ((index + 1) == this.imports.size()) {
+            builder.append("]\n");
+          } else {
+            builder.append("\n");
+          }
+        }
+      }
+
+      if (this.declarations.isEmpty()) {
+        builder.append("  []\n");
+      } else {
+        for (int index = 0; index < this.declarations.size(); ++index) {
+          if (index == 0) {
+            builder.append("  [\n    ");
+          } else {
+            builder.append("    ");
+          }
+          builder.append(this.declarations.get(index));
+          if ((index + 1) == this.declarations.size()) {
+            builder.append("\n  ]\n");
+          } else {
+            builder.append("\n");
+          }
+        }
+      }
+
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   /**
@@ -284,6 +384,15 @@ public abstract class UASTUDeclaration
     public @Nonnull PackagePath getPath()
     {
       return this.path;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDPackage ");
+      builder.append(this.path);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -359,6 +468,23 @@ public abstract class UASTUDeclaration
     {
       return this.writes;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderFragment ");
+      builder.append(this.inputs);
+      builder.append(" ");
+      builder.append(this.parameters);
+      builder.append(" ");
+      builder.append(this.outputs);
+      builder.append(" ");
+      builder.append(this.locals);
+      builder.append(" ");
+      builder.append(this.writes);
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUDShaderFragmentInput extends
@@ -378,6 +504,15 @@ public abstract class UASTUDeclaration
     public @Nonnull UASTUNameLocal getName()
     {
       return this.name;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderFragmentInput ");
+      builder.append(this.name);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -412,6 +547,17 @@ public abstract class UASTUDeclaration
     {
       return this.expression;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderFragmentLocalDiscard ");
+      builder.append(this.discard);
+      builder.append(" ");
+      builder.append(this.expression);
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUDShaderFragmentLocalValue extends
@@ -429,6 +575,15 @@ public abstract class UASTUDeclaration
     public @Nonnull UASTUDValueLocal getValue()
     {
       return this.value;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderFragmentLocalValue ");
+      builder.append(this.value);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -458,6 +613,17 @@ public abstract class UASTUDeclaration
     {
       return this.name;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderFragmentOutput ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.index);
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUDShaderFragmentOutputAssignment extends
@@ -484,6 +650,17 @@ public abstract class UASTUDeclaration
     {
       return this.variable;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderFragmentOutputAssignment ");
+      builder.append(this.name.getActual());
+      builder.append(" ");
+      builder.append(this.variable);
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUDShaderFragmentParameter extends
@@ -498,6 +675,15 @@ public abstract class UASTUDeclaration
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderFragmentParameter ");
+      builder.append(this.name.show());
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -557,6 +743,17 @@ public abstract class UASTUDeclaration
     {
       return this.vertex_shader;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderProgram ");
+      builder.append(this.fragment_shader.show());
+      builder.append(" ");
+      builder.append(this.vertex_shader.show());
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUDShaderVertex extends UASTUDShader
@@ -609,6 +806,23 @@ public abstract class UASTUDeclaration
     {
       return this.writes;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderVertex ");
+      builder.append(this.inputs);
+      builder.append(" ");
+      builder.append(this.parameters);
+      builder.append(" ");
+      builder.append(this.outputs);
+      builder.append(" ");
+      builder.append(this.values);
+      builder.append(" ");
+      builder.append(this.writes);
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUDShaderVertexInput extends
@@ -629,6 +843,15 @@ public abstract class UASTUDeclaration
     {
       return this.name;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderVertexInput ");
+      builder.append(this.name.show());
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUDShaderVertexLocalValue extends
@@ -647,6 +870,15 @@ public abstract class UASTUDeclaration
     {
       return this.value;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderVertexLocalValue ");
+      builder.append(this.value);
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUDShaderVertexOutput extends
@@ -661,6 +893,15 @@ public abstract class UASTUDeclaration
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderVertexOutput ");
+      builder.append(this.name);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -688,6 +929,17 @@ public abstract class UASTUDeclaration
     {
       return this.variable;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderVertexOutputAssignment ");
+      builder.append(this.name.getActual());
+      builder.append(" ");
+      builder.append(this.variable);
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUDShaderVertexParameter extends
@@ -707,6 +959,15 @@ public abstract class UASTUDeclaration
     public @Nonnull UASTUNameLocal getName()
     {
       return this.name;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderVertexParameter ");
+      builder.append(this.name.show());
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -776,6 +1037,17 @@ public abstract class UASTUDeclaration
     {
       return this.name;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDTypeRecord ");
+      builder.append(this.name.getActual());
+      builder.append(" ");
+      builder.append(this.fields);
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUDTypeRecordField
@@ -800,6 +1072,17 @@ public abstract class UASTUDeclaration
     public @Nonnull UASTUTypePath getType()
     {
       return this.type;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDTypeRecordField ");
+      builder.append(this.name.getActual());
+      builder.append(" ");
+      builder.append(this.type.show());
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -840,6 +1123,26 @@ public abstract class UASTUDeclaration
     {
       return this.name;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDValue ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.ascription
+        .map(new Function<UASTUTypePath, String>() {
+          @Override public String call(
+            final @Nonnull UASTUTypePath x)
+          {
+            return x.show();
+          }
+        }));
+      builder.append(" ");
+      builder.append(this.expression);
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   /**
@@ -878,6 +1181,26 @@ public abstract class UASTUDeclaration
     public @Nonnull UASTUNameLocal getName()
     {
       return this.name;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDValueLocal ");
+      builder.append(this.name.show());
+      builder.append(" ");
+      builder.append(this.ascription
+        .map(new Function<UASTUTypePath, String>() {
+          @Override public String call(
+            final UASTUTypePath x)
+          {
+            return x.show();
+          }
+        }));
+      builder.append(" ");
+      builder.append(this.expression);
+      builder.append("]");
+      return builder.toString();
     }
   }
 }

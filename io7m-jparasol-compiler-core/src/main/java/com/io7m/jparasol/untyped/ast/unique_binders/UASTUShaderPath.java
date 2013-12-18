@@ -20,7 +20,9 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jaux.functional.Function;
 import com.io7m.jaux.functional.Option;
+import com.io7m.jaux.functional.Unit;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
@@ -46,5 +48,21 @@ public final class UASTUShaderPath
   public @Nonnull TokenIdentifierLower getName()
   {
     return this.name;
+  }
+
+  public @Nonnull String show()
+  {
+    final StringBuilder s = new StringBuilder();
+    this.module.map(new Function<TokenIdentifierUpper, Unit>() {
+      @Override public Unit call(
+        final TokenIdentifierUpper x)
+      {
+        s.append(x.getActual());
+        s.append(".");
+        return Unit.unit();
+      }
+    });
+    s.append(this.name.getActual());
+    return s.toString();
   }
 }
