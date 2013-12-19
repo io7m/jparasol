@@ -52,6 +52,15 @@ public abstract class UASTUName
       return this.actual;
     }
 
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUNameBuiltIn ");
+      builder.append(this.actual);
+      builder.append("]");
+      return builder.toString();
+    }
+
     @Override public String show()
     {
       final StringBuilder s = new StringBuilder();
@@ -92,6 +101,17 @@ public abstract class UASTUName
       return this.name;
     }
 
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUNameGlobal ");
+      builder.append(this.module);
+      builder.append(" ");
+      builder.append(this.name);
+      builder.append("]");
+      return builder.toString();
+    }
+
     @Override public String show()
     {
       final StringBuilder s = new StringBuilder();
@@ -127,6 +147,17 @@ public abstract class UASTUName
     public @Nonnull String getName()
     {
       return this.name;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUNameLocal ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.original);
+      builder.append("]");
+      return builder.toString();
     }
 
     public @Nonnull TokenIdentifierLower getOriginal()
@@ -172,6 +203,15 @@ public abstract class UASTUName
       s.append("%");
       s.append(this.actual.getActual());
       return s.toString();
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUNameModuleLevel ");
+      builder.append(this.actual);
+      builder.append("]");
+      return builder.toString();
     }
   }
 

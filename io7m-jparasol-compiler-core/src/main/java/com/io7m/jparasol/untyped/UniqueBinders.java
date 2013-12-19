@@ -31,6 +31,7 @@ import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.PartialFunction;
+import com.io7m.jlog.Level;
 import com.io7m.jlog.Log;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
@@ -141,30 +142,35 @@ public final class UniqueBinders
   private static class Context
   {
     public static @Nonnull Context initialContext(
-      final @Nonnull ModuleContext module)
+      final @Nonnull ModuleContext module,
+      final @Nonnull Log log)
     {
       return new Context(
         module,
         null,
         new HashSet<String>(),
-        new HashMap<String, UASTUNameLocal>());
+        new HashMap<String, UASTUNameLocal>(),
+        log);
     }
 
     private final @Nonnull Set<String>                 builtins;
     private final @Nonnull ModuleContext               module;
     private final @Nonnull Map<String, UASTUNameLocal> names;
     private final @CheckForNull Context                parent;
+    private final @Nonnull Log                         log;
 
     public Context(
       final @Nonnull ModuleContext module,
       final @CheckForNull Context parent,
       final @Nonnull Set<String> builtins,
-      final @Nonnull Map<String, UASTUNameLocal> names)
+      final @Nonnull Map<String, UASTUNameLocal> names,
+      final @Nonnull Log log)
     {
       this.module = module;
       this.parent = parent;
       this.builtins = builtins;
       this.names = names;
+      this.log = log;
     }
 
     public @Nonnull UASTUNameLocal addBinding(
@@ -190,12 +196,39 @@ public final class UniqueBinders
       }
 
       final UASTUNameLocal u = new UASTUNameLocal(name, s.toString());
-      this.names.put(s.toString(), u);
+      this.names.put(name.getActual(), u);
+
+      if (this.log.enabled(Level.LOG_DEBUG)) {
+        final StringBuilder m = new StringBuilder();
+        m.append("Added binding ");
+        m.append(u.show());
+        m.append(" for ");
+        m.append(name);
+        this.log.debug(m.toString());
+      }
       return u;
     }
 
     public @Nonnull UASTUName getName(
       final @Nonnull TokenIdentifierLower name)
+      throws ConstraintError
+    {
+      final UASTUName result = this.getNameInternal(name);
+
+      if (this.log.enabled(Level.LOG_DEBUG)) {
+        final StringBuilder m = new StringBuilder();
+        m.append("Retrieved name ");
+        m.append(result != null ? result.show() : "<null>");
+        m.append(" for ");
+        m.append(name.getActual());
+        this.log.debug(m.toString());
+      }
+
+      return result;
+    }
+
+    private UASTUName getNameInternal(
+      final TokenIdentifierLower name)
       throws ConstraintError
     {
       if (this.builtins.contains(name.getActual())) {
@@ -207,7 +240,7 @@ public final class UniqueBinders
       if (this.parent == null) {
         return new UASTUNameModuleLevel(name);
       }
-      return this.parent.getName(name);
+      return this.parent.getNameInternal(name);
     }
 
     public @Nonnull UASTUName getNameFromValuePath(
@@ -246,7 +279,8 @@ public final class UniqueBinders
         this.module,
         this,
         this.builtins,
-        new HashMap<String, UASTUName.UASTUNameLocal>());
+        new HashMap<String, UASTUName.UASTUNameLocal>(),
+        this.log);
     }
 
     public @Nonnull Context withNewPlusBuiltins(
@@ -260,7 +294,8 @@ public final class UniqueBinders
         this.module,
         this,
         new_builtins,
-        new HashMap<String, UASTUName.UASTUNameLocal>());
+        new HashMap<String, UASTUName.UASTUNameLocal>(),
+        this.log);
     }
   }
 
@@ -739,6 +774,7 @@ public final class UniqueBinders
         ConstraintError
     {
       final TokenIdentifierLower name = f.getName();
+
       final UASTUExpression body =
         f.getBody().expressionVisitableAccept(
           new ExpressionTransformer(this.context));
@@ -828,11 +864,14 @@ public final class UniqueBinders
     UASTIModuleLevelDeclarationVisitor<UASTUDeclarationModuleLevel, UASTIChecked, UniqueBindersError>
   {
     private final @Nonnull ModuleContext module;
+    private final @Nonnull Context       context;
 
     public ModuleLevelTransformer(
-      final @Nonnull ModuleContext module)
+      final @Nonnull ModuleContext module,
+      final @Nonnull Log log)
     {
       this.module = module;
+      this.context = Context.initialContext(this.module, log);
     }
 
     @Override public UASTUDShaderFragment moduleVisitFragmentShader(
@@ -840,9 +879,10 @@ public final class UniqueBinders
       throws UniqueBindersError,
         ConstraintError
     {
-      final Context c = Context.initialContext(this.module);
-      return f
-        .fragmentShaderVisitableAccept(new FragmentShaderTransformer(c));
+      this.context.addBinding(f.getName());
+
+      return f.fragmentShaderVisitableAccept(new FragmentShaderTransformer(
+        this.context.withNew()));
     }
 
     @Override public UASTUDFunction moduleVisitFunctionDefined(
@@ -850,8 +890,10 @@ public final class UniqueBinders
       throws UniqueBindersError,
         ConstraintError
     {
-      final Context c = Context.initialContext(this.module);
-      return f.functionVisitableAccept(new FunctionTransformer(c));
+      this.context.addBinding(f.getName());
+
+      return f.functionVisitableAccept(new FunctionTransformer(this.context
+        .withNew()));
     }
 
     @Override public UASTUDFunction moduleVisitFunctionExternal(
@@ -859,8 +901,10 @@ public final class UniqueBinders
       throws UniqueBindersError,
         ConstraintError
     {
-      final Context c = Context.initialContext(this.module);
-      return f.functionVisitableAccept(new FunctionTransformer(c));
+      this.context.addBinding(f.getName());
+
+      return f.functionVisitableAccept(new FunctionTransformer(this.context
+        .withNew()));
     }
 
     @Override public UASTUDShaderProgram moduleVisitProgramShader(
@@ -881,6 +925,7 @@ public final class UniqueBinders
     {
       final List<UASTUDTypeRecordField> fields =
         new ArrayList<UASTUDTypeRecordField>();
+
       for (final UASTIDTypeRecordField<UASTIChecked> f : r.getFields()) {
         fields.add(new UASTUDTypeRecordField(f.getName(), UniqueBinders
           .mapTypePath(f.getType())));
@@ -894,11 +939,11 @@ public final class UniqueBinders
       throws UniqueBindersError,
         ConstraintError
     {
-      final Context c = Context.initialContext(this.module);
+      this.context.addBinding(v.getName());
 
       final UASTUExpression body =
         v.getExpression().expressionVisitableAccept(
-          new ExpressionTransformer(c));
+          new ExpressionTransformer(this.context.withNew()));
 
       final Option<UASTUTypePath> ascription =
         UniqueBinders.mapAscription(v.getAscription());
@@ -911,17 +956,20 @@ public final class UniqueBinders
       throws UniqueBindersError,
         ConstraintError
     {
-      final Context c = Context.initialContext(this.module);
-      return f.vertexShaderVisitableAccept(new VertexShaderTransformer(c));
+      return f.vertexShaderVisitableAccept(new VertexShaderTransformer(
+        this.context.withNew()));
     }
   }
 
   private static class ModuleTransformer implements
     UASTIModuleVisitor<UASTUDModule, UASTUDImport, UASTUDeclarationModuleLevel, UASTIChecked, UniqueBindersError>
   {
-    public ModuleTransformer()
+    private final @Nonnull Log log;
+
+    public ModuleTransformer(
+      final @Nonnull Log log)
     {
-      // Nothing
+      this.log = log;
     }
 
     @Override public UASTUDModule moduleVisit(
@@ -949,7 +997,7 @@ public final class UniqueBinders
         throws UniqueBindersError,
           ConstraintError
     {
-      return new ModuleLevelTransformer(new ModuleContext());
+      return new ModuleLevelTransformer(new ModuleContext(), this.log);
     }
   }
 
@@ -1021,7 +1069,7 @@ public final class UniqueBinders
       assert module != null;
 
       final UASTUDModule u_module =
-        module.moduleVisitableAccept(new ModuleTransformer());
+        module.moduleVisitableAccept(new ModuleTransformer(this.log));
 
       modules_new.put(path, u_module);
     }
