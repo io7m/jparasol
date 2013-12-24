@@ -23,13 +23,18 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Function;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Unit;
+import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
+/**
+ * A path to a type.
+ */
+
 public final class UASTUTypePath
 {
-  private final @Nonnull Option<TokenIdentifierUpper> module;
-  private final @Nonnull TokenIdentifierLower         name;
+  private final @Nonnull Option<Token.TokenIdentifierUpper> module;
+  private final @Nonnull Token.TokenIdentifierLower         name;
 
   public UASTUTypePath(
     final @Nonnull Option<TokenIdentifierUpper> module,
@@ -40,14 +45,45 @@ public final class UASTUTypePath
     this.name = Constraints.constrainNotNull(name, "Name");
   }
 
-  public @Nonnull Option<TokenIdentifierUpper> getModule()
+  @Override public boolean equals(
+    final Object obj)
+  {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    final UASTUTypePath other = (UASTUTypePath) obj;
+    if (!this.module.equals(other.module)) {
+      return false;
+    }
+    if (!this.name.equals(other.name)) {
+      return false;
+    }
+    return true;
+  }
+
+  public @Nonnull Option<Token.TokenIdentifierUpper> getModule()
   {
     return this.module;
   }
 
-  public @Nonnull TokenIdentifierLower getName()
+  public @Nonnull Token.TokenIdentifierLower getName()
   {
     return this.name;
+  }
+
+  @Override public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = (prime * result) + this.module.hashCode();
+    result = (prime * result) + this.name.hashCode();
+    return result;
   }
 
   public @Nonnull String show()
@@ -64,5 +100,16 @@ public final class UASTUTypePath
     });
     s.append(this.name.getActual());
     return s.toString();
+  }
+
+  @Override public String toString()
+  {
+    final StringBuilder builder = new StringBuilder();
+    builder.append("[UASTUTypePath ");
+    builder.append(this.module);
+    builder.append(" ");
+    builder.append(this.name);
+    builder.append("]");
+    return builder.toString();
   }
 }

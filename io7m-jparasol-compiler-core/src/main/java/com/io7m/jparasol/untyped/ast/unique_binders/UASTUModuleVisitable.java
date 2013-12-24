@@ -23,7 +23,7 @@ import com.io7m.jaux.Constraints.ConstraintError;
 public interface UASTUModuleVisitable
 {
   public
-    <M, I, D, E extends Throwable, V extends UASTUModuleVisitor<M, I, D, E>>
+    <M, I, D, DTE extends D, DTY extends D, DS extends D, E extends Throwable, V extends UASTUModuleVisitor<M, I, D, DTE, DTY, DS, E>>
     M
     moduleVisitableAccept(
       final @Nonnull V v)

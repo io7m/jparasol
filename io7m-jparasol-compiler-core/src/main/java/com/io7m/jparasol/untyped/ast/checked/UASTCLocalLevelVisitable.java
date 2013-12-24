@@ -14,9 +14,19 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.untyped.ast.initial;
+package com.io7m.jparasol.untyped.ast.checked;
 
-public interface UASTIChecked extends UASTIStatus
+import javax.annotation.Nonnull;
+
+import com.io7m.jaux.Constraints.ConstraintError;
+
+public interface UASTCLocalLevelVisitable
 {
-  // No value-level representation.
+  public
+    <A, E extends Throwable, V extends UASTCLocalLevelVisitor<A, E>>
+    A
+    localVisitableAccept(
+      final @Nonnull V v)
+      throws E,
+        ConstraintError;
 }

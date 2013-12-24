@@ -18,10 +18,8 @@ package com.io7m.jparasol.untyped;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.CheckForNull;
@@ -30,6 +28,7 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Option;
+import com.io7m.jaux.functional.Option.None;
 import com.io7m.jaux.functional.PartialFunction;
 import com.io7m.jlog.Level;
 import com.io7m.jlog.Log;
@@ -37,58 +36,59 @@ import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.NameRestrictions;
 import com.io7m.jparasol.NameRestrictions.NameRestricted;
-import com.io7m.jparasol.NamesBuiltIn;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
-import com.io7m.jparasol.untyped.ast.initial.UASTIChecked;
-import com.io7m.jparasol.untyped.ast.initial.UASTICompilation;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragment;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentInput;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalDiscard;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalValue;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutput;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputAssignment;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentParameter;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgram;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexInput;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexLocalValue;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutputAssignment;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameter;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEInteger;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIELet;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIENew;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEReal;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecord;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProjection;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpressionVisitor;
-import com.io7m.jparasol.untyped.ast.initial.UASTIFragmentShaderLocalVisitor;
-import com.io7m.jparasol.untyped.ast.initial.UASTIFragmentShaderVisitor;
-import com.io7m.jparasol.untyped.ast.initial.UASTIFunctionVisitor;
-import com.io7m.jparasol.untyped.ast.initial.UASTILocalLevelVisitor;
-import com.io7m.jparasol.untyped.ast.initial.UASTIModuleLevelDeclarationVisitor;
-import com.io7m.jparasol.untyped.ast.initial.UASTIModuleVisitor;
-import com.io7m.jparasol.untyped.ast.initial.UASTIShaderPath;
-import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
-import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
-import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderLocalVisitor;
-import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionArgument;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionDefined;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionExternal;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDImport;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDModule;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragment;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentInput;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentLocalDiscard;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentLocalValue;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentOutput;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentParameter;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderProgram;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderVertex;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderVertexInput;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderVertexLocalValue;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderVertexOutput;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderVertexOutputAssignment;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderVertexParameter;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTerm;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTypeRecord;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTypeRecordField;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValue;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueLocal;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEApplication;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEBoolean;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEConditional;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEInteger;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCELet;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCENew;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEReal;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCERecord;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCERecordProjection;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCESwizzle;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCRecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpressionVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCFragmentShaderLocalVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCFragmentShaderVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCFunctionVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCLocalLevelVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCModuleVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCShaderPath;
+import com.io7m.jparasol.untyped.ast.checked.UASTCShaderVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCTermVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCTypePath;
+import com.io7m.jparasol.untyped.ast.checked.UASTCTypeVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCValuePath;
+import com.io7m.jparasol.untyped.ast.checked.UASTCVertexShaderLocalVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCVertexShaderVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunction;
@@ -97,6 +97,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunct
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDImport;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDModule;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShader;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragment;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentInput;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentLocal;
@@ -112,6 +113,8 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShade
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertexOutput;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertexOutputAssignment;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertexParameter;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTerm;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecord;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValue;
@@ -130,50 +133,52 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecord
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUESwizzle;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTURecordFieldAssignment;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUName;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUName.UASTUNameGlobal;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUName.UASTUNameLocal;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUName.UASTUNameModuleLevel;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUShaderPath;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTypePath;
+import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName;
+import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
+import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameNonLocal;
 
 public final class UniqueBinders
 {
-  private static class Context
+  private static final class Context
   {
     public static @Nonnull Context initialContext(
       final @Nonnull ModuleContext module,
+      final @CheckForNull UASTCDTerm term,
       final @Nonnull Log log)
     {
       return new Context(
         module,
         null,
-        new HashSet<String>(),
-        new HashMap<String, UASTUNameLocal>(),
+        term,
+        new HashMap<String, UniqueNameLocal>(),
         log);
     }
 
-    private final @Nonnull Set<String>                 builtins;
-    private final @Nonnull ModuleContext               module;
-    private final @Nonnull Map<String, UASTUNameLocal> names;
-    private final @CheckForNull Context                parent;
-    private final @Nonnull Log                         log;
+    private final int                                   depth;
+    private final @Nonnull Log                          log;
+    private final @Nonnull ModuleContext                module;
+    private final @Nonnull Map<String, UniqueNameLocal> names;
+    private final @CheckForNull Context                 parent;
+    private final @CheckForNull UASTCDTerm              root;
 
     public Context(
       final @Nonnull ModuleContext module,
       final @CheckForNull Context parent,
-      final @Nonnull Set<String> builtins,
-      final @Nonnull Map<String, UASTUNameLocal> names,
+      final @CheckForNull UASTCDTerm root,
+      final @Nonnull Map<String, UniqueNameLocal> names,
       final @Nonnull Log log)
     {
       this.module = module;
       this.parent = parent;
-      this.builtins = builtins;
       this.names = names;
       this.log = log;
+      this.root = root;
+      this.depth = this.parent == null ? 1 : this.parent.getDepth() + 1;
     }
 
-    public @Nonnull UASTUNameLocal addBinding(
+    public @Nonnull UniqueNameLocal addBinding(
       final @Nonnull TokenIdentifierLower name)
       throws ConstraintError
     {
@@ -195,29 +200,38 @@ public final class UniqueBinders
         }
       }
 
-      final UASTUNameLocal u = new UASTUNameLocal(name, s.toString());
+      final UniqueNameLocal u = new UniqueNameLocal(name, s.toString());
       this.names.put(name.getActual(), u);
 
       if (this.log.enabled(Level.LOG_DEBUG)) {
         final StringBuilder m = new StringBuilder();
-        m.append("Added binding ");
+        m.append("[");
+        m.append(this.depth);
+        m.append("] Added binding ");
         m.append(u.show());
         m.append(" for ");
-        m.append(name);
+        m.append(name.getActual());
         this.log.debug(m.toString());
       }
       return u;
     }
 
-    public @Nonnull UASTUName getName(
+    private int getDepth()
+    {
+      return this.depth;
+    }
+
+    public @Nonnull UniqueName getName(
       final @Nonnull TokenIdentifierLower name)
       throws ConstraintError
     {
-      final UASTUName result = this.getNameInternal(name);
+      final UniqueName result = this.getNameInternal(name);
 
       if (this.log.enabled(Level.LOG_DEBUG)) {
         final StringBuilder m = new StringBuilder();
-        m.append("Retrieved name ");
+        m.append("[");
+        m.append(this.depth);
+        m.append("] Retrieved name ");
         m.append(result != null ? result.show() : "<null>");
         m.append(" for ");
         m.append(name.getActual());
@@ -227,33 +241,29 @@ public final class UniqueBinders
       return result;
     }
 
-    private UASTUName getNameInternal(
-      final TokenIdentifierLower name)
-      throws ConstraintError
-    {
-      if (this.builtins.contains(name.getActual())) {
-        return new UASTUName.UASTUNameBuiltIn(name);
-      }
-      if (this.names.containsKey(name.getActual())) {
-        return this.names.get(name.getActual());
-      }
-      if (this.parent == null) {
-        return new UASTUNameModuleLevel(name);
-      }
-      return this.parent.getNameInternal(name);
-    }
-
-    public @Nonnull UASTUName getNameFromValuePath(
-      final @Nonnull UASTIValuePath name)
+    public @Nonnull UniqueName getNameFromValuePath(
+      final @Nonnull UASTCValuePath name)
       throws ConstraintError
     {
       final Option<TokenIdentifierUpper> m = name.getModule();
       if (m.isSome()) {
-        return new UASTUNameGlobal(
-          ((Option.Some<TokenIdentifierUpper>) m).value,
-          name.getName());
+        return new UniqueNameNonLocal(m, name.getName());
       }
       return this.getName(name.getName());
+    }
+
+    private UniqueName getNameInternal(
+      final TokenIdentifierLower name)
+      throws ConstraintError
+    {
+      if (this.names.containsKey(name.getActual())) {
+        return this.names.get(name.getActual());
+      }
+      if (this.parent == null) {
+        final None<TokenIdentifierUpper> none = Option.none();
+        return new UniqueNameNonLocal(none, name);
+      }
+      return this.parent.getNameInternal(name);
     }
 
     public @CheckForNull Context getParent()
@@ -268,6 +278,11 @@ public final class UniqueBinders
         return true;
       }
       if (this.parent == null) {
+        if (this.root != null) {
+          if (this.root.getName().getActual().equals(name)) {
+            return true;
+          }
+        }
         return false;
       }
       return this.parent.nameExists(name);
@@ -278,29 +293,14 @@ public final class UniqueBinders
       return new Context(
         this.module,
         this,
-        this.builtins,
-        new HashMap<String, UASTUName.UASTUNameLocal>(),
-        this.log);
-    }
-
-    public @Nonnull Context withNewPlusBuiltins(
-      final @Nonnull Set<String> more_builtins)
-    {
-      final HashSet<String> new_builtins = new HashSet<String>();
-      new_builtins.addAll(this.builtins);
-      new_builtins.addAll(more_builtins);
-
-      return new Context(
-        this.module,
-        this,
-        new_builtins,
-        new HashMap<String, UASTUName.UASTUNameLocal>(),
+        this.root,
+        new HashMap<String, UniqueName.UniqueNameLocal>(),
         this.log);
     }
   }
 
-  private static class ExpressionTransformer implements
-    UASTIExpressionVisitor<UASTUExpression, UASTUDValueLocal, UASTIChecked, UniqueBindersError>
+  private static final class ExpressionTransformer implements
+    UASTCExpressionVisitor<UASTUExpression, UASTUDValueLocal, UniqueBindersError>
   {
     private @Nonnull Context context;
 
@@ -312,7 +312,7 @@ public final class UniqueBinders
 
     @Override public UASTUEApplication expressionVisitApplication(
       final @Nonnull List<UASTUExpression> arguments,
-      final @Nonnull UASTIEApplication<UASTIChecked> e)
+      final @Nonnull UASTCEApplication e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -321,7 +321,7 @@ public final class UniqueBinders
     }
 
     @Override public void expressionVisitApplicationPre(
-      final @Nonnull UASTIEApplication<UASTIChecked> e)
+      final @Nonnull UASTCEApplication e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -329,7 +329,7 @@ public final class UniqueBinders
     }
 
     @Override public UASTUEBoolean expressionVisitBoolean(
-      final @Nonnull UASTIEBoolean<UASTIChecked> e)
+      final @Nonnull UASTCEBoolean e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -340,7 +340,7 @@ public final class UniqueBinders
       final @Nonnull UASTUExpression condition,
       final @Nonnull UASTUExpression left,
       final @Nonnull UASTUExpression right,
-      final @Nonnull UASTIEConditional<UASTIChecked> e)
+      final @Nonnull UASTCEConditional e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -348,7 +348,7 @@ public final class UniqueBinders
     }
 
     @Override public void expressionVisitConditionalPre(
-      final @Nonnull UASTIEConditional<UASTIChecked> e)
+      final @Nonnull UASTCEConditional e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -356,7 +356,7 @@ public final class UniqueBinders
     }
 
     @Override public @Nonnull UASTUEInteger expressionVisitInteger(
-      final @Nonnull UASTIEInteger<UASTIChecked> e)
+      final @Nonnull UASTCEInteger e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -366,7 +366,7 @@ public final class UniqueBinders
     @Override public @Nonnull UASTUELet expressionVisitLet(
       final @Nonnull List<UASTUDValueLocal> bindings,
       final @Nonnull UASTUExpression body,
-      final @Nonnull UASTIELet<UASTIChecked> e)
+      final @Nonnull UASTCELet e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -376,9 +376,9 @@ public final class UniqueBinders
     }
 
     @Override public
-      UASTILocalLevelVisitor<UASTUDValueLocal, UASTIChecked, UniqueBindersError>
+      UASTCLocalLevelVisitor<UASTUDValueLocal, UniqueBindersError>
       expressionVisitLetPre(
-        final @Nonnull UASTIELet<UASTIChecked> e)
+        final @Nonnull UASTCELet e)
         throws UniqueBindersError,
           ConstraintError
     {
@@ -388,7 +388,7 @@ public final class UniqueBinders
 
     @Override public @Nonnull UASTUENew expressionVisitNew(
       final @Nonnull List<UASTUExpression> arguments,
-      final @Nonnull UASTIENew<UASTIChecked> e)
+      final @Nonnull UASTCENew e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -396,7 +396,7 @@ public final class UniqueBinders
     }
 
     @Override public void expressionVisitNewPre(
-      final @Nonnull UASTIENew<UASTIChecked> e)
+      final @Nonnull UASTCENew e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -404,7 +404,7 @@ public final class UniqueBinders
     }
 
     @Override public @Nonnull UASTUEReal expressionVisitReal(
-      final @Nonnull UASTIEReal<UASTIChecked> e)
+      final @Nonnull UASTCEReal e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -412,15 +412,14 @@ public final class UniqueBinders
     }
 
     @Override public @Nonnull UASTUERecord expressionVisitRecord(
-      final @Nonnull UASTIERecord<UASTIChecked> e)
+      final @Nonnull UASTCERecord e)
       throws UniqueBindersError,
         ConstraintError
     {
       final List<UASTURecordFieldAssignment> fields =
         new ArrayList<UASTURecordFieldAssignment>();
 
-      for (final UASTIRecordFieldAssignment<UASTIChecked> f : e
-        .getAssignments()) {
+      for (final UASTCRecordFieldAssignment f : e.getAssignments()) {
         final UASTUExpression ep =
           f.getExpression().expressionVisitableAccept(
             new ExpressionTransformer(this.context));
@@ -436,7 +435,7 @@ public final class UniqueBinders
       UASTUERecordProjection
       expressionVisitRecordProjection(
         final @Nonnull UASTUExpression body,
-        final @Nonnull UASTIERecordProjection<UASTIChecked> e)
+        final @Nonnull UASTCERecordProjection e)
         throws UniqueBindersError,
           ConstraintError
     {
@@ -444,7 +443,7 @@ public final class UniqueBinders
     }
 
     @Override public void expressionVisitRecordProjectionPre(
-      final @Nonnull UASTIERecordProjection<UASTIChecked> e)
+      final @Nonnull UASTCERecordProjection e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -453,7 +452,7 @@ public final class UniqueBinders
 
     @Override public @Nonnull UASTUESwizzle expressionVisitSwizzle(
       final @Nonnull UASTUExpression body,
-      final @Nonnull UASTIESwizzle<UASTIChecked> e)
+      final @Nonnull UASTCESwizzle e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -461,7 +460,7 @@ public final class UniqueBinders
     }
 
     @Override public void expressionVisitSwizzlePre(
-      final @Nonnull UASTIESwizzle<UASTIChecked> e)
+      final @Nonnull UASTCESwizzle e)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -469,168 +468,25 @@ public final class UniqueBinders
     }
 
     @Override public @Nonnull UASTUEVariable expressionVisitVariable(
-      final @Nonnull UASTIEVariable<UASTIChecked> e)
+      final @Nonnull UASTCEVariable e)
       throws UniqueBindersError,
         ConstraintError
     {
-      return new UASTUEVariable(
-        this.context.getNameFromValuePath(e.getName()));
+      final UniqueName name = this.context.getNameFromValuePath(e.getName());
+      return new UASTUEVariable(name);
     }
   }
 
-  private static class FragmentShaderLocalTransformer implements
-    UASTIFragmentShaderLocalVisitor<UASTUDShaderFragmentLocal, UASTIChecked, UniqueBindersError>
+  private static final class FragmentShaderTransformer implements
+    UASTCFragmentShaderVisitor<UASTUDShaderFragment, UASTUDShaderFragmentInput, UASTUDShaderFragmentParameter, UASTUDShaderFragmentOutput, UASTUDShaderFragmentLocal, UASTUDShaderFragmentOutputAssignment, UniqueBindersError>,
+    UASTCFragmentShaderLocalVisitor<UASTUDShaderFragmentLocal, UniqueBindersError>
   {
     private final @Nonnull Context context;
-
-    public FragmentShaderLocalTransformer(
-      final @Nonnull Context c)
-    {
-      this.context = c;
-    }
-
-    @Override public @Nonnull
-      UASTUDShaderFragmentLocalDiscard
-      fragmentShaderVisitLocalDiscard(
-        final @Nonnull UASTIDShaderFragmentLocalDiscard<UASTIChecked> d)
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      final UASTUExpression expr =
-        d.getExpression().expressionVisitableAccept(
-          new ExpressionTransformer(this.context));
-      return new UASTUDShaderFragmentLocalDiscard(d.getDiscard(), expr);
-    }
-
-    @Override public @Nonnull
-      UASTUDShaderFragmentLocalValue
-      fragmentShaderVisitLocalValue(
-        final @Nonnull UASTIDShaderFragmentLocalValue<UASTIChecked> v)
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      final UASTIDValueLocal<UASTIChecked> original = v.getValue();
-      final UASTUNameLocal name = this.context.addBinding(original.getName());
-      final Option<UASTUTypePath> ascription =
-        UniqueBinders.mapAscription(original.getAscription());
-
-      final UASTUExpression expression =
-        original.getExpression().expressionVisitableAccept(
-          new ExpressionTransformer(this.context));
-
-      final UASTUDValueLocal value =
-        new UASTUDValueLocal(name, ascription, expression);
-
-      return new UASTUDShaderFragmentLocalValue(value);
-    }
-  }
-
-  private static class VertexShaderLocalTransformer implements
-    UASTIVertexShaderLocalVisitor<UASTUDShaderVertexLocalValue, UASTIChecked, UniqueBindersError>
-  {
-    private final @Nonnull Context context;
-
-    public VertexShaderLocalTransformer(
-      final @Nonnull Context c)
-    {
-      this.context = c;
-    }
-
-    @Override public
-      UASTUDShaderVertexLocalValue
-      vertexShaderVisitLocalValue(
-        final @Nonnull UASTIDShaderVertexLocalValue<UASTIChecked> v)
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      final UASTIDValueLocal<UASTIChecked> original = v.getValue();
-      final UASTUNameLocal name = this.context.addBinding(original.getName());
-      final Option<UASTUTypePath> ascription =
-        UniqueBinders.mapAscription(original.getAscription());
-
-      final UASTUExpression expression =
-        original.getExpression().expressionVisitableAccept(
-          new ExpressionTransformer(this.context));
-
-      final UASTUDValueLocal value =
-        new UASTUDValueLocal(name, ascription, expression);
-
-      return new UASTUDShaderVertexLocalValue(value);
-    }
-  }
-
-  private static class FragmentShaderTransformer implements
-    UASTIFragmentShaderVisitor<UASTUDShaderFragment, UASTUDShaderFragmentInput, UASTUDShaderFragmentParameter, UASTUDShaderFragmentOutput, UASTUDShaderFragmentLocal, UASTUDShaderFragmentOutputAssignment, UASTIChecked, UniqueBindersError>
-  {
-    private @Nonnull Context context;
 
     public FragmentShaderTransformer(
-      final Context c)
+      final @Nonnull Context context)
     {
-      this.context = c;
-    }
-
-    @Override public @Nonnull
-      UASTUDShaderFragmentInput
-      fragmentShaderVisitInput(
-        final @Nonnull UASTIDShaderFragmentInput<UASTIChecked> i)
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      final UASTUNameLocal name = this.context.addBinding(i.getName());
-      final UASTUTypePath type = UniqueBinders.mapTypePath(i.getType());
-      return new UASTUDShaderFragmentInput(name, type);
-    }
-
-    @Override public @Nonnull
-      UASTIFragmentShaderLocalVisitor<UASTUDShaderFragmentLocal, UASTIChecked, UniqueBindersError>
-      fragmentShaderVisitLocalsPre()
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      this.context =
-        this.context.withNewPlusBuiltins(NamesBuiltIn.FRAGMENT_SHADER_INPUTS);
-      return new FragmentShaderLocalTransformer(this.context);
-    }
-
-    @Override public @Nonnull
-      UASTUDShaderFragmentOutput
-      fragmentShaderVisitOutput(
-        final @Nonnull UASTIDShaderFragmentOutput<UASTIChecked> o)
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      return new UASTUDShaderFragmentOutput(
-        o.getName(),
-        UniqueBinders.mapTypePath(o.getType()),
-        o.getIndex());
-    }
-
-    @Override public @Nonnull
-      UASTUDShaderFragmentOutputAssignment
-      fragmentShaderVisitOutputAssignment(
-        final @Nonnull UASTIDShaderFragmentOutputAssignment<UASTIChecked> a)
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      final UASTUExpression evar =
-        a.getVariable().expressionVisitableAccept(
-          new ExpressionTransformer(this.context));
-      return new UASTUDShaderFragmentOutputAssignment(
-        a.getName(),
-        (UASTUEVariable) evar);
-    }
-
-    @Override public @Nonnull
-      UASTUDShaderFragmentParameter
-      fragmentShaderVisitParameter(
-        final @Nonnull UASTIDShaderFragmentParameter<UASTIChecked> p)
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      final UASTUNameLocal name = this.context.addBinding(p.getName());
-      final UASTUTypePath type = UniqueBinders.mapTypePath(p.getType());
-      return new UASTUDShaderFragmentParameter(name, type);
+      this.context = context;
     }
 
     @Override public
@@ -641,7 +497,7 @@ public final class UniqueBinders
         final @Nonnull List<UASTUDShaderFragmentOutput> outputs,
         final @Nonnull List<UASTUDShaderFragmentLocal> locals,
         final @Nonnull List<UASTUDShaderFragmentOutputAssignment> output_assignments,
-        final @Nonnull UASTIDShaderFragment<UASTIChecked> f)
+        final @Nonnull UASTCDShaderFragment f)
         throws UniqueBindersError,
           ConstraintError
     {
@@ -653,101 +509,91 @@ public final class UniqueBinders
         locals,
         output_assignments);
     }
-  }
 
-  private static class VertexShaderTransformer implements
-    UASTIVertexShaderVisitor<UASTUDShaderVertex, UASTUDShaderVertexInput, UASTUDShaderVertexParameter, UASTUDShaderVertexOutput, UASTUDShaderVertexLocalValue, UASTUDShaderVertexOutputAssignment, UASTIChecked, UniqueBindersError>
-  {
-    private final @Nonnull Context context;
-
-    public VertexShaderTransformer(
-      final Context c)
-    {
-      this.context = c;
-    }
-
-    @Override public @Nonnull UASTUDShaderVertexInput vertexShaderVisitInput(
-      final @Nonnull UASTIDShaderVertexInput<UASTIChecked> i)
+    @Override public UASTUDShaderFragmentInput fragmentShaderVisitInput(
+      final @Nonnull UASTCDShaderFragmentInput i)
       throws UniqueBindersError,
         ConstraintError
     {
-      final UASTUNameLocal name = this.context.addBinding(i.getName());
+      final UniqueNameLocal name = this.context.addBinding(i.getName());
       final UASTUTypePath type = UniqueBinders.mapTypePath(i.getType());
-      return new UASTUDShaderVertexInput(name, type);
+      return new UASTUDShaderFragmentInput(name, type);
     }
 
-    @Override public @Nonnull
-      UASTUDShaderVertexOutput
-      vertexShaderVisitOutput(
-        final @Nonnull UASTIDShaderVertexOutput<UASTIChecked> o)
+    @Override public
+      UASTUDShaderFragmentLocalDiscard
+      fragmentShaderVisitLocalDiscard(
+        final @Nonnull UASTCDShaderFragmentLocalDiscard d)
         throws UniqueBindersError,
           ConstraintError
     {
-      return new UASTUDShaderVertexOutput(
-        o.getName(),
-        UniqueBinders.mapTypePath(o.getType()));
-    }
-
-    @Override public @Nonnull
-      UASTUDShaderVertexOutputAssignment
-      vertexShaderVisitOutputAssignment(
-        final @Nonnull UASTIDShaderVertexOutputAssignment<UASTIChecked> a)
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      final UASTUExpression evar =
-        a.getVariable().expressionVisitableAccept(
+      final UASTUExpression ex =
+        d.getExpression().expressionVisitableAccept(
           new ExpressionTransformer(this.context));
-      return new UASTUDShaderVertexOutputAssignment(
-        a.getName(),
-        (UASTUEVariable) evar);
+      return new UASTUDShaderFragmentLocalDiscard(d.getDiscard(), ex);
     }
 
-    @Override public @Nonnull
-      UASTUDShaderVertexParameter
-      vertexShaderVisitParameter(
-        final @Nonnull UASTIDShaderVertexParameter<UASTIChecked> p)
+    @Override public
+      UASTCFragmentShaderLocalVisitor<UASTUDShaderFragmentLocal, UniqueBindersError>
+      fragmentShaderVisitLocalsPre()
         throws UniqueBindersError,
           ConstraintError
     {
-      final UASTUNameLocal name = this.context.addBinding(p.getName());
+      return this;
+    }
+
+    @Override public
+      UASTUDShaderFragmentLocalValue
+      fragmentShaderVisitLocalValue(
+        final UASTCDShaderFragmentLocalValue v)
+        throws UniqueBindersError,
+          ConstraintError
+    {
+      final UASTCDValueLocal value = v.getValue();
+      final UASTUDValueLocal value_new =
+        value.localVisitableAccept(new LocalTransformer(this.context));
+      return new UASTUDShaderFragmentLocalValue(value_new);
+    }
+
+    @Override public UASTUDShaderFragmentOutput fragmentShaderVisitOutput(
+      final @Nonnull UASTCDShaderFragmentOutput o)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final UniqueNameLocal name =
+        new UniqueNameLocal(o.getName(), o.getName().getActual());
+      final UASTUTypePath type = UniqueBinders.mapTypePath(o.getType());
+      return new UASTUDShaderFragmentOutput(name, type, o.getIndex());
+    }
+
+    @Override public
+      UASTUDShaderFragmentOutputAssignment
+      fragmentShaderVisitOutputAssignment(
+        final @Nonnull UASTCDShaderFragmentOutputAssignment a)
+        throws UniqueBindersError,
+          ConstraintError
+    {
+      final UASTCValuePath path = a.getVariable().getName();
+      final UASTUEVariable variable =
+        new UASTUEVariable(this.context.getNameFromValuePath(path));
+      return new UASTUDShaderFragmentOutputAssignment(a.getName(), variable);
+    }
+
+    @Override public
+      UASTUDShaderFragmentParameter
+      fragmentShaderVisitParameter(
+        final @Nonnull UASTCDShaderFragmentParameter p)
+        throws UniqueBindersError,
+          ConstraintError
+    {
+      final UniqueNameLocal name = this.context.addBinding(p.getName());
       final UASTUTypePath type = UniqueBinders.mapTypePath(p.getType());
-      return new UASTUDShaderVertexParameter(name, type);
-    }
-
-    @Override public
-      UASTUDShaderVertex
-      vertexShaderVisit(
-        final @Nonnull List<UASTUDShaderVertexInput> inputs,
-        final @Nonnull List<UASTUDShaderVertexParameter> parameters,
-        final @Nonnull List<UASTUDShaderVertexOutput> outputs,
-        final @Nonnull List<UASTUDShaderVertexLocalValue> locals,
-        final @Nonnull List<UASTUDShaderVertexOutputAssignment> output_assignments,
-        final @Nonnull UASTIDShaderVertex<UASTIChecked> v)
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      return new UASTUDShaderVertex(
-        v.getName(),
-        inputs,
-        outputs,
-        parameters,
-        locals,
-        output_assignments);
-    }
-
-    @Override public
-      UASTIVertexShaderLocalVisitor<UASTUDShaderVertexLocalValue, UASTIChecked, UniqueBindersError>
-      vertexShaderVisitLocalsPre()
-        throws UniqueBindersError,
-          ConstraintError
-    {
-      return new VertexShaderLocalTransformer(this.context);
+      return new UASTUDShaderFragmentParameter(name, type);
     }
   }
 
-  private static class FunctionTransformer implements
-    UASTIFunctionVisitor<UASTUDFunction, UASTUDFunctionArgument, UASTIChecked, UniqueBindersError>
+  private static final class FunctionTransformer implements
+    UASTCFunctionVisitor<UASTUDFunction, UASTUDFunctionArgument, UniqueBindersError>
   {
     private final @Nonnull Context context;
 
@@ -758,18 +604,18 @@ public final class UniqueBinders
     }
 
     @Override public UASTUDFunctionArgument functionVisitArgument(
-      final @Nonnull UASTIDFunctionArgument<UASTIChecked> f)
+      final @Nonnull UASTCDFunctionArgument f)
       throws UniqueBindersError,
         ConstraintError
     {
-      final UASTUNameLocal name = this.context.addBinding(f.getName());
+      final UniqueNameLocal name = this.context.addBinding(f.getName());
       return new UASTUDFunctionArgument(name, UniqueBinders.mapTypePath(f
         .getType()));
     }
 
     @Override public UASTUDFunction functionVisitDefined(
       final @Nonnull List<UASTUDFunctionArgument> arguments,
-      final @Nonnull UASTIDFunctionDefined<UASTIChecked> f)
+      final @Nonnull UASTCDFunctionDefined f)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -787,7 +633,7 @@ public final class UniqueBinders
     }
 
     @Override public void functionVisitDefinedPre(
-      final @Nonnull UASTIDFunctionDefined<UASTIChecked> f)
+      final @Nonnull UASTCDFunctionDefined f)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -796,7 +642,7 @@ public final class UniqueBinders
 
     @Override public UASTUDFunction functionVisitExternal(
       final @Nonnull List<UASTUDFunctionArgument> arguments,
-      final @Nonnull UASTIDFunctionExternal<UASTIChecked> f)
+      final @Nonnull UASTCDFunctionExternal f)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -809,7 +655,7 @@ public final class UniqueBinders
     }
 
     @Override public void functionVisitExternalPre(
-      final @Nonnull UASTIDFunctionExternal<UASTIChecked> f)
+      final @Nonnull UASTCDFunctionExternal f)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -817,8 +663,8 @@ public final class UniqueBinders
     }
   }
 
-  private static class LocalTransformer implements
-    UASTILocalLevelVisitor<UASTUDValueLocal, UASTIChecked, UniqueBindersError>
+  private static final class LocalTransformer implements
+    UASTCLocalLevelVisitor<UASTUDValueLocal, UniqueBindersError>
   {
     private final @Nonnull Context context;
 
@@ -829,11 +675,10 @@ public final class UniqueBinders
     }
 
     @Override public UASTUDValueLocal localVisitValueLocal(
-      final @Nonnull UASTIDValueLocal<UASTIChecked> v)
+      final @Nonnull UASTCDValueLocal v)
       throws UniqueBindersError,
         ConstraintError
     {
-      final UASTUNameLocal name = this.context.addBinding(v.getName());
       final Option<UASTUTypePath> ascription =
         UniqueBinders.mapAscription(v.getAscription());
 
@@ -841,11 +686,12 @@ public final class UniqueBinders
         v.getExpression().expressionVisitableAccept(
           new ExpressionTransformer(this.context));
 
+      final UniqueNameLocal name = this.context.addBinding(v.getName());
       return new UASTUDValueLocal(name, ascription, expression);
     }
   }
 
-  private static class ModuleContext
+  private static final class ModuleContext
   {
     private final @Nonnull AtomicInteger next;
 
@@ -860,55 +706,120 @@ public final class UniqueBinders
     }
   }
 
-  private static class ModuleLevelTransformer implements
-    UASTIModuleLevelDeclarationVisitor<UASTUDeclarationModuleLevel, UASTIChecked, UniqueBindersError>
+  private static final class ModuleTransformer implements
+    UASTCModuleVisitor<UASTUDModule, UASTUDImport, UASTUDeclarationModuleLevel, UASTUDTerm, UASTUDType, UASTUDShader, UniqueBindersError>,
+    UASTCTypeVisitor<UASTUDType, UniqueBindersError>,
+    UASTCTermVisitor<UASTUDTerm, UniqueBindersError>,
+    UASTCShaderVisitor<UASTUDShader, UniqueBindersError>
   {
-    private final @Nonnull ModuleContext module;
-    private final @Nonnull Context       context;
+    private final @Nonnull ModuleContext context;
+    private final @Nonnull Log           log;
 
-    public ModuleLevelTransformer(
-      final @Nonnull ModuleContext module,
+    public ModuleTransformer(
       final @Nonnull Log log)
     {
-      this.module = module;
-      this.context = Context.initialContext(this.module, log);
+      this.context = new ModuleContext();
+      this.log = new Log(log, "module-transformer");
+    }
+
+    @Override public
+      UASTCShaderVisitor<UASTUDShader, UniqueBindersError>
+      moduleShadersPre(
+        final @Nonnull UASTCDModule m)
+        throws UniqueBindersError,
+          ConstraintError
+    {
+      return this;
+    }
+
+    @Override public
+      UASTCTermVisitor<UASTUDTerm, UniqueBindersError>
+      moduleTermsPre(
+        final @Nonnull UASTCDModule m)
+        throws UniqueBindersError,
+          ConstraintError
+    {
+      return this;
+    }
+
+    @Override public
+      UASTCTypeVisitor<UASTUDType, UniqueBindersError>
+      moduleTypesPre(
+        final @Nonnull UASTCDModule m)
+        throws UniqueBindersError,
+          ConstraintError
+    {
+      return this;
+    }
+
+    @Override public UASTUDModule moduleVisit(
+      final @Nonnull List<UASTUDImport> imports,
+      final @Nonnull List<UASTUDeclarationModuleLevel> declarations,
+      final @Nonnull Map<String, UASTUDTerm> terms,
+      final @Nonnull Map<String, UASTUDType> types,
+      final @Nonnull Map<String, UASTUDShader> shaders,
+      final @Nonnull UASTCDModule m)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final Map<String, UASTCDImport> import_names = m.getImportedNames();
+      final Map<String, UASTUDImport> r_import_names =
+        new HashMap<String, UASTUDImport>();
+      for (final String in : import_names.keySet()) {
+        final UASTCDImport i = import_names.get(in);
+        r_import_names.put(in, new UASTUDImport(i.getPath(), i.getRename()));
+      }
+
+      final Map<String, UASTCDImport> import_renames = m.getImportedRenames();
+      final Map<String, UASTUDImport> r_import_renames =
+        new HashMap<String, UASTUDImport>();
+      for (final String in : import_renames.keySet()) {
+        final UASTCDImport i = import_renames.get(in);
+        final UASTUDImport ri = new UASTUDImport(i.getPath(), i.getRename());
+        r_import_renames.put(in, ri);
+      }
+
+      final Map<ModulePathFlat, UASTCDImport> import_modules =
+        m.getImportedModules();
+      final Map<ModulePathFlat, UASTUDImport> r_import_modules =
+        new HashMap<ModulePathFlat, UASTUDImport>();
+      for (final ModulePathFlat in : import_modules.keySet()) {
+        final UASTCDImport i = import_modules.get(in);
+        r_import_modules
+          .put(in, new UASTUDImport(i.getPath(), i.getRename()));
+      }
+
+      return new UASTUDModule(
+        m.getPath(),
+        imports,
+        r_import_modules,
+        r_import_names,
+        r_import_renames,
+        declarations,
+        terms,
+        types,
+        shaders);
     }
 
     @Override public UASTUDShaderFragment moduleVisitFragmentShader(
-      final @Nonnull UASTIDShaderFragment<UASTIChecked> f)
+      final @Nonnull UASTCDShaderFragment f)
       throws UniqueBindersError,
         ConstraintError
     {
-      this.context.addBinding(f.getName());
-
       return f.fragmentShaderVisitableAccept(new FragmentShaderTransformer(
-        this.context.withNew()));
+        Context.initialContext(this.context, null, this.log)));
     }
 
-    @Override public UASTUDFunction moduleVisitFunctionDefined(
-      final @Nonnull UASTIDFunctionDefined<UASTIChecked> f)
+    @Override public UASTUDImport moduleVisitImport(
+      final @Nonnull UASTCDImport i)
       throws UniqueBindersError,
         ConstraintError
     {
-      this.context.addBinding(f.getName());
-
-      return f.functionVisitableAccept(new FunctionTransformer(this.context
-        .withNew()));
+      return new UASTUDImport(i.getPath(), i.getRename());
     }
 
-    @Override public UASTUDFunction moduleVisitFunctionExternal(
-      final @Nonnull UASTIDFunctionExternal<UASTIChecked> f)
-      throws UniqueBindersError,
-        ConstraintError
-    {
-      this.context.addBinding(f.getName());
-
-      return f.functionVisitableAccept(new FunctionTransformer(this.context
-        .withNew()));
-    }
-
-    @Override public UASTUDShaderProgram moduleVisitProgramShader(
-      final @Nonnull UASTIDShaderProgram<UASTIChecked> p)
+    @Override public UASTUDShader moduleVisitProgramShader(
+      final @Nonnull UASTCDShaderProgram p)
       throws UniqueBindersError,
         ConstraintError
     {
@@ -918,97 +829,175 @@ public final class UniqueBinders
         UniqueBinders.mapShaderPath(p.getFragmentShader()));
     }
 
-    @Override public UASTUDTypeRecord moduleVisitTypeRecord(
-      final @Nonnull UASTIDTypeRecord<UASTIChecked> r)
+    @Override public UASTUDShader moduleVisitVertexShader(
+      final @Nonnull UASTCDShaderVertex v)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      return v.vertexShaderVisitableAccept(new VertexShaderTransformer(
+        Context.initialContext(this.context, null, this.log)));
+    }
+
+    @Override public UASTUDTerm termVisitFunctionDefined(
+      final @Nonnull UASTCDFunctionDefined f)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final Context ctx = Context.initialContext(this.context, f, this.log);
+      return f.functionVisitableAccept(new FunctionTransformer(ctx));
+    }
+
+    @Override public UASTUDTerm termVisitFunctionExternal(
+      final @Nonnull UASTCDFunctionExternal f)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final Context ctx = Context.initialContext(this.context, f, this.log);
+      return f.functionVisitableAccept(new FunctionTransformer(ctx));
+    }
+
+    @Override public UASTUDValue termVisitValue(
+      final @Nonnull UASTCDValue v)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final Option<UASTUTypePath> ascription =
+        UniqueBinders.mapAscription(v.getAscription());
+
+      final Context ctx = Context.initialContext(this.context, v, this.log);
+
+      final UASTUExpression expression =
+        v.getExpression().expressionVisitableAccept(
+          new ExpressionTransformer(ctx));
+
+      return new UASTUDValue(v.getName(), ascription, expression);
+    }
+
+    @Override public UASTUDTypeRecord typeVisitTypeRecord(
+      final @Nonnull UASTCDTypeRecord r)
       throws UniqueBindersError,
         ConstraintError
     {
       final List<UASTUDTypeRecordField> fields =
         new ArrayList<UASTUDTypeRecordField>();
 
-      for (final UASTIDTypeRecordField<UASTIChecked> f : r.getFields()) {
+      for (final UASTCDTypeRecordField f : r.getFields()) {
         fields.add(new UASTUDTypeRecordField(f.getName(), UniqueBinders
           .mapTypePath(f.getType())));
       }
 
       return new UASTUDTypeRecord(r.getName(), fields);
     }
-
-    @Override public UASTUDValue moduleVisitValue(
-      final @Nonnull UASTIDValue<UASTIChecked> v)
-      throws UniqueBindersError,
-        ConstraintError
-    {
-      this.context.addBinding(v.getName());
-
-      final UASTUExpression body =
-        v.getExpression().expressionVisitableAccept(
-          new ExpressionTransformer(this.context.withNew()));
-
-      final Option<UASTUTypePath> ascription =
-        UniqueBinders.mapAscription(v.getAscription());
-
-      return new UASTUDValue(v.getName(), ascription, body);
-    }
-
-    @Override public UASTUDShaderVertex moduleVisitVertexShader(
-      final @Nonnull UASTIDShaderVertex<UASTIChecked> f)
-      throws UniqueBindersError,
-        ConstraintError
-    {
-      return f.vertexShaderVisitableAccept(new VertexShaderTransformer(
-        this.context.withNew()));
-    }
   }
 
-  private static class ModuleTransformer implements
-    UASTIModuleVisitor<UASTUDModule, UASTUDImport, UASTUDeclarationModuleLevel, UASTIChecked, UniqueBindersError>
+  private static final class VertexShaderTransformer implements
+    UASTCVertexShaderVisitor<UASTUDShaderVertex, UASTUDShaderVertexInput, UASTUDShaderVertexParameter, UASTUDShaderVertexOutput, UASTUDShaderVertexLocalValue, UASTUDShaderVertexOutputAssignment, UniqueBindersError>,
+    UASTCVertexShaderLocalVisitor<UASTUDShaderVertexLocalValue, UniqueBindersError>
   {
-    private final @Nonnull Log log;
+    private final @Nonnull Context context;
 
-    public ModuleTransformer(
-      final @Nonnull Log log)
+    public VertexShaderTransformer(
+      final @Nonnull Context context)
     {
-      this.log = log;
-    }
-
-    @Override public UASTUDModule moduleVisit(
-      final @Nonnull List<UASTUDImport> imports,
-      final @Nonnull List<UASTUDeclarationModuleLevel> declarations,
-      final @Nonnull UASTIDModule<UASTIChecked> m)
-      throws UniqueBindersError,
-        ConstraintError
-    {
-      return new UASTUDModule(m.getName(), imports, declarations);
-    }
-
-    @Override public UASTUDImport moduleVisitImport(
-      final @Nonnull UASTIDImport<UASTIChecked> i)
-      throws UniqueBindersError,
-        ConstraintError
-    {
-      return new UASTUDImport(i.getPath(), i.getRename());
+      this.context = context;
     }
 
     @Override public
-      UASTIModuleLevelDeclarationVisitor<UASTUDeclarationModuleLevel, UASTIChecked, UniqueBindersError>
-      moduleVisitPre(
-        final @Nonnull UASTIDModule<UASTIChecked> m)
+      UASTUDShaderVertex
+      vertexShaderVisit(
+        final @Nonnull List<UASTUDShaderVertexInput> inputs,
+        final @Nonnull List<UASTUDShaderVertexParameter> parameters,
+        final @Nonnull List<UASTUDShaderVertexOutput> outputs,
+        final @Nonnull List<UASTUDShaderVertexLocalValue> locals,
+        final @Nonnull List<UASTUDShaderVertexOutputAssignment> output_assignments,
+        final @Nonnull UASTCDShaderVertex v)
         throws UniqueBindersError,
           ConstraintError
     {
-      return new ModuleLevelTransformer(new ModuleContext(), this.log);
+      return new UASTUDShaderVertex(
+        v.getName(),
+        inputs,
+        outputs,
+        parameters,
+        locals,
+        output_assignments);
+    }
+
+    @Override public UASTUDShaderVertexInput vertexShaderVisitInput(
+      final @Nonnull UASTCDShaderVertexInput i)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final UniqueNameLocal name = this.context.addBinding(i.getName());
+      final UASTUTypePath type = UniqueBinders.mapTypePath(i.getType());
+      return new UASTUDShaderVertexInput(name, type);
+    }
+
+    @Override public
+      UASTCVertexShaderLocalVisitor<UASTUDShaderVertexLocalValue, UniqueBindersError>
+      vertexShaderVisitLocalsPre()
+        throws UniqueBindersError,
+          ConstraintError
+    {
+      return this;
+    }
+
+    @Override public
+      UASTUDShaderVertexLocalValue
+      vertexShaderVisitLocalValue(
+        final UASTCDShaderVertexLocalValue v)
+        throws UniqueBindersError,
+          ConstraintError
+    {
+      final UASTCDValueLocal value = v.getValue();
+      final UASTUDValueLocal value_new =
+        value.localVisitableAccept(new LocalTransformer(this.context));
+      return new UASTUDShaderVertexLocalValue(value_new);
+    }
+
+    @Override public UASTUDShaderVertexOutput vertexShaderVisitOutput(
+      final @Nonnull UASTCDShaderVertexOutput o)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final UniqueNameLocal name =
+        new UniqueNameLocal(o.getName(), o.getName().getActual());
+      final UASTUTypePath type = UniqueBinders.mapTypePath(o.getType());
+      return new UASTUDShaderVertexOutput(name, type);
+    }
+
+    @Override public
+      UASTUDShaderVertexOutputAssignment
+      vertexShaderVisitOutputAssignment(
+        final @Nonnull UASTCDShaderVertexOutputAssignment a)
+        throws UniqueBindersError,
+          ConstraintError
+    {
+      final UASTCValuePath path = a.getVariable().getName();
+      final UASTUEVariable variable =
+        new UASTUEVariable(this.context.getNameFromValuePath(path));
+      return new UASTUDShaderVertexOutputAssignment(a.getName(), variable);
+    }
+
+    @Override public UASTUDShaderVertexParameter vertexShaderVisitParameter(
+      final @Nonnull UASTCDShaderVertexParameter p)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final UniqueNameLocal name = this.context.addBinding(p.getName());
+      final UASTUTypePath type = UniqueBinders.mapTypePath(p.getType());
+      return new UASTUDShaderVertexParameter(name, type);
     }
   }
 
   static @Nonnull Option<UASTUTypePath> mapAscription(
-    final @Nonnull Option<UASTITypePath> original)
+    final @Nonnull Option<UASTCTypePath> original)
     throws ConstraintError
   {
     return original
-      .mapPartial(new PartialFunction<UASTITypePath, UASTUTypePath, ConstraintError>() {
+      .mapPartial(new PartialFunction<UASTCTypePath, UASTUTypePath, ConstraintError>() {
         @Override public UASTUTypePath call(
-          final @Nonnull UASTITypePath x)
+          final @Nonnull UASTCTypePath x)
           throws ConstraintError
         {
           return UniqueBinders.mapTypePath(x);
@@ -1017,32 +1006,32 @@ public final class UniqueBinders
   }
 
   static @Nonnull UASTUShaderPath mapShaderPath(
-    final @Nonnull UASTIShaderPath path)
+    final @Nonnull UASTCShaderPath path)
     throws ConstraintError
   {
     return new UASTUShaderPath(path.getModule(), path.getName());
   }
 
   static @Nonnull UASTUTypePath mapTypePath(
-    final @Nonnull UASTITypePath type)
+    final @Nonnull UASTCTypePath type)
     throws ConstraintError
   {
     return new UASTUTypePath(type.getModule(), type.getName());
   }
 
   public static @Nonnull UniqueBinders newUniqueBinders(
-    final @Nonnull UASTICompilation<UASTIChecked> compilation,
+    final @Nonnull UASTCCompilation compilation,
     final @Nonnull Log log)
     throws ConstraintError
   {
     return new UniqueBinders(compilation, log);
   }
 
-  private final @Nonnull UASTICompilation<UASTIChecked> compilation;
-  private final @Nonnull Log                            log;
+  private final @Nonnull UASTCCompilation compilation;
+  private final @Nonnull Log              log;
 
   private UniqueBinders(
-    final @Nonnull UASTICompilation<UASTIChecked> compilation,
+    final @Nonnull UASTCCompilation compilation,
     final @Nonnull Log log)
     throws ConstraintError
   {
@@ -1055,7 +1044,7 @@ public final class UniqueBinders
     throws UniqueBindersError,
       ConstraintError
   {
-    final Map<ModulePathFlat, UASTIDModule<UASTIChecked>> modules =
+    final Map<ModulePathFlat, UASTCDModule> modules =
       this.compilation.getModules();
     final Map<ModulePathFlat, ModulePath> paths = this.compilation.getPaths();
 
@@ -1065,7 +1054,7 @@ public final class UniqueBinders
     for (final ModulePathFlat path : modules.keySet()) {
       this.log.debug(String.format("module: %s", path.getActual()));
 
-      final UASTIDModule<UASTIChecked> module = modules.get(path);
+      final UASTCDModule module = modules.get(path);
       assert module != null;
 
       final UASTUDModule u_module =

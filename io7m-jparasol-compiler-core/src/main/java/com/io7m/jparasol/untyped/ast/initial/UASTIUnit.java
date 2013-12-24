@@ -30,16 +30,16 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
  * A compilation unit.
  */
 
-public final class UASTIUnit<S extends UASTIStatus>
+public final class UASTIUnit
 {
-  private final @Nonnull File                  file;
-  private final @Nonnull List<UASTIDModule<S>> modules;
-  private final @Nonnull UASTIDPackage<S>      package_name;
+  private final @Nonnull File               file;
+  private final @Nonnull List<UASTIDModule> modules;
+  private final @Nonnull UASTIDPackage      package_name;
 
   public UASTIUnit(
     final @Nonnull File file,
-    final @Nonnull UASTIDPackage<S> package_name,
-    final @Nonnull List<UASTIDModule<S>> modules)
+    final @Nonnull UASTIDPackage package_name,
+    final @Nonnull List<UASTIDModule> modules)
     throws ConstraintError
   {
     this.file = Constraints.constrainNotNull(file, "File");
@@ -52,12 +52,12 @@ public final class UASTIUnit<S extends UASTIStatus>
     return this.file;
   }
 
-  public @Nonnull List<UASTIDModule<S>> getModules()
+  public @Nonnull List<UASTIDModule> getModules()
   {
     return this.modules;
   }
 
-  public @Nonnull UASTIDPackage<S> getPackageName()
+  public @Nonnull UASTIDPackage getPackageName()
   {
     return this.package_name;
   }

@@ -20,10 +20,10 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 
-public interface UASTIVertexShaderLocalVisitable<S extends UASTIStatus>
+public interface UASTIVertexShaderLocalVisitable
 {
   public
-    <L, E extends Throwable, V extends UASTIVertexShaderLocalVisitor<L, S, E>>
+    <L, E extends Throwable, V extends UASTIVertexShaderLocalVisitor<L, E>>
     L
     vertexShaderLocalVisitableAccept(
       final @Nonnull V v)

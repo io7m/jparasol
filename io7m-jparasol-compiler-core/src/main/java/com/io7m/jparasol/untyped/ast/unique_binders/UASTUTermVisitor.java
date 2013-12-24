@@ -21,46 +21,22 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionExternal;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragment;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderProgram;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertex;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecord;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValue;
 
-public interface UASTUModuleLevelDeclarationVisitor<D, E extends Throwable>
+public interface UASTUTermVisitor<T, E extends Throwable>
 {
-  public @Nonnull D moduleVisitFragmentShader(
-    final @Nonnull UASTUDShaderFragment f)
-    throws E,
-      ConstraintError;
-
-  public @Nonnull D moduleVisitFunctionDefined(
+  public T termVisitFunctionDefined(
     final @Nonnull UASTUDFunctionDefined f)
     throws E,
       ConstraintError;
 
-  public @Nonnull D moduleVisitFunctionExternal(
+  public T termVisitFunctionExternal(
     final @Nonnull UASTUDFunctionExternal f)
     throws E,
       ConstraintError;
 
-  public @Nonnull D moduleVisitProgramShader(
-    final @Nonnull UASTUDShaderProgram p)
-    throws E,
-      ConstraintError;
-
-  public @Nonnull D moduleVisitTypeRecord(
-    final @Nonnull UASTUDTypeRecord r)
-    throws E,
-      ConstraintError;
-
-  public @Nonnull D moduleVisitValue(
+  public T termVisitValue(
     final @Nonnull UASTUDValue v)
-    throws E,
-      ConstraintError;
-
-  public @Nonnull D moduleVisitVertexShader(
-    final @Nonnull UASTUDShaderVertex f)
     throws E,
       ConstraintError;
 }

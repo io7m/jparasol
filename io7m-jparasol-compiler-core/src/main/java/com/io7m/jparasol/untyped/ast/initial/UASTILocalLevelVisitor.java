@@ -21,10 +21,10 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 
-public interface UASTILocalLevelVisitor<A, S extends UASTIStatus, E extends Throwable>
+public interface UASTILocalLevelVisitor<A, E extends Throwable>
 {
   public A localVisitValueLocal(
-    final @Nonnull UASTIDValueLocal<S> v)
+    final @Nonnull UASTIDValueLocal v)
     throws E,
       ConstraintError;
 }

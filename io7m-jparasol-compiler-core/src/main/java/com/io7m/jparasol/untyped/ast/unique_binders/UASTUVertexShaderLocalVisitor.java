@@ -14,9 +14,17 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.untyped.ast.initial;
+package com.io7m.jparasol.untyped.ast.unique_binders;
 
-public interface UASTIUnchecked extends UASTIStatus
+import javax.annotation.Nonnull;
+
+import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertexLocalValue;
+
+public interface UASTUVertexShaderLocalVisitor<L, E extends Throwable>
 {
-  // No value-level representation.
+  public L vertexShaderVisitLocalValue(
+    final @Nonnull UASTUDShaderVertexLocalValue v)
+    throws E,
+      ConstraintError;
 }

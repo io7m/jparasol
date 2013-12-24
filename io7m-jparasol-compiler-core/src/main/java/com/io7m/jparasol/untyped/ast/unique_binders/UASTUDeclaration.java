@@ -9,14 +9,17 @@
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
  * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
- * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFIT WHETHER IN AN ACTION
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package com.io7m.jparasol.untyped.ast.unique_binders;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -24,13 +27,15 @@ import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Function;
 import com.io7m.jaux.functional.Option;
+import com.io7m.jaux.functional.Unit;
 import com.io7m.jparasol.ModulePath;
+import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.lexer.Token.TokenDiscard;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUName.UASTUNameLocal;
+import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 
 public abstract class UASTUDeclaration
 {
@@ -39,9 +44,9 @@ public abstract class UASTUDeclaration
    */
 
   public static abstract class UASTUDeclarationLocalLevel extends
-    UASTUDeclaration
+    UASTUDeclaration implements UASTULocalLevelVisitable
   {
-    // Nothing
+    public abstract @Nonnull UniqueNameLocal getName();
   }
 
   /**
@@ -69,7 +74,7 @@ public abstract class UASTUDeclaration
    */
 
   public static abstract class UASTUDeclarationUnitLevel extends
-    UASTUDeclaration
+    UASTUDeclaration implements UASTUUnitLevelVisitable
   {
     // Nothing
   }
@@ -78,18 +83,19 @@ public abstract class UASTUDeclaration
    * The type of function declarations.
    */
 
-  public static abstract class UASTUDFunction extends UASTUDTerm
+  public static abstract class UASTUDFunction extends UASTUDTerm implements
+    UASTUFunctionVisitable
   {
     // Nothing
   }
 
   public static final class UASTUDFunctionArgument
   {
-    private final @Nonnull UASTUNameLocal name;
-    private final @Nonnull UASTUTypePath  type;
+    private final @Nonnull UniqueNameLocal name;
+    private final @Nonnull UASTUTypePath   type;
 
     public UASTUDFunctionArgument(
-      final @Nonnull UASTUNameLocal name,
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type)
       throws ConstraintError
     {
@@ -97,7 +103,7 @@ public abstract class UASTUDeclaration
       this.type = Constraints.constrainNotNull(type, "Type");
     }
 
-    public @Nonnull UASTUNameLocal getName()
+    public @Nonnull UniqueNameLocal getName()
     {
       return this.name;
     }
@@ -111,9 +117,9 @@ public abstract class UASTUDeclaration
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDFunctionArgument ");
-      builder.append(this.name.show());
+      builder.append(this.name);
       builder.append(" ");
-      builder.append(this.type.show());
+      builder.append(this.type);
       builder.append("]");
       return builder.toString();
     }
@@ -144,6 +150,23 @@ public abstract class UASTUDeclaration
       this.body = Constraints.constrainNotNull(body, "Body");
     }
 
+    @Override public
+      <A, B, E extends Throwable, V extends UASTUFunctionVisitor<A, B, E>>
+      A
+      functionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.functionVisitDefinedPre(this);
+      final List<B> args = new ArrayList<B>();
+      for (final UASTUDFunctionArgument a : this.arguments) {
+        final B x = v.functionVisitArgument(a);
+        args.add(x);
+      }
+      return v.functionVisitDefined(args, this);
+    }
+
     public @Nonnull List<UASTUDFunctionArgument> getArguments()
     {
       return this.arguments;
@@ -164,15 +187,26 @@ public abstract class UASTUDeclaration
       return this.return_type;
     }
 
+    @Override public
+      <T, E extends Throwable, V extends UASTUTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitFunctionDefined(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDFunctionDefined ");
-      builder.append(this.name.getActual());
+      builder.append(this.name);
       builder.append(" ");
       builder.append(this.arguments);
       builder.append(" ");
-      builder.append(this.return_type.show());
+      builder.append(this.return_type);
       builder.append(" ");
       builder.append(this.body);
       builder.append("]");
@@ -205,6 +239,23 @@ public abstract class UASTUDeclaration
       this.external = Constraints.constrainNotNull(external, "External");
     }
 
+    @Override public
+      <A, B, E extends Throwable, V extends UASTUFunctionVisitor<A, B, E>>
+      A
+      functionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.functionVisitExternalPre(this);
+      final List<B> args = new ArrayList<B>();
+      for (final UASTUDFunctionArgument a : this.arguments) {
+        final B x = v.functionVisitArgument(a);
+        args.add(x);
+      }
+      return v.functionVisitExternal(args, this);
+    }
+
     public @Nonnull List<UASTUDFunctionArgument> getArguments()
     {
       return this.arguments;
@@ -225,15 +276,26 @@ public abstract class UASTUDeclaration
       return this.return_type;
     }
 
+    @Override public
+      <T, E extends Throwable, V extends UASTUTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitFunctionExternal(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUDFunctionExternal ");
-      builder.append(this.name.getActual());
+      builder.append("[UASTUDFunctionDefined ");
+      builder.append(this.name);
       builder.append(" ");
       builder.append(this.arguments);
       builder.append(" ");
-      builder.append(this.return_type.show());
+      builder.append(this.return_type);
       builder.append(" ");
       builder.append(this.external.getActual());
       builder.append("]");
@@ -259,6 +321,28 @@ public abstract class UASTUDeclaration
       this.rename = Constraints.constrainNotNull(rename, "Rename");
     }
 
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final UASTUDImport other = (UASTUDImport) obj;
+      if (!this.path.equals(other.path)) {
+        return false;
+      }
+      if (!this.rename.equals(other.rename)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull ModulePath getPath()
     {
       return this.path;
@@ -269,15 +353,13 @@ public abstract class UASTUDeclaration
       return this.rename;
     }
 
-    @Override public String toString()
+    @Override public int hashCode()
     {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUDImport ");
-      builder.append(this.path);
-      builder.append(" ");
-      builder.append(this.rename);
-      builder.append("]");
-      return builder.toString();
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.path.hashCode();
+      result = (prime * result) + this.rename.hashCode();
+      return result;
     }
   }
 
@@ -285,22 +367,46 @@ public abstract class UASTUDeclaration
    * Module declarations.
    */
 
-  public static final class UASTUDModule extends UASTUDeclarationUnitLevel
+  public static final class UASTUDModule extends UASTUDeclarationUnitLevel implements
+    UASTUModuleVisitable
   {
     private final @Nonnull List<UASTUDeclarationModuleLevel> declarations;
+    private final @Nonnull Map<ModulePathFlat, UASTUDImport> imported_modules;
+    private final @Nonnull Map<String, UASTUDImport>         imported_names;
+    private final @Nonnull Map<String, UASTUDImport>         imported_renames;
     private final @Nonnull List<UASTUDImport>                imports;
-    private final @Nonnull TokenIdentifierUpper              name;
+    private final @Nonnull ModulePath                        path;
+    private final @Nonnull Map<String, UASTUDShader>         shaders;
+    private final @Nonnull Map<String, UASTUDTerm>           terms;
+    private final @Nonnull Map<String, UASTUDType>           types;
 
     public UASTUDModule(
-      final @Nonnull TokenIdentifierUpper name,
+      final @Nonnull ModulePath path,
       final @Nonnull List<UASTUDImport> imports,
-      final @Nonnull List<UASTUDeclarationModuleLevel> declarations)
+      final @Nonnull Map<ModulePathFlat, UASTUDImport> imported_modules,
+      final @Nonnull Map<String, UASTUDImport> imported_names,
+      final @Nonnull Map<String, UASTUDImport> imported_renames,
+      final @Nonnull List<UASTUDeclarationModuleLevel> declarations,
+      final @Nonnull Map<String, UASTUDTerm> terms,
+      final @Nonnull Map<String, UASTUDType> types,
+      final @Nonnull Map<String, UASTUDShader> shaders)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.path = Constraints.constrainNotNull(path, "Path");
+
       this.imports = Constraints.constrainNotNull(imports, "Imports");
+      this.imported_modules =
+        Constraints.constrainNotNull(imported_modules, "Imported modules");
+      this.imported_names =
+        Constraints.constrainNotNull(imported_names, "Imported names");
+      this.imported_renames =
+        Constraints.constrainNotNull(imported_renames, "Imported renames");
+
       this.declarations =
         Constraints.constrainNotNull(declarations, "Declarations");
+      this.terms = Constraints.constrainNotNull(terms, "Terms");
+      this.types = Constraints.constrainNotNull(types, "Types");
+      this.shaders = Constraints.constrainNotNull(shaders, "Shaders");
     }
 
     public @Nonnull List<UASTUDeclarationModuleLevel> getDeclarations()
@@ -308,61 +414,133 @@ public abstract class UASTUDeclaration
       return this.declarations;
     }
 
+    public @Nonnull Map<ModulePathFlat, UASTUDImport> getImportedModules()
+    {
+      return this.imported_modules;
+    }
+
+    public @Nonnull Map<String, UASTUDImport> getImportedNames()
+    {
+      return this.imported_names;
+    }
+
+    public @Nonnull Map<String, UASTUDImport> getImportedRenames()
+    {
+      return this.imported_renames;
+    }
+
     public @Nonnull List<UASTUDImport> getImports()
     {
       return this.imports;
     }
 
-    public @Nonnull TokenIdentifierUpper getName()
+    public @Nonnull ModulePath getPath()
     {
-      return this.name;
+      return this.path;
+    }
+
+    public @Nonnull Map<String, UASTUDShader> getShaders()
+    {
+      return this.shaders;
+    }
+
+    public @Nonnull Map<String, UASTUDTerm> getTerms()
+    {
+      return this.terms;
+    }
+
+    public @Nonnull Map<String, UASTUDType> getTypes()
+    {
+      return this.types;
+    }
+
+    @Override public
+      <M, I, D, DTE extends D, DTY extends D, DS extends D, E extends Throwable, V extends UASTUModuleVisitor<M, I, D, DTE, DTY, DS, E>>
+      M
+      moduleVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      final List<I> r_imports = new ArrayList<I>();
+      for (final UASTUDImport i : this.imports) {
+        final I r = v.moduleVisitImport(i);
+        r_imports.add(r);
+      }
+
+      final List<D> r_decls = new ArrayList<D>();
+      final Map<String, DTY> r_types = new HashMap<String, DTY>();
+      final Map<String, DTE> r_terms = new HashMap<String, DTE>();
+      final Map<String, DS> r_shaders = new HashMap<String, DS>();
+
+      {
+        final UASTUTypeVisitor<DTY, E> tv = v.moduleTypesPre(this);
+        for (final String k : this.types.keySet()) {
+          final UASTUDType ty = this.types.get(k);
+          final DTY r = ty.typeVisitableAccept(tv);
+          r_types.put(k, r);
+          r_decls.add(r);
+        }
+      }
+
+      {
+        final UASTUTermVisitor<DTE, E> tv = v.moduleTermsPre(this);
+        for (final String k : this.terms.keySet()) {
+          final UASTUDTerm t = this.terms.get(k);
+          final DTE r = t.termVisitableAccept(tv);
+          r_terms.put(k, r);
+          r_decls.add(r);
+        }
+      }
+
+      {
+        final UASTUShaderVisitor<DS, E> tv = v.moduleShadersPre(this);
+        for (final String k : this.shaders.keySet()) {
+          final UASTUDShader t = this.shaders.get(k);
+          final DS r = t.shaderVisitableAccept(tv);
+          r_shaders.put(k, r);
+          r_decls.add(r);
+        }
+      }
+
+      return v.moduleVisit(
+        r_imports,
+        r_decls,
+        r_terms,
+        r_types,
+        r_shaders,
+        this);
     }
 
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDModule ");
-      builder.append(this.name.getActual());
-      builder.append("\n");
-
-      if (this.imports.isEmpty()) {
-        builder.append("  []\n");
-      } else {
-        for (int index = 0; index < this.imports.size(); ++index) {
-          if (index == 0) {
-            builder.append("  [");
-          } else {
-            builder.append("  ");
-          }
-          builder.append(this.imports.get(index));
-          if ((index + 1) == this.imports.size()) {
-            builder.append("]\n");
-          } else {
-            builder.append("\n");
-          }
-        }
+      builder.append(ModulePathFlat.fromModulePath(this.path).getActual());
+      builder.append(" [\n");
+      for (final UASTUDImport i : this.imports) {
+        builder.append("  ");
+        builder.append(i);
+        builder.append("\n");
       }
-
-      if (this.declarations.isEmpty()) {
-        builder.append("  []\n");
-      } else {
-        for (int index = 0; index < this.declarations.size(); ++index) {
-          if (index == 0) {
-            builder.append("  [\n    ");
-          } else {
-            builder.append("    ");
-          }
-          builder.append(this.declarations.get(index));
-          if ((index + 1) == this.declarations.size()) {
-            builder.append("\n  ]\n");
-          } else {
-            builder.append("\n");
-          }
-        }
+      for (final UASTUDeclarationModuleLevel d : this.declarations) {
+        builder.append("  ");
+        builder.append(d);
+        builder.append("\n");
       }
-
-      builder.append("]");
+      builder.append("]]");
       return builder.toString();
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTUUnitLevelVisitor<A, E>>
+      A
+      unitVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.unitVisitModule(this);
     }
   }
 
@@ -386,13 +564,15 @@ public abstract class UASTUDeclaration
       return this.path;
     }
 
-    @Override public String toString()
+    @Override public
+      <A, E extends Throwable, V extends UASTUUnitLevelVisitor<A, E>>
+      A
+      unitVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
     {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUDPackage ");
-      builder.append(this.path);
-      builder.append("]");
-      return builder.toString();
+      return v.unitVisitPackage(this);
     }
   }
 
@@ -401,7 +581,7 @@ public abstract class UASTUDeclaration
    */
 
   public static abstract class UASTUDShader extends
-    UASTUDeclarationModuleLevel
+    UASTUDeclarationModuleLevel implements UASTUShaderVisitable
   {
     private final @Nonnull TokenIdentifierLower name;
 
@@ -418,7 +598,8 @@ public abstract class UASTUDeclaration
     }
   }
 
-  public static final class UASTUDShaderFragment extends UASTUDShader
+  public static final class UASTUDShaderFragment extends UASTUDShader implements
+    UASTUFragmentShaderVisitable
   {
     private final @Nonnull List<UASTUDShaderFragmentInput>            inputs;
     private final @Nonnull List<UASTUDShaderFragmentLocal>            locals;
@@ -442,6 +623,56 @@ public abstract class UASTUDeclaration
         Constraints.constrainNotNull(parameters, "Parameters");
       this.locals = Constraints.constrainNotNull(locals, "Locals");
       this.writes = Constraints.constrainNotNull(writes, "Writes");
+    }
+
+    @Override public
+      <F, PI, PP, PO, L, O, E extends Throwable, V extends UASTUFragmentShaderVisitor<F, PI, PP, PO, L, O, E>>
+      F
+      fragmentShaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      final List<PI> r_inputs = new ArrayList<PI>();
+      for (final UASTUDShaderFragmentInput i : this.inputs) {
+        final PI ri = v.fragmentShaderVisitInput(i);
+        r_inputs.add(ri);
+      }
+
+      final List<PO> r_outputs = new ArrayList<PO>();
+      for (final UASTUDShaderFragmentOutput o : this.outputs) {
+        final PO ro = v.fragmentShaderVisitOutput(o);
+        r_outputs.add(ro);
+      }
+
+      final List<PP> r_parameters = new ArrayList<PP>();
+      for (final UASTUDShaderFragmentParameter p : this.parameters) {
+        final PP rp = v.fragmentShaderVisitParameter(p);
+        r_parameters.add(rp);
+      }
+
+      final UASTUFragmentShaderLocalVisitor<L, E> lv =
+        v.fragmentShaderVisitLocalsPre();
+
+      final ArrayList<L> r_locals = new ArrayList<L>();
+      for (final UASTUDShaderFragmentLocal l : this.locals) {
+        final L rl = l.fragmentShaderLocalVisitableAccept(lv);
+        r_locals.add(rl);
+      }
+
+      final ArrayList<O> r_assigns = new ArrayList<O>();
+      for (final UASTUDShaderFragmentOutputAssignment w : this.writes) {
+        final O rw = v.fragmentShaderVisitOutputAssignment(w);
+        r_assigns.add(rw);
+      }
+
+      return v.fragmentShaderVisit(
+        r_inputs,
+        r_parameters,
+        r_outputs,
+        r_locals,
+        r_assigns,
+        this);
     }
 
     public @Nonnull List<UASTUDShaderFragmentInput> getInputs()
@@ -469,55 +700,99 @@ public abstract class UASTUDeclaration
       return this.writes;
     }
 
+    @Override public
+      <T, E extends Throwable, V extends UASTUShaderVisitor<T, E>>
+      T
+      shaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.moduleVisitFragmentShader(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderFragment ");
-      builder.append(this.inputs);
-      builder.append(" ");
-      builder.append(this.parameters);
-      builder.append(" ");
-      builder.append(this.outputs);
-      builder.append(" ");
-      builder.append(this.locals);
-      builder.append(" ");
-      builder.append(this.writes);
+      builder.append(this.getName().getActual());
+      builder.append(" [\n");
+
+      if (this.inputs.isEmpty() == false) {
+        for (final UASTUDShaderFragmentInput i : this.inputs) {
+          builder.append("    ");
+          builder.append(i);
+          builder.append("\n");
+        }
+        builder.append("\n");
+      }
+
+      if (this.parameters.isEmpty() == false) {
+        for (final UASTUDShaderFragmentParameter i : this.parameters) {
+          builder.append("    ");
+          builder.append(i);
+          builder.append("\n");
+        }
+        builder.append("\n");
+      }
+
+      if (this.outputs.isEmpty() == false) {
+        for (final UASTUDShaderFragmentOutput o : this.outputs) {
+          builder.append("    ");
+          builder.append(o);
+          builder.append("\n");
+        }
+        builder.append("\n");
+      }
+
+      if (this.locals.isEmpty() == false) {
+        for (final UASTUDShaderFragmentLocal l : this.locals) {
+          builder.append("    ");
+          builder.append(l);
+          builder.append("\n");
+        }
+        builder.append("\n");
+      }
+
+      if (this.writes.isEmpty() == false) {
+        for (final UASTUDShaderFragmentOutputAssignment w : this.writes) {
+          builder.append("    ");
+          builder.append(w);
+          builder.append("\n");
+        }
+      }
+      builder.append("  ]\n");
       builder.append("]");
       return builder.toString();
     }
+
   }
 
   public static final class UASTUDShaderFragmentInput extends
     UASTUDShaderFragmentParameters
   {
-    private final @Nonnull UASTUNameLocal name;
-
     public UASTUDShaderFragmentInput(
-      final @Nonnull UASTUNameLocal name,
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type)
       throws ConstraintError
     {
-      super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
-    }
-
-    public @Nonnull UASTUNameLocal getName()
-    {
-      return this.name;
+      super(name, type);
     }
 
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderFragmentInput ");
-      builder.append(this.name.show());
+      builder.append(this.getName());
+      builder.append(" ");
+      builder.append(this.getType());
       builder.append("]");
       return builder.toString();
     }
   }
 
   public static abstract class UASTUDShaderFragmentLocal extends
-    UASTUDeclarationShaderLevel
+    UASTUDeclarationShaderLevel implements UASTUFragmentShaderLocalVisitable
   {
     // Nothing
   }
@@ -538,6 +813,17 @@ public abstract class UASTUDeclaration
         Constraints.constrainNotNull(expression, "Expression");
     }
 
+    @Override public
+      <L, E extends Throwable, V extends UASTUFragmentShaderLocalVisitor<L, E>>
+      L
+      fragmentShaderLocalVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitLocalDiscard(this);
+    }
+
     public @Nonnull TokenDiscard getDiscard()
     {
       return this.discard;
@@ -546,15 +832,6 @@ public abstract class UASTUDeclaration
     public @Nonnull UASTUExpression getExpression()
     {
       return this.expression;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUDShaderFragmentLocalDiscard ");
-      builder.append(this.expression);
-      builder.append("]");
-      return builder.toString();
     }
   }
 
@@ -568,6 +845,17 @@ public abstract class UASTUDeclaration
       throws ConstraintError
     {
       this.value = Constraints.constrainNotNull(value, "Value");
+    }
+
+    @Override public
+      <L, E extends Throwable, V extends UASTUFragmentShaderLocalVisitor<L, E>>
+      L
+      fragmentShaderLocalVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitLocalValue(this);
     }
 
     public @Nonnull UASTUDValueLocal getValue()
@@ -588,17 +876,15 @@ public abstract class UASTUDeclaration
   public static final class UASTUDShaderFragmentOutput extends
     UASTUDShaderFragmentParameters
   {
-    private final int                           index;
-    private final @Nonnull TokenIdentifierLower name;
+    private final int index;
 
     public UASTUDShaderFragmentOutput(
-      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type,
       final int index)
       throws ConstraintError
     {
-      super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
+      super(name, type);
       this.index = index;
     }
 
@@ -607,16 +893,13 @@ public abstract class UASTUDeclaration
       return this.index;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
-    {
-      return this.name;
-    }
-
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderFragmentOutput ");
-      builder.append(this.name.getActual());
+      builder.append(this.getName());
+      builder.append(" ");
+      builder.append(this.getType());
       builder.append(" ");
       builder.append(this.index);
       builder.append("]");
@@ -653,7 +936,7 @@ public abstract class UASTUDeclaration
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderFragmentOutputAssignment ");
-      builder.append(this.name.getActual());
+      builder.append(this.name);
       builder.append(" ");
       builder.append(this.variable);
       builder.append("]");
@@ -664,22 +947,21 @@ public abstract class UASTUDeclaration
   public static final class UASTUDShaderFragmentParameter extends
     UASTUDShaderFragmentParameters
   {
-    private final @Nonnull UASTUNameLocal name;
-
     public UASTUDShaderFragmentParameter(
-      final @Nonnull UASTUNameLocal name,
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type)
       throws ConstraintError
     {
-      super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
+      super(name, type);
     }
 
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderFragmentParameter ");
-      builder.append(this.name.show());
+      builder.append(this.getName());
+      builder.append(" ");
+      builder.append(this.getType());
       builder.append("]");
       return builder.toString();
     }
@@ -689,23 +971,32 @@ public abstract class UASTUDeclaration
     UASTUDShaderParameters
   {
     UASTUDShaderFragmentParameters(
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type)
       throws ConstraintError
     {
-      super(type);
+      super(name, type);
     }
   }
 
   public static abstract class UASTUDShaderParameters extends
     UASTUDeclarationShaderLevel
   {
-    private final @Nonnull UASTUTypePath type;
+    private final @Nonnull UniqueNameLocal name;
+    private final @Nonnull UASTUTypePath   type;
 
     UASTUDShaderParameters(
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type)
       throws ConstraintError
     {
+      this.name = Constraints.constrainNotNull(name, "Name");
       this.type = Constraints.constrainNotNull(type, "Type");
+    }
+
+    public final @Nonnull UniqueNameLocal getName()
+    {
+      return this.name;
     }
 
     public final @Nonnull UASTUTypePath getType()
@@ -742,24 +1033,25 @@ public abstract class UASTUDeclaration
       return this.vertex_shader;
     }
 
-    @Override public String toString()
+    @Override public
+      <T, E extends Throwable, V extends UASTUShaderVisitor<T, E>>
+      T
+      shaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
     {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUDShaderProgram ");
-      builder.append(this.fragment_shader.show());
-      builder.append(" ");
-      builder.append(this.vertex_shader.show());
-      builder.append("]");
-      return builder.toString();
+      return v.moduleVisitProgramShader(this);
     }
   }
 
-  public static final class UASTUDShaderVertex extends UASTUDShader
+  public static final class UASTUDShaderVertex extends UASTUDShader implements
+    UASTUVertexShaderVisitable
   {
     private final @Nonnull List<UASTUDShaderVertexInput>            inputs;
+    private final @Nonnull List<UASTUDShaderVertexLocalValue>       locals;
     private final @Nonnull List<UASTUDShaderVertexOutput>           outputs;
     private final @Nonnull List<UASTUDShaderVertexParameter>        parameters;
-    private final @Nonnull List<UASTUDShaderVertexLocalValue>       values;
     private final @Nonnull List<UASTUDShaderVertexOutputAssignment> writes;
 
     public UASTUDShaderVertex(
@@ -767,7 +1059,7 @@ public abstract class UASTUDeclaration
       final @Nonnull List<UASTUDShaderVertexInput> inputs,
       final @Nonnull List<UASTUDShaderVertexOutput> outputs,
       final @Nonnull List<UASTUDShaderVertexParameter> parameters,
-      final @Nonnull List<UASTUDShaderVertexLocalValue> values,
+      final @Nonnull List<UASTUDShaderVertexLocalValue> locals,
       final @Nonnull List<UASTUDShaderVertexOutputAssignment> writes)
       throws ConstraintError
     {
@@ -776,13 +1068,18 @@ public abstract class UASTUDeclaration
       this.outputs = Constraints.constrainNotNull(outputs, "Outputs");
       this.parameters =
         Constraints.constrainNotNull(parameters, "Parameters");
-      this.values = Constraints.constrainNotNull(values, "Values");
+      this.locals = Constraints.constrainNotNull(locals, "Values");
       this.writes = Constraints.constrainNotNull(writes, "Writes");
     }
 
     public @Nonnull List<UASTUDShaderVertexInput> getInputs()
     {
       return this.inputs;
+    }
+
+    public @Nonnull List<UASTUDShaderVertexLocalValue> getLocals()
+    {
+      return this.locals;
     }
 
     public @Nonnull List<UASTUDShaderVertexOutput> getOutputs()
@@ -795,58 +1092,146 @@ public abstract class UASTUDeclaration
       return this.parameters;
     }
 
-    public @Nonnull List<UASTUDShaderVertexLocalValue> getValues()
-    {
-      return this.values;
-    }
-
     public @Nonnull List<UASTUDShaderVertexOutputAssignment> getWrites()
     {
       return this.writes;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTUShaderVisitor<T, E>>
+      T
+      shaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.moduleVisitVertexShader(this);
     }
 
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderVertex ");
-      builder.append(this.inputs);
-      builder.append(" ");
-      builder.append(this.parameters);
-      builder.append(" ");
-      builder.append(this.outputs);
-      builder.append(" ");
-      builder.append(this.values);
-      builder.append(" ");
-      builder.append(this.writes);
+      builder.append(this.getName().getActual());
+      builder.append(" [\n");
+
+      if (this.inputs.isEmpty() == false) {
+        for (final UASTUDShaderVertexInput i : this.inputs) {
+          builder.append("    ");
+          builder.append(i);
+          builder.append("\n");
+        }
+        builder.append("\n");
+      }
+
+      if (this.parameters.isEmpty() == false) {
+        for (final UASTUDShaderVertexParameter i : this.parameters) {
+          builder.append("    ");
+          builder.append(i);
+          builder.append("\n");
+        }
+        builder.append("\n");
+      }
+
+      if (this.outputs.isEmpty() == false) {
+        for (final UASTUDShaderVertexOutput o : this.outputs) {
+          builder.append("    ");
+          builder.append(o);
+          builder.append("\n");
+        }
+        builder.append("\n");
+      }
+
+      if (this.locals.isEmpty() == false) {
+        for (final UASTUDShaderVertexLocalValue l : this.locals) {
+          builder.append("    ");
+          builder.append(l);
+          builder.append("\n");
+        }
+        builder.append("\n");
+      }
+
+      if (this.writes.isEmpty() == false) {
+        for (final UASTUDShaderVertexOutputAssignment w : this.writes) {
+          builder.append("    ");
+          builder.append(w);
+          builder.append("\n");
+        }
+      }
+      builder.append("  ]\n");
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public
+      <VS, PI, PP, PO, L, O, E extends Throwable, V extends UASTUVertexShaderVisitor<VS, PI, PP, PO, L, O, E>>
+      VS
+      vertexShaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      final List<PI> r_inputs = new ArrayList<PI>();
+      for (final UASTUDShaderVertexInput i : this.inputs) {
+        final PI ri = v.vertexShaderVisitInput(i);
+        r_inputs.add(ri);
+      }
+
+      final List<PO> r_outputs = new ArrayList<PO>();
+      for (final UASTUDShaderVertexOutput o : this.outputs) {
+        final PO ro = v.vertexShaderVisitOutput(o);
+        r_outputs.add(ro);
+      }
+
+      final List<PP> r_parameters = new ArrayList<PP>();
+      for (final UASTUDShaderVertexParameter p : this.parameters) {
+        final PP rp = v.vertexShaderVisitParameter(p);
+        r_parameters.add(rp);
+      }
+
+      final UASTUVertexShaderLocalVisitor<L, E> lv =
+        v.vertexShaderVisitLocalsPre();
+
+      final ArrayList<L> r_locals = new ArrayList<L>();
+      for (final UASTUDShaderVertexLocalValue l : this.locals) {
+        final L rl = lv.vertexShaderVisitLocalValue(l);
+        r_locals.add(rl);
+      }
+
+      final ArrayList<O> r_assigns = new ArrayList<O>();
+      for (final UASTUDShaderVertexOutputAssignment w : this.writes) {
+        final O rw = v.vertexShaderVisitOutputAssignment(w);
+        r_assigns.add(rw);
+      }
+
+      return v.vertexShaderVisit(
+        r_inputs,
+        r_parameters,
+        r_outputs,
+        r_locals,
+        r_assigns,
+        this);
     }
   }
 
   public static final class UASTUDShaderVertexInput extends
     UASTUDShaderVertexParameters
   {
-    private final @Nonnull UASTUNameLocal name;
-
     public UASTUDShaderVertexInput(
-      final @Nonnull UASTUNameLocal name,
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type)
       throws ConstraintError
     {
-      super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
-    }
-
-    public @Nonnull UASTUNameLocal getName()
-    {
-      return this.name;
+      super(name, type);
     }
 
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderVertexInput ");
-      builder.append(this.name.show());
+      builder.append(this.getName());
+      builder.append(" ");
+      builder.append(this.getType());
       builder.append("]");
       return builder.toString();
     }
@@ -882,22 +1267,21 @@ public abstract class UASTUDeclaration
   public static final class UASTUDShaderVertexOutput extends
     UASTUDShaderVertexParameters
   {
-    private final @Nonnull TokenIdentifierLower name;
-
     public UASTUDShaderVertexOutput(
-      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type)
       throws ConstraintError
     {
-      super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
+      super(name, type);
     }
 
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderVertexOutput ");
-      builder.append(this.name.getActual());
+      builder.append(this.getName());
+      builder.append(" ");
+      builder.append(this.getType());
       builder.append("]");
       return builder.toString();
     }
@@ -932,9 +1316,9 @@ public abstract class UASTUDeclaration
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDShaderVertexOutputAssignment ");
-      builder.append(this.name.getActual());
+      builder.append(this.getName());
       builder.append(" ");
-      builder.append(this.variable);
+      builder.append(this.getVariable());
       builder.append("]");
       return builder.toString();
     }
@@ -943,29 +1327,12 @@ public abstract class UASTUDeclaration
   public static final class UASTUDShaderVertexParameter extends
     UASTUDShaderVertexParameters
   {
-    private final @Nonnull UASTUNameLocal name;
-
     public UASTUDShaderVertexParameter(
-      final @Nonnull UASTUNameLocal name,
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type)
       throws ConstraintError
     {
-      super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
-    }
-
-    public @Nonnull UASTUNameLocal getName()
-    {
-      return this.name;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUDShaderVertexParameter ");
-      builder.append(this.name.show());
-      builder.append("]");
-      return builder.toString();
+      super(name, type);
     }
   }
 
@@ -973,10 +1340,11 @@ public abstract class UASTUDeclaration
     UASTUDShaderParameters
   {
     UASTUDShaderVertexParameters(
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type)
       throws ConstraintError
     {
-      super(type);
+      super(name, type);
     }
   }
 
@@ -984,7 +1352,8 @@ public abstract class UASTUDeclaration
    * The type of term declarations.
    */
 
-  public static abstract class UASTUDTerm extends UASTUDeclarationModuleLevel
+  public static abstract class UASTUDTerm extends UASTUDeclarationModuleLevel implements
+    UASTUTermVisitable
   {
     // Nothing
   }
@@ -1003,7 +1372,8 @@ public abstract class UASTUDeclaration
    * The type of type declarations.
    */
 
-  public static abstract class UASTUDType extends UASTUDeclarationModuleLevel
+  public static abstract class UASTUDType extends UASTUDeclarationModuleLevel implements
+    UASTUTypeVisitable
   {
     // Nothing
   }
@@ -1012,7 +1382,8 @@ public abstract class UASTUDeclaration
    * Record declarations.
    */
 
-  public static final class UASTUDTypeRecord extends UASTUDType
+  public static final class UASTUDTypeRecord extends UASTUDType implements
+    UASTUDRecordVisitable
   {
     private final @Nonnull List<UASTUDTypeRecordField> fields;
     private final @Nonnull TokenIdentifierLower        name;
@@ -1036,15 +1407,34 @@ public abstract class UASTUDeclaration
       return this.name;
     }
 
-    @Override public String toString()
+    @Override public
+      <A, B, E extends Throwable, V extends UASTUDRecordVisitor<A, B, E>>
+      A
+      recordTypeVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
     {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUDTypeRecord ");
-      builder.append(this.name.getActual());
-      builder.append(" ");
-      builder.append(this.fields);
-      builder.append("]");
-      return builder.toString();
+      v.recordTypeVisitPre(this);
+
+      final List<B> new_fields = new ArrayList<B>();
+      for (final UASTUDTypeRecordField f : this.fields) {
+        final B x = v.recordTypeVisitField(f);
+        new_fields.add(x);
+      }
+
+      return v.recordTypeVisit(new_fields, this);
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTUTypeVisitor<T, E>>
+      T
+      typeVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.typeVisitTypeRecord(this);
     }
   }
 
@@ -1070,17 +1460,6 @@ public abstract class UASTUDeclaration
     public @Nonnull UASTUTypePath getType()
     {
       return this.type;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUDTypeRecordField ");
-      builder.append(this.name.getActual());
-      builder.append(" ");
-      builder.append(this.type.show());
-      builder.append("]");
-      return builder.toString();
     }
   }
 
@@ -1122,25 +1501,39 @@ public abstract class UASTUDeclaration
       return this.name;
     }
 
+    @Override public
+      <T, E extends Throwable, V extends UASTUTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitValue(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTUDValue ");
       builder.append(this.name.getActual());
       builder.append(" ");
-      builder.append(this.ascription
-        .map(new Function<UASTUTypePath, String>() {
-          @Override public String call(
-            final @Nonnull UASTUTypePath x)
-          {
-            return x.show();
-          }
-        }));
-      builder.append(" ");
+
+      this.ascription.map(new Function<UASTUTypePath, Unit>() {
+        @Override public Unit call(
+          final UASTUTypePath x)
+        {
+          builder.append(x.show());
+          builder.append(" ");
+          return Unit.unit();
+        }
+      });
+
       builder.append(this.expression);
       builder.append("]");
       return builder.toString();
     }
+
   }
 
   /**
@@ -1151,10 +1544,10 @@ public abstract class UASTUDeclaration
   {
     private final @Nonnull Option<UASTUTypePath> ascription;
     private final @Nonnull UASTUExpression       expression;
-    private final @Nonnull UASTUNameLocal        name;
+    private final @Nonnull UniqueNameLocal       name;
 
     public UASTUDValueLocal(
-      final @Nonnull UASTUNameLocal name,
+      final @Nonnull UniqueNameLocal name,
       final @Nonnull Option<UASTUTypePath> ascription,
       final @Nonnull UASTUExpression expression)
       throws ConstraintError
@@ -1176,9 +1569,20 @@ public abstract class UASTUDeclaration
       return this.expression;
     }
 
-    public @Nonnull UASTUNameLocal getName()
+    @Override public @Nonnull UniqueNameLocal getName()
     {
       return this.name;
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTULocalLevelVisitor<A, E>>
+      A
+      localVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.localVisitValueLocal(this);
     }
 
     @Override public String toString()
@@ -1187,15 +1591,17 @@ public abstract class UASTUDeclaration
       builder.append("[UASTUDValueLocal ");
       builder.append(this.name.show());
       builder.append(" ");
-      builder.append(this.ascription
-        .map(new Function<UASTUTypePath, String>() {
-          @Override public String call(
-            final UASTUTypePath x)
-          {
-            return x.show();
-          }
-        }));
-      builder.append(" ");
+
+      this.ascription.map(new Function<UASTUTypePath, Unit>() {
+        @Override public Unit call(
+          final UASTUTypePath x)
+        {
+          builder.append(x.show());
+          builder.append(" ");
+          return Unit.unit();
+        }
+      });
+
       builder.append(this.expression);
       builder.append("]");
       return builder.toString();

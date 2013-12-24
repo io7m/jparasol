@@ -14,18 +14,18 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.untyped.ast.unique_binders;
+package com.io7m.jparasol.untyped.ast.checked;
 
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 
-public interface UASTUModuleLevelDeclarationVisitable
+public interface UASTCVertexShaderVisitable
 {
   public
-    <A, E extends Throwable, V extends UASTUModuleLevelDeclarationVisitor<A, E>>
-    A
-    moduleLevelVisitableAccept(
+    <VS, PI, PP, PO, L, O, E extends Throwable, V extends UASTCVertexShaderVisitor<VS, PI, PP, PO, L, O, E>>
+    VS
+    vertexShaderVisitableAccept(
       final @Nonnull V v)
       throws E,
         ConstraintError;

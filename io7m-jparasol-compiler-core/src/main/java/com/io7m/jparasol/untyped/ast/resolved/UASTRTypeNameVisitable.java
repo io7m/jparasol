@@ -14,9 +14,18 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.untyped.ast.initial;
+package com.io7m.jparasol.untyped.ast.resolved;
 
-public interface UASTIStatus
+import javax.annotation.Nonnull;
+
+import com.io7m.jaux.Constraints.ConstraintError;
+
+public interface UASTRTypeNameVisitable
 {
-  // No value-level representation.
+    <A, E extends Throwable, V extends UASTRTypeNameVisitor<A, E>>
+    A
+    typeNameVisitableAccept(
+      final @Nonnull V v)
+      throws ConstraintError,
+        E;
 }

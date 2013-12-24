@@ -24,22 +24,22 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDImport;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 
-public interface UASTIModuleVisitor<M, I, D, S extends UASTIStatus, E extends Throwable>
+public interface UASTIModuleVisitor<M, I, D, E extends Throwable>
 {
-  public UASTIModuleLevelDeclarationVisitor<D, S, E> moduleVisitPre(
-    final @Nonnull UASTIDModule<S> m)
-    throws E,
-      ConstraintError;
-
   public M moduleVisit(
     final @Nonnull List<I> imports,
     final @Nonnull List<D> declarations,
-    final @Nonnull UASTIDModule<S> m)
+    final @Nonnull UASTIDModule m)
     throws E,
       ConstraintError;
 
   public I moduleVisitImport(
-    final @Nonnull UASTIDImport<S> i)
+    final @Nonnull UASTIDImport i)
+    throws E,
+      ConstraintError;
+
+  public UASTIModuleLevelDeclarationVisitor<D, E> moduleVisitPre(
+    final @Nonnull UASTIDModule m)
     throws E,
       ConstraintError;
 }

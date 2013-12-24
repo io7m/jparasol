@@ -26,18 +26,17 @@ import com.io7m.jparasol.NameRestrictions.NameRestrictionsException;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
-import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 
 public final class UnitCombinerError extends CompilerError
 {
   private static final long serialVersionUID = 5359160308099372566L;
 
   public static UnitCombinerError duplicateModule(
-    final @Nonnull UASTIDModule<UASTIUnchecked> original,
-    final @Nonnull UASTIDModule<UASTIUnchecked> current)
+    final @Nonnull UASTIDModule original,
+    final @Nonnull UASTIDModule current)
     throws ConstraintError
   {
-    final TokenIdentifierUpper cn = current.getName();
+    final TokenIdentifierUpper cn = current.getPath().getName();
     final StringBuilder m = new StringBuilder();
     m.append("The module named '");
     m.append(cn.getActual());
@@ -46,9 +45,9 @@ public final class UnitCombinerError extends CompilerError
     m.append(":");
     m.append(cn.getPosition());
     m.append(" conflicts with the module definition at ");
-    m.append(original.getName().getFile());
+    m.append(original.getPath().getName().getFile());
     m.append(":");
-    m.append(original.getName().getPosition());
+    m.append(original.getPath().getName().getPosition());
     return new UnitCombinerError(cn.getFile(), cn.getPosition(), m.toString());
   }
 

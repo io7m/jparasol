@@ -28,19 +28,20 @@ import org.junit.Test;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
+import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.TestUtilities;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.parser.Parser;
 import com.io7m.jparasol.parser.ParserTest;
 import com.io7m.jparasol.untyped.ModuleStructureError.Code;
-import com.io7m.jparasol.untyped.ast.initial.UASTIChecked;
+import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDModule;
 import com.io7m.jparasol.untyped.ast.initial.UASTICompilation;
-import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
 
 public final class ModuleStructureTest
 {
-  static UASTICompilation<UASTIChecked> check(
+  static UASTCCompilation check(
     final String names[])
     throws ConstraintError,
       ModuleStructureError
@@ -60,7 +61,7 @@ public final class ModuleStructureTest
     return r != null;
   }
 
-  static UASTICompilation<UASTIChecked> checkInternal(
+  static UASTCCompilation checkInternal(
     final String names[])
     throws ConstraintError,
       ModuleStructureError
@@ -116,23 +117,22 @@ public final class ModuleStructureTest
     }
   }
 
-  static UASTICompilation<UASTIUnchecked> parseAndCombine(
+  static UASTICompilation parseAndCombine(
     final String names[])
   {
     try {
-      final List<UASTIUnit<UASTIUnchecked>> units =
-        ModuleStructureTest.parseUnits(names);
+      final List<UASTIUnit> units = ModuleStructureTest.parseUnits(names);
       return UASTICompilation.fromUnits(units);
     } catch (final Throwable x) {
       throw new UnreachableCodeException(x);
     }
   }
 
-  static UASTICompilation<UASTIUnchecked> parseAndCombineInternal(
+  static UASTICompilation parseAndCombineInternal(
     final String names[])
   {
     try {
-      final List<UASTIUnit<UASTIUnchecked>> units =
+      final List<UASTIUnit> units =
         ModuleStructureTest.parseUnitsInternal(names);
       return UASTICompilation.fromUnits(units);
     } catch (final Throwable x) {
@@ -140,11 +140,9 @@ public final class ModuleStructureTest
     }
   }
 
-  @SuppressWarnings("resource") private static
-    UASTIUnit<UASTIUnchecked>
-    parseUnit(
-      final String name,
-      final boolean internal)
+  @SuppressWarnings("resource") private static UASTIUnit parseUnit(
+    final String name,
+    final boolean internal)
   {
     try {
       final InputStream is =
@@ -164,11 +162,10 @@ public final class ModuleStructureTest
     }
   }
 
-  private static List<UASTIUnit<UASTIUnchecked>> parseUnits(
+  private static List<UASTIUnit> parseUnits(
     final String[] names)
   {
-    final List<UASTIUnit<UASTIUnchecked>> units =
-      new ArrayList<UASTIUnit<UASTIUnchecked>>();
+    final List<UASTIUnit> units = new ArrayList<UASTIUnit>();
 
     for (final String name : names) {
       units.add(ModuleStructureTest.parseUnit(name, false));
@@ -177,11 +174,10 @@ public final class ModuleStructureTest
     return units;
   }
 
-  private static List<UASTIUnit<UASTIUnchecked>> parseUnitsInternal(
+  private static List<UASTIUnit> parseUnitsInternal(
     final String[] names)
   {
-    final List<UASTIUnit<UASTIUnchecked>> units =
-      new ArrayList<UASTIUnit<UASTIUnchecked>>();
+    final List<UASTIUnit> units = new ArrayList<UASTIUnit>();
 
     for (final String name : names) {
       units.add(ModuleStructureTest.parseUnit(name, true));
@@ -194,7 +190,26 @@ public final class ModuleStructureTest
     throws ModuleStructureError,
       ConstraintError
   {
-    ModuleStructureTest.checkInternal(new String[] { "all.p" });
+    final UASTCCompilation uc =
+      ModuleStructureTest.checkInternal(new String[] { "all.p" });
+
+    final ModulePathFlat first = uc.getModules().keySet().iterator().next();
+    Assert.assertEquals("x.y.M", first.getActual());
+
+    final UASTCDModule module = uc.getModules().get(first);
+    Assert.assertTrue(module.getTerms().containsKey("x"));
+    Assert.assertTrue(module.getTerms().containsKey("y"));
+    Assert.assertTrue(module.getTerms().containsKey("a"));
+    Assert.assertTrue(module.getTerms().containsKey("z"));
+    Assert.assertTrue(module.getTerms().containsKey("w"));
+    Assert.assertTrue(module.getTerms().containsKey("f"));
+    Assert.assertTrue(module.getTerms().containsKey("g"));
+
+    Assert.assertTrue(module.getTypes().containsKey("t"));
+
+    Assert.assertTrue(module.getShaders().containsKey("v"));
+    Assert.assertTrue(module.getShaders().containsKey("f"));
+    Assert.assertTrue(module.getShaders().containsKey("p"));
   }
 
   @SuppressWarnings("static-method") @Test(

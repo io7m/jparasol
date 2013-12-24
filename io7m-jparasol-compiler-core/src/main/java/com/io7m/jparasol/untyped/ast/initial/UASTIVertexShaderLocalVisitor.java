@@ -21,10 +21,10 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexLocalValue;
 
-public interface UASTIVertexShaderLocalVisitor<L, S extends UASTIStatus, E extends Throwable>
+public interface UASTIVertexShaderLocalVisitor<L, E extends Throwable>
 {
   public L vertexShaderVisitLocalValue(
-    final @Nonnull UASTIDShaderVertexLocalValue<S> v)
+    final @Nonnull UASTIDShaderVertexLocalValue v)
     throws E,
       ConstraintError;
 }

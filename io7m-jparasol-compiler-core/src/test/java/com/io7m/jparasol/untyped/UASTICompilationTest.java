@@ -39,7 +39,6 @@ import com.io7m.jparasol.parser.Parser;
 import com.io7m.jparasol.parser.ParserTest;
 import com.io7m.jparasol.untyped.ast.initial.UASTICompilation;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
-import com.io7m.jparasol.untyped.ast.initial.UASTIUnchecked;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
 
 public class UASTICompilationTest
@@ -67,10 +66,8 @@ public class UASTICompilationTest
     }
   }
 
-  @SuppressWarnings("resource") static
-    UASTIUnit<UASTIUnchecked>
-    parseResource(
-      final String name)
+  @SuppressWarnings("resource") static UASTIUnit parseResource(
+    final String name)
   {
     try {
       final InputStream is =
@@ -83,18 +80,27 @@ public class UASTICompilationTest
     }
   }
 
+  @SuppressWarnings("static-method") @Test(expected = UnitCombinerError.class) public
+    void
+    testBadPackage()
+      throws UnitCombinerError,
+        ConstraintError
+  {
+    final ArrayList<UASTIUnit> units = new ArrayList<UASTIUnit>();
+    units.add(UASTICompilationTest
+      .parseResource("untyped/restricted_name/restricted-name-000.p"));
+    UASTICompilation.fromUnits(units);
+  }
+
   @SuppressWarnings("static-method") @Test public void testCombine0()
     throws UnitCombinerError,
       ConstraintError
   {
-    final ArrayList<UASTIUnit<UASTIUnchecked>> units =
-      new ArrayList<UASTIUnit<UASTIUnchecked>>();
+    final ArrayList<UASTIUnit> units = new ArrayList<UASTIUnit>();
     units.add(UASTICompilationTest.parseResource("parser/testDUnit0.p"));
     units.add(UASTICompilationTest.parseResource("parser/testDUnit1.p"));
-    final UASTICompilation<UASTIUnchecked> c =
-      UASTICompilation.fromUnits(units);
-    final Map<ModulePathFlat, UASTIDModule<UASTIUnchecked>> m =
-      c.getModules();
+    final UASTICompilation c = UASTICompilation.fromUnits(units);
+    final Map<ModulePathFlat, UASTIDModule> m = c.getModules();
 
     Assert.assertTrue(m.containsKey(UASTICompilationTest.modulePath(
       new String[] { "com", "io7m", "example" },
@@ -116,23 +122,9 @@ public class UASTICompilationTest
       throws UnitCombinerError,
         ConstraintError
   {
-    final ArrayList<UASTIUnit<UASTIUnchecked>> units =
-      new ArrayList<UASTIUnit<UASTIUnchecked>>();
+    final ArrayList<UASTIUnit> units = new ArrayList<UASTIUnit>();
     units.add(UASTICompilationTest.parseResource("parser/testDUnit0.p"));
     units.add(UASTICompilationTest.parseResource("parser/testDUnit0.p"));
-    UASTICompilation.fromUnits(units);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = UnitCombinerError.class) public
-    void
-    testBadPackage()
-      throws UnitCombinerError,
-        ConstraintError
-  {
-    final ArrayList<UASTIUnit<UASTIUnchecked>> units =
-      new ArrayList<UASTIUnit<UASTIUnchecked>>();
-    units.add(UASTICompilationTest
-      .parseResource("untyped/restricted_name/restricted-name-000.p"));
     UASTICompilation.fromUnits(units);
   }
 }

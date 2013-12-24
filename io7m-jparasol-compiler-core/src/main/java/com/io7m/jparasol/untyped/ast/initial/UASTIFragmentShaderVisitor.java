@@ -27,7 +27,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragme
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentParameter;
 
-public interface UASTIFragmentShaderVisitor<F, PI, PP, PO, L, O, S extends UASTIStatus, E extends Throwable>
+public interface UASTIFragmentShaderVisitor<F, PI, PP, PO, L, O, E extends Throwable>
 {
   public @Nonnull F fragmentShaderVisit(
     final @Nonnull List<PI> inputs,
@@ -35,33 +35,33 @@ public interface UASTIFragmentShaderVisitor<F, PI, PP, PO, L, O, S extends UASTI
     final @Nonnull List<PO> outputs,
     final @Nonnull List<L> locals,
     final @Nonnull List<O> output_assignments,
-    final @Nonnull UASTIDShaderFragment<S> f)
+    final @Nonnull UASTIDShaderFragment f)
     throws E,
       ConstraintError;
 
   public @Nonnull PI fragmentShaderVisitInput(
-    final @Nonnull UASTIDShaderFragmentInput<S> i)
+    final @Nonnull UASTIDShaderFragmentInput i)
     throws E,
       ConstraintError;
 
   public @Nonnull
-    UASTIFragmentShaderLocalVisitor<L, S, E>
+    UASTIFragmentShaderLocalVisitor<L, E>
     fragmentShaderVisitLocalsPre()
       throws E,
         ConstraintError;
 
   public @Nonnull PO fragmentShaderVisitOutput(
-    final @Nonnull UASTIDShaderFragmentOutput<S> o)
+    final @Nonnull UASTIDShaderFragmentOutput o)
     throws E,
       ConstraintError;
 
   public @Nonnull O fragmentShaderVisitOutputAssignment(
-    final @Nonnull UASTIDShaderFragmentOutputAssignment<S> a)
+    final @Nonnull UASTIDShaderFragmentOutputAssignment a)
     throws E,
       ConstraintError;
 
   public @Nonnull PP fragmentShaderVisitParameter(
-    final @Nonnull UASTIDShaderFragmentParameter<S> p)
+    final @Nonnull UASTIDShaderFragmentParameter p)
     throws E,
       ConstraintError;
 }

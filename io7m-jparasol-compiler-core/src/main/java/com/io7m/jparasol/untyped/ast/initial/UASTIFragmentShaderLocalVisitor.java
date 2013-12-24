@@ -22,15 +22,15 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalDiscard;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalValue;
 
-public interface UASTIFragmentShaderLocalVisitor<L, S extends UASTIStatus, E extends Throwable>
+public interface UASTIFragmentShaderLocalVisitor<L, E extends Throwable>
 {
   public L fragmentShaderVisitLocalDiscard(
-    final @Nonnull UASTIDShaderFragmentLocalDiscard<S> d)
+    final @Nonnull UASTIDShaderFragmentLocalDiscard d)
     throws E,
       ConstraintError;
 
   public L fragmentShaderVisitLocalValue(
-    final @Nonnull UASTIDShaderFragmentLocalValue<S> v)
+    final @Nonnull UASTIDShaderFragmentLocalValue v)
     throws E,
       ConstraintError;
 }

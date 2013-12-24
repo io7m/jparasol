@@ -27,40 +27,40 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 
-public interface UASTIModuleLevelDeclarationVisitor<D, S extends UASTIStatus, E extends Throwable>
+public interface UASTIModuleLevelDeclarationVisitor<D, E extends Throwable>
 {
   public D moduleVisitFragmentShader(
-    final @Nonnull UASTIDShaderFragment<S> f)
+    final @Nonnull UASTIDShaderFragment f)
     throws E,
       ConstraintError;
 
   public D moduleVisitFunctionDefined(
-    final @Nonnull UASTIDFunctionDefined<S> f)
+    final @Nonnull UASTIDFunctionDefined f)
     throws E,
       ConstraintError;
 
   public D moduleVisitFunctionExternal(
-    final @Nonnull UASTIDFunctionExternal<S> f)
+    final @Nonnull UASTIDFunctionExternal f)
     throws E,
       ConstraintError;
 
   public D moduleVisitProgramShader(
-    final @Nonnull UASTIDShaderProgram<S> p)
+    final @Nonnull UASTIDShaderProgram p)
     throws E,
       ConstraintError;
 
   public D moduleVisitTypeRecord(
-    final @Nonnull UASTIDTypeRecord<S> r)
+    final @Nonnull UASTIDTypeRecord r)
     throws E,
       ConstraintError;
 
   public D moduleVisitValue(
-    final @Nonnull UASTIDValue<S> v)
+    final @Nonnull UASTIDValue v)
     throws E,
       ConstraintError;
 
   public D moduleVisitVertexShader(
-    final @Nonnull UASTIDShaderVertex<S> f)
+    final @Nonnull UASTIDShaderVertex f)
     throws E,
       ConstraintError;
 }

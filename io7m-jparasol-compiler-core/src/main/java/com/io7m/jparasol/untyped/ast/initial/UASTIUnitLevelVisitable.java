@@ -20,10 +20,10 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 
-public interface UASTIUnitLevelVisitable<S extends UASTIStatus>
+public interface UASTIUnitLevelVisitable
 {
   public
-    <A, E extends Throwable, V extends UASTIUnitLevelVisitor<A, S, E>>
+    <A, E extends Throwable, V extends UASTIUnitLevelVisitor<A, E>>
     A
     unitVisitableAccept(
       final @Nonnull V v)

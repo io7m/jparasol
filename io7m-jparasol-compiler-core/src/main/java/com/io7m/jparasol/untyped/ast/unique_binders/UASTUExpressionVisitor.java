@@ -59,32 +59,7 @@ public interface UASTUExpressionVisitor<A, L, E extends Throwable>
     throws E,
       ConstraintError;
 
-  public void expressionVisitConditionalConditionPre(
-    final @Nonnull UASTUEConditional e)
-    throws E,
-      ConstraintError;
-
-  public void expressionVisitConditionalConditionPost(
-    final @Nonnull UASTUEConditional e)
-    throws E,
-      ConstraintError;
-
-  public void expressionVisitConditionalLeftPre(
-    final @Nonnull UASTUEConditional e)
-    throws E,
-      ConstraintError;
-
-  public void expressionVisitConditionalLeftPost(
-    final @Nonnull UASTUEConditional e)
-    throws E,
-      ConstraintError;
-
-  public void expressionVisitConditionalRightPre(
-    final @Nonnull UASTUEConditional e)
-    throws E,
-      ConstraintError;
-
-  public void expressionVisitConditionalRightPost(
+  public void expressionVisitConditionalPre(
     final @Nonnull UASTUEConditional e)
     throws E,
       ConstraintError;

@@ -14,7 +14,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.untyped.ast.unique_binders;
+package com.io7m.jparasol.untyped.ast.resolved;
 
 import java.io.File;
 
@@ -22,22 +22,23 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.ModulePath;
+import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
-public abstract class UASTUName
+public abstract class UASTRTermName implements UASTRTermNameVisitable
 {
   /**
    * A name that refers to something built-in (such as a built-in name for a
    * shader input or output).
    */
 
-  public static final class UASTUNameBuiltIn extends UASTUName
+  public static final class UASTRTermNameBuiltIn extends UASTRTermName
   {
     private final @Nonnull TokenIdentifierLower actual;
 
-    public UASTUNameBuiltIn(
+    public UASTRTermNameBuiltIn(
       final @Nonnull TokenIdentifierLower actual)
       throws ConstraintError
     {
@@ -52,15 +53,6 @@ public abstract class UASTUName
       return this.actual;
     }
 
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUNameBuiltIn ");
-      builder.append(this.actual);
-      builder.append("]");
-      return builder.toString();
-    }
-
     @Override public String show()
     {
       final StringBuilder s = new StringBuilder();
@@ -68,58 +60,96 @@ public abstract class UASTUName
       s.append(this.actual.getActual());
       return s.toString();
     }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTRTermNameVisitor<A, E>>
+      A
+      termNameVisitableAccept(
+        final @Nonnull V v)
+        throws ConstraintError,
+          E
+    {
+      return v.termNameVisitBuiltIn(this);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTRNameBuiltIn ");
+      builder.append(this.actual);
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   /**
    * A fully qualified name.
    */
 
-  public static final class UASTUNameGlobal extends UASTUName
+  public static final class UASTRTermNameGlobal extends UASTRTermName
   {
-    private final @Nonnull TokenIdentifierUpper module;
+    private final @Nonnull ModulePathFlat       flat;
     private final @Nonnull TokenIdentifierLower name;
+    private final @Nonnull ModulePath           path;
 
-    public UASTUNameGlobal(
-      final @Nonnull TokenIdentifierUpper module,
+    public UASTRTermNameGlobal(
+      final @Nonnull ModulePath path,
       final @Nonnull TokenIdentifierLower actual)
       throws ConstraintError
     {
       super(
         Constraints.constrainNotNull(actual, "Actual").getFile(),
         Constraints.constrainNotNull(actual, "Actual").getPosition());
-      this.module = Constraints.constrainNotNull(module, "Module");
+      this.path = Constraints.constrainNotNull(path, "Path");
+      this.flat = ModulePathFlat.fromModulePath(path);
       this.name = actual;
     }
 
-    public final @Nonnull TokenIdentifierUpper getModule()
+    public @Nonnull ModulePathFlat getFlat()
     {
-      return this.module;
+      return this.flat;
     }
 
-    public final @Nonnull TokenIdentifierLower getName()
+    public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    @Override public String toString()
+    public @Nonnull ModulePath getPath()
     {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUNameGlobal ");
-      builder.append(this.module);
-      builder.append(" ");
-      builder.append(this.name);
-      builder.append("]");
-      return builder.toString();
+      return this.path;
     }
 
     @Override public String show()
     {
       final StringBuilder s = new StringBuilder();
       s.append("$");
-      s.append(this.module.getActual());
+      s.append(this.flat.getActual());
       s.append(".");
       s.append(this.name.getActual());
       return s.toString();
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTRTermNameVisitor<A, E>>
+      A
+      termNameVisitableAccept(
+        final @Nonnull V v)
+        throws ConstraintError,
+          E
+    {
+      return v.termNameVisitGlobal(this);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTRNameGlobal ");
+      builder.append(this.path);
+      builder.append(" ");
+      builder.append(this.name);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -127,37 +157,26 @@ public abstract class UASTUName
    * A name that refers to a local variable.
    */
 
-  public static final class UASTUNameLocal extends UASTUName
+  public static final class UASTRTermNameLocal extends UASTRTermName
   {
-    private final @Nonnull String               name;
+    private final @Nonnull String               current;
     private final @Nonnull TokenIdentifierLower original;
 
-    public UASTUNameLocal(
+    public UASTRTermNameLocal(
       final @Nonnull TokenIdentifierLower original,
-      final @Nonnull String name)
+      final @Nonnull String current)
       throws ConstraintError
     {
       super(
         Constraints.constrainNotNull(original, "Original").getFile(),
         Constraints.constrainNotNull(original, "Original").getPosition());
-      this.original = Constraints.constrainNotNull(original, "Original");
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.original = original;
+      this.current = Constraints.constrainNotNull(current, "Current");
     }
 
-    public @Nonnull String getName()
+    public @Nonnull String getCurrent()
     {
-      return this.name;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUNameLocal ");
-      builder.append(this.name);
-      builder.append(" ");
-      builder.append(this.original);
-      builder.append("]");
-      return builder.toString();
+      return this.current;
     }
 
     public @Nonnull TokenIdentifierLower getOriginal()
@@ -169,47 +188,28 @@ public abstract class UASTUName
     {
       final StringBuilder s = new StringBuilder();
       s.append("&");
-      s.append(this.name);
+      s.append(this.current);
       return s.toString();
     }
-  }
 
-  /**
-   * A name that refers to something at module level in the current module.
-   */
-
-  public static final class UASTUNameModuleLevel extends UASTUName
-  {
-    private final @Nonnull TokenIdentifierLower actual;
-
-    public UASTUNameModuleLevel(
-      final @Nonnull TokenIdentifierLower actual)
-      throws ConstraintError
+    @Override public
+      <A, E extends Throwable, V extends UASTRTermNameVisitor<A, E>>
+      A
+      termNameVisitableAccept(
+        final @Nonnull V v)
+        throws ConstraintError,
+          E
     {
-      super(
-        Constraints.constrainNotNull(actual, "Actual").getFile(),
-        Constraints.constrainNotNull(actual, "Actual").getPosition());
-      this.actual = actual;
-    }
-
-    public @Nonnull TokenIdentifierLower getActual()
-    {
-      return this.actual;
-    }
-
-    @Override public String show()
-    {
-      final StringBuilder s = new StringBuilder();
-      s.append("%");
-      s.append(this.actual.getActual());
-      return s.toString();
+      return v.termNameVisitLocal(this);
     }
 
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUNameModuleLevel ");
-      builder.append(this.actual);
+      builder.append("[UASTRNameLocal ");
+      builder.append(this.current);
+      builder.append(" ");
+      builder.append(this.original);
       builder.append("]");
       return builder.toString();
     }
@@ -218,7 +218,7 @@ public abstract class UASTUName
   private final @Nonnull File     file;
   private final @Nonnull Position position;
 
-  protected UASTUName(
+  protected UASTRTermName(
     final @Nonnull File file,
     final @Nonnull Position position)
     throws ConstraintError

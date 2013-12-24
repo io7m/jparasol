@@ -17,6 +17,7 @@
 package com.io7m.jparasol.untyped.ast.unique_binders;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -24,9 +25,19 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDImport;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDModule;
 
-public interface UASTUModuleVisitor<M, I, D, E extends Throwable>
+public interface UASTUModuleVisitor<M, I, D, DTE extends D, DTY extends D, DS extends D, E extends Throwable>
 {
-  public UASTUModuleLevelDeclarationVisitor<D, E> moduleVisitPre(
+  public UASTUShaderVisitor<DS, E> moduleShadersPre(
+    final @Nonnull UASTUDModule m)
+    throws E,
+      ConstraintError;
+
+  public UASTUTermVisitor<DTE, E> moduleTermsPre(
+    final @Nonnull UASTUDModule m)
+    throws E,
+      ConstraintError;
+
+  public UASTUTypeVisitor<DTY, E> moduleTypesPre(
     final @Nonnull UASTUDModule m)
     throws E,
       ConstraintError;
@@ -34,6 +45,9 @@ public interface UASTUModuleVisitor<M, I, D, E extends Throwable>
   public M moduleVisit(
     final @Nonnull List<I> imports,
     final @Nonnull List<D> declarations,
+    final @Nonnull Map<String, DTE> terms,
+    final @Nonnull Map<String, DTY> types,
+    final @Nonnull Map<String, DS> shaders,
     final @Nonnull UASTUDModule m)
     throws E,
       ConstraintError;

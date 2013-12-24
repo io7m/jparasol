@@ -20,16 +20,19 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Function;
 import com.io7m.jaux.functional.Option;
-import com.io7m.jaux.functional.Unit;
+import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
+/**
+ * A path to a shader.
+ */
+
 public final class UASTUShaderPath
 {
-  private final @Nonnull Option<TokenIdentifierUpper> module;
-  private final @Nonnull TokenIdentifierLower         name;
+  private final @Nonnull Option<Token.TokenIdentifierUpper> module;
+  private final @Nonnull Token.TokenIdentifierLower         name;
 
   public UASTUShaderPath(
     final @Nonnull Option<TokenIdentifierUpper> module,
@@ -40,29 +43,13 @@ public final class UASTUShaderPath
     this.name = Constraints.constrainNotNull(name, "Name");
   }
 
-  public @Nonnull Option<TokenIdentifierUpper> getModule()
+  public @Nonnull Option<Token.TokenIdentifierUpper> getModule()
   {
     return this.module;
   }
 
-  public @Nonnull TokenIdentifierLower getName()
+  public @Nonnull Token.TokenIdentifierLower getName()
   {
     return this.name;
-  }
-
-  public @Nonnull String show()
-  {
-    final StringBuilder s = new StringBuilder();
-    this.module.map(new Function<TokenIdentifierUpper, Unit>() {
-      @Override public Unit call(
-        final TokenIdentifierUpper x)
-      {
-        s.append(x.getActual());
-        s.append(".");
-        return Unit.unit();
-      }
-    });
-    s.append(this.name.getActual());
-    return s.toString();
   }
 }
