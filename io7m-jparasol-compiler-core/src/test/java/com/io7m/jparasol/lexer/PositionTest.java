@@ -14,30 +14,21 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.parser;
+package com.io7m.jparasol.lexer;
 
-import java.io.File;
+import org.junit.Assert;
+import org.junit.Test;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.CompilerError;
-import com.io7m.jparasol.lexer.Position;
-
-public final class ParserError extends CompilerError
+public class PositionTest
 {
-  private static final long serialVersionUID;
-
-  static {
-    serialVersionUID = 260713896414675714L;
-  }
-
-  public ParserError(
-    final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
+  @SuppressWarnings("static-method") @Test public void testEquals()
   {
-    super(message, file, position);
+    final Position p = new Position(1, 1);
+    Assert.assertEquals(p, p);
+    Assert.assertEquals(new Position(0, 0), new Position(0, 0));
+    Assert.assertNotEquals(new Position(1, 0), new Position(0, 0));
+    Assert.assertNotEquals(new Position(0, 1), new Position(0, 0));
+    Assert.assertNotEquals(new Position(1, 0), Integer.valueOf(23));
+    Assert.assertNotEquals(new Position(0, 0), null);
   }
 }
