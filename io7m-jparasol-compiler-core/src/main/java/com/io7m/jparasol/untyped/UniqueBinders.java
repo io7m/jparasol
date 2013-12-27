@@ -346,7 +346,7 @@ public final class UniqueBinders
       throws UniqueBindersError,
         ConstraintError
     {
-      return new UASTUEConditional(condition, left, right);
+      return new UASTUEConditional(e.getIf(), condition, left, right);
     }
 
     @Override public void expressionVisitConditionalPre(

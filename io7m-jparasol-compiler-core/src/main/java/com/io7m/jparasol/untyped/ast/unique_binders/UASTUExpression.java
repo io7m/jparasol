@@ -27,6 +27,7 @@ import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.Token.TokenIf;
 import com.io7m.jparasol.lexer.Token.TokenLet;
 import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
 import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
@@ -135,13 +136,16 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull UASTUExpression condition;
     private final @Nonnull UASTUExpression left;
     private final @Nonnull UASTUExpression right;
+    private final @Nonnull TokenIf         token;
 
     public UASTUEConditional(
+      final @Nonnull TokenIf token,
       final @Nonnull UASTUExpression condition,
       final @Nonnull UASTUExpression left,
       final @Nonnull UASTUExpression right)
       throws ConstraintError
     {
+      this.token = Constraints.constrainNotNull(token, "Token");
       this.condition = Constraints.constrainNotNull(condition, "Condition");
       this.left = Constraints.constrainNotNull(left, "Left");
       this.right = Constraints.constrainNotNull(right, "Right");
@@ -188,6 +192,11 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
       builder.append(this.right);
       builder.append("]");
       return builder.toString();
+    }
+
+    public TokenIf getIf()
+    {
+      return this.token;
     }
   }
 

@@ -76,6 +76,52 @@ public abstract class UASTRDeclaration
     // Nothing
   }
 
+  public static final class UASTRDExternal
+  {
+    private final boolean                       fragment_shader_allowed;
+    private final @Nonnull TokenIdentifierLower name;
+    private final boolean                       vertex_shader_allowed;
+
+    public UASTRDExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final boolean vertex_shader_allowed,
+      final boolean fragment_shader_allowed)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.vertex_shader_allowed = vertex_shader_allowed;
+      this.fragment_shader_allowed = fragment_shader_allowed;
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public boolean isFragmentShaderAllowed()
+    {
+      return this.fragment_shader_allowed;
+    }
+
+    public boolean isVertexShaderAllowed()
+    {
+      return this.vertex_shader_allowed;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTRDExternal ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.vertex_shader_allowed);
+      builder.append(" ");
+      builder.append(this.fragment_shader_allowed);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
   /**
    * The type of function declarations.
    */
@@ -179,52 +225,6 @@ public abstract class UASTRDeclaration
       builder.append(this.body);
       builder.append("]");
       return builder.toString();
-    }
-  }
-
-  public static final class UASTRDExternal
-  {
-    private final @Nonnull TokenIdentifierLower name;
-    private final boolean                       vertex_shader_allowed;
-    private final boolean                       fragment_shader_allowed;
-
-    public UASTRDExternal(
-      final @Nonnull TokenIdentifierLower name,
-      final boolean vertex_shader_allowed,
-      final boolean fragment_shader_allowed)
-      throws ConstraintError
-    {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.vertex_shader_allowed = vertex_shader_allowed;
-      this.fragment_shader_allowed = fragment_shader_allowed;
-    }
-
-    public @Nonnull TokenIdentifierLower getName()
-    {
-      return this.name;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTRDExternal ");
-      builder.append(this.name);
-      builder.append(" ");
-      builder.append(this.vertex_shader_allowed);
-      builder.append(" ");
-      builder.append(this.fragment_shader_allowed);
-      builder.append("]");
-      return builder.toString();
-    }
-
-    public boolean isVertexShaderAllowed()
-    {
-      return this.vertex_shader_allowed;
-    }
-
-    public boolean isFragmentShaderAllowed()
-    {
-      return this.fragment_shader_allowed;
     }
   }
 
@@ -342,7 +342,9 @@ public abstract class UASTRDeclaration
     private final @Nonnull List<UASTRDImport>                imports;
     private final @Nonnull ModulePath                        path;
     private final @Nonnull Map<String, UASTRDShader>         shaders;
+    private final @Nonnull List<String>                      term_topology;
     private final @Nonnull Map<String, UASTRDTerm>           terms;
+    private final @Nonnull List<String>                      type_topology;
     private final @Nonnull Map<String, UASTRDType>           types;
 
     public UASTRDModule(
@@ -353,7 +355,9 @@ public abstract class UASTRDeclaration
       final @Nonnull Map<String, UASTRDImport> imported_renames,
       final @Nonnull List<UASTRDeclarationModuleLevel> declarations,
       final @Nonnull Map<String, UASTRDTerm> terms,
+      final @Nonnull List<String> term_topology,
       final @Nonnull Map<String, UASTRDType> types,
+      final @Nonnull List<String> type_topology,
       final @Nonnull Map<String, UASTRDShader> shaders)
       throws ConstraintError
     {
@@ -369,8 +373,13 @@ public abstract class UASTRDeclaration
 
       this.declarations =
         Constraints.constrainNotNull(declarations, "Declarations");
+
       this.terms = Constraints.constrainNotNull(terms, "Terms");
+      this.term_topology =
+        Constraints.constrainNotNull(term_topology, "Term topology");
       this.types = Constraints.constrainNotNull(types, "Types");
+      this.type_topology =
+        Constraints.constrainNotNull(type_topology, "Type topology");
       this.shaders = Constraints.constrainNotNull(shaders, "Shaders");
     }
 
@@ -399,9 +408,19 @@ public abstract class UASTRDeclaration
       return this.terms;
     }
 
+    public @Nonnull List<String> getTermTopology()
+    {
+      return this.term_topology;
+    }
+
     public @Nonnull Map<String, UASTRDType> getTypes()
     {
       return this.types;
+    }
+
+    public @Nonnull List<String> getTypeTopology()
+    {
+      return this.type_topology;
     }
 
     @Override public String toString()

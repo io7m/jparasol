@@ -268,7 +268,7 @@ public final class ModuleStructure
       throws ModuleStructureError,
         ConstraintError
     {
-      return new UASTCEConditional(condition, left, right);
+      return new UASTCEConditional(e.getIf(), condition, left, right);
     }
 
     @Override public void expressionVisitConditionalPre(

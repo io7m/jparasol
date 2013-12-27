@@ -561,6 +561,85 @@ public final class ResolverTest
       ResolverError.Code.RESOLVER_IMPORT_UNKNOWN);
   }
 
+  @SuppressWarnings("static-method") @Test public
+    void
+    testModuleTermTopology0()
+      throws ResolverError,
+        ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest
+        .resolved(new String[] { "resolver/module-term-topology-0.p" });
+
+    final UASTRDModule m = ResolverTest.firstModule(r);
+
+    final List<String> topo = m.getTermTopology();
+    Assert.assertEquals(3, topo.size());
+
+    System.out.println(topo);
+
+    Assert.assertEquals("z", topo.get(0));
+    Assert.assertEquals("y", topo.get(1));
+    Assert.assertEquals("x", topo.get(2));
+  }
+
+  @SuppressWarnings("static-method") @Test public void testModuleTopology0()
+    throws ResolverError,
+      ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest.resolved(new String[] { "resolver/module-topology-0.p" });
+
+    final List<ModulePathFlat> topo = r.getTopology();
+    Assert.assertEquals(3, topo.size());
+
+    System.out.println(topo);
+
+    Assert.assertEquals("x.y.P", topo.get(0).getActual());
+    Assert.assertEquals("x.y.N", topo.get(1).getActual());
+    Assert.assertEquals("x.y.M", topo.get(2).getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public void testModuleTopology1()
+    throws ResolverError,
+      ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest.resolved(new String[] { "resolver/module-topology-1.p" });
+
+    final List<ModulePathFlat> topo = r.getTopology();
+    Assert.assertEquals(4, topo.size());
+
+    System.out.println(topo);
+
+    Assert.assertEquals("x.y.Q", topo.get(0).getActual());
+    Assert.assertEquals("x.y.N", topo.get(1).getActual());
+    Assert.assertEquals("x.y.P", topo.get(2).getActual());
+    Assert.assertEquals("x.y.M", topo.get(3).getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testModuleTypeTopology0()
+      throws ResolverError,
+        ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest
+        .resolved(new String[] { "resolver/module-type-topology-0.p" });
+
+    final UASTRDModule m = ResolverTest.firstModule(r);
+
+    final List<String> topo = m.getTypeTopology();
+    Assert.assertEquals(3, topo.size());
+
+    System.out.println(topo);
+
+    Assert.assertEquals("z", topo.get(0));
+    Assert.assertEquals("y", topo.get(1));
+    Assert.assertEquals("x", topo.get(2));
+  }
+
   @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
     void
     testProgramShaderNonexistent0()
@@ -626,41 +705,6 @@ public final class ResolverTest
     Assert.assertEquals("v", p.getVertexShader().getName().getActual());
     Assert.assertEquals("x.y.N", p.getFragmentShader().getFlat().getActual());
     Assert.assertEquals("f", p.getFragmentShader().getName().getActual());
-  }
-
-  @SuppressWarnings("static-method") @Test public void testTopology0()
-    throws ResolverError,
-      ConstraintError
-  {
-    final UASTRCompilation r =
-      ResolverTest.resolved(new String[] { "resolver/topology-0.p" });
-
-    final List<ModulePathFlat> topo = r.getTopology();
-    Assert.assertEquals(3, topo.size());
-
-    System.out.println(topo);
-
-    Assert.assertEquals("x.y.P", topo.get(0).getActual());
-    Assert.assertEquals("x.y.N", topo.get(1).getActual());
-    Assert.assertEquals("x.y.M", topo.get(2).getActual());
-  }
-
-  @SuppressWarnings("static-method") @Test public void testTopology1()
-    throws ResolverError,
-      ConstraintError
-  {
-    final UASTRCompilation r =
-      ResolverTest.resolved(new String[] { "resolver/topology-1.p" });
-
-    final List<ModulePathFlat> topo = r.getTopology();
-    Assert.assertEquals(4, topo.size());
-
-    System.out.println(topo);
-
-    Assert.assertEquals("x.y.Q", topo.get(0).getActual());
-    Assert.assertEquals("x.y.N", topo.get(1).getActual());
-    Assert.assertEquals("x.y.P", topo.get(2).getActual());
-    Assert.assertEquals("x.y.M", topo.get(3).getActual());
   }
 
   @SuppressWarnings("static-method") @Test public

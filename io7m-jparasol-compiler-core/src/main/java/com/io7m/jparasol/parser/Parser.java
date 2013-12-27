@@ -35,6 +35,7 @@ import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenDiscard;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.Token.TokenIf;
 import com.io7m.jparasol.lexer.Token.TokenLet;
 import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
 import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
@@ -1291,6 +1292,8 @@ public final class Parser
       IOException,
       LexerError
   {
+    this.parserExpectExact(Type.TOKEN_IF);
+    final TokenIf tif = (TokenIf) this.token;
     this.parserConsumeExact(Type.TOKEN_IF);
     final UASTIExpression econd = this.expression();
     this.parserConsumeExact(Type.TOKEN_THEN);
@@ -1298,7 +1301,7 @@ public final class Parser
     this.parserConsumeExact(Type.TOKEN_ELSE);
     final UASTIExpression eright = this.expression();
     this.parserConsumeExact(Type.TOKEN_END);
-    return new UASTIEConditional(econd, eleft, eright);
+    return new UASTIEConditional(tif, econd, eleft, eright);
   }
 
   public @Nonnull UASTIEInteger expressionInteger()

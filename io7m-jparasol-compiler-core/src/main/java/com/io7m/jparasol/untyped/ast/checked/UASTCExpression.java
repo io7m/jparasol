@@ -27,6 +27,7 @@ import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.Token.TokenIf;
 import com.io7m.jparasol.lexer.Token.TokenLet;
 import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
 import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
@@ -135,13 +136,16 @@ public abstract class UASTCExpression implements UASTCExpressionVisitable
     private final @Nonnull UASTCExpression condition;
     private final @Nonnull UASTCExpression left;
     private final @Nonnull UASTCExpression right;
+    private final @Nonnull TokenIf         token;
 
     public UASTCEConditional(
+      final @Nonnull TokenIf token,
       final @Nonnull UASTCExpression condition,
       final @Nonnull UASTCExpression left,
       final @Nonnull UASTCExpression right)
       throws ConstraintError
     {
+      this.token = Constraints.constrainNotNull(token, "Token");
       this.condition = Constraints.constrainNotNull(condition, "Condition");
       this.left = Constraints.constrainNotNull(left, "Left");
       this.right = Constraints.constrainNotNull(right, "Right");
@@ -188,6 +192,11 @@ public abstract class UASTCExpression implements UASTCExpressionVisitable
       builder.append(this.right);
       builder.append("]");
       return builder.toString();
+    }
+
+    public @Nonnull TokenIf getIf()
+    {
+      return this.token;
     }
   }
 

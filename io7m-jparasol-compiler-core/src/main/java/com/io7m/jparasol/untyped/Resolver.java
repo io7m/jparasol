@@ -263,7 +263,7 @@ public final class Resolver
       throws ResolverError,
         ConstraintError
     {
-      return new UASTREConditional(condition, left, right);
+      return new UASTREConditional(e.getIf(), condition, left, right);
     }
 
     @Override public void expressionVisitConditionalPre(
@@ -943,6 +943,13 @@ public final class Resolver
           .put(in, new UASTRDImport(i.getPath(), i.getRename()));
       }
 
+      final ModulePathFlat current_flat =
+        ModulePathFlat.fromModulePath(m.getPath());
+      final List<String> term_topology =
+        this.term_graph.getTopology(current_flat);
+      final List<String> type_topology =
+        this.type_graph.getTopology(current_flat);
+
       return new UASTRDModule(
         m.getPath(),
         imports,
@@ -951,7 +958,9 @@ public final class Resolver
         r_import_renames,
         declarations,
         terms,
+        term_topology,
         types,
+        type_topology,
         shaders);
     }
 
@@ -1218,6 +1227,25 @@ public final class Resolver
       this.graph =
         new DirectedAcyclicGraph<Term, TermReference>(TermReference.class);
       this.log = new Log(log, "term-graph");
+    }
+
+    @SuppressWarnings("synthetic-access") public @Nonnull
+      List<String>
+      getTopology(
+        final @Nonnull ModulePathFlat current)
+    {
+      final TopologicalOrderIterator<Term, TermReference> iter =
+        new TopologicalOrderIterator<Term, TermReference>(this.graph);
+
+      final ArrayList<String> ls = new ArrayList<String>();
+      while (iter.hasNext()) {
+        final Term t = iter.next();
+        if (t.module.equals(current)) {
+          ls.add(t.name);
+        }
+      }
+
+      return ls;
     }
 
     public void addTermReference(
@@ -1584,6 +1612,25 @@ public final class Resolver
       this.graph =
         new DirectedAcyclicGraph<Type, TypeReference>(TypeReference.class);
       this.log = new Log(log, "type-graph");
+    }
+
+    @SuppressWarnings("synthetic-access") public @Nonnull
+      List<String>
+      getTopology(
+        final @Nonnull ModulePathFlat current)
+    {
+      final TopologicalOrderIterator<Type, TypeReference> iter =
+        new TopologicalOrderIterator<Type, TypeReference>(this.graph);
+
+      final ArrayList<String> ls = new ArrayList<String>();
+      while (iter.hasNext()) {
+        final Type t = iter.next();
+        if (t.module.equals(current)) {
+          ls.add(t.name);
+        }
+      }
+
+      return ls;
     }
 
     public void addTypeReference(
