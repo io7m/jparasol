@@ -16,6 +16,8 @@
 
 package com.io7m.jparasol.untyped;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -25,7 +27,14 @@ import org.junit.Test;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
+import com.io7m.jaux.functional.Option.Some;
+import com.io7m.jparasol.ModulePath;
+import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.TestUtilities;
+import com.io7m.jparasol.lexer.Position;
+import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRCompilation;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDModule;
@@ -37,13 +46,16 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderProgr
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderVertex;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTypeRecord;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValue;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREApplication;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREInteger;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRELet;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRENew;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRERecord;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREVariable;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameGlobal;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName.UASTRTypeNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName.UASTRTypeNameGlobal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
@@ -257,6 +269,30 @@ public final class ResolverTest
     final UASTRENew enew = (UASTRENew) t.getExpression();
     final UASTRTypeNameBuiltIn name = (UASTRTypeNameBuiltIn) enew.getName();
     Assert.assertEquals("integer", name.getName().getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testExpressionLetTypeOK0()
+      throws ResolverError,
+        ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest
+        .resolved(new String[] { "resolver/expression-let-type-ok-0.p" });
+
+    final UASTRDModule m = ResolverTest.firstModule(r);
+
+    final UASTRDValue t = (UASTRDValue) m.getTerms().get("x");
+    Assert.assertEquals("x", t.getName().getActual());
+    final UASTRELet elet = (UASTRELet) t.getExpression();
+
+    {
+      final UASTRDValueLocal b0 = elet.getBindings().get(0);
+      final UASTRTypeNameBuiltIn b0_type =
+        (UASTRTypeNameBuiltIn) ((Some<UASTRTypeName>) b0.getAscription()).value;
+      Assert.assertEquals("integer", b0_type.getName().getActual());
+    }
   }
 
   @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
@@ -516,6 +552,17 @@ public final class ResolverTest
       ResolverError.Code.RESOLVER_SHADER_NONEXISTENT);
   }
 
+  @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
+    void
+    testProgramShaderNonexistent2()
+      throws ResolverError,
+        ConstraintError
+  {
+    ResolverTest.checkMustFailWithCode(
+      new String[] { "resolver/program-shader-nonexistent-2.p" },
+      ResolverError.Code.RESOLVER_MODULE_REFERENCE_UNKNOWN);
+  }
+
   @SuppressWarnings("static-method") @Test public void testProgramShaderOk0()
     throws ResolverError,
       ConstraintError
@@ -529,6 +576,24 @@ public final class ResolverTest
       (UASTRDShaderProgram) m.getShaders().get("p");
 
     Assert.assertEquals("v", p.getVertexShader().getName().getActual());
+    Assert.assertEquals("f", p.getFragmentShader().getName().getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public void testProgramShaderOk1()
+    throws ResolverError,
+      ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest
+        .resolved(new String[] { "resolver/program-shader-ok-1.p" });
+
+    final UASTRDModule m = ResolverTest.getModule(r, "x.y", "M");
+    final UASTRDShaderProgram p =
+      (UASTRDShaderProgram) m.getShaders().get("p");
+
+    Assert.assertEquals("x.y.N", p.getVertexShader().getFlat().getActual());
+    Assert.assertEquals("v", p.getVertexShader().getName().getActual());
+    Assert.assertEquals("x.y.N", p.getFragmentShader().getFlat().getActual());
     Assert.assertEquals("f", p.getFragmentShader().getName().getActual());
   }
 
@@ -582,6 +647,69 @@ public final class ResolverTest
     ResolverTest.checkMustFailWithCode(
       new String[] { "resolver/type-record-recursive-1.p" },
       ResolverError.Code.RESOLVER_TYPE_RECURSIVE_MUTUAL);
+  }
+
+  @SuppressWarnings("static-method") @Test public void testValueTypeOK0()
+    throws ResolverError,
+      ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest.resolved(new String[] { "resolver/value-type-ok-0.p" });
+
+    final UASTRDModule m = ResolverTest.firstModule(r);
+
+    final UASTRDValue v = (UASTRDValue) m.getTerms().get("x");
+    final UASTRTypeName t = ((Some<UASTRTypeName>) v.getAscription()).value;
+    final UASTRTypeNameBuiltIn tb = (UASTRTypeNameBuiltIn) t;
+
+    Assert.assertEquals("integer", tb.getName().getActual());
+  }
+
+  private static UASTRDModule getModule(
+    final @Nonnull UASTRCompilation comp,
+    final @Nonnull String pp,
+    final @Nonnull String name)
+    throws ConstraintError
+  {
+    final ModulePath path = ResolverTest.getModuleMakePath(pp, name);
+    final ModulePathFlat flat = ModulePathFlat.fromModulePath(path);
+    return comp.getModules().get(flat);
+  }
+
+  private static @Nonnull ModulePath getModuleMakePath(
+    final @Nonnull String pp,
+    final @Nonnull String name)
+    throws ConstraintError
+  {
+    final String[] segments = pp.split("\\.");
+    final ArrayList<TokenIdentifierLower> tokens =
+      new ArrayList<TokenIdentifierLower>();
+
+    final File file = new File("<stdin>");
+    final Position pos = new Position(0, 0);
+    for (int index = 0; index < segments.length; ++index) {
+      tokens.add(new TokenIdentifierLower(file, pos, segments[index]));
+    }
+
+    final TokenIdentifierUpper tname =
+      new TokenIdentifierUpper(file, pos, name);
+    return new ModulePath(new PackagePath(tokens), tname);
+  }
+
+  @SuppressWarnings("static-method") @Test public void testValueRenameOK0()
+    throws ResolverError,
+      ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest.resolved(new String[] { "resolver/value-rename-ok-0.p" });
+
+    final UASTRDModule m = ResolverTest.getModule(r, "x.y", "M");
+    final UASTRDValue v = (UASTRDValue) m.getTerms().get("x");
+    final UASTREVariable vvar = (UASTREVariable) v.getExpression();
+    final UASTRTermNameGlobal vvn = (UASTRTermNameGlobal) vvar.getName();
+
+    Assert.assertEquals("x.y.N", vvn.getFlat().getActual());
+    Assert.assertEquals("x", vvn.getName().getActual());
   }
 
   @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
