@@ -27,6 +27,7 @@ import javax.annotation.Nonnull;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph.CycleFoundException;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
@@ -764,6 +765,20 @@ public final class Resolver
         }
       }
     }
+
+    public @Nonnull List<ModulePathFlat> getTopology()
+    {
+      final TopologicalOrderIterator<UASTUDModule, Import> iter =
+        new TopologicalOrderIterator<UASTUDModule, Import>(this.import_graph);
+
+      final ArrayList<ModulePathFlat> ls = new ArrayList<ModulePathFlat>();
+      while (iter.hasNext()) {
+        final UASTUDModule m = iter.next();
+        ls.add(ModulePathFlat.fromModulePath(m.getPath()));
+      }
+
+      return ls;
+    }
   }
 
   private static final class LocalResolver implements
@@ -912,7 +927,7 @@ public final class Resolver
       final Map<String, UASTUDImport> import_renames = m.getImportedRenames();
       final Map<String, UASTRDImport> r_import_renames =
         new HashMap<String, UASTRDImport>();
-      for (final String in : import_names.keySet()) {
+      for (final String in : import_renames.keySet()) {
         final UASTUDImport i = import_renames.get(in);
         r_import_renames
           .put(in, new UASTRDImport(i.getPath(), i.getRename()));
@@ -2063,6 +2078,9 @@ public final class Resolver
       results.put(path, mr);
     }
 
-    return new UASTRCompilation(results, this.compilation.getPaths());
+    return new UASTRCompilation(
+      ri.getTopology(),
+      results,
+      this.compilation.getPaths());
   }
 }

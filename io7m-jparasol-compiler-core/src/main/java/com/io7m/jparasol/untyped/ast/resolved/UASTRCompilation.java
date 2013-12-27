@@ -17,6 +17,7 @@
 package com.io7m.jparasol.untyped.ast.resolved;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -29,16 +30,24 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDModule;
 
 public final class UASTRCompilation
 {
+  private final @Nonnull List<ModulePathFlat>              topology;
   private final @Nonnull Map<ModulePathFlat, UASTRDModule> modules;
   private final @Nonnull Map<ModulePathFlat, ModulePath>   paths;
 
   public UASTRCompilation(
+    final @Nonnull List<ModulePathFlat> topology,
     final @Nonnull Map<ModulePathFlat, UASTRDModule> modules,
     final @Nonnull Map<ModulePathFlat, ModulePath> paths)
     throws ConstraintError
   {
+    this.topology = Constraints.constrainNotNull(topology, "Topology");
     this.modules = Constraints.constrainNotNull(modules, "Modules");
     this.paths = Constraints.constrainNotNull(paths, "Paths");
+  }
+
+  public @Nonnull List<ModulePathFlat> getTopology()
+  {
+    return this.topology;
   }
 
   public @Nonnull Map<ModulePathFlat, UASTRDModule> getModules()

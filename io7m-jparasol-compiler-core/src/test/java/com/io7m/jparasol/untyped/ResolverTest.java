@@ -137,6 +137,37 @@ public final class ResolverTest
     return r.getModules().entrySet().iterator().next().getValue();
   }
 
+  private static UASTRDModule getModule(
+    final @Nonnull UASTRCompilation comp,
+    final @Nonnull String pp,
+    final @Nonnull String name)
+    throws ConstraintError
+  {
+    final ModulePath path = ResolverTest.getModuleMakePath(pp, name);
+    final ModulePathFlat flat = ModulePathFlat.fromModulePath(path);
+    return comp.getModules().get(flat);
+  }
+
+  private static @Nonnull ModulePath getModuleMakePath(
+    final @Nonnull String pp,
+    final @Nonnull String name)
+    throws ConstraintError
+  {
+    final String[] segments = pp.split("\\.");
+    final ArrayList<TokenIdentifierLower> tokens =
+      new ArrayList<TokenIdentifierLower>();
+
+    final File file = new File("<stdin>");
+    final Position pos = new Position(0, 0);
+    for (int index = 0; index < segments.length; ++index) {
+      tokens.add(new TokenIdentifierLower(file, pos, segments[index]));
+    }
+
+    final TokenIdentifierUpper tname =
+      new TokenIdentifierUpper(file, pos, name);
+    return new ModulePath(new PackagePath(tokens), tname);
+  }
+
   static UASTRCompilation resolved(
     final String[] names)
     throws ResolverError,
@@ -254,23 +285,6 @@ public final class ResolverTest
       ResolverError.Code.RESOLVER_TERM_RECURSIVE_MUTUAL);
   }
 
-  @SuppressWarnings("static-method") @Test public void testExpressionNewOK0()
-    throws ResolverError,
-      ConstraintError
-  {
-    final UASTRCompilation r =
-      ResolverTest
-        .resolved(new String[] { "resolver/expression-new-term-ok-0.p" });
-
-    final UASTRDModule m = ResolverTest.firstModule(r);
-
-    final UASTRDValue t = (UASTRDValue) m.getTerms().get("x");
-    Assert.assertEquals("x", t.getName().getActual());
-    final UASTRENew enew = (UASTRENew) t.getExpression();
-    final UASTRTypeNameBuiltIn name = (UASTRTypeNameBuiltIn) enew.getName();
-    Assert.assertEquals("integer", name.getName().getActual());
-  }
-
   @SuppressWarnings("static-method") @Test public
     void
     testExpressionLetTypeOK0()
@@ -293,6 +307,23 @@ public final class ResolverTest
         (UASTRTypeNameBuiltIn) ((Some<UASTRTypeName>) b0.getAscription()).value;
       Assert.assertEquals("integer", b0_type.getName().getActual());
     }
+  }
+
+  @SuppressWarnings("static-method") @Test public void testExpressionNewOK0()
+    throws ResolverError,
+      ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest
+        .resolved(new String[] { "resolver/expression-new-term-ok-0.p" });
+
+    final UASTRDModule m = ResolverTest.firstModule(r);
+
+    final UASTRDValue t = (UASTRDValue) m.getTerms().get("x");
+    Assert.assertEquals("x", t.getName().getActual());
+    final UASTRENew enew = (UASTRENew) t.getExpression();
+    final UASTRTypeNameBuiltIn name = (UASTRTypeNameBuiltIn) enew.getName();
+    Assert.assertEquals("integer", name.getName().getActual());
   }
 
   @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
@@ -597,6 +628,41 @@ public final class ResolverTest
     Assert.assertEquals("f", p.getFragmentShader().getName().getActual());
   }
 
+  @SuppressWarnings("static-method") @Test public void testTopology0()
+    throws ResolverError,
+      ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest.resolved(new String[] { "resolver/topology-0.p" });
+
+    final List<ModulePathFlat> topo = r.getTopology();
+    Assert.assertEquals(3, topo.size());
+
+    System.out.println(topo);
+
+    Assert.assertEquals("x.y.P", topo.get(0).getActual());
+    Assert.assertEquals("x.y.N", topo.get(1).getActual());
+    Assert.assertEquals("x.y.M", topo.get(2).getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public void testTopology1()
+    throws ResolverError,
+      ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest.resolved(new String[] { "resolver/topology-1.p" });
+
+    final List<ModulePathFlat> topo = r.getTopology();
+    Assert.assertEquals(4, topo.size());
+
+    System.out.println(topo);
+
+    Assert.assertEquals("x.y.Q", topo.get(0).getActual());
+    Assert.assertEquals("x.y.N", topo.get(1).getActual());
+    Assert.assertEquals("x.y.P", topo.get(2).getActual());
+    Assert.assertEquals("x.y.M", topo.get(3).getActual());
+  }
+
   @SuppressWarnings("static-method") @Test public
     void
     testTypeRecordBuiltIn0()
@@ -647,69 +713,6 @@ public final class ResolverTest
     ResolverTest.checkMustFailWithCode(
       new String[] { "resolver/type-record-recursive-1.p" },
       ResolverError.Code.RESOLVER_TYPE_RECURSIVE_MUTUAL);
-  }
-
-  @SuppressWarnings("static-method") @Test public void testValueTypeOK0()
-    throws ResolverError,
-      ConstraintError
-  {
-    final UASTRCompilation r =
-      ResolverTest.resolved(new String[] { "resolver/value-type-ok-0.p" });
-
-    final UASTRDModule m = ResolverTest.firstModule(r);
-
-    final UASTRDValue v = (UASTRDValue) m.getTerms().get("x");
-    final UASTRTypeName t = ((Some<UASTRTypeName>) v.getAscription()).value;
-    final UASTRTypeNameBuiltIn tb = (UASTRTypeNameBuiltIn) t;
-
-    Assert.assertEquals("integer", tb.getName().getActual());
-  }
-
-  private static UASTRDModule getModule(
-    final @Nonnull UASTRCompilation comp,
-    final @Nonnull String pp,
-    final @Nonnull String name)
-    throws ConstraintError
-  {
-    final ModulePath path = ResolverTest.getModuleMakePath(pp, name);
-    final ModulePathFlat flat = ModulePathFlat.fromModulePath(path);
-    return comp.getModules().get(flat);
-  }
-
-  private static @Nonnull ModulePath getModuleMakePath(
-    final @Nonnull String pp,
-    final @Nonnull String name)
-    throws ConstraintError
-  {
-    final String[] segments = pp.split("\\.");
-    final ArrayList<TokenIdentifierLower> tokens =
-      new ArrayList<TokenIdentifierLower>();
-
-    final File file = new File("<stdin>");
-    final Position pos = new Position(0, 0);
-    for (int index = 0; index < segments.length; ++index) {
-      tokens.add(new TokenIdentifierLower(file, pos, segments[index]));
-    }
-
-    final TokenIdentifierUpper tname =
-      new TokenIdentifierUpper(file, pos, name);
-    return new ModulePath(new PackagePath(tokens), tname);
-  }
-
-  @SuppressWarnings("static-method") @Test public void testValueRenameOK0()
-    throws ResolverError,
-      ConstraintError
-  {
-    final UASTRCompilation r =
-      ResolverTest.resolved(new String[] { "resolver/value-rename-ok-0.p" });
-
-    final UASTRDModule m = ResolverTest.getModule(r, "x.y", "M");
-    final UASTRDValue v = (UASTRDValue) m.getTerms().get("x");
-    final UASTREVariable vvar = (UASTREVariable) v.getExpression();
-    final UASTRTermNameGlobal vvn = (UASTRTermNameGlobal) vvar.getName();
-
-    Assert.assertEquals("x.y.N", vvn.getFlat().getActual());
-    Assert.assertEquals("x", vvn.getName().getActual());
   }
 
   @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
@@ -810,6 +813,22 @@ public final class ResolverTest
       ResolverError.Code.RESOLVER_TERM_RECURSIVE_MUTUAL);
   }
 
+  @SuppressWarnings("static-method") @Test public void testValueRenameOK0()
+    throws ResolverError,
+      ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest.resolved(new String[] { "resolver/value-rename-ok-0.p" });
+
+    final UASTRDModule m = ResolverTest.getModule(r, "x.y", "M");
+    final UASTRDValue v = (UASTRDValue) m.getTerms().get("x");
+    final UASTREVariable vvar = (UASTREVariable) v.getExpression();
+    final UASTRTermNameGlobal vvn = (UASTRTermNameGlobal) vvar.getName();
+
+    Assert.assertEquals("x.y.N", vvn.getFlat().getActual());
+    Assert.assertEquals("x", vvn.getName().getActual());
+  }
+
   @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
     void
     testValueTypeNonexistent0()
@@ -898,6 +917,22 @@ public final class ResolverTest
       ResolverError.Code.RESOLVER_TYPE_NONEXISTENT);
   }
 
+  @SuppressWarnings("static-method") @Test public void testValueTypeOK0()
+    throws ResolverError,
+      ConstraintError
+  {
+    final UASTRCompilation r =
+      ResolverTest.resolved(new String[] { "resolver/value-type-ok-0.p" });
+
+    final UASTRDModule m = ResolverTest.firstModule(r);
+
+    final UASTRDValue v = (UASTRDValue) m.getTerms().get("x");
+    final UASTRTypeName t = ((Some<UASTRTypeName>) v.getAscription()).value;
+    final UASTRTypeNameBuiltIn tb = (UASTRTypeNameBuiltIn) t;
+
+    Assert.assertEquals("integer", tb.getName().getActual());
+  }
+
   @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
     void
     testVertexShaderLocalTermNonexistent0()
@@ -965,5 +1000,4 @@ public final class ResolverTest
         new String[] { "resolver/vertex-shader-type-nonexistent-parameter-0.p" },
         ResolverError.Code.RESOLVER_TYPE_NONEXISTENT);
   }
-
 }
