@@ -200,6 +200,52 @@ public abstract class UASTCDeclaration
     }
   }
 
+  public static final class UASTCDExternal
+  {
+    private final @Nonnull TokenIdentifierLower name;
+    private final boolean                       vertex_shader_allowed;
+    private final boolean                       fragment_shader_allowed;
+
+    public UASTCDExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final boolean vertex_shader_allowed,
+      final boolean fragment_shader_allowed)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.vertex_shader_allowed = vertex_shader_allowed;
+      this.fragment_shader_allowed = fragment_shader_allowed;
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTCDExternal ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.vertex_shader_allowed);
+      builder.append(" ");
+      builder.append(this.fragment_shader_allowed);
+      builder.append("]");
+      return builder.toString();
+    }
+
+    public boolean isVertexShaderAllowed()
+    {
+      return this.vertex_shader_allowed;
+    }
+
+    public boolean isFragmentShaderAllowed()
+    {
+      return this.fragment_shader_allowed;
+    }
+  }
+
   /**
    * Functions with external declarations (private FFI).
    */
@@ -207,7 +253,7 @@ public abstract class UASTCDeclaration
   public static final class UASTCDFunctionExternal extends UASTCDFunction
   {
     private final @Nonnull List<UASTCDFunctionArgument> arguments;
-    private final @Nonnull TokenIdentifierLower         external;
+    private final @Nonnull UASTCDExternal               external;
     private final @Nonnull TokenIdentifierLower         name;
     private final @Nonnull UASTCTypePath                return_type;
 
@@ -215,7 +261,7 @@ public abstract class UASTCDeclaration
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull List<UASTCDFunctionArgument> arguments,
       final @Nonnull UASTCTypePath return_type,
-      final @Nonnull TokenIdentifierLower external)
+      final @Nonnull UASTCDExternal external)
       throws ConstraintError
     {
       this.name = Constraints.constrainNotNull(name, "Name");
@@ -247,7 +293,7 @@ public abstract class UASTCDeclaration
       return this.arguments;
     }
 
-    public @Nonnull TokenIdentifierLower getExternal()
+    public @Nonnull UASTCDExternal getExternal()
     {
       return this.external;
     }
@@ -283,7 +329,7 @@ public abstract class UASTCDeclaration
       builder.append(" ");
       builder.append(this.return_type);
       builder.append(" ");
-      builder.append(this.external.getActual());
+      builder.append(this.external);
       builder.append("]");
       return builder.toString();
     }

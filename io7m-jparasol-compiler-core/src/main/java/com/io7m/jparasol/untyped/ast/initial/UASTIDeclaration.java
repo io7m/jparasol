@@ -182,6 +182,39 @@ public abstract class UASTIDeclaration
     }
   }
 
+  public static final class UASTIDExternal
+  {
+    private final @Nonnull TokenIdentifierLower name;
+    private final boolean                       vertex_shader_allowed;
+    private final boolean                       fragment_shader_allowed;
+
+    public UASTIDExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final boolean vertex_shader_allowed,
+      final boolean fragment_shader_allowed)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.vertex_shader_allowed = vertex_shader_allowed;
+      this.fragment_shader_allowed = fragment_shader_allowed;
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public boolean isVertexShaderAllowed()
+    {
+      return this.vertex_shader_allowed;
+    }
+
+    public boolean isFragmentShaderAllowed()
+    {
+      return this.fragment_shader_allowed;
+    }
+  }
+
   /**
    * Functions with external declarations (private FFI).
    */
@@ -189,7 +222,7 @@ public abstract class UASTIDeclaration
   public static final class UASTIDFunctionExternal extends UASTIDFunction
   {
     private final @Nonnull List<UASTIDFunctionArgument> arguments;
-    private final @Nonnull TokenIdentifierLower         external;
+    private final @Nonnull UASTIDExternal               external;
     private final @Nonnull TokenIdentifierLower         name;
     private final @Nonnull UASTITypePath                return_type;
 
@@ -197,7 +230,7 @@ public abstract class UASTIDeclaration
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull List<UASTIDFunctionArgument> arguments,
       final @Nonnull UASTITypePath return_type,
-      final @Nonnull TokenIdentifierLower external)
+      final @Nonnull UASTIDExternal external)
       throws ConstraintError
     {
       this.name = Constraints.constrainNotNull(name, "Name");
@@ -229,7 +262,7 @@ public abstract class UASTIDeclaration
       return this.arguments;
     }
 
-    public @Nonnull TokenIdentifierLower getExternal()
+    public @Nonnull UASTIDExternal getExternal()
     {
       return this.external;
     }

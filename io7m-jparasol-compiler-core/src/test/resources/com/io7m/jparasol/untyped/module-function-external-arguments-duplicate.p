@@ -4,5 +4,5 @@ module M is
   function f (
     x : integer,
     x : integer
-  ) : integer = external xyz;
+  ) : integer = external xyz is vertex true; fragment true; end;
 end;

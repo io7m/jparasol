@@ -37,6 +37,7 @@ import com.io7m.jparasol.NameRestrictions.NameRestrictionsException;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDExternal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunction;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionDefined;
@@ -84,6 +85,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCTypePath;
 import com.io7m.jparasol.untyped.ast.checked.UASTCValuePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTICompilation;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDRecordVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
@@ -733,11 +735,16 @@ public final class ModuleStructure
       throws ModuleStructureError,
         ConstraintError
     {
+      final UASTIDExternal ext = f.getExternal();
+
       return new UASTCDFunctionExternal(
         f.getName(),
         arguments,
         ModuleStructure.typePath(f.getReturnType()),
-        f.getExternal());
+        new UASTCDExternal(
+          ext.getName(),
+          ext.isVertexShaderAllowed(),
+          ext.isFragmentShaderAllowed()));
     }
 
     @Override public void functionVisitExternalPre(

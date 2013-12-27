@@ -38,6 +38,7 @@ import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.lexer.Token.Type;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
@@ -327,7 +328,7 @@ public class ParserTest
   {
     final Parser p =
       ParserTest
-        .makeStringInternalParser("function f (x : integer, y : Example.t) : integer = external xyz");
+        .makeStringInternalParser("function f (x : integer, y : Example.t) : integer = external xyz is vertex true; fragment true; end");
 
     final UASTIDFunctionExternal r =
       (UASTIDFunctionExternal) p.declarationFunction();
@@ -344,7 +345,9 @@ public class ParserTest
       .getType()
       .getModule()).value.getActual());
     Assert.assertEquals("t", arg1.getType().getName().getActual());
-    Assert.assertEquals("xyz", r.getExternal().getActual());
+
+    final UASTIDExternal ext = r.getExternal();
+    Assert.assertEquals("xyz", ext.getName().getActual());
   }
 
   @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public

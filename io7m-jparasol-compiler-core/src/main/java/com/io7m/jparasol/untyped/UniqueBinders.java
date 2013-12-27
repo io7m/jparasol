@@ -39,6 +39,7 @@ import com.io7m.jparasol.NameRestrictions.NameRestricted;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDExternal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionExternal;
@@ -91,6 +92,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCVertexShaderLocalVisitor;
 import com.io7m.jparasol.untyped.ast.checked.UASTCVertexShaderVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunction;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionDefined;
@@ -646,12 +648,16 @@ public final class UniqueBinders
       throws UniqueBindersError,
         ConstraintError
     {
+      final UASTCDExternal ext = f.getExternal();
       final TokenIdentifierLower name = f.getName();
       return new UASTUDFunctionExternal(
         name,
         arguments,
         UniqueBinders.mapTypePath(f.getReturnType()),
-        f.getExternal());
+        new UASTUDExternal(
+          ext.getName(),
+          ext.isVertexShaderAllowed(),
+          ext.isFragmentShaderAllowed()));
     }
 
     @Override public void functionVisitExternalPre(

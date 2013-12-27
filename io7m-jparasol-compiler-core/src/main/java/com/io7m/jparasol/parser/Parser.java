@@ -41,6 +41,7 @@ import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
 import com.io7m.jparasol.lexer.Token.TokenLiteralIntegerDecimal;
 import com.io7m.jparasol.lexer.Token.TokenLiteralReal;
 import com.io7m.jparasol.lexer.Token.Type;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunction;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
@@ -393,6 +394,34 @@ public final class Parser
     }
   }
 
+  public @Nonnull UASTIDExternal declarationExternal()
+    throws ParserError,
+      LexerError,
+      IOException,
+      ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_EXTERNAL);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_IS);
+
+    this.parserConsumeExact(Type.TOKEN_VERTEX);
+    this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
+    final TokenLiteralBoolean vallow = (TokenLiteralBoolean) this.token;
+    this.parserConsumeExact(Type.TOKEN_LITERAL_BOOLEAN);
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
+    this.parserConsumeExact(Type.TOKEN_FRAGMENT);
+    this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
+    final TokenLiteralBoolean fallow = (TokenLiteralBoolean) this.token;
+    this.parserConsumeExact(Type.TOKEN_LITERAL_BOOLEAN);
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
+    this.parserConsumeExact(Type.TOKEN_END);
+    return new UASTIDExternal(name, vallow.getValue(), fallow.getValue());
+  }
+
   public @Nonnull UASTIDFunction declarationFunction()
     throws ParserError,
       IOException,
@@ -419,10 +448,7 @@ public final class Parser
          */
 
         if (this.internal) {
-          this.parserConsumeExact(Type.TOKEN_EXTERNAL);
-          this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
-          final TokenIdentifierLower ext = (TokenIdentifierLower) this.token;
-          this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+          final UASTIDExternal ext = this.declarationExternal();
           return new UASTIDFunctionExternal(name, args, type, ext);
         }
 

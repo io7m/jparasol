@@ -43,6 +43,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.typed.TType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRCompilation;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDExternal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDFunctionExternal;
@@ -96,6 +97,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName.UASTRTypeNameGlobal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeNameVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDRecordVisitor;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionExternal;
@@ -1454,11 +1456,15 @@ public final class Resolver
         arguments.add(new UASTRDFunctionArgument(an_new, at_new));
       }
 
+      final UASTUDExternal ext = f.getExternal();
       return new UASTRDFunctionExternal(
         f.getName(),
         arguments,
         return_type,
-        f.getExternal());
+        new UASTRDExternal(
+          ext.getName(),
+          ext.isVertexShaderAllowed(),
+          ext.isFragmentShaderAllowed()));
     }
 
     @Override public @Nonnull UASTRDValue termVisitValue(
