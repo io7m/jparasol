@@ -49,7 +49,10 @@ module M is
     a : integer,
     b : integer
   ) : integer =
-    external xyz;
+    external xyz is
+      vertex true;
+      fragment true;
+    end;
 
   shader vertex v is
     out out0 : vector_4f;

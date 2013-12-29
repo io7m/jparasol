@@ -16,50 +16,51 @@
 
 package com.io7m.jparasol.untyped.ast.unique_binders;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragment;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentInput;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentLocalDiscard;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentLocalValue;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutputAssignment;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentParameter;
 
-public interface UASTUFragmentShaderVisitor<E extends Throwable>
+public interface UASTUFragmentShaderVisitor<F, PI, PP, PO, L, O, E extends Throwable>
 {
-  public void fragmentShaderVisit(
+  public @Nonnull F fragmentShaderVisit(
+    final @Nonnull List<PI> inputs,
+    final @Nonnull List<PP> parameters,
+    final @Nonnull List<PO> outputs,
+    final @Nonnull List<L> locals,
+    final @Nonnull List<O> output_assignments,
     final @Nonnull UASTUDShaderFragment f)
     throws E,
       ConstraintError;
 
-  public void fragmentShaderVisitInput(
+  public @Nonnull PI fragmentShaderVisitInput(
     final @Nonnull UASTUDShaderFragmentInput i)
     throws E,
       ConstraintError;
 
-  public void fragmentShaderVisitLocalDiscard(
-    final @Nonnull UASTUDShaderFragmentLocalDiscard d)
-    throws E,
-      ConstraintError;
+  public @Nonnull
+    UASTUFragmentShaderLocalVisitor<L, E>
+    fragmentShaderVisitLocalsPre()
+      throws E,
+        ConstraintError;
 
-  public void fragmentShaderVisitLocalValue(
-    final @Nonnull UASTUDShaderFragmentLocalValue v)
-    throws E,
-      ConstraintError;
-
-  public void fragmentShaderVisitOutput(
+  public @Nonnull PO fragmentShaderVisitOutput(
     final @Nonnull UASTUDShaderFragmentOutput o)
     throws E,
       ConstraintError;
 
-  public void fragmentShaderVisitOutputAssignment(
+  public @Nonnull O fragmentShaderVisitOutputAssignment(
     final @Nonnull UASTUDShaderFragmentOutputAssignment a)
     throws E,
       ConstraintError;
 
-  public void fragmentShaderVisitParameter(
+  public @Nonnull PP fragmentShaderVisitParameter(
     final @Nonnull UASTUDShaderFragmentParameter p)
     throws E,
       ConstraintError;

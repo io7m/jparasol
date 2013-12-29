@@ -16,21 +16,41 @@
 
 package com.io7m.jparasol.untyped.ast.initial;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionExternal;
 
-public interface UASTIFunctionVisitor<S extends UASTIStatus, E extends Throwable>
+public interface UASTIFunctionVisitor<A, B, E extends Throwable>
 {
-  public void functionVisitDefined(
-    final @Nonnull UASTIDFunctionDefined<S> f)
+  public B functionVisitArgument(
+    final @Nonnull UASTIDFunctionArgument f)
     throws E,
       ConstraintError;
 
-  public void functionVisitExternal(
-    final @Nonnull UASTIDFunctionExternal<S> f)
+  public A functionVisitDefined(
+    final @Nonnull List<B> arguments,
+    final @Nonnull UASTIDFunctionDefined f)
+    throws E,
+      ConstraintError;
+
+  public void functionVisitDefinedPre(
+    final @Nonnull UASTIDFunctionDefined f)
+    throws E,
+      ConstraintError;
+
+  public A functionVisitExternal(
+    final @Nonnull List<B> arguments,
+    final @Nonnull UASTIDFunctionExternal f)
+    throws E,
+      ConstraintError;
+
+  public void functionVisitExternalPre(
+    final @Nonnull UASTIDFunctionExternal f)
     throws E,
       ConstraintError;
 }

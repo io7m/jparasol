@@ -9,14 +9,16 @@
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
  * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
- * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITWHETHER IN AN ACTION
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package com.io7m.jparasol.untyped.ast.unique_binders;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -25,6 +27,7 @@ import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.Token.TokenIf;
 import com.io7m.jparasol.lexer.Token.TokenLet;
 import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
 import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
@@ -36,10 +39,10 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
   public static final class UASTUEApplication extends UASTUExpression
   {
     private final @Nonnull List<UASTUExpression> arguments;
-    private final @Nonnull UASTUName             name;
+    private final @Nonnull UniqueName            name;
 
     public UASTUEApplication(
-      final @Nonnull UASTUName name,
+      final @Nonnull UniqueName name,
       final @Nonnull List<UASTUExpression> arguments)
       throws ConstraintError
     {
@@ -48,17 +51,20 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitApplication(this);
+      v.expressionVisitApplicationPre(this);
+      final List<A> args = new ArrayList<A>();
       for (final UASTUExpression a : this.arguments) {
-        a.expressionVisitableAccept(v);
+        final A x = a.expressionVisitableAccept(v);
+        args.add(x);
       }
+      return v.expressionVisitApplication(args, this);
     }
 
     public @Nonnull List<UASTUExpression> getArguments()
@@ -66,9 +72,20 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
       return this.arguments;
     }
 
-    public @Nonnull UASTUName getName()
+    public @Nonnull UniqueName getName()
     {
       return this.name;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUEApplication ");
+      builder.append(this.name.show());
+      builder.append(" ");
+      builder.append(this.arguments);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -84,14 +101,14 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitBoolean(this);
+      return v.expressionVisitBoolean(this);
     }
 
     public @Nonnull TokenLiteralBoolean getToken()
@@ -103,6 +120,15 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     {
       return this.token.getValue();
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUEBoolean ");
+      builder.append(this.token.getValue());
+      builder.append("]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUEConditional extends UASTUExpression
@@ -110,30 +136,34 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull UASTUExpression condition;
     private final @Nonnull UASTUExpression left;
     private final @Nonnull UASTUExpression right;
+    private final @Nonnull TokenIf         token;
 
     public UASTUEConditional(
+      final @Nonnull TokenIf token,
       final @Nonnull UASTUExpression condition,
       final @Nonnull UASTUExpression left,
       final @Nonnull UASTUExpression right)
       throws ConstraintError
     {
+      this.token = Constraints.constrainNotNull(token, "Token");
       this.condition = Constraints.constrainNotNull(condition, "Condition");
       this.left = Constraints.constrainNotNull(left, "Left");
       this.right = Constraints.constrainNotNull(right, "Right");
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitConditional(this);
-      this.condition.expressionVisitableAccept(v);
-      this.left.expressionVisitableAccept(v);
-      this.right.expressionVisitableAccept(v);
+      v.expressionVisitConditionalPre(this);
+      final A c = this.condition.expressionVisitableAccept(v);
+      final A l = this.left.expressionVisitableAccept(v);
+      final A r = this.right.expressionVisitableAccept(v);
+      return v.expressionVisitConditional(c, l, r, this);
     }
 
     public @Nonnull UASTUExpression getCondition()
@@ -150,6 +180,24 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     {
       return this.right;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUEConditional ");
+      builder.append(this.condition);
+      builder.append(" ");
+      builder.append(this.left);
+      builder.append(" ");
+      builder.append(this.right);
+      builder.append("]");
+      return builder.toString();
+    }
+
+    public TokenIf getIf()
+    {
+      return this.token;
+    }
   }
 
   public static final class UASTUEInteger extends UASTUExpression
@@ -164,14 +212,14 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitInteger(this);
+      return v.expressionVisitInteger(this);
     }
 
     public @Nonnull TokenLiteralInteger getToken()
@@ -179,9 +227,18 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
       return this.token;
     }
 
-    public @Nonnull BigDecimal getValue()
+    public @Nonnull BigInteger getValue()
     {
       return this.token.getValue();
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUEInteger ");
+      builder.append(this.token.getValue());
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -203,15 +260,23 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitLet(this);
-      this.body.expressionVisitableAccept(v);
+      final UASTULocalLevelVisitor<L, E> bv = v.expressionVisitLetPre(this);
+
+      final ArrayList<L> r_bindings = new ArrayList<L>();
+      for (final UASTUDValueLocal b : this.bindings) {
+        final L rb = bv.localVisitValueLocal(b);
+        r_bindings.add(rb);
+      }
+
+      final A x = this.body.expressionVisitableAccept(v);
+      return v.expressionVisitLet(r_bindings, x, this);
     }
 
     public @Nonnull List<UASTUDValueLocal> getBindings()
@@ -227,6 +292,21 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     public @Nonnull TokenLet getToken()
     {
       return this.token;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUELet [\n");
+      for (final UASTUDValueLocal b : this.bindings) {
+        builder.append("  ");
+        builder.append(b);
+        builder.append("\n");
+      }
+      builder.append("] [\n");
+      builder.append(this.body);
+      builder.append("\n]");
+      return builder.toString();
     }
   }
 
@@ -245,17 +325,19 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitNew(this);
+      final List<A> args = new ArrayList<A>();
       for (final UASTUExpression b : this.arguments) {
-        b.expressionVisitableAccept(v);
+        final A x = b.expressionVisitableAccept(v);
+        args.add(x);
       }
+      return v.expressionVisitNew(args, this);
     }
 
     public @Nonnull List<UASTUExpression> getArguments()
@@ -266,6 +348,17 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     public @Nonnull UASTUTypePath getName()
     {
       return this.name;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUENew ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.arguments);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -281,14 +374,14 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitReal(this);
+      return v.expressionVisitReal(this);
     }
 
     public @Nonnull TokenLiteralReal getToken()
@@ -299,6 +392,15 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     public @Nonnull BigDecimal getValue()
     {
       return this.token.getValue();
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUEReal ");
+      builder.append(this.token.getValue());
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -318,14 +420,14 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitRecord(this);
+      return v.expressionVisitRecord(this);
     }
 
     public @Nonnull List<UASTURecordFieldAssignment> getAssignments()
@@ -336,6 +438,21 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     public @Nonnull UASTUTypePath getTypePath()
     {
       return this.type_path;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUERecord ");
+      builder.append(this.type_path);
+      builder.append(" [\n");
+      for (final UASTURecordFieldAssignment a : this.assignments) {
+        builder.append("  ");
+        builder.append(a);
+        builder.append("\n");
+      }
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -355,15 +472,16 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitRecordProjection(this);
-      this.expression.expressionVisitableAccept(v);
+      v.expressionVisitRecordProjectionPre(this);
+      final A x = this.expression.expressionVisitableAccept(v);
+      return v.expressionVisitRecordProjection(x, this);
     }
 
     public @Nonnull UASTUExpression getExpression()
@@ -374,6 +492,17 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     public @Nonnull TokenIdentifierLower getField()
     {
       return this.field;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUERecordProjection ");
+      builder.append(this.expression);
+      builder.append(" ");
+      builder.append(this.field.getActual());
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -393,15 +522,16 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitSwizzle(this);
-      this.expression.expressionVisitableAccept(v);
+      v.expressionVisitSwizzlePre(this);
+      final A x = this.expression.expressionVisitableAccept(v);
+      return v.expressionVisitSwizzle(x, this);
     }
 
     public @Nonnull UASTUExpression getExpression()
@@ -413,33 +543,56 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     {
       return this.fields;
     }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUESwizzle ");
+      builder.append(this.expression);
+      builder.append(" [");
+      for (final TokenIdentifierLower f : this.fields) {
+        builder.append(f.getActual());
+        builder.append(" ");
+      }
+      builder.append("]]");
+      return builder.toString();
+    }
   }
 
   public static final class UASTUEVariable extends UASTUExpression
   {
-    private final @Nonnull UASTUName name;
+    private final @Nonnull UniqueName name;
 
     public UASTUEVariable(
-      final @Nonnull UASTUName name)
+      final @Nonnull UniqueName name)
       throws ConstraintError
     {
       this.name = Constraints.constrainNotNull(name, "Name");
     }
 
     @Override public
-      <E extends Throwable, V extends UASTUExpressionVisitor<E>>
-      void
+      <A, L, E extends Throwable, V extends UASTUExpressionVisitor<A, L, E>>
+      A
       expressionVisitableAccept(
         final @Nonnull V v)
         throws E,
           ConstraintError
     {
-      v.expressionVisitVariable(this);
+      return v.expressionVisitVariable(this);
     }
 
-    public @Nonnull UASTUName getName()
+    public @Nonnull UniqueName getName()
     {
       return this.name;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUEVariable ");
+      builder.append(this.name);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -466,6 +619,17 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTURecordFieldAssignment ");
+      builder.append(this.name.getActual());
+      builder.append(" ");
+      builder.append(this.expression);
+      builder.append("]");
+      return builder.toString();
     }
   }
 }

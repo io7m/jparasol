@@ -20,11 +20,11 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 
-public interface UASTIFragmentShaderVisitable<S extends UASTIStatus>
+public interface UASTIFragmentShaderVisitable
 {
   public
-    <E extends Throwable, V extends UASTIFragmentShaderVisitor<S, E>>
-    void
+    <F, PI, PP, PO, L, O, E extends Throwable, V extends UASTIFragmentShaderVisitor<F, PI, PP, PO, L, O, E>>
+    F
     fragmentShaderVisitableAccept(
       final @Nonnull V v)
       throws E,

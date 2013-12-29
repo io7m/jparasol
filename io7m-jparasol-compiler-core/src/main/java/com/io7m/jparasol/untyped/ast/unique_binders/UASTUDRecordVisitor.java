@@ -16,21 +16,29 @@
 
 package com.io7m.jparasol.untyped.ast.unique_binders;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecord;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecordField;
 
-public interface UASTUDRecordVisitor<E extends Throwable>
+public interface UASTUDRecordVisitor<A, B, E extends Throwable>
 {
-  public void recordTypeVisit(
+  public A recordTypeVisit(
+    final @Nonnull List<B> fields,
     final @Nonnull UASTUDTypeRecord e)
     throws E,
       ConstraintError;
 
-  public void recordTypeVisitField(
+  public B recordTypeVisitField(
     final @Nonnull UASTUDTypeRecordField e)
+    throws E,
+      ConstraintError;
+
+  public void recordTypeVisitPre(
+    final @Nonnull UASTUDTypeRecord e)
     throws E,
       ConstraintError;
 }

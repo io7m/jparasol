@@ -23,8 +23,8 @@ import com.io7m.jaux.Constraints.ConstraintError;
 public interface UASTUFragmentShaderVisitable
 {
   public
-    <E extends Throwable, V extends UASTUFragmentShaderVisitor<E>>
-    void
+    <F, PI, PP, PO, L, O, E extends Throwable, V extends UASTUFragmentShaderVisitor<F, PI, PP, PO, L, O, E>>
+    F
     fragmentShaderVisitableAccept(
       final @Nonnull V v)
       throws E,

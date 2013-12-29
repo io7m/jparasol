@@ -22,14 +22,14 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDModule;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDPackage;
 
-public interface UASTUUnitLevelVisitor<E extends Throwable>
+public interface UASTUUnitLevelVisitor<U, E extends Throwable>
 {
-  public void unitVisitModule(
+  public U unitVisitModule(
     final @Nonnull UASTUDModule m)
     throws E,
       ConstraintError;
 
-  public void unitVisitPackage(
+  public U unitVisitPackage(
     final @Nonnull UASTUDPackage p)
     throws E,
       ConstraintError;

@@ -33,25 +33,6 @@ public final class ParserError extends CompilerError
   }
 
   public ParserError(
-    final @Nonnull Exception cause,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
-  {
-    super(cause, file, position);
-  }
-
-  public ParserError(
-    final @Nonnull Exception cause,
-    final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
-  {
-    super(cause, message, file, position);
-  }
-
-  public ParserError(
     final @Nonnull String message,
     final @Nonnull File file,
     final @Nonnull Position position)

@@ -18,6 +18,7 @@ package com.io7m.jparasol.lexer;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
@@ -552,7 +553,7 @@ public abstract class Token
 
   public interface TokenLiteralInteger
   {
-    public @Nonnull BigDecimal getValue();
+    public @Nonnull BigInteger getValue();
   }
 
   public static final class TokenLiteralIntegerDecimal extends Token implements
@@ -565,16 +566,16 @@ public abstract class Token
       throws ConstraintError
     {
       Constraints.constrainNotNull(text, "Text");
-      return new TokenLiteralIntegerDecimal(file, position, new BigDecimal(
+      return new TokenLiteralIntegerDecimal(file, position, new BigInteger(
         text));
     }
 
-    private final @Nonnull BigDecimal value;
+    private final @Nonnull BigInteger value;
 
     @SuppressWarnings("synthetic-access") private TokenLiteralIntegerDecimal(
       final @Nonnull File file,
       final @Nonnull Position position,
-      final @Nonnull BigDecimal value)
+      final @Nonnull BigInteger value)
       throws ConstraintError
     {
       super(Type.TOKEN_LITERAL_INTEGER_DECIMAL, file, position);
@@ -601,7 +602,7 @@ public abstract class Token
       return true;
     }
 
-    @Override public @Nonnull BigDecimal getValue()
+    @Override public @Nonnull BigInteger getValue()
     {
       return this.value;
     }

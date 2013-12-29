@@ -18,8 +18,10 @@ package com.io7m.jparasol.untyped.ast.initial;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -34,32 +36,40 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.untyped.UnitCombinerError;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 
-public final class UASTICompilation<S extends UASTIStatus>
+public final class UASTICompilation
 {
-  public static @Nonnull UASTICompilation<UASTIUnchecked> fromUnits(
-    final @Nonnull List<UASTIUnit<UASTIUnchecked>> units)
+  static final @Nonnull Set<String> EMPTY;
+
+  static {
+    EMPTY = Collections.unmodifiableSet(new HashSet<String>());
+  }
+
+  public static @Nonnull UASTICompilation fromUnits(
+    final @Nonnull List<UASTIUnit> units)
     throws ConstraintError,
       UnitCombinerError
   {
     try {
-      final HashMap<ModulePathFlat, UASTIDModule<UASTIUnchecked>> m =
-        new HashMap<ModulePathFlat, UASTIDModule<UASTIUnchecked>>();
+      final HashMap<ModulePathFlat, UASTIDModule> m =
+        new HashMap<ModulePathFlat, UASTIDModule>();
       final HashMap<ModulePathFlat, ModulePath> paths =
         new HashMap<ModulePathFlat, ModulePath>();
 
-      for (final UASTIUnit<UASTIUnchecked> u : units) {
+      for (final UASTIUnit u : units) {
         final PackagePath pp = u.getPackageName().getPath();
 
         for (final TokenIdentifierLower pc : pp.getComponents()) {
-          NameRestrictions.checkRestrictedExceptional(pc);
+          NameRestrictions.checkRestrictedExceptional(
+            UASTICompilation.EMPTY,
+            pc);
         }
 
-        for (final UASTIDModule<UASTIUnchecked> um : u.getModules()) {
+        for (final UASTIDModule um : u.getModules()) {
 
-          final ModulePath mp = new ModulePath(pp, um.getName());
+          final ModulePath mp = um.getPath();
           final ModulePathFlat flat = ModulePathFlat.fromModulePath(mp);
 
-          final UASTIDModule<UASTIUnchecked> original = m.get(flat);
+          final UASTIDModule original = m.get(flat);
 
           if (original != null) {
             throw UnitCombinerError.duplicateModule(original, um);
@@ -70,17 +80,17 @@ public final class UASTICompilation<S extends UASTIStatus>
         }
       }
 
-      return new UASTICompilation<UASTIUnchecked>(m, paths);
+      return new UASTICompilation(m, paths);
     } catch (final NameRestrictionsException x) {
       throw new UnitCombinerError(x);
     }
   }
 
-  private final @Nonnull Map<ModulePathFlat, UASTIDModule<S>> modules;
-  private final @Nonnull Map<ModulePathFlat, ModulePath>      paths;
+  private final @Nonnull Map<ModulePathFlat, UASTIDModule> modules;
+  private final @Nonnull Map<ModulePathFlat, ModulePath>   paths;
 
   private UASTICompilation(
-    final @Nonnull Map<ModulePathFlat, UASTIDModule<S>> modules,
+    final @Nonnull Map<ModulePathFlat, UASTIDModule> modules,
     final @Nonnull Map<ModulePathFlat, ModulePath> paths)
     throws ConstraintError
   {
@@ -88,7 +98,7 @@ public final class UASTICompilation<S extends UASTIStatus>
     this.paths = Constraints.constrainNotNull(paths, "Paths");
   }
 
-  public @Nonnull Map<ModulePathFlat, UASTIDModule<S>> getModules()
+  public @Nonnull Map<ModulePathFlat, UASTIDModule> getModules()
   {
     return Collections.unmodifiableMap(this.modules);
   }

@@ -23,8 +23,8 @@ import com.io7m.jaux.Constraints.ConstraintError;
 public interface UASTUUnitLevelVisitable
 {
   public
-    <E extends Throwable, V extends UASTUUnitLevelVisitor<E>>
-    void
+    <A, E extends Throwable, V extends UASTUUnitLevelVisitor<A, E>>
+    A
     unitVisitableAccept(
       final @Nonnull V v)
       throws E,

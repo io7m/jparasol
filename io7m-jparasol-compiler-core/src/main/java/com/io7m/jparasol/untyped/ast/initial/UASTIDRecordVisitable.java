@@ -20,11 +20,11 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 
-public interface UASTIDRecordVisitable<S extends UASTIStatus>
+public interface UASTIDRecordVisitable
 {
   public
-    <E extends Throwable, V extends UASTIDRecordVisitor<S, E>>
-    void
+    <A, B, E extends Throwable, V extends UASTIDRecordVisitor<A, B, E>>
+    A
     recordTypeVisitableAccept(
       final @Nonnull V v)
       throws E,
