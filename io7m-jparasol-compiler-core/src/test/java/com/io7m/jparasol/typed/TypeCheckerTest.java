@@ -1206,4 +1206,10 @@ public final class TypeCheckerTest
     Assert.assertEquals(TVector4F.get(), v.getOutputs().get(1).getType());
   }
 
+  @SuppressWarnings("static-method") @Test public void testBugOld_b77370072()
+    throws TypeCheckerError,
+      ConstraintError
+  {
+    TypeCheckerTest.checked(new String[] { "bug-old-b77370072.p" });
+  }
 }
