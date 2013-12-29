@@ -934,6 +934,8 @@ public final class ModuleStructure
         throws ModuleStructureError,
           ConstraintError
     {
+      assert this.declaration_checker != null;
+
       return new UASTCDModule(
         m.getPath(),
         imports,

@@ -73,7 +73,7 @@ public abstract class UniqueName implements UniqueNameVisitable
 
     @Override public String show()
     {
-      return String.format("\\%%s", this.name.getActual());
+      return String.format("@%s", this.name.getActual());
     }
 
     @Override public String toString()

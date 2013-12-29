@@ -787,14 +787,14 @@ public final class Resolver
   {
     private final @Nonnull UASTUDModule                      module;
     private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @Nonnull UASTUDTerm                        term;
-    private final @Nonnull TermGraph                         term_graph;
+    private final @CheckForNull UASTUDTerm                   term;
+    private final @CheckForNull TermGraph                    term_graph;
 
     public LocalResolver(
-      final @Nonnull UASTUDTerm term,
+      final @CheckForNull UASTUDTerm term,
       final @Nonnull UASTUDModule module,
       final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-      final @Nonnull TermGraph term_graph)
+      final @CheckForNull TermGraph term_graph)
     {
       this.term = term;
       this.module = module;

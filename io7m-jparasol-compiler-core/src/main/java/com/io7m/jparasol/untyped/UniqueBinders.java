@@ -263,8 +263,8 @@ public final class UniqueBinders
       return this.getName(name.getName());
     }
 
-    private UniqueName getNameInternal(
-      final TokenIdentifierLower name)
+    private @Nonnull UniqueName getNameInternal(
+      final @Nonnull TokenIdentifierLower name)
       throws ConstraintError
     {
       if (this.builtins.contains(name.getActual())) {
@@ -401,8 +401,9 @@ public final class UniqueBinders
       throws UniqueBindersError,
         ConstraintError
     {
-      assert this.context.getParent() != null;
-      this.context = this.context.getParent();
+      final Context p = this.context.getParent();
+      assert p != null;
+      this.context = p;
       return new UASTUELet(e.getToken(), bindings, body);
     }
 
