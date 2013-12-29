@@ -256,7 +256,7 @@ public final class TypeCheckerTest
     }
   }
 
-  private static List<UASTIUnit> parseUnits(
+  public static List<UASTIUnit> parseUnits(
     final String[] names)
   {
     final List<UASTIUnit> units = new ArrayList<UASTIUnit>();
@@ -268,7 +268,7 @@ public final class TypeCheckerTest
     return units;
   }
 
-  private static List<UASTIUnit> parseUnitsInternal(
+  public static List<UASTIUnit> parseUnitsInternal(
     final String[] names)
   {
     final List<UASTIUnit> units = new ArrayList<UASTIUnit>();
