@@ -642,6 +642,28 @@ public final class ResolverTest
 
   @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
     void
+    testProgramShaderRecursive0()
+      throws ResolverError,
+        ConstraintError
+  {
+    ResolverTest.checkMustFailWithCode(
+      new String[] { "resolver/program-shader-recursive-0.p" },
+      ResolverError.Code.RESOLVER_SHADER_RECURSIVE_LOCAL);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
+    void
+    testProgramShaderRecursive1()
+      throws ResolverError,
+        ConstraintError
+  {
+    ResolverTest.checkMustFailWithCode(
+      new String[] { "resolver/program-shader-recursive-1.p" },
+      ResolverError.Code.RESOLVER_SHADER_RECURSIVE_MUTUAL);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
+    void
     testProgramShaderNonexistent0()
       throws ResolverError,
         ConstraintError

@@ -18,8 +18,10 @@ package com.io7m.jparasol.untyped.ast.initial;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -36,6 +38,12 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 
 public final class UASTICompilation
 {
+  static final @Nonnull Set<String> EMPTY;
+
+  static {
+    EMPTY = Collections.unmodifiableSet(new HashSet<String>());
+  }
+
   public static @Nonnull UASTICompilation fromUnits(
     final @Nonnull List<UASTIUnit> units)
     throws ConstraintError,
@@ -51,7 +59,9 @@ public final class UASTICompilation
         final PackagePath pp = u.getPackageName().getPath();
 
         for (final TokenIdentifierLower pc : pp.getComponents()) {
-          NameRestrictions.checkRestrictedExceptional(pc);
+          NameRestrictions.checkRestrictedExceptional(
+            UASTICompilation.EMPTY,
+            pc);
         }
 
         for (final UASTIDModule um : u.getModules()) {

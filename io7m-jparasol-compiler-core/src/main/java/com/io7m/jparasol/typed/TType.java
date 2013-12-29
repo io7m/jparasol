@@ -27,7 +27,8 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnimplementedCodeException;
+import com.io7m.jaux.UnreachableCodeException;
+import com.io7m.jparasol.typed.ast.TASTExpression;
 
 public abstract class TType
 {
@@ -85,6 +86,11 @@ public abstract class TType
     @Override public int hashCode()
     {
       return this.getName().hashCode();
+    }
+
+    @Override public String toString()
+    {
+      return "[TBoolean]";
     }
   }
 
@@ -237,6 +243,127 @@ public abstract class TType
     {
       return this.getName().hashCode();
     }
+
+    @Override public String toString()
+    {
+      return "[TFloat]";
+    }
+  }
+
+  /**
+   * Function type.
+   */
+
+  public static final class TFunction extends TType
+  {
+    private final @Nonnull List<TFunctionArgument> arguments;
+    private final @Nonnull TValueType              return_type;
+
+    public TFunction(
+      final @Nonnull List<TFunctionArgument> arguments,
+      final @Nonnull TValueType return_type)
+      throws ConstraintError
+    {
+      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+      this.return_type =
+        Constraints.constrainNotNull(return_type, "Return type");
+    }
+
+    public @Nonnull List<TFunctionArgument> getArguments()
+    {
+      return this.arguments;
+    }
+
+    @Override public int getComponentCount()
+    {
+      return 1;
+    }
+
+    @Override public List<TConstructor> getConstructors()
+    {
+      return new ArrayList<TConstructor>();
+    }
+
+    @Override public String getName()
+    {
+      final StringBuilder m = new StringBuilder();
+      m.append(TType.formatFunctionArguments(this.arguments));
+      m.append(" → ");
+      m.append(this.return_type.getName());
+      return m.toString();
+    }
+
+    public @Nonnull TValueType getReturnType()
+    {
+      return this.return_type;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[TFunction ");
+      builder.append(this.arguments);
+      builder.append(" ");
+      builder.append(this.return_type);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
+  public static final class TFunctionArgument
+  {
+    private final @Nonnull String     name;
+    private final @Nonnull TValueType type;
+
+    public TFunctionArgument(
+      final @Nonnull String name,
+      final @Nonnull TValueType type)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.type = Constraints.constrainNotNull(type, "Type");
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TFunctionArgument other = (TFunctionArgument) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
+    public @Nonnull String getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull TValueType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
   }
 
   /**
@@ -295,6 +422,11 @@ public abstract class TType
     @Override public int hashCode()
     {
       return this.getName().hashCode();
+    }
+
+    @Override public String toString()
+    {
+      return "[TInteger]";
     }
   }
 
@@ -366,6 +498,11 @@ public abstract class TType
     {
       return this.getName().hashCode();
     }
+
+    @Override public String toString()
+    {
+      return "[TMatrix3x3F]";
+    }
   }
 
   /**
@@ -426,6 +563,11 @@ public abstract class TType
     {
       return this.getName().hashCode();
     }
+
+    @Override public String toString()
+    {
+      return "[TMatrix4x4F]";
+    }
   }
 
   /**
@@ -438,18 +580,21 @@ public abstract class TType
   }
 
   /**
-   * The main integer type.
+   * The record type.
    */
 
   public static final class TRecord extends TManifestType
   {
-    private final @Nonnull String name;
+    private final @Nonnull List<TRecordField> fields;
+    private final @Nonnull String             name;
 
-    private TRecord(
-      final @Nonnull String name)
+    public TRecord(
+      final @Nonnull String name,
+      final @Nonnull List<TRecordField> fields)
       throws ConstraintError
     {
       this.name = Constraints.constrainNotNull(name, "Name");
+      this.fields = Constraints.constrainNotNull(fields, "Fields");
     }
 
     @Override public boolean equals(
@@ -473,13 +618,17 @@ public abstract class TType
 
     @Override public int getComponentCount()
     {
-      // TODO: XXX
-      throw new UnimplementedCodeException();
+      return 1;
     }
 
     @Override public List<TConstructor> getConstructors()
     {
       return new ArrayList<TType.TConstructor>();
+    }
+
+    public @Nonnull List<TRecordField> getFields()
+    {
+      return this.fields;
     }
 
     @Override public String getName()
@@ -493,6 +642,84 @@ public abstract class TType
       int result = 1;
       result = (prime * result) + this.name.hashCode();
       return result;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[TRecord ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.fields);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
+  public static final class TRecordField
+  {
+    private final @Nonnull String        name;
+    private final @Nonnull TManifestType type;
+
+    public TRecordField(
+      final @Nonnull String name,
+      final @Nonnull TManifestType type)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.type = Constraints.constrainNotNull(type, "Type");
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TRecordField other = (TRecordField) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
+    public @Nonnull String getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull TManifestType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[TRecordField ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.type);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -548,6 +775,11 @@ public abstract class TType
     {
       return this.getName().hashCode();
     }
+
+    @Override public String toString()
+    {
+      return "[TSampler2D]";
+    }
   }
 
   /**
@@ -602,6 +834,11 @@ public abstract class TType
     {
       return this.getName().hashCode();
     }
+
+    @Override public String toString()
+    {
+      return "[TSamplerCube]";
+    }
   }
 
   /**
@@ -616,11 +853,61 @@ public abstract class TType
     // Nothing
   }
 
+  public static abstract class TVectorFType extends TVectorType
+  {
+    @Override public final TValueType getComponentType()
+    {
+      return TFloat.get();
+    }
+
+    @Override public TManifestType getSwizzleType(
+      final int size)
+    {
+      switch (size) {
+        case 1:
+          return TFloat.get();
+        case 2:
+          return TVector2F.get();
+        case 3:
+          return TVector3F.get();
+        case 4:
+          return TVector4F.get();
+        default:
+          throw new UnreachableCodeException();
+      }
+    }
+  }
+
+  public static abstract class TVectorIType extends TVectorType
+  {
+    @Override public final TValueType getComponentType()
+    {
+      return TInteger.get();
+    }
+
+    @Override public TManifestType getSwizzleType(
+      final int size)
+    {
+      switch (size) {
+        case 1:
+          return TInteger.get();
+        case 2:
+          return TVector2I.get();
+        case 3:
+          return TVector3I.get();
+        case 4:
+          return TVector4I.get();
+        default:
+          throw new UnreachableCodeException();
+      }
+    }
+  }
+
   /**
    * 2D floating point vector type.
    */
 
-  public static final class TVector2F extends TVectorType
+  public static final class TVector2F extends TVectorFType
   {
     private final static @Nonnull TVector2F INSTANCE = new TVector2F();
 
@@ -661,11 +948,6 @@ public abstract class TType
       return TType.VECTOR_2_COMPONENT_NAMES;
     }
 
-    @Override public TValueType getComponentType()
-    {
-      return TFloat.get();
-    }
-
     @Override public @Nonnull List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
@@ -686,13 +968,18 @@ public abstract class TType
     {
       return this.getName().hashCode();
     }
+
+    @Override public String toString()
+    {
+      return "[TVector2F]";
+    }
   }
 
   /**
    * 2D integer vector type.
    */
 
-  public static final class TVector2I extends TVectorType
+  public static final class TVector2I extends TVectorIType
   {
     private final static @Nonnull TVector2I INSTANCE = new TVector2I();
 
@@ -733,11 +1020,6 @@ public abstract class TType
       return TType.VECTOR_2_COMPONENT_NAMES;
     }
 
-    @Override public TValueType getComponentType()
-    {
-      return TInteger.get();
-    }
-
     @Override public @Nonnull List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
@@ -758,13 +1040,18 @@ public abstract class TType
     {
       return this.getName().hashCode();
     }
+
+    @Override public String toString()
+    {
+      return "[TVector2I]";
+    }
   }
 
   /**
    * 3D floating point vector type.
    */
 
-  public static final class TVector3F extends TVectorType
+  public static final class TVector3F extends TVectorFType
   {
     private final static @Nonnull TVector3F INSTANCE = new TVector3F();
 
@@ -805,11 +1092,6 @@ public abstract class TType
       return TType.VECTOR_3_COMPONENT_NAMES;
     }
 
-    @Override public TValueType getComponentType()
-    {
-      return TFloat.get();
-    }
-
     @Override public @Nonnull List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
@@ -842,13 +1124,18 @@ public abstract class TType
     {
       return this.getName().hashCode();
     }
+
+    @Override public String toString()
+    {
+      return "[TVector3F]";
+    }
   }
 
   /**
    * 3D integer vector type.
    */
 
-  public static final class TVector3I extends TVectorType
+  public static final class TVector3I extends TVectorIType
   {
     private final static @Nonnull TVector3I INSTANCE = new TVector3I();
 
@@ -889,11 +1176,6 @@ public abstract class TType
       return TType.VECTOR_3_COMPONENT_NAMES;
     }
 
-    @Override public TValueType getComponentType()
-    {
-      return TInteger.get();
-    }
-
     @Override public @Nonnull List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
@@ -919,12 +1201,17 @@ public abstract class TType
 
     @Override public String getName()
     {
-      return "vector_3f";
+      return "vector_3i";
     }
 
     @Override public int hashCode()
     {
       return this.getName().hashCode();
+    }
+
+    @Override public String toString()
+    {
+      return "[TVector3I]";
     }
   }
 
@@ -932,7 +1219,7 @@ public abstract class TType
    * 4D floating point vector type.
    */
 
-  public static final class TVector4F extends TVectorType
+  public static final class TVector4F extends TVectorFType
   {
     private final static @Nonnull TVector4F INSTANCE = new TVector4F();
 
@@ -971,11 +1258,6 @@ public abstract class TType
       getComponentNames()
     {
       return TType.VECTOR_4_COMPONENT_NAMES;
-    }
-
-    @Override public TValueType getComponentType()
-    {
-      return TFloat.get();
     }
 
     @Override public @Nonnull List<TConstructor> getConstructors()
@@ -1030,13 +1312,18 @@ public abstract class TType
     {
       return this.getName().hashCode();
     }
+
+    @Override public String toString()
+    {
+      return "[TVector4F]";
+    }
   }
 
   /**
    * 4D integer vector type.
    */
 
-  public static final class TVector4I extends TVectorType
+  public static final class TVector4I extends TVectorIType
   {
     private final static @Nonnull TVector4I INSTANCE = new TVector4I();
 
@@ -1075,11 +1362,6 @@ public abstract class TType
       getComponentNames()
     {
       return TType.VECTOR_4_COMPONENT_NAMES;
-    }
-
-    @Override public TValueType getComponentType()
-    {
-      return TInteger.get();
     }
 
     @Override public @Nonnull List<TConstructor> getConstructors()
@@ -1134,6 +1416,11 @@ public abstract class TType
     {
       return this.getName().hashCode();
     }
+
+    @Override public String toString()
+    {
+      return "[TVector4I]";
+    }
   }
 
   /**
@@ -1145,12 +1432,13 @@ public abstract class TType
     public abstract @Nonnull List<String> getComponentNames();
 
     public abstract @Nonnull TValueType getComponentType();
+
+    public abstract @Nonnull TManifestType getSwizzleType(
+      int size);
   }
 
   private static final @Nonnull List<String> VECTOR_2_COMPONENT_NAMES;
-
   private static final @Nonnull List<String> VECTOR_3_COMPONENT_NAMES;
-
   private static final @Nonnull List<String> VECTOR_4_COMPONENT_NAMES;
 
   static {
@@ -1167,6 +1455,51 @@ public abstract class TType
     "y",
     "z",
     "w" }));
+  }
+
+  public static @Nonnull String formatFunctionArguments(
+    final @Nonnull List<TFunctionArgument> arguments)
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("(");
+    for (int index = 0; index < arguments.size(); ++index) {
+      m.append(arguments.get(index).getType().getName());
+      if ((index + 1) < arguments.size()) {
+        m.append(" × ");
+      }
+    }
+    m.append(")");
+    return m.toString();
+  }
+
+  public static @Nonnull String formatTypeExpressionList(
+    final @Nonnull List<TASTExpression> es)
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("(");
+    for (int index = 0; index < es.size(); ++index) {
+      m.append(es.get(index).getType().getName());
+      if ((index + 1) < es.size()) {
+        m.append(" × ");
+      }
+    }
+    m.append(")");
+    return m.toString();
+  }
+
+  public static @Nonnull <T extends TType> String formatTypeList(
+    final @Nonnull List<T> list)
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("(");
+    for (int index = 0; index < list.size(); ++index) {
+      m.append(list.get(index).getName());
+      if ((index + 1) < list.size()) {
+        m.append(" × ");
+      }
+    }
+    m.append(")");
+    return m.toString();
   }
 
   public static @Nonnull Map<String, TType> getBaseTypes()

@@ -16,6 +16,8 @@
 
 package com.io7m.jparasol.untyped.ast.resolved;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,7 +128,8 @@ public abstract class UASTRDeclaration
    * The type of function declarations.
    */
 
-  public static abstract class UASTRDFunction extends UASTRDTerm
+  public static abstract class UASTRDFunction extends UASTRDTerm implements
+    UASTRFunctionVisitable
   {
     // Nothing
   }
@@ -192,6 +195,23 @@ public abstract class UASTRDeclaration
       this.body = Constraints.constrainNotNull(body, "Body");
     }
 
+    @Override public
+      <A, B, E extends Throwable, V extends UASTRFunctionVisitor<A, B, E>>
+      A
+      functionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.functionVisitDefinedPre(this);
+      final List<B> args = new ArrayList<B>();
+      for (final UASTRDFunctionArgument a : this.arguments) {
+        final B x = v.functionVisitArgument(a);
+        args.add(x);
+      }
+      return v.functionVisitDefined(args, this);
+    }
+
     public @Nonnull List<UASTRDFunctionArgument> getArguments()
     {
       return this.arguments;
@@ -210,6 +230,17 @@ public abstract class UASTRDeclaration
     public @Nonnull UASTRTypeName getReturnType()
     {
       return this.return_type;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTRTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitFunctionDefined(this);
     }
 
     @Override public String toString()
@@ -253,6 +284,23 @@ public abstract class UASTRDeclaration
       this.external = Constraints.constrainNotNull(external, "External");
     }
 
+    @Override public
+      <A, B, E extends Throwable, V extends UASTRFunctionVisitor<A, B, E>>
+      A
+      functionVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      v.functionVisitExternalPre(this);
+      final List<B> args = new ArrayList<B>();
+      for (final UASTRDFunctionArgument a : this.arguments) {
+        final B x = v.functionVisitArgument(a);
+        args.add(x);
+      }
+      return v.functionVisitExternal(args, this);
+    }
+
     public @Nonnull List<UASTRDFunctionArgument> getArguments()
     {
       return this.arguments;
@@ -271,6 +319,17 @@ public abstract class UASTRDeclaration
     public @Nonnull UASTRTypeName getReturnType()
     {
       return this.return_type;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTRTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitFunctionExternal(this);
     }
 
     @Override public String toString()
@@ -333,14 +392,17 @@ public abstract class UASTRDeclaration
    * Module declarations.
    */
 
-  public static final class UASTRDModule extends UASTRDeclarationUnitLevel
+  public static final class UASTRDModule extends UASTRDeclarationUnitLevel implements
+    UASTRModuleVisitable
   {
     private final @Nonnull List<UASTRDeclarationModuleLevel> declarations;
+    private final @Nonnull ModulePathFlat                    flat;
     private final @Nonnull Map<ModulePathFlat, UASTRDImport> imported_modules;
     private final @Nonnull Map<String, UASTRDImport>         imported_names;
     private final @Nonnull Map<String, UASTRDImport>         imported_renames;
     private final @Nonnull List<UASTRDImport>                imports;
     private final @Nonnull ModulePath                        path;
+    private final @Nonnull List<String>                      shader_topology;
     private final @Nonnull Map<String, UASTRDShader>         shaders;
     private final @Nonnull List<String>                      term_topology;
     private final @Nonnull Map<String, UASTRDTerm>           terms;
@@ -358,10 +420,12 @@ public abstract class UASTRDeclaration
       final @Nonnull List<String> term_topology,
       final @Nonnull Map<String, UASTRDType> types,
       final @Nonnull List<String> type_topology,
-      final @Nonnull Map<String, UASTRDShader> shaders)
+      final @Nonnull Map<String, UASTRDShader> shaders,
+      final @Nonnull List<String> shader_topology)
       throws ConstraintError
     {
       this.path = Constraints.constrainNotNull(path, "Path");
+      this.flat = ModulePathFlat.fromModulePath(path);
 
       this.imports = Constraints.constrainNotNull(imports, "Imports");
       this.imported_modules =
@@ -381,11 +445,18 @@ public abstract class UASTRDeclaration
       this.type_topology =
         Constraints.constrainNotNull(type_topology, "Type topology");
       this.shaders = Constraints.constrainNotNull(shaders, "Shaders");
+      this.shader_topology =
+        Constraints.constrainNotNull(shader_topology, "Shader topology");
     }
 
     public @Nonnull List<UASTRDeclarationModuleLevel> getDeclarations()
     {
       return this.declarations;
+    }
+
+    public @Nonnull ModulePathFlat getFlat()
+    {
+      return this.flat;
     }
 
     public @Nonnull List<UASTRDImport> getImports()
@@ -401,6 +472,11 @@ public abstract class UASTRDeclaration
     public @Nonnull Map<String, UASTRDShader> getShaders()
     {
       return this.shaders;
+    }
+
+    public @Nonnull List<String> getShaderTopology()
+    {
+      return this.shader_topology;
     }
 
     public @Nonnull Map<String, UASTRDTerm> getTerms()
@@ -421,6 +497,64 @@ public abstract class UASTRDeclaration
     public @Nonnull List<String> getTypeTopology()
     {
       return this.type_topology;
+    }
+
+    @Override public
+      <M, I, D, DTE extends D, DTY extends D, DS extends D, E extends Throwable, V extends UASTRModuleVisitor<M, I, D, DTE, DTY, DS, E>>
+      M
+      moduleVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      final List<I> r_imports = new ArrayList<I>();
+      for (final UASTRDImport i : this.imports) {
+        final I r = v.moduleVisitImport(i);
+        r_imports.add(r);
+      }
+
+      final List<D> r_decls = new ArrayList<D>();
+      final Map<String, DTY> r_types = new HashMap<String, DTY>();
+      final Map<String, DTE> r_terms = new HashMap<String, DTE>();
+      final Map<String, DS> r_shaders = new HashMap<String, DS>();
+
+      {
+        final UASTRTypeVisitor<DTY, E> tv = v.moduleTypesPre(this);
+        for (final String k : this.types.keySet()) {
+          final UASTRDType ty = this.types.get(k);
+          final DTY r = ty.typeVisitableAccept(tv);
+          r_types.put(k, r);
+          r_decls.add(r);
+        }
+      }
+
+      {
+        final UASTRTermVisitor<DTE, E> tv = v.moduleTermsPre(this);
+        for (final String k : this.terms.keySet()) {
+          final UASTRDTerm t = this.terms.get(k);
+          final DTE r = t.termVisitableAccept(tv);
+          r_terms.put(k, r);
+          r_decls.add(r);
+        }
+      }
+
+      {
+        final UASTRShaderVisitor<DS, E> tv = v.moduleShadersPre(this);
+        for (final String k : this.shaders.keySet()) {
+          final UASTRDShader t = this.shaders.get(k);
+          final DS r = t.shaderVisitableAccept(tv);
+          r_shaders.put(k, r);
+          r_decls.add(r);
+        }
+      }
+
+      return v.moduleVisit(
+        r_imports,
+        r_decls,
+        r_terms,
+        r_types,
+        r_shaders,
+        this);
     }
 
     @Override public String toString()
@@ -506,7 +640,7 @@ public abstract class UASTRDeclaration
    */
 
   public static abstract class UASTRDShader extends
-    UASTRDeclarationModuleLevel
+    UASTRDeclarationModuleLevel implements UASTRShaderVisitable
   {
     private final @Nonnull TokenIdentifierLower name;
 
@@ -523,7 +657,8 @@ public abstract class UASTRDeclaration
     }
   }
 
-  public static final class UASTRDShaderFragment extends UASTRDShader
+  public static final class UASTRDShaderFragment extends UASTRDShader implements
+    UASTRFragmentShaderVisitable
   {
     private final @Nonnull List<UASTRDShaderFragmentInput>            inputs;
     private final @Nonnull List<UASTRDShaderFragmentLocal>            locals;
@@ -549,6 +684,56 @@ public abstract class UASTRDeclaration
       this.writes = Constraints.constrainNotNull(writes, "Writes");
     }
 
+    @Override public
+      <F, PI, PP, PO, L, O, E extends Throwable, V extends UASTRFragmentShaderVisitor<F, PI, PP, PO, L, O, E>>
+      F
+      fragmentShaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      final List<PI> r_inputs = new ArrayList<PI>();
+      for (final UASTRDShaderFragmentInput i : this.inputs) {
+        final PI ri = v.fragmentShaderVisitInput(i);
+        r_inputs.add(ri);
+      }
+
+      final List<PO> r_outputs = new ArrayList<PO>();
+      for (final UASTRDShaderFragmentOutput o : this.outputs) {
+        final PO ro = v.fragmentShaderVisitOutput(o);
+        r_outputs.add(ro);
+      }
+
+      final List<PP> r_parameters = new ArrayList<PP>();
+      for (final UASTRDShaderFragmentParameter p : this.parameters) {
+        final PP rp = v.fragmentShaderVisitParameter(p);
+        r_parameters.add(rp);
+      }
+
+      final UASTRFragmentShaderLocalVisitor<L, E> lv =
+        v.fragmentShaderVisitLocalsPre();
+
+      final ArrayList<L> r_locals = new ArrayList<L>();
+      for (final UASTRDShaderFragmentLocal l : this.locals) {
+        final L rl = l.fragmentShaderLocalVisitableAccept(lv);
+        r_locals.add(rl);
+      }
+
+      final ArrayList<O> r_assigns = new ArrayList<O>();
+      for (final UASTRDShaderFragmentOutputAssignment w : this.writes) {
+        final O rw = v.fragmentShaderVisitOutputAssignment(w);
+        r_assigns.add(rw);
+      }
+
+      return v.fragmentShaderVisit(
+        r_inputs,
+        r_parameters,
+        r_outputs,
+        r_locals,
+        r_assigns,
+        this);
+    }
+
     public @Nonnull List<UASTRDShaderFragmentInput> getInputs()
     {
       return this.inputs;
@@ -572,6 +757,17 @@ public abstract class UASTRDeclaration
     public @Nonnull List<UASTRDShaderFragmentOutputAssignment> getWrites()
     {
       return this.writes;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTRShaderVisitor<T, E>>
+      T
+      shaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.moduleVisitFragmentShader(this);
     }
 
     @Override public String toString()
@@ -622,7 +818,7 @@ public abstract class UASTRDeclaration
   }
 
   public static abstract class UASTRDShaderFragmentLocal extends
-    UASTRDeclarationShaderLevel
+    UASTRDeclarationShaderLevel implements UASTRFragmentShaderLocalVisitable
   {
     // Nothing
   }
@@ -641,6 +837,17 @@ public abstract class UASTRDeclaration
       this.discard = Constraints.constrainNotNull(discard, "Discard");
       this.expression =
         Constraints.constrainNotNull(expression, "Expression");
+    }
+
+    @Override public
+      <L, E extends Throwable, V extends UASTRFragmentShaderLocalVisitor<L, E>>
+      L
+      fragmentShaderLocalVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitLocalDiscard(this);
     }
 
     public @Nonnull TokenDiscard getDiscard()
@@ -673,6 +880,17 @@ public abstract class UASTRDeclaration
       throws ConstraintError
     {
       this.value = Constraints.constrainNotNull(value, "Value");
+    }
+
+    @Override public
+      <L, E extends Throwable, V extends UASTRFragmentShaderLocalVisitor<L, E>>
+      L
+      fragmentShaderLocalVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitLocalValue(this);
     }
 
     public @Nonnull UASTRDValueLocal getValue()
@@ -852,6 +1070,17 @@ public abstract class UASTRDeclaration
       return this.vertex_shader;
     }
 
+    @Override public
+      <T, E extends Throwable, V extends UASTRShaderVisitor<T, E>>
+      T
+      shaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.moduleVisitProgramShader(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -864,7 +1093,8 @@ public abstract class UASTRDeclaration
     }
   }
 
-  public static final class UASTRDShaderVertex extends UASTRDShader
+  public static final class UASTRDShaderVertex extends UASTRDShader implements
+    UASTRVertexShaderVisitable
   {
     private final @Nonnull List<UASTRDShaderVertexInput>            inputs;
     private final @Nonnull List<UASTRDShaderVertexOutput>           outputs;
@@ -915,6 +1145,17 @@ public abstract class UASTRDeclaration
       return this.writes;
     }
 
+    @Override public
+      <T, E extends Throwable, V extends UASTRShaderVisitor<T, E>>
+      T
+      shaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.moduleVisitVertexShader(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -930,6 +1171,56 @@ public abstract class UASTRDeclaration
       builder.append(this.writes);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public
+      <VS, PI, PP, PO, L, O, E extends Throwable, V extends UASTRVertexShaderVisitor<VS, PI, PP, PO, L, O, E>>
+      VS
+      vertexShaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      final List<PI> r_inputs = new ArrayList<PI>();
+      for (final UASTRDShaderVertexInput i : this.inputs) {
+        final PI ri = v.vertexShaderVisitInput(i);
+        r_inputs.add(ri);
+      }
+
+      final List<PO> r_outputs = new ArrayList<PO>();
+      for (final UASTRDShaderVertexOutput o : this.outputs) {
+        final PO ro = v.vertexShaderVisitOutput(o);
+        r_outputs.add(ro);
+      }
+
+      final List<PP> r_parameters = new ArrayList<PP>();
+      for (final UASTRDShaderVertexParameter p : this.parameters) {
+        final PP rp = v.vertexShaderVisitParameter(p);
+        r_parameters.add(rp);
+      }
+
+      final UASTRVertexShaderLocalVisitor<L, E> lv =
+        v.vertexShaderVisitLocalsPre();
+
+      final ArrayList<L> r_locals = new ArrayList<L>();
+      for (final UASTRDShaderVertexLocalValue l : this.values) {
+        final L rl = lv.vertexShaderVisitLocalValue(l);
+        r_locals.add(rl);
+      }
+
+      final ArrayList<O> r_assigns = new ArrayList<O>();
+      for (final UASTRDShaderVertexOutputAssignment w : this.writes) {
+        final O rw = v.vertexShaderVisitOutputAssignment(w);
+        r_assigns.add(rw);
+      }
+
+      return v.vertexShaderVisit(
+        r_inputs,
+        r_parameters,
+        r_outputs,
+        r_locals,
+        r_assigns,
+        this);
     }
   }
 
@@ -1001,6 +1292,11 @@ public abstract class UASTRDeclaration
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
     }
 
     @Override public String toString()
@@ -1094,7 +1390,8 @@ public abstract class UASTRDeclaration
    * The type of term declarations.
    */
 
-  public static abstract class UASTRDTerm extends UASTRDeclarationModuleLevel
+  public static abstract class UASTRDTerm extends UASTRDeclarationModuleLevel implements
+    UASTRTermVisitable
   {
     // Nothing
   }
@@ -1113,7 +1410,8 @@ public abstract class UASTRDeclaration
    * The type of type declarations.
    */
 
-  public static abstract class UASTRDType extends UASTRDeclarationModuleLevel
+  public static abstract class UASTRDType extends UASTRDeclarationModuleLevel implements
+    UASTRTypeVisitable
   {
     // Nothing
   }
@@ -1155,6 +1453,17 @@ public abstract class UASTRDeclaration
       builder.append(this.fields);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTRTypeVisitor<T, E>>
+      T
+      typeVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.typeVisitTypeRecord(this);
     }
   }
 
@@ -1230,6 +1539,17 @@ public abstract class UASTRDeclaration
     @Override public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTRTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitValue(this);
     }
 
     @Override public String toString()

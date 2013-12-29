@@ -401,7 +401,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testVector3IName()
   {
-    Assert.assertEquals("vector_3f", TVector3I.get().getName());
+    Assert.assertEquals("vector_3i", TVector3I.get().getName());
   }
 
   @SuppressWarnings("static-method") @Test public

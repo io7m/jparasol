@@ -80,6 +80,11 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
       builder.append("]");
       return builder.toString();
     }
+
+    @Override public TokenIdentifierLower getName()
+    {
+      return this.actual;
+    }
   }
 
   /**
@@ -110,7 +115,7 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
       return this.flat;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    @Override public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
     }
@@ -213,6 +218,11 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
       builder.append("]");
       return builder.toString();
     }
+
+    @Override public TokenIdentifierLower getName()
+    {
+      return this.original;
+    }
   }
 
   private final @Nonnull File     file;
@@ -238,4 +248,6 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
   }
 
   public abstract @Nonnull String show();
+
+  public abstract @Nonnull TokenIdentifierLower getName();
 }

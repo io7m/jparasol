@@ -38,6 +38,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValue
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUELet;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
+import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameNonLocal;
 
@@ -180,6 +181,28 @@ public final class UniqueBindersTest
       final UniqueNameLocal name =
         (UniqueNameLocal) out0.getVariable().getName();
       Assert.assertEquals("inv41", name.getCurrent());
+    }
+  }
+
+  @SuppressWarnings("static-method") @Test public void testFragmentShader2()
+    throws UniqueBindersError,
+      ConstraintError
+  {
+    final UASTUCompilation r =
+      UniqueBindersTest
+        .uniqueInternal(new String[] { "unique_binders/fragment-shader-2.p" });
+
+    final UASTUDModule first = UniqueBindersTest.firstModule(r);
+    System.out.println(first);
+
+    final UASTUDShaderFragment fs =
+      (UASTUDShaderFragment) first.getShaders().get("f");
+
+    {
+      final UASTUDShaderFragmentOutputAssignment out0 = fs.getWrites().get(0);
+      final UniqueNameBuiltIn name =
+        (UniqueNameBuiltIn) out0.getVariable().getName();
+      Assert.assertEquals("gl_FragCoord", name.getName().getActual());
     }
   }
 

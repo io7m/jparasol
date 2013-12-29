@@ -19,11 +19,17 @@ package com.io7m.jparasol.untyped.ast.unique_binders;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameNonLocal;
 
 public interface UniqueNameVisitor<A, E extends Throwable>
 {
+  public A uniqueNameVisitBuiltIn(
+    final @Nonnull UniqueNameBuiltIn name)
+    throws E,
+      ConstraintError;
+
   public A uniqueNameVisitLocal(
     final @Nonnull UniqueNameLocal name)
     throws E,

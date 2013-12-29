@@ -148,6 +148,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTypeVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUVertexShaderLocalVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUVertexShaderVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName;
+import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameNonLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitor;
@@ -854,6 +855,7 @@ public final class Resolver
     private final @Nonnull Log                               log;
     private final @Nonnull UASTUDModule                      module;
     private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
+    private final @Nonnull ShaderGraph                       shader_graph;
     private final @Nonnull TermGraph                         term_graph;
     private final @Nonnull TypeGraph                         type_graph;
 
@@ -866,6 +868,7 @@ public final class Resolver
       this.modules = modules;
       this.term_graph = new TermGraph(log);
       this.type_graph = new TypeGraph(log);
+      this.shader_graph = new ShaderGraph(log);
       this.log = new Log(log, "names");
 
       if (this.log.enabled(Level.LOG_DEBUG)) {
@@ -945,10 +948,13 @@ public final class Resolver
 
       final ModulePathFlat current_flat =
         ModulePathFlat.fromModulePath(m.getPath());
+
       final List<String> term_topology =
         this.term_graph.getTopology(current_flat);
       final List<String> type_topology =
         this.type_graph.getTopology(current_flat);
+      final List<String> shader_topology =
+        this.shader_graph.getTopology(current_flat);
 
       return new UASTRDModule(
         m.getPath(),
@@ -961,7 +967,8 @@ public final class Resolver
         term_topology,
         types,
         type_topology,
-        shaders);
+        shaders,
+        shader_topology);
     }
 
     @Override public @Nonnull UASTRDShader moduleVisitFragmentShader(
@@ -969,11 +976,15 @@ public final class Resolver
       throws ResolverError,
         ConstraintError
     {
-      return f.fragmentShaderVisitableAccept(new FragmentShaderResolver(
-        this.log,
-        this.module,
-        this.modules,
-        f));
+      final UASTRDShaderFragment fs =
+        f.fragmentShaderVisitableAccept(new FragmentShaderResolver(
+          this.log,
+          this.module,
+          this.modules,
+          f));
+
+      this.shader_graph.addShader(this.module.getPath(), f.getName());
+      return fs;
     }
 
     @Override public @Nonnull UASTRDImport moduleVisitImport(
@@ -1008,6 +1019,18 @@ public final class Resolver
           vp.getModule(),
           vp.getName());
 
+      this.shader_graph.addShaderReference(
+        this.module.getPath(),
+        p.getName(),
+        vertex_shader.getPath(),
+        vertex_shader.getName());
+
+      this.shader_graph.addShaderReference(
+        this.module.getPath(),
+        p.getName(),
+        fragment_shader.getPath(),
+        fragment_shader.getName());
+
       return new UASTRDShaderProgram(
         p.getName(),
         vertex_shader,
@@ -1019,11 +1042,15 @@ public final class Resolver
       throws ResolverError,
         ConstraintError
     {
-      return v.vertexShaderVisitableAccept(new VertexShaderResolver(
-        this.log,
-        this.module,
-        this.modules,
-        v));
+      final UASTRDShaderVertex vs =
+        v.vertexShaderVisitableAccept(new VertexShaderResolver(
+          this.log,
+          this.module,
+          this.modules,
+          v));
+
+      this.shader_graph.addShader(this.module.getPath(), v.getName());
+      return vs;
     }
 
     @Override public @Nonnull UASTRDTerm termVisitFunctionDefined(
@@ -1108,6 +1135,7 @@ public final class Resolver
       throws ResolverError,
         ConstraintError
     {
+      this.type_graph.addType(this.module.getPath(), e.getName());
       return new UASTRDTypeRecord(e.getName(), fields);
     }
 
@@ -1160,6 +1188,247 @@ public final class Resolver
         ConstraintError
     {
       // Nothing
+    }
+  }
+
+  /**
+   * A shader in the shader graph.
+   */
+
+  private static final class Shader
+  {
+    private final @Nonnull ModulePathFlat module;
+    private final @Nonnull String         name;
+
+    public Shader(
+      final @Nonnull ModulePathFlat module,
+      final @Nonnull String name)
+    {
+      this.module = module;
+      this.name = name;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final Shader other = (Shader) obj;
+      if (!this.module.equals(other.module)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.module.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+  }
+
+  /**
+   * Shader graph.
+   */
+
+  private static final class ShaderGraph
+  {
+    private final @Nonnull DirectedAcyclicGraph<Shader, ShaderReference> graph;
+    private final @Nonnull Log                                           log;
+
+    public ShaderGraph(
+      final @Nonnull Log log)
+    {
+      this.graph =
+        new DirectedAcyclicGraph<Shader, ShaderReference>(
+          ShaderReference.class);
+      this.log = new Log(log, "shader-graph");
+    }
+
+    public void addShader(
+      final @Nonnull ModulePath source_module,
+      final @Nonnull TokenIdentifierLower source_name)
+    {
+      final ModulePathFlat source_module_flat =
+        ModulePathFlat.fromModulePath(source_module);
+      final Shader source =
+        new Shader(source_module_flat, source_name.getActual());
+
+      if (this.log.enabled(Level.LOG_DEBUG)) {
+        this.log.debug(String.format(
+          "Adding shader: %s.%s",
+          source_module_flat.getActual(),
+          source_name.getActual()));
+      }
+
+      this.graph.addVertex(source);
+    }
+
+    public void addShaderReference(
+      final @Nonnull ModulePath source_module,
+      final @Nonnull TokenIdentifierLower source_name,
+      final @Nonnull ModulePath target_module,
+      final @Nonnull TokenIdentifierLower target_name)
+      throws ResolverError,
+        ConstraintError
+    {
+      final ModulePathFlat source_module_flat =
+        ModulePathFlat.fromModulePath(source_module);
+      final ModulePathFlat target_module_flat =
+        ModulePathFlat.fromModulePath(target_module);
+
+      final Shader source =
+        new Shader(source_module_flat, source_name.getActual());
+
+      final Shader target =
+        new Shader(target_module_flat, target_name.getActual());
+
+      final ShaderReference edge =
+        new ShaderReference(
+          source_module,
+          source_name,
+          target_module,
+          target_name);
+
+      try {
+        this.addShader(source_module, source_name);
+        this.addShader(target_module, target_name);
+
+        if (this.log.enabled(Level.LOG_DEBUG)) {
+          this.log.debug(String.format(
+            "Adding shader reference: %s.%s -> %s.%s",
+            source_module_flat.getActual(),
+            source_name.getActual(),
+            target_module_flat.getActual(),
+            target_name.getActual()));
+        }
+
+        this.graph.addDagEdge(source, target, edge);
+      } catch (final IllegalArgumentException x) {
+        throw ResolverError.shaderRecursiveLocal(source_name, target_name);
+      } catch (final CycleFoundException x) {
+
+        /**
+         * Because a cycle as occurred on an insertion of edge A -> B, then
+         * there must be some path B -> A already in the graph. Use a shortest
+         * path algorithm to determine that path.
+         */
+
+        final DijkstraShortestPath<Shader, ShaderReference> dj =
+          new DijkstraShortestPath<Shader, ShaderReference>(
+            this.graph,
+            target,
+            source);
+
+        final List<ShaderReference> terms = dj.getPathEdgeList();
+        assert terms != null;
+
+        final ArrayList<TokenIdentifierLower> tokens =
+          new ArrayList<TokenIdentifierLower>();
+        tokens.add(target_name);
+
+        for (final ShaderReference ref : terms) {
+          tokens.add(ref.target_name);
+        }
+
+        throw ResolverError.shaderRecursiveMutual(source_name, tokens);
+      }
+    }
+
+    @SuppressWarnings("synthetic-access") public @Nonnull
+      List<String>
+      getTopology(
+        final @Nonnull ModulePathFlat current)
+    {
+      final TopologicalOrderIterator<Shader, ShaderReference> iter =
+        new TopologicalOrderIterator<Shader, ShaderReference>(this.graph);
+
+      final ArrayList<String> ls = new ArrayList<String>();
+      while (iter.hasNext()) {
+        final Shader t = iter.next();
+        if (t.module.equals(current)) {
+          ls.add(t.name);
+        }
+      }
+
+      return ls;
+    }
+  }
+
+  /**
+   * A reference made to a shader named <code>name</code> via the module
+   * <code>module</code>, in module <code>from</code>.
+   */
+
+  private static final class ShaderReference
+  {
+    final @Nonnull ModulePath           source_module;
+    final @Nonnull TokenIdentifierLower source_name;
+    final @Nonnull ModulePath           target_module;
+    final @Nonnull TokenIdentifierLower target_name;
+
+    public ShaderReference(
+      final @Nonnull ModulePath source_module,
+      final @Nonnull TokenIdentifierLower source_name,
+      final @Nonnull ModulePath target_module,
+      final @Nonnull TokenIdentifierLower target_name)
+    {
+      this.source_module = source_module;
+      this.source_name = source_name;
+      this.target_module = target_module;
+      this.target_name = target_name;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final ShaderReference other = (ShaderReference) obj;
+      if (!this.source_name.equals(other.source_name)) {
+        return false;
+      }
+      if (!this.source_module.equals(other.source_module)) {
+        return false;
+      }
+      if (!this.target_module.equals(other.target_module)) {
+        return false;
+      }
+      if (!this.target_name.equals(other.target_name)) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.source_name.hashCode();
+      result = (prime * result) + this.source_module.hashCode();
+      result = (prime * result) + this.target_module.hashCode();
+      result = (prime * result) + this.target_name.hashCode();
+      return result;
     }
   }
 
@@ -1229,23 +1498,23 @@ public final class Resolver
       this.log = new Log(log, "term-graph");
     }
 
-    @SuppressWarnings("synthetic-access") public @Nonnull
-      List<String>
-      getTopology(
-        final @Nonnull ModulePathFlat current)
+    public void addTerm(
+      final @Nonnull ModulePath source_module,
+      final @Nonnull TokenIdentifierLower source_name)
     {
-      final TopologicalOrderIterator<Term, TermReference> iter =
-        new TopologicalOrderIterator<Term, TermReference>(this.graph);
+      final ModulePathFlat source_module_flat =
+        ModulePathFlat.fromModulePath(source_module);
+      final Term source =
+        new Term(source_module_flat, source_name.getActual());
 
-      final ArrayList<String> ls = new ArrayList<String>();
-      while (iter.hasNext()) {
-        final Term t = iter.next();
-        if (t.module.equals(current)) {
-          ls.add(t.name);
-        }
+      if (this.log.enabled(Level.LOG_DEBUG)) {
+        this.log.debug(String.format(
+          "Adding term: %s.%s",
+          source_module_flat.getActual(),
+          source_name.getActual()));
       }
 
-      return ls;
+      this.graph.addVertex(source);
     }
 
     public void addTermReference(
@@ -1263,7 +1532,6 @@ public final class Resolver
 
       final Term source =
         new Term(source_module_flat, source_name.getActual());
-
       final Term target =
         new Term(target_module_flat, target_name.getActual());
 
@@ -1275,23 +1543,8 @@ public final class Resolver
           target_name);
 
       try {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format(
-            "Adding term: %s.%s",
-            source_module_flat.getActual(),
-            source_name.getActual()));
-        }
-
-        this.graph.addVertex(source);
-
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format(
-            "Adding term: %s.%s",
-            target_module_flat.getActual(),
-            target_name.getActual()));
-        }
-
-        this.graph.addVertex(target);
+        this.addTerm(source_module, source_name);
+        this.addTerm(target_module, target_name);
 
         if (this.log.enabled(Level.LOG_DEBUG)) {
           this.log.debug(String.format(
@@ -1332,6 +1585,25 @@ public final class Resolver
 
         throw ResolverError.termRecursiveMutual(source_name, tokens);
       }
+    }
+
+    @SuppressWarnings("synthetic-access") public @Nonnull
+      List<String>
+      getTopology(
+        final @Nonnull ModulePathFlat current)
+    {
+      final TopologicalOrderIterator<Term, TermReference> iter =
+        new TopologicalOrderIterator<Term, TermReference>(this.graph);
+
+      final ArrayList<String> ls = new ArrayList<String>();
+      while (iter.hasNext()) {
+        final Term t = iter.next();
+        if (t.module.equals(current)) {
+          ls.add(t.name);
+        }
+      }
+
+      return ls;
     }
   }
 
@@ -1461,6 +1733,7 @@ public final class Resolver
         arguments.add(new UASTRDFunctionArgument(an_new, at_new));
       }
 
+      this.term_graph.addTerm(this.module.getPath(), f.getName());
       return new UASTRDFunctionDefined(
         f.getName(),
         arguments,
@@ -1475,6 +1748,7 @@ public final class Resolver
         throws ResolverError,
           ConstraintError
     {
+
       final UASTUTypePath rt = f.getReturnType();
       final UASTRTypeName return_type =
         Resolver.lookupType(
@@ -1498,6 +1772,8 @@ public final class Resolver
             at.getName());
         arguments.add(new UASTRDFunctionArgument(an_new, at_new));
       }
+
+      this.term_graph.addTerm(this.module.getPath(), f.getName());
 
       final UASTUDExternal ext = f.getExternal();
       return new UASTRDFunctionExternal(
@@ -1544,6 +1820,7 @@ public final class Resolver
             this.modules,
             this.term_graph));
 
+      this.term_graph.addTerm(this.module.getPath(), v.getName());
       return new UASTRDValue(v.getName(), ascription, ex);
     }
   }
@@ -1598,7 +1875,7 @@ public final class Resolver
   }
 
   /**
-   * Term graph.
+   * Type graph.
    */
 
   private static final class TypeGraph
@@ -1614,23 +1891,23 @@ public final class Resolver
       this.log = new Log(log, "type-graph");
     }
 
-    @SuppressWarnings("synthetic-access") public @Nonnull
-      List<String>
-      getTopology(
-        final @Nonnull ModulePathFlat current)
+    public void addType(
+      final @Nonnull ModulePath source_module,
+      final @Nonnull TokenIdentifierLower source_name)
     {
-      final TopologicalOrderIterator<Type, TypeReference> iter =
-        new TopologicalOrderIterator<Type, TypeReference>(this.graph);
+      final ModulePathFlat source_module_flat =
+        ModulePathFlat.fromModulePath(source_module);
+      final Type source =
+        new Type(source_module_flat, source_name.getActual());
 
-      final ArrayList<String> ls = new ArrayList<String>();
-      while (iter.hasNext()) {
-        final Type t = iter.next();
-        if (t.module.equals(current)) {
-          ls.add(t.name);
-        }
+      if (this.log.enabled(Level.LOG_DEBUG)) {
+        this.log.debug(String.format(
+          "Adding type: %s.%s",
+          source_module_flat.getActual(),
+          source_name.getActual()));
       }
 
-      return ls;
+      this.graph.addVertex(source);
     }
 
     public void addTypeReference(
@@ -1660,27 +1937,12 @@ public final class Resolver
           target_name);
 
       try {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format(
-            "Adding term: %s.%s",
-            source_module_flat.getActual(),
-            source_name.getActual()));
-        }
-
-        this.graph.addVertex(source);
+        this.addType(source_module, source_name);
+        this.addType(target_module, target_name);
 
         if (this.log.enabled(Level.LOG_DEBUG)) {
           this.log.debug(String.format(
-            "Adding term: %s.%s",
-            target_module_flat.getActual(),
-            target_name.getActual()));
-        }
-
-        this.graph.addVertex(target);
-
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format(
-            "Adding term reference: %s.%s -> %s.%s",
+            "Adding type reference: %s.%s -> %s.%s",
             source_module_flat.getActual(),
             source_name.getActual(),
             target_module_flat.getActual(),
@@ -1717,6 +1979,25 @@ public final class Resolver
 
         throw ResolverError.typeRecursiveMutual(source_name, tokens);
       }
+    }
+
+    @SuppressWarnings("synthetic-access") public @Nonnull
+      List<String>
+      getTopology(
+        final @Nonnull ModulePathFlat current)
+    {
+      final TopologicalOrderIterator<Type, TypeReference> iter =
+        new TopologicalOrderIterator<Type, TypeReference>(this.graph);
+
+      final ArrayList<String> ls = new ArrayList<String>();
+      while (iter.hasNext()) {
+        final Type t = iter.next();
+        if (t.module.equals(current)) {
+          ls.add(t.name);
+        }
+      }
+
+      return ls;
     }
   }
 
@@ -2014,6 +2295,14 @@ public final class Resolver
   {
     return name
       .uniqueNameVisitableAccept(new UniqueNameVisitor<UASTRTermName, ResolverError>() {
+        @Override public UASTRTermNameBuiltIn uniqueNameVisitBuiltIn(
+          final @Nonnull UniqueNameBuiltIn n)
+          throws ResolverError,
+            ConstraintError
+        {
+          return new UASTRTermNameBuiltIn(n.getName());
+        }
+
         @Override public @Nonnull UASTRTermName uniqueNameVisitLocal(
           final UniqueNameLocal name_actual)
           throws ResolverError,

@@ -37,7 +37,7 @@ public abstract class UASTRTypeName implements UASTRTypeNameVisitable
       this.name = Constraints.constrainNotNull(name, "Name");
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    @Override public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
     }
@@ -80,7 +80,7 @@ public abstract class UASTRTypeName implements UASTRTypeNameVisitable
       return this.flat;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    @Override public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
     }
@@ -112,4 +112,6 @@ public abstract class UASTRTypeName implements UASTRTypeNameVisitable
   }
 
   public abstract @Nonnull String show();
+
+  public abstract @Nonnull TokenIdentifierLower getName();
 }

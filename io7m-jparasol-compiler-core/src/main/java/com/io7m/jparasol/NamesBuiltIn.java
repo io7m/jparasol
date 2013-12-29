@@ -17,32 +17,35 @@
 package com.io7m.jparasol;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import com.io7m.jparasol.typed.TType.TValueType;
+import com.io7m.jparasol.typed.TType.TVector4F;
+
 public final class NamesBuiltIn
 {
-  public static final Set<String> FRAGMENT_SHADER_INPUTS;
-  public static final Set<String> VERTEX_SHADER_OUTPUTS;
+  public static final Map<String, TValueType> FRAGMENT_SHADER_INPUTS;
+  public static final Map<String, TValueType> VERTEX_SHADER_OUTPUTS;
 
   static {
     VERTEX_SHADER_OUTPUTS = NamesBuiltIn.makeVertexShaderOutputs();
     FRAGMENT_SHADER_INPUTS = NamesBuiltIn.makeFragmentShaderInputs();
   }
 
-  private static @Nonnull Set<String> makeFragmentShaderInputs()
+  private static @Nonnull Map<String, TValueType> makeFragmentShaderInputs()
   {
-    final HashSet<String> s = new HashSet<String>();
-    s.add("gl_FragCoord");
-    return Collections.unmodifiableSet(s);
+    final Map<String, TValueType> m = new HashMap<String, TValueType>();
+    m.put("gl_FragCoord", TVector4F.get());
+    return Collections.unmodifiableMap(m);
   }
 
-  private static @Nonnull Set<String> makeVertexShaderOutputs()
+  private static @Nonnull Map<String, TValueType> makeVertexShaderOutputs()
   {
-    final HashSet<String> s = new HashSet<String>();
-    s.add("gl_Position");
-    return Collections.unmodifiableSet(s);
+    final Map<String, TValueType> m = new HashMap<String, TValueType>();
+    m.put("gl_Position", TVector4F.get());
+    return Collections.unmodifiableMap(m);
   }
 }
