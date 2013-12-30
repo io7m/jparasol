@@ -286,7 +286,7 @@ public abstract class TType
       final StringBuilder m = new StringBuilder();
       m.append(TType.formatFunctionArguments(this.arguments));
       m.append(" → ");
-      m.append(this.return_type.getName());
+      m.append(this.return_type.getShowName());
       this.name = new TTypeNameBuiltIn(m.toString());
     }
 
@@ -1546,7 +1546,7 @@ public abstract class TType
     final StringBuilder m = new StringBuilder();
     m.append("(");
     for (int index = 0; index < arguments.size(); ++index) {
-      m.append(arguments.get(index).getType().getName());
+      m.append(arguments.get(index).getType().getShowName());
       if ((index + 1) < arguments.size()) {
         m.append(" × ");
       }
@@ -1561,7 +1561,7 @@ public abstract class TType
     final StringBuilder m = new StringBuilder();
     m.append("(");
     for (int index = 0; index < es.size(); ++index) {
-      m.append(es.get(index).getType().getName());
+      m.append(es.get(index).getType().getShowName());
       if ((index + 1) < es.size()) {
         m.append(" × ");
       }
@@ -1576,7 +1576,7 @@ public abstract class TType
     final StringBuilder m = new StringBuilder();
     m.append("(");
     for (int index = 0; index < list.size(); ++index) {
-      m.append(list.get(index).getName());
+      m.append(list.get(index).getShowName());
       if ((index + 1) < list.size()) {
         m.append(" × ");
       }

@@ -1960,8 +1960,6 @@ public final class TypeChecker
   {
     final Map<ModulePathFlat, UASTRDModule> modules =
       this.compilation.getModules();
-    final Map<ModulePathFlat, TASTDModule> checked_modules =
-      new HashMap<ModulePathFlat, TASTDModule>();
 
     final List<ModulePathFlat> topology =
       this.compilation.getModuleTopology();
@@ -1975,6 +1973,9 @@ public final class TypeChecker
     /**
      * Type check modules in (reverse) topological order.
      */
+
+    final Map<ModulePathFlat, TASTDModule> checked_modules =
+      new HashMap<ModulePathFlat, TASTDModule>();
 
     for (int index = topology.size() - 1; index >= 0; --index) {
       final ModulePathFlat path = topology.get(index);

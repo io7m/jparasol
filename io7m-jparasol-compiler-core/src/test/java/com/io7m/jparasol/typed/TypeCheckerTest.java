@@ -53,6 +53,16 @@ import com.io7m.jparasol.typed.TType.TVector4F;
 import com.io7m.jparasol.typed.TType.TVector4I;
 import com.io7m.jparasol.typed.TypeCheckerError.Code;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionDefined;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentInput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderProgram;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexOutput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecord;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTENew;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
@@ -61,13 +71,6 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
 import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlat;
 import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlat;
 import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlat;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionDefined;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecord;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
 import com.io7m.jparasol.typed.ast.TASTReference;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 import com.io7m.jparasol.untyped.ModuleStructure;
@@ -537,6 +540,82 @@ public final class TypeCheckerTest
 
       Assert.assertEquals(9, g.vertexSet().size());
     }
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testProgramShaderOK_0()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    final TASTCompilation r =
+      TypeCheckerTest.checked(new String[] { "program-shader-ok-0.p" });
+
+    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDShaderProgram p = (TASTDShaderProgram) m.getShaders().get("p");
+    final TASTDShaderVertex v = (TASTDShaderVertex) m.getShaders().get("v");
+    final TASTDShaderFragment f =
+      (TASTDShaderFragment) m.getShaders().get("f");
+
+    for (final TASTDShaderFragmentInput i : f.getInputs()) {
+      for (final TASTDShaderVertexOutput o : v.getOutputs()) {
+        if (i.getName().getCurrent().equals(o.getName().getActual())) {
+          Assert.assertEquals(i.getType(), o.getType());
+        }
+      }
+    }
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testProgramShaderOK_1()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    final TASTCompilation r =
+      TypeCheckerTest.checked(new String[] { "program-shader-ok-1.p" });
+
+    final TASTDModule mm = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule mn = TypeCheckerTest.getModule(r, "x.y", "N");
+    final TASTDModule mo = TypeCheckerTest.getModule(r, "x.y", "O");
+
+    final TASTDShaderProgram p =
+      (TASTDShaderProgram) mo.getShaders().get("p");
+
+    final TASTDShaderVertex v = (TASTDShaderVertex) mm.getShaders().get("v");
+
+    final TASTDShaderFragment f =
+      (TASTDShaderFragment) mn.getShaders().get("f");
+
+    for (final TASTDShaderFragmentInput i : f.getInputs()) {
+      for (final TASTDShaderVertexOutput o : v.getOutputs()) {
+        if (i.getName().getCurrent().equals(o.getName().getActual())) {
+          Assert.assertEquals(i.getType(), o.getType());
+        }
+      }
+    }
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testProgramShaderNotCompatible_0()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "program-shader-not-compatible-0.p" },
+      Code.TYPE_ERROR_SHADERS_INCOMPATIBLE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testProgramShaderNotCompatible_1()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "program-shader-not-compatible-1.p" },
+      Code.TYPE_ERROR_SHADERS_INCOMPATIBLE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
