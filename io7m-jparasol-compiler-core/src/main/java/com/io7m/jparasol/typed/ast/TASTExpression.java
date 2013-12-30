@@ -59,6 +59,31 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       this.type = Constraints.constrainNotNull(type, "Type");
     }
 
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTEApplication other = (TASTEApplication) obj;
+      if (!this.arguments.equals(other.arguments)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
     @Override public
       <A, L, E extends Throwable, V extends TASTExpressionVisitor<A, L, E>>
       A
@@ -86,6 +111,21 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.name;
     }
 
+    @Override public @Nonnull TType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.arguments.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -95,11 +135,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append(this.arguments);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public @Nonnull TType getType()
-    {
-      return this.type;
     }
   }
 
@@ -112,6 +147,25 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       throws ConstraintError
     {
       this.token = Constraints.constrainNotNull(token, "Token");
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTEBoolean other = (TASTEBoolean) obj;
+      if (!this.token.equals(other.token)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public
@@ -130,9 +184,22 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.token;
     }
 
+    @Override public TType getType()
+    {
+      return TBoolean.get();
+    }
+
     public boolean getValue()
     {
       return this.token.getValue();
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.token.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -142,11 +209,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append(this.getValue());
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public TType getType()
-    {
-      return TBoolean.get();
     }
   }
 
@@ -168,6 +230,31 @@ public abstract class TASTExpression implements TASTExpressionVisitable
 
       assert (this.condition.getType().equals(TBoolean.get()));
       assert (this.left.getType().equals(this.right.getType()));
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTEConditional other = (TASTEConditional) obj;
+      if (!this.condition.equals(other.condition)) {
+        return false;
+      }
+      if (!this.left.equals(other.left)) {
+        return false;
+      }
+      if (!this.right.equals(other.right)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public
@@ -208,6 +295,21 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.right;
     }
 
+    @Override public TType getType()
+    {
+      return this.left.getType();
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.condition.hashCode();
+      result = (prime * result) + this.left.hashCode();
+      result = (prime * result) + this.right.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -220,11 +322,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append("]");
       return builder.toString();
     }
-
-    @Override public TType getType()
-    {
-      return this.left.getType();
-    }
   }
 
   public static final class TASTEInteger extends TASTExpression
@@ -236,6 +333,25 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       throws ConstraintError
     {
       this.token = Constraints.constrainNotNull(token, "Token");
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTEInteger other = (TASTEInteger) obj;
+      if (!this.token.equals(other.token)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public
@@ -254,9 +370,22 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.token;
     }
 
+    @Override public TType getType()
+    {
+      return TInteger.get();
+    }
+
     public @Nonnull BigInteger getValue()
     {
       return this.token.getValue();
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.token.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -266,11 +395,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append(this.getValue());
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public TType getType()
-    {
-      return TInteger.get();
     }
   }
 
@@ -289,6 +413,31 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       this.token = Constraints.constrainNotNull(token, "Token");
       this.bindings = Constraints.constrainNotNull(bindings, "Bindings");
       this.body = Constraints.constrainNotNull(body, "Body");
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTELet other = (TASTELet) obj;
+      if (!this.bindings.equals(other.bindings)) {
+        return false;
+      }
+      if (!this.body.equals(other.body)) {
+        return false;
+      }
+      if (!this.token.equals(other.token)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public
@@ -326,6 +475,21 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.token;
     }
 
+    @Override public TType getType()
+    {
+      return this.body.getType();
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.bindings.hashCode();
+      result = (prime * result) + this.body.hashCode();
+      result = (prime * result) + this.token.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -335,11 +499,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append(this.body);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public TType getType()
-    {
-      return this.body.getType();
     }
   }
 
@@ -355,6 +514,28 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     {
       this.type = Constraints.constrainNotNull(type, "Type");
       this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTENew other = (TASTENew) obj;
+      if (!this.arguments.equals(other.arguments)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public
@@ -378,6 +559,20 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.arguments;
     }
 
+    @Override public TType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.arguments.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -387,11 +582,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append(this.arguments);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public TType getType()
-    {
-      return this.type;
     }
   }
 
@@ -404,6 +594,25 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       throws ConstraintError
     {
       this.token = Constraints.constrainNotNull(token, "Token");
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTEReal other = (TASTEReal) obj;
+      if (!this.token.equals(other.token)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public
@@ -422,9 +631,22 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.token;
     }
 
+    @Override public TType getType()
+    {
+      return TFloat.get();
+    }
+
     public @Nonnull BigDecimal getValue()
     {
       return this.token.getValue();
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.token.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -434,11 +656,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append(this.getValue());
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public TType getType()
-    {
-      return TFloat.get();
     }
   }
 
@@ -457,6 +674,28 @@ public abstract class TASTExpression implements TASTExpressionVisitable
         Constraints.constrainNotNull(assignments, "Assignments");
     }
 
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTERecord other = (TASTERecord) obj;
+      if (!this.assignments.equals(other.assignments)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
     @Override public
       <A, L, E extends Throwable, V extends TASTExpressionVisitor<A, L, E>>
       A
@@ -473,6 +712,20 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.assignments;
     }
 
+    @Override public TType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.assignments.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -482,11 +735,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append(this.assignments);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public TType getType()
-    {
-      return this.type;
     }
   }
 
@@ -506,6 +754,31 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       this.expression =
         Constraints.constrainNotNull(expression, "Expression");
       this.field = Constraints.constrainNotNull(field, "Field");
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTERecordProjection other = (TASTERecordProjection) obj;
+      if (!this.expression.equals(other.expression)) {
+        return false;
+      }
+      if (!this.field.equals(other.field)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public
@@ -531,6 +804,21 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.field;
     }
 
+    @Override public TType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.expression.hashCode();
+      result = (prime * result) + this.field.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -540,11 +828,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append(this.field);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public TType getType()
-    {
-      return this.type;
     }
   }
 
@@ -566,6 +849,31 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       this.fields = Constraints.constrainNotNull(fields, "Fields");
 
       assert (this.expression.getType() instanceof TVectorType);
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTESwizzle other = (TASTESwizzle) obj;
+      if (!this.expression.equals(other.expression)) {
+        return false;
+      }
+      if (!this.fields.equals(other.fields)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public
@@ -591,6 +899,21 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.fields;
     }
 
+    @Override public TType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.expression.hashCode();
+      result = (prime * result) + this.fields.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -603,17 +926,12 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append("]");
       return builder.toString();
     }
-
-    @Override public TType getType()
-    {
-      return this.type;
-    }
   }
 
   public static final class TASTEVariable extends TASTExpression
   {
-    private final @Nonnull TType        type;
     private final @Nonnull TASTTermName name;
+    private final @Nonnull TType        type;
 
     public TASTEVariable(
       final @Nonnull TType type,
@@ -622,6 +940,28 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     {
       this.type = Constraints.constrainNotNull(type, "Type");
       this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTEVariable other = (TASTEVariable) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public
@@ -640,6 +980,20 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       return this.name;
     }
 
+    @Override public @Nonnull TType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -647,11 +1001,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       builder.append(this.name.show());
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public @Nonnull TType getType()
-    {
-      return this.type;
     }
   }
 
@@ -670,6 +1019,28 @@ public abstract class TASTExpression implements TASTExpressionVisitable
         Constraints.constrainNotNull(expression, "Expression");
     }
 
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTRecordFieldAssignment other = (TASTRecordFieldAssignment) obj;
+      if (!this.expression.equals(other.expression)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull TASTExpression getExpression()
     {
       return this.expression;
@@ -678,6 +1049,15 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.expression.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
     }
 
     @Override public String toString()

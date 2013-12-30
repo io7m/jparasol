@@ -40,6 +40,41 @@ public final class TASTShaderName
     this.name = Constraints.constrainNotNull(name, "Name");
   }
 
+  @Override public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = (prime * result) + this.flat.hashCode();
+    result = (prime * result) + this.name.hashCode();
+    result = (prime * result) + this.path.hashCode();
+    return result;
+  }
+
+  @Override public boolean equals(
+    final Object obj)
+  {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    final TASTShaderName other = (TASTShaderName) obj;
+    if (!this.flat.equals(other.flat)) {
+      return false;
+    }
+    if (!this.name.equals(other.name)) {
+      return false;
+    }
+    if (!this.path.equals(other.path)) {
+      return false;
+    }
+    return true;
+  }
+
   public @Nonnull ModulePathFlat getFlat()
   {
     return this.flat;

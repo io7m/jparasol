@@ -97,6 +97,42 @@ public abstract class TASTRDeclaration
       this.fragment_shader_allowed = fragment_shader_allowed;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result =
+        (prime * result) + (this.fragment_shader_allowed ? 1231 : 1237);
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + (this.vertex_shader_allowed ? 1231 : 1237);
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDExternal other = (TASTDExternal) obj;
+      if (this.fragment_shader_allowed != other.fragment_shader_allowed) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (this.vertex_shader_allowed != other.vertex_shader_allowed) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
@@ -154,6 +190,37 @@ public abstract class TASTRDeclaration
       return this.name;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDFunctionArgument other = (TASTDFunctionArgument) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull TValueType getType()
     {
       return this.type;
@@ -202,6 +269,45 @@ public abstract class TASTRDeclaration
       return this.arguments;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.arguments.hashCode();
+      result = (prime * result) + this.body.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDFunctionDefined other = (TASTDFunctionDefined) obj;
+      if (!this.arguments.equals(other.arguments)) {
+        return false;
+      }
+      if (!this.body.equals(other.body)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull TASTExpression getBody()
     {
       return this.body;
@@ -246,6 +352,45 @@ public abstract class TASTRDeclaration
     private final @Nonnull TASTDExternal               external;
     private final @Nonnull TokenIdentifierLower        name;
     private final @Nonnull TFunction                   type;
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.arguments.hashCode();
+      result = (prime * result) + this.external.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDFunctionExternal other = (TASTDFunctionExternal) obj;
+      if (!this.arguments.equals(other.arguments)) {
+        return false;
+      }
+      if (!this.external.equals(other.external)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
 
     public TASTDFunctionExternal(
       final @Nonnull TokenIdentifierLower name,
@@ -312,6 +457,37 @@ public abstract class TASTRDeclaration
     {
       this.path = Constraints.constrainNotNull(path, "Path");
       this.rename = Constraints.constrainNotNull(rename, "Rename");
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.path.hashCode();
+      result = (prime * result) + this.rename.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDImport other = (TASTDImport) obj;
+      if (!this.path.equals(other.path)) {
+        return false;
+      }
+      if (!this.rename.equals(other.rename)) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull ModulePath getPath()
@@ -409,6 +585,77 @@ public abstract class TASTRDeclaration
       return this.shader_topology;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.declarations.hashCode();
+      result = (prime * result) + this.imported_modules.hashCode();
+      result = (prime * result) + this.imported_names.hashCode();
+      result = (prime * result) + this.imported_renames.hashCode();
+      result = (prime * result) + this.imports.hashCode();
+      result = (prime * result) + this.path.hashCode();
+      result = (prime * result) + this.shader_topology.hashCode();
+      result = (prime * result) + this.shaders.hashCode();
+      result = (prime * result) + this.term_topology.hashCode();
+      result = (prime * result) + this.terms.hashCode();
+      result = (prime * result) + this.type_topology.hashCode();
+      result = (prime * result) + this.types.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDModule other = (TASTDModule) obj;
+      if (!this.declarations.equals(other.declarations)) {
+        return false;
+      }
+      if (!this.imported_modules.equals(other.imported_modules)) {
+        return false;
+      }
+      if (!this.imported_names.equals(other.imported_names)) {
+        return false;
+      }
+      if (!this.imported_renames.equals(other.imported_renames)) {
+        return false;
+      }
+      if (!this.imports.equals(other.imports)) {
+        return false;
+      }
+      if (!this.path.equals(other.path)) {
+        return false;
+      }
+      if (!this.shader_topology.equals(other.shader_topology)) {
+        return false;
+      }
+      if (!this.shaders.equals(other.shaders)) {
+        return false;
+      }
+      if (!this.term_topology.equals(other.term_topology)) {
+        return false;
+      }
+      if (!this.terms.equals(other.terms)) {
+        return false;
+      }
+      if (!this.type_topology.equals(other.type_topology)) {
+        return false;
+      }
+      if (!this.types.equals(other.types)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull ModulePath getPath()
     {
       return this.path;
@@ -497,6 +744,33 @@ public abstract class TASTRDeclaration
       return this.path;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.path.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDPackage other = (TASTDPackage) obj;
+      if (!this.path.equals(other.path)) {
+        return false;
+      }
+      return true;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -521,6 +795,33 @@ public abstract class TASTRDeclaration
       throws ConstraintError
     {
       this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShader other = (TASTDShader) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public final @Nonnull TokenIdentifierLower getName()
@@ -563,6 +864,49 @@ public abstract class TASTRDeclaration
     public @Nonnull List<TASTDShaderFragmentLocal> getLocals()
     {
       return this.locals;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.inputs.hashCode();
+      result = (prime * result) + this.locals.hashCode();
+      result = (prime * result) + this.outputs.hashCode();
+      result = (prime * result) + this.parameters.hashCode();
+      result = (prime * result) + this.writes.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj)) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderFragment other = (TASTDShaderFragment) obj;
+      if (!this.inputs.equals(other.inputs)) {
+        return false;
+      }
+      if (!this.locals.equals(other.locals)) {
+        return false;
+      }
+      if (!this.outputs.equals(other.outputs)) {
+        return false;
+      }
+      if (!this.parameters.equals(other.parameters)) {
+        return false;
+      }
+      if (!this.writes.equals(other.writes)) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull List<TASTDShaderFragmentOutput> getOutputs()
@@ -628,6 +972,33 @@ public abstract class TASTRDeclaration
       return this.name;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderFragmentInput other = (TASTDShaderFragmentInput) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -665,6 +1036,38 @@ public abstract class TASTRDeclaration
       return this.discard;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.discard.hashCode();
+      result = (prime * result) + this.expression.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderFragmentLocalDiscard other =
+        (TASTDShaderFragmentLocalDiscard) obj;
+      if (!this.discard.equals(other.discard)) {
+        return false;
+      }
+      if (!this.expression.equals(other.expression)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull TASTExpression getExpression()
     {
       return this.expression;
@@ -697,6 +1100,34 @@ public abstract class TASTRDeclaration
       return this.value;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.value.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderFragmentLocalValue other =
+        (TASTDShaderFragmentLocalValue) obj;
+      if (!this.value.equals(other.value)) {
+        return false;
+      }
+      return true;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -722,6 +1153,37 @@ public abstract class TASTRDeclaration
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
       this.index = index;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.index;
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderFragmentOutput other = (TASTDShaderFragmentOutput) obj;
+      if (this.index != other.index) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
     }
 
     public int getIndex()
@@ -766,6 +1228,38 @@ public abstract class TASTRDeclaration
       return this.name;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.variable.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderFragmentOutputAssignment other =
+        (TASTDShaderFragmentOutputAssignment) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.variable.equals(other.variable)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull TASTEVariable getVariable()
     {
       return this.variable;
@@ -795,6 +1289,34 @@ public abstract class TASTRDeclaration
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderFragmentParameter other =
+        (TASTDShaderFragmentParameter) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull TASTTermNameLocal getName()
@@ -835,6 +1357,33 @@ public abstract class TASTRDeclaration
       this.type = Constraints.constrainNotNull(type, "Type");
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderParameters other = (TASTDShaderParameters) obj;
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
     public final @Nonnull TValueType getType()
     {
       return this.type;
@@ -857,6 +1406,37 @@ public abstract class TASTRDeclaration
         Constraints.constrainNotNull(vertex_shader, "Vertex shader");
       this.fragment_shader =
         Constraints.constrainNotNull(fragment_shader, "Fragment shader");
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.fragment_shader.hashCode();
+      result = (prime * result) + this.vertex_shader.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj)) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderProgram other = (TASTDShaderProgram) obj;
+      if (!this.fragment_shader.equals(other.fragment_shader)) {
+        return false;
+      }
+      if (!this.vertex_shader.equals(other.vertex_shader)) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull TASTShaderName getFragmentShader()
@@ -918,6 +1498,49 @@ public abstract class TASTRDeclaration
       this.writes = Constraints.constrainNotNull(writes, "Writes");
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.inputs.hashCode();
+      result = (prime * result) + this.outputs.hashCode();
+      result = (prime * result) + this.parameters.hashCode();
+      result = (prime * result) + this.values.hashCode();
+      result = (prime * result) + this.writes.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj)) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderVertex other = (TASTDShaderVertex) obj;
+      if (!this.inputs.equals(other.inputs)) {
+        return false;
+      }
+      if (!this.outputs.equals(other.outputs)) {
+        return false;
+      }
+      if (!this.parameters.equals(other.parameters)) {
+        return false;
+      }
+      if (!this.values.equals(other.values)) {
+        return false;
+      }
+      if (!this.writes.equals(other.writes)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull List<TASTDShaderVertexInput> getInputs()
     {
       return this.inputs;
@@ -977,6 +1600,33 @@ public abstract class TASTRDeclaration
   {
     private final @Nonnull TASTTermNameLocal name;
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj)) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderVertexInput other = (TASTDShaderVertexInput) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
+    }
+
     public TASTDShaderVertexInput(
       final @Nonnull TASTTermNameLocal name,
       final @Nonnull TValueType type)
@@ -1013,6 +1663,34 @@ public abstract class TASTRDeclaration
       this.value = Constraints.constrainNotNull(value, "Value");
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.value.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderVertexLocalValue other =
+        (TASTDShaderVertexLocalValue) obj;
+      if (!this.value.equals(other.value)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull TASTDValueLocal getValue()
     {
       return this.value;
@@ -1040,6 +1718,33 @@ public abstract class TASTRDeclaration
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj)) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderVertexOutput other = (TASTDShaderVertexOutput) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull TokenIdentifierLower getName()
@@ -1070,6 +1775,38 @@ public abstract class TASTRDeclaration
     {
       this.name = Constraints.constrainNotNull(name, "Name");
       this.variable = Constraints.constrainNotNull(variable, "Variable");
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.variable.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderVertexOutputAssignment other =
+        (TASTDShaderVertexOutputAssignment) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.variable.equals(other.variable)) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull TokenIdentifierLower getName()
@@ -1106,6 +1843,34 @@ public abstract class TASTRDeclaration
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj)) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderVertexParameter other =
+        (TASTDShaderVertexParameter) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull TASTTermNameLocal getName()
@@ -1183,6 +1948,41 @@ public abstract class TASTRDeclaration
       this.fields = Constraints.constrainNotNull(fields, "Fields");
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.fields.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDTypeRecord other = (TASTDTypeRecord) obj;
+      if (!this.fields.equals(other.fields)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull List<TASTDTypeRecordField> getFields()
     {
       return this.fields;
@@ -1234,6 +2034,37 @@ public abstract class TASTRDeclaration
       return this.type;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDTypeRecordField other = (TASTDTypeRecordField) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -1268,6 +2099,37 @@ public abstract class TASTRDeclaration
     public @Nonnull TASTExpression getExpression()
     {
       return this.expression;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.expression.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDValue other = (TASTDValue) obj;
+      if (!this.expression.equals(other.expression)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
     }
 
     @Override public @Nonnull TokenIdentifierLower getName()
@@ -1314,6 +2176,37 @@ public abstract class TASTRDeclaration
     public @Nonnull TASTExpression getExpression()
     {
       return this.expression;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.expression.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDValueLocal other = (TASTDValueLocal) obj;
+      if (!this.expression.equals(other.expression)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull TASTTermNameLocal getName()

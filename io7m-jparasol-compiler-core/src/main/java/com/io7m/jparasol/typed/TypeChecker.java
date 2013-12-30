@@ -1894,7 +1894,7 @@ public final class TypeChecker
     final Map<ModulePathFlat, TASTDModule> checked_modules =
       new HashMap<ModulePathFlat, TASTDModule>();
 
-    final List<ModulePathFlat> topology = this.compilation.getTopology();
+    final List<ModulePathFlat> topology = this.compilation.getModuleTopology();
     if (this.log.enabled(Level.LOG_DEBUG)) {
       final StringBuilder m = new StringBuilder();
       m.append(topology.size());
@@ -1912,7 +1912,7 @@ public final class TypeChecker
     }
 
     return new TASTCompilation(
-      this.compilation.getTopology(),
+      this.compilation.getModuleTopology(),
       checked_modules,
       this.compilation.getPaths());
   }

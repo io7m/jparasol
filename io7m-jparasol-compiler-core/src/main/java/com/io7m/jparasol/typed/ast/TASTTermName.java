@@ -48,6 +48,33 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       this.actual = actual;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.actual.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTTermNameBuiltIn other = (TASTTermNameBuiltIn) obj;
+      if (!this.actual.equals(other.actual)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull TokenIdentifierLower getActual()
     {
       return this.actual;
@@ -103,6 +130,41 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       this.path = Constraints.constrainNotNull(path, "Path");
       this.flat = ModulePathFlat.fromModulePath(path);
       this.name = actual;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.flat.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.path.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTTermNameGlobal other = (TASTTermNameGlobal) obj;
+      if (!this.flat.equals(other.flat)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.path.equals(other.path)) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull ModulePathFlat getFlat()
@@ -174,6 +236,37 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       this.current = Constraints.constrainNotNull(current, "Current");
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.current.hashCode();
+      result = (prime * result) + this.original.hashCode();
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTTermNameLocal other = (TASTTermNameLocal) obj;
+      if (!this.current.equals(other.current)) {
+        return false;
+      }
+      if (!this.original.equals(other.original)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull String getCurrent()
     {
       return this.current;
@@ -225,6 +318,37 @@ public abstract class TASTTermName implements TASTTermNameVisitable
   {
     this.file = Constraints.constrainNotNull(file, "File");
     this.position = Constraints.constrainNotNull(position, "Position");
+  }
+
+  @Override public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = (prime * result) + this.file.hashCode();
+    result = (prime * result) + this.position.hashCode();
+    return result;
+  }
+
+  @Override public boolean equals(
+    final Object obj)
+  {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    final TASTTermName other = (TASTTermName) obj;
+    if (!this.file.equals(other.file)) {
+      return false;
+    }
+    if (!this.position.equals(other.position)) {
+      return false;
+    }
+    return true;
   }
 
   public final @Nonnull File getFile()

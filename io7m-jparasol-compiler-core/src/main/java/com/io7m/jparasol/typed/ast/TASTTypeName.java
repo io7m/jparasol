@@ -37,6 +37,42 @@ public abstract class TASTTypeName implements TASTTypeNameVisitable
       this.name = Constraints.constrainNotNull(name, "Name");
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[TASTTypeNameBuiltIn ");
+      builder.append(this.name);
+      builder.append("]");
+      return builder.toString();
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTTypeNameBuiltIn other = (TASTTypeNameBuiltIn) obj;
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
+    }
+
     public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
@@ -73,6 +109,54 @@ public abstract class TASTTypeName implements TASTTypeNameVisitable
       this.path = Constraints.constrainNotNull(path, "Path");
       this.flat = ModulePathFlat.fromModulePath(path);
       this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.flat.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.path.hashCode();
+      return result;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[TASTTypeNameGlobal ");
+      builder.append(this.flat);
+      builder.append(" ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.path);
+      builder.append("]");
+      return builder.toString();
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTTypeNameGlobal other = (TASTTypeNameGlobal) obj;
+      if (!this.flat.equals(other.flat)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.path.equals(other.path)) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull ModulePathFlat getFlat()

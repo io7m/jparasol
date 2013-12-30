@@ -590,7 +590,7 @@ public final class ResolverTest
     final UASTRCompilation r =
       ResolverTest.resolved(new String[] { "resolver/module-topology-0.p" });
 
-    final List<ModulePathFlat> topo = r.getTopology();
+    final List<ModulePathFlat> topo = r.getModuleTopology();
     Assert.assertEquals(3, topo.size());
 
     System.out.println(topo);
@@ -607,7 +607,7 @@ public final class ResolverTest
     final UASTRCompilation r =
       ResolverTest.resolved(new String[] { "resolver/module-topology-1.p" });
 
-    final List<ModulePathFlat> topo = r.getTopology();
+    final List<ModulePathFlat> topo = r.getModuleTopology();
     Assert.assertEquals(4, topo.size());
 
     System.out.println(topo);

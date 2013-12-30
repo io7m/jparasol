@@ -30,24 +30,25 @@ import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDModule;
 
 public final class TASTCompilation
 {
-  private final @Nonnull List<ModulePathFlat>             topology;
+  private final @Nonnull List<ModulePathFlat>             module_topology;
   private final @Nonnull Map<ModulePathFlat, TASTDModule> modules;
   private final @Nonnull Map<ModulePathFlat, ModulePath>  paths;
 
   public TASTCompilation(
-    final @Nonnull List<ModulePathFlat> topology,
+    final @Nonnull List<ModulePathFlat> module_topology,
     final @Nonnull Map<ModulePathFlat, TASTDModule> modules,
     final @Nonnull Map<ModulePathFlat, ModulePath> paths)
     throws ConstraintError
   {
-    this.topology = Constraints.constrainNotNull(topology, "Topology");
+    this.module_topology =
+      Constraints.constrainNotNull(module_topology, "Module topology");
     this.modules = Constraints.constrainNotNull(modules, "Modules");
     this.paths = Constraints.constrainNotNull(paths, "Paths");
   }
 
-  public @Nonnull List<ModulePathFlat> getTopology()
+  public @Nonnull List<ModulePathFlat> getModuleTopology()
   {
-    return this.topology;
+    return this.module_topology;
   }
 
   public @Nonnull Map<ModulePathFlat, TASTDModule> getModules()
