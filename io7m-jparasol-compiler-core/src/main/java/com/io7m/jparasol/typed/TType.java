@@ -28,6 +28,8 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
+import com.io7m.jparasol.typed.TTypeName.TTypeNameBuiltIn;
+import com.io7m.jparasol.typed.TTypeName.TTypeNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTExpression;
 
 public abstract class TType
@@ -45,9 +47,15 @@ public abstract class TType
       return TBoolean.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TBoolean()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("boolean");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -78,9 +86,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public TTypeNameBuiltIn getName()
     {
-      return "boolean";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -199,9 +207,15 @@ public abstract class TType
       return TFloat.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TFloat()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("float");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -234,9 +248,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public TTypeNameBuiltIn getName()
     {
-      return "float";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -258,6 +272,7 @@ public abstract class TType
   {
     private final @Nonnull List<TFunctionArgument> arguments;
     private final @Nonnull TValueType              return_type;
+    private final @Nonnull TTypeNameBuiltIn        name;
 
     public TFunction(
       final @Nonnull List<TFunctionArgument> arguments,
@@ -267,6 +282,12 @@ public abstract class TType
       this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
       this.return_type =
         Constraints.constrainNotNull(return_type, "Return type");
+
+      final StringBuilder m = new StringBuilder();
+      m.append(TType.formatFunctionArguments(this.arguments));
+      m.append(" → ");
+      m.append(this.return_type.getName());
+      this.name = new TTypeNameBuiltIn(m.toString());
     }
 
     public @Nonnull List<TFunctionArgument> getArguments()
@@ -284,13 +305,9 @@ public abstract class TType
       return new ArrayList<TConstructor>();
     }
 
-    @Override public String getName()
+    @Override public TTypeNameBuiltIn getName()
     {
-      final StringBuilder m = new StringBuilder();
-      m.append(TType.formatFunctionArguments(this.arguments));
-      m.append(" → ");
-      m.append(this.return_type.getName());
-      return m.toString();
+      return this.name;
     }
 
     public @Nonnull TValueType getReturnType()
@@ -379,9 +396,15 @@ public abstract class TType
       return TInteger.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TInteger()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("integer");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -414,9 +437,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "integer";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -454,9 +477,15 @@ public abstract class TType
       return TMatrix3x3F.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TMatrix3x3F()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("matrix_3x3f");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -489,9 +518,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "matrix_3x3f";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -518,9 +547,15 @@ public abstract class TType
       return TMatrix4x4F.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TMatrix4x4F()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("matrix_4x4f");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -554,9 +589,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "matrix_4x4f";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -586,10 +621,10 @@ public abstract class TType
   public static final class TRecord extends TManifestType
   {
     private final @Nonnull List<TRecordField> fields;
-    private final @Nonnull String             name;
+    private final @Nonnull TTypeNameGlobal    name;
 
     public TRecord(
-      final @Nonnull String name,
+      final @Nonnull TTypeNameGlobal name,
       final @Nonnull List<TRecordField> fields)
       throws ConstraintError
     {
@@ -631,7 +666,7 @@ public abstract class TType
       return this.fields;
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameGlobal getName()
     {
       return this.name;
     }
@@ -736,9 +771,15 @@ public abstract class TType
       return TSampler2D.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TSampler2D()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("sampler_2d");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -766,9 +807,9 @@ public abstract class TType
       return new ArrayList<TConstructor>();
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "sampler_2d";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -795,9 +836,15 @@ public abstract class TType
       return TSamplerCube.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TSamplerCube()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("sampler_cube");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -825,9 +872,9 @@ public abstract class TType
       return new ArrayList<TConstructor>();
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "sampler_cube";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -916,9 +963,15 @@ public abstract class TType
       return TVector2F.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TVector2F()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("vector_2f");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -959,9 +1012,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "vector_2f";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -988,9 +1041,15 @@ public abstract class TType
       return TVector2I.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TVector2I()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("vector_2i");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -1031,9 +1090,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "vector_2i";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -1060,9 +1119,15 @@ public abstract class TType
       return TVector3F.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TVector3F()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("vector_3f");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -1115,9 +1180,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "vector_3f";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -1144,9 +1209,15 @@ public abstract class TType
       return TVector3I.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TVector3I()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("vector_3i");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -1199,9 +1270,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "vector_3i";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -1228,9 +1299,15 @@ public abstract class TType
       return TVector4F.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TVector4F()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("vector_4f");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -1303,9 +1380,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "vector_4f";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -1332,9 +1409,15 @@ public abstract class TType
       return TVector4I.INSTANCE;
     }
 
+    private final @Nonnull TTypeNameBuiltIn name;
+
     private TVector4I()
     {
-
+      try {
+        this.name = new TTypeNameBuiltIn("vector_4i");
+      } catch (final ConstraintError e) {
+        throw new UnreachableCodeException(e);
+      }
     }
 
     @Override public boolean equals(
@@ -1407,9 +1490,9 @@ public abstract class TType
       return constructors;
     }
 
-    @Override public String getName()
+    @Override public @Nonnull TTypeNameBuiltIn getName()
     {
-      return "vector_4i";
+      return this.name;
     }
 
     @Override public int hashCode()
@@ -1502,9 +1585,11 @@ public abstract class TType
     return m.toString();
   }
 
-  public static @Nonnull Map<String, TType> getBaseTypes()
+  public static @Nonnull Map<TTypeNameBuiltIn, TType> getBaseTypesByName()
   {
-    final HashMap<String, TType> m = new HashMap<String, TType>();
+    final HashMap<TTypeNameBuiltIn, TType> m =
+      new HashMap<TTypeNameBuiltIn, TType>();
+
     m.put(TBoolean.get().getName(), TBoolean.get());
     m.put(TInteger.get().getName(), TInteger.get());
     m.put(TFloat.get().getName(), TFloat.get());
@@ -1534,9 +1619,10 @@ public abstract class TType
 
   public abstract @Nonnull List<TConstructor> getConstructors();
 
-  /**
-   * Retrieve the name of the type as it appears in Parasol programs.
-   */
+  public abstract @Nonnull TTypeName getName();
 
-  public abstract @Nonnull String getName();
+  public final @Nonnull String getShowName()
+  {
+    return this.getName().show();
+  }
 }

@@ -22,33 +22,42 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
+
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.typed.TTypeNameFlat;
 import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDModule;
 
 public final class TASTCompilation
 {
-  private final @Nonnull List<ModulePathFlat>             module_topology;
-  private final @Nonnull Map<ModulePathFlat, TASTDModule> modules;
-  private final @Nonnull Map<ModulePathFlat, ModulePath>  paths;
+  private final @Nonnull List<ModulePathFlat>                                    module_topology;
+  private final @Nonnull Map<ModulePathFlat, TASTDModule>                        modules;
+  private final @Nonnull Map<ModulePathFlat, ModulePath>                         paths;
+  private final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>   term_graph;
+  private final @Nonnull DirectedAcyclicGraph<TASTEitherTypeTerm, TASTReference> term_type_graph;
+  private final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference>      type_graph;
 
   public TASTCompilation(
     final @Nonnull List<ModulePathFlat> module_topology,
     final @Nonnull Map<ModulePathFlat, TASTDModule> modules,
-    final @Nonnull Map<ModulePathFlat, ModulePath> paths)
+    final @Nonnull Map<ModulePathFlat, ModulePath> paths,
+    final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> term_graph,
+    final @Nonnull DirectedAcyclicGraph<TASTEitherTypeTerm, TASTReference> term_type_graph,
+    final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference> type_graph)
     throws ConstraintError
   {
     this.module_topology =
       Constraints.constrainNotNull(module_topology, "Module topology");
     this.modules = Constraints.constrainNotNull(modules, "Modules");
     this.paths = Constraints.constrainNotNull(paths, "Paths");
-  }
 
-  public @Nonnull List<ModulePathFlat> getModuleTopology()
-  {
-    return this.module_topology;
+    this.term_graph = Constraints.constrainNotNull(term_graph, "Term graph");
+    this.type_graph = Constraints.constrainNotNull(type_graph, "Type graph");
+    this.term_type_graph =
+      Constraints.constrainNotNull(term_type_graph, "Term/type graph");
   }
 
   public @Nonnull Map<ModulePathFlat, TASTDModule> getModules()
@@ -56,8 +65,34 @@ public final class TASTCompilation
     return Collections.unmodifiableMap(this.modules);
   }
 
+  public @Nonnull List<ModulePathFlat> getModuleTopology()
+  {
+    return this.module_topology;
+  }
+
   public @Nonnull Map<ModulePathFlat, ModulePath> getPaths()
   {
     return Collections.unmodifiableMap(this.paths);
+  }
+
+  public @Nonnull
+    DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>
+    getTermGraph()
+  {
+    return this.term_graph;
+  }
+
+  public @Nonnull
+    DirectedAcyclicGraph<TASTEitherTypeTerm, TASTReference>
+    getTermTypeGraph()
+  {
+    return this.term_type_graph;
+  }
+
+  public @Nonnull
+    DirectedAcyclicGraph<TTypeNameFlat, TASTReference>
+    getTypeGraph()
+  {
+    return this.type_graph;
   }
 }

@@ -79,7 +79,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testBooleanName()
   {
-    Assert.assertEquals("boolean", TBoolean.get().getName());
+    Assert.assertEquals("boolean", TBoolean.get().getName().getName());
   }
 
   @Test public void testFloatConstructors()
@@ -106,7 +106,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testFloatName()
   {
-    Assert.assertEquals("float", TFloat.get().getName());
+    Assert.assertEquals("float", TFloat.get().getName().getName());
   }
 
   @Test public void testIntegerConstructors()
@@ -133,7 +133,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testIntegerName()
   {
-    Assert.assertEquals("integer", TInteger.get().getName());
+    Assert.assertEquals("integer", TInteger.get().getName().getName());
   }
 
   @Test public void testMatrix3x3FConstructors()
@@ -160,7 +160,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testMatrix3x3FName()
   {
-    Assert.assertEquals("matrix_3x3f", TMatrix3x3F.get().getName());
+    Assert.assertEquals("matrix_3x3f", TMatrix3x3F.get().getName().getName());
   }
 
   @Test public void testMatrix4x4FConstructors()
@@ -189,7 +189,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testMatrix4x4FName()
   {
-    Assert.assertEquals("matrix_4x4f", TMatrix4x4F.get().getName());
+    Assert.assertEquals("matrix_4x4f", TMatrix4x4F.get().getName().getName());
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -208,7 +208,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testSampler2DName()
   {
-    Assert.assertEquals("sampler_2d", TSampler2D.get().getName());
+    Assert.assertEquals("sampler_2d", TSampler2D.get().getName().getName());
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -229,7 +229,10 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testSamplerCubeName()
   {
-    Assert.assertEquals("sampler_cube", TSamplerCube.get().getName());
+    Assert.assertEquals("sampler_cube", TSamplerCube
+      .get()
+      .getName()
+      .getName());
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -266,7 +269,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testVector2FName()
   {
-    Assert.assertEquals("vector_2f", TVector2F.get().getName());
+    Assert.assertEquals("vector_2f", TVector2F.get().getName().getName());
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -303,7 +306,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testVector2IName()
   {
-    Assert.assertEquals("vector_2i", TVector2I.get().getName());
+    Assert.assertEquals("vector_2i", TVector2I.get().getName().getName());
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -352,7 +355,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testVector3FName()
   {
-    Assert.assertEquals("vector_3f", TVector3F.get().getName());
+    Assert.assertEquals("vector_3f", TVector3F.get().getName().getName());
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -401,7 +404,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testVector3IName()
   {
-    Assert.assertEquals("vector_3i", TVector3I.get().getName());
+    Assert.assertEquals("vector_3i", TVector3I.get().getName().getName());
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -471,7 +474,7 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testVector4FName()
   {
-    Assert.assertEquals("vector_4f", TVector4F.get().getName());
+    Assert.assertEquals("vector_4f", TVector4F.get().getName().getName());
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -541,6 +544,6 @@ public final class TTypeTest
 
   @SuppressWarnings("static-method") @Test public void testVector4IName()
   {
-    Assert.assertEquals("vector_4i", TVector4I.get().getName());
+    Assert.assertEquals("vector_4i", TVector4I.get().getName().getName());
   }
 }

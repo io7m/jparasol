@@ -43,6 +43,7 @@ import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.typed.TType;
+import com.io7m.jparasol.typed.TTypeName.TTypeNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRCompilation;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDExternal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDFunctionArgument;
@@ -2352,7 +2353,9 @@ public final class Resolver
     final UASTUDModule m;
 
     if (qualification.isNone()) {
-      if (TType.getBaseTypes().containsKey(name.getActual())) {
+      final Map<TTypeNameBuiltIn, TType> tbn = TType.getBaseTypesByName();
+      final TTypeNameBuiltIn tb = new TTypeNameBuiltIn(name.getActual());
+      if (tbn.containsKey(tb)) {
         return new UASTRTypeNameBuiltIn(name);
       }
 

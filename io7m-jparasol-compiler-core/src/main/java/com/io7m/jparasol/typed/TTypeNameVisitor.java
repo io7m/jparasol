@@ -14,18 +14,23 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.typed.ast;
+package com.io7m.jparasol.typed;
 
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.typed.TTypeName.TTypeNameBuiltIn;
+import com.io7m.jparasol.typed.TTypeName.TTypeNameGlobal;
 
-public interface TASTTypeNameVisitable
+public interface TTypeNameVisitor<A, E extends Throwable>
 {
-    <A, E extends Throwable, V extends TASTTypeNameVisitor<A, E>>
-    A
-    typeNameVisitableAccept(
-      final @Nonnull V v)
-      throws ConstraintError,
-        E;
+  public A typeNameVisitBuiltIn(
+    final @Nonnull TTypeNameBuiltIn t)
+    throws ConstraintError,
+      E;
+
+  public A typeNameVisitGlobal(
+    final @Nonnull TTypeNameGlobal t)
+    throws ConstraintError,
+      E;
 }

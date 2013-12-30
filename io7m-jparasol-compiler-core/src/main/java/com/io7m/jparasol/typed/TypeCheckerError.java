@@ -28,8 +28,10 @@ import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jaux.functional.Unit;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.lexer.Position;
+import com.io7m.jparasol.lexer.Token.TokenDiscard;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIf;
+import com.io7m.jparasol.typed.TType.TBoolean;
 import com.io7m.jparasol.typed.TType.TConstructor;
 import com.io7m.jparasol.typed.TType.TFunctionArgument;
 import com.io7m.jparasol.typed.TType.TManifestType;
@@ -73,6 +75,7 @@ public final class TypeCheckerError extends CompilerError
     TYPE_ERROR_FUNCTION_BODY_RETURN_INCOMPATIBLE,
     TYPE_ERROR_RECORD_FIELD_NOT_MANIFEST,
     TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE,
+    TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN,
     TYPE_ERROR_SHADER_WRONG_SHADER_TYPE,
     TYPE_ERROR_SHADERS_INCOMPATIBLE,
     TYPE_ERROR_VALUE_ASCRIPTION_MISMATCH,
@@ -91,14 +94,31 @@ public final class TypeCheckerError extends CompilerError
     m.append("The shader output ");
     m.append(name.getActual());
     m.append(" is of type ");
-    m.append(out_type.getName());
+    m.append(out_type.getShowName());
     m.append(" but an expression was given of type ");
-    m.append(type.getName());
+    m.append(type.getShowName());
 
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE,
+      m.toString());
+  }
+
+  public static @Nonnull TypeCheckerError shaderDiscardNotBoolean(
+    final @Nonnull TokenDiscard discard,
+    final @Nonnull TType type)
+    throws ConstraintError
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("A discard expression must be of type ");
+    m.append(TBoolean.get().getShowName());
+    m.append(" but an expression was given of type ");
+    m.append(type.getShowName());
+    return new TypeCheckerError(
+      discard.getFile(),
+      discard.getPosition(),
+      Code.TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN,
       m.toString());
   }
 
@@ -194,7 +214,6 @@ public final class TypeCheckerError extends CompilerError
 
   public static @Nonnull TypeCheckerError shadersNotCompatible(
     final @Nonnull TokenIdentifierLower program,
-    final @Nonnull TASTDShaderVertex vs,
     final @Nonnull TASTDShaderFragment fs,
     final @Nonnull Set<String> assigned,
     final @Nonnull Map<String, TValueType> wrong_types)
@@ -212,7 +231,7 @@ public final class TypeCheckerError extends CompilerError
         m.append("  ");
         m.append(fi_name.getCurrent());
         m.append(" : ");
-        m.append(f.getType().getName());
+        m.append(f.getType().getShowName());
         m.append(" has no matching vertex shader output\n");
       } else {
         assert wrong_types.containsKey(fi_name.getCurrent());
@@ -220,9 +239,9 @@ public final class TypeCheckerError extends CompilerError
         m.append("  ");
         m.append(fi_name.getCurrent());
         m.append(" : ");
-        m.append(f.getType().getName());
+        m.append(f.getType().getShowName());
         m.append(" is incompatible with the vertex shader output of type ");
-        m.append(type.getName());
+        m.append(type.getShowName());
         m.append("\n");
       }
     }
@@ -269,7 +288,7 @@ public final class TypeCheckerError extends CompilerError
     m.append(" to the given arguments; ");
     m.append(name.getName().getActual());
     m.append(" is of the non-function type ");
-    m.append(t.getName());
+    m.append(t.getShowName());
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
@@ -335,9 +354,9 @@ public final class TypeCheckerError extends CompilerError
     m.append("The type of field ");
     m.append(field_name.getActual());
     m.append(" is ");
-    m.append(expected_type.getName());
+    m.append(expected_type.getShowName());
     m.append(" but an expression was given of type ");
-    m.append(got_type.getName());
+    m.append(got_type.getShowName());
     return new TypeCheckerError(
       field_name.getFile(),
       field_name.getPosition(),
@@ -361,7 +380,7 @@ public final class TypeCheckerError extends CompilerError
       m.append("  ");
       m.append(u.getName());
       m.append(" : ");
-      m.append(u.getType().getName());
+      m.append(u.getType().getShowName());
       m.append("\n");
     }
 
@@ -399,7 +418,7 @@ public final class TypeCheckerError extends CompilerError
   {
     final StringBuilder m = new StringBuilder();
     m.append("The type ");
-    m.append(tr.getName());
+    m.append(tr.getShowName());
     m.append(" does not have a field named ");
     m.append(field.getActual());
     m.append("\n");
@@ -409,7 +428,7 @@ public final class TypeCheckerError extends CompilerError
       m.append("  ");
       m.append(f.getName());
       m.append(" : ");
-      m.append(f.getType().getName());
+      m.append(f.getType().getShowName());
       m.append("\n");
     }
 
@@ -429,7 +448,7 @@ public final class TypeCheckerError extends CompilerError
   {
     final StringBuilder m = new StringBuilder();
     m.append("The type of the given expression is ");
-    m.append(body.getType().getName());
+    m.append(body.getType().getShowName());
     m
       .append(", which is not a record type and therefore the expression cannot be the body of a record projection");
     return new TypeCheckerError(
@@ -446,7 +465,7 @@ public final class TypeCheckerError extends CompilerError
   {
     final StringBuilder m = new StringBuilder();
     m.append("The type ");
-    m.append(record.getName());
+    m.append(record.getShowName());
     m.append(" does not contain a field named ");
     m.append(field_name.getActual());
     m.append("\n");
@@ -456,7 +475,7 @@ public final class TypeCheckerError extends CompilerError
       m.append("  ");
       m.append(f.getName());
       m.append(" : ");
-      m.append(f.getType().getName());
+      m.append(f.getType().getShowName());
       m.append("\n");
     }
 
@@ -475,7 +494,7 @@ public final class TypeCheckerError extends CompilerError
     final StringBuilder m = new StringBuilder();
     m
       .append("Only expressions of vector types can be swizzled. The given expression is of type ");
-    m.append(body.getType().getName());
+    m.append(body.getType().getShowName());
 
     return new TypeCheckerError(
       first_field.getFile(),
@@ -508,7 +527,7 @@ public final class TypeCheckerError extends CompilerError
   {
     final StringBuilder m = new StringBuilder();
     m.append("The type ");
-    m.append(tv.getName());
+    m.append(tv.getShowName());
     m.append(" does not have a component named ");
     m.append(f.getActual());
     m.append("\n");
@@ -536,9 +555,9 @@ public final class TypeCheckerError extends CompilerError
     m.append("The body of function ");
     m.append(name.getActual());
     m.append(" is expected to be of type ");
-    m.append(expected.getName());
+    m.append(expected.getShowName());
     m.append(" but an expression was given of type ");
-    m.append(got.getName());
+    m.append(got.getShowName());
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
@@ -558,9 +577,9 @@ public final class TypeCheckerError extends CompilerError
     m.append("The ascription on value ");
     m.append(name.getActual());
     m.append(" requires that the type must be ");
-    m.append(expected.getName());
+    m.append(expected.getShowName());
     m.append(" but an expression was given of type ");
-    m.append(got.getName());
+    m.append(got.getShowName());
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
@@ -577,7 +596,7 @@ public final class TypeCheckerError extends CompilerError
     m.append("The body of value ");
     m.append(name.getActual());
     m.append(" is of a non-value type ");
-    m.append(type.getName());
+    m.append(type.getShowName());
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
@@ -593,7 +612,7 @@ public final class TypeCheckerError extends CompilerError
     final StringBuilder m = new StringBuilder();
     m
       .append("The condition expression of a condition must be of type boolean, but an expression was given here of type ");
-    m.append(condition.getType().getName());
+    m.append(condition.getType().getShowName());
 
     return new TypeCheckerError(
       token.getFile(),
@@ -609,7 +628,7 @@ public final class TypeCheckerError extends CompilerError
   {
     final StringBuilder m = new StringBuilder();
     m.append("The (non-manifest) type ");
-    m.append(ty.getName());
+    m.append(ty.getShowName());
     m.append(" cannot be used as the type of a record field");
 
     return type_name

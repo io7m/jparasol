@@ -14,7 +14,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.typed.ast;
+package com.io7m.jparasol.typed;
 
 import javax.annotation.Nonnull;
 
@@ -24,34 +24,17 @@ import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-public abstract class TASTTypeName implements TASTTypeNameVisitable
+public abstract class TTypeName implements TTypeNameVisitable
 {
-  public static final class TASTTypeNameBuiltIn extends TASTTypeName
+  public static final class TTypeNameBuiltIn extends TTypeName
   {
-    private final @Nonnull TokenIdentifierLower name;
+    private final @Nonnull String name;
 
-    public TASTTypeNameBuiltIn(
-      final @Nonnull TokenIdentifierLower name)
+    public TTypeNameBuiltIn(
+      final @Nonnull String name)
       throws ConstraintError
     {
       this.name = Constraints.constrainNotNull(name, "Name");
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[TASTTypeNameBuiltIn ");
-      builder.append(this.name);
-      builder.append("]");
-      return builder.toString();
     }
 
     @Override public boolean equals(
@@ -66,25 +49,42 @@ public abstract class TASTTypeName implements TASTTypeNameVisitable
       if (this.getClass() != obj.getClass()) {
         return false;
       }
-      final TASTTypeNameBuiltIn other = (TASTTypeNameBuiltIn) obj;
+      final TTypeNameBuiltIn other = (TTypeNameBuiltIn) obj;
       if (!this.name.equals(other.name)) {
         return false;
       }
       return true;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    public @Nonnull String getName()
     {
       return this.name;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
     @Override public @Nonnull String show()
     {
-      return this.name.getActual();
+      return this.name;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[TTypeNameBuiltIn ");
+      builder.append(this.name);
+      builder.append("]");
+      return builder.toString();
     }
 
     @Override public
-      <A, E extends Throwable, V extends TASTTypeNameVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeNameVisitor<A, E>>
       A
       typeNameVisitableAccept(
         final @Nonnull V v)
@@ -95,43 +95,20 @@ public abstract class TASTTypeName implements TASTTypeNameVisitable
     }
   }
 
-  public static final class TASTTypeNameGlobal extends TASTTypeName
+  public static final class TTypeNameGlobal extends TTypeName
   {
     private final @Nonnull ModulePathFlat       flat;
     private final @Nonnull TokenIdentifierLower name;
     private final @Nonnull ModulePath           path;
 
-    public TASTTypeNameGlobal(
+    public TTypeNameGlobal(
       final @Nonnull ModulePath path,
       final @Nonnull TokenIdentifierLower name)
       throws ConstraintError
     {
       this.path = Constraints.constrainNotNull(path, "Path");
-      this.flat = ModulePathFlat.fromModulePath(path);
       this.name = Constraints.constrainNotNull(name, "Name");
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.flat.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.path.hashCode();
-      return result;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[TASTTypeNameGlobal ");
-      builder.append(this.flat);
-      builder.append(" ");
-      builder.append(this.name);
-      builder.append(" ");
-      builder.append(this.path);
-      builder.append("]");
-      return builder.toString();
+      this.flat = ModulePathFlat.fromModulePath(path);
     }
 
     @Override public boolean equals(
@@ -146,10 +123,7 @@ public abstract class TASTTypeName implements TASTTypeNameVisitable
       if (this.getClass() != obj.getClass()) {
         return false;
       }
-      final TASTTypeNameGlobal other = (TASTTypeNameGlobal) obj;
-      if (!this.flat.equals(other.flat)) {
-        return false;
-      }
+      final TTypeNameGlobal other = (TTypeNameGlobal) obj;
       if (!this.name.equals(other.name)) {
         return false;
       }
@@ -174,6 +148,15 @@ public abstract class TASTTypeName implements TASTTypeNameVisitable
       return this.path;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.path.hashCode();
+      return result;
+    }
+
     @Override public @Nonnull String show()
     {
       final StringBuilder s = new StringBuilder();
@@ -183,8 +166,19 @@ public abstract class TASTTypeName implements TASTTypeNameVisitable
       return s.toString();
     }
 
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[TTypeNameGlobal ");
+      builder.append(this.path);
+      builder.append(" ");
+      builder.append(this.name);
+      builder.append("]");
+      return builder.toString();
+    }
+
     @Override public
-      <A, E extends Throwable, V extends TASTTypeNameVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeNameVisitor<A, E>>
       A
       typeNameVisitableAccept(
         final @Nonnull V v)

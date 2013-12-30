@@ -97,17 +97,6 @@ public abstract class TASTRDeclaration
       this.fragment_shader_allowed = fragment_shader_allowed;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result =
-        (prime * result) + (this.fragment_shader_allowed ? 1231 : 1237);
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + (this.vertex_shader_allowed ? 1231 : 1237);
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -136,6 +125,17 @@ public abstract class TASTRDeclaration
     public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result =
+        (prime * result) + (this.fragment_shader_allowed ? 1231 : 1237);
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + (this.vertex_shader_allowed ? 1231 : 1237);
+      return result;
     }
 
     public boolean isFragmentShaderAllowed()
@@ -185,20 +185,6 @@ public abstract class TASTRDeclaration
       this.type = Constraints.constrainNotNull(type, "Type");
     }
 
-    public @Nonnull TASTTermNameLocal getName()
-    {
-      return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -221,9 +207,23 @@ public abstract class TASTRDeclaration
       return true;
     }
 
+    public @Nonnull TASTTermNameLocal getName()
+    {
+      return this.name;
+    }
+
     public @Nonnull TValueType getType()
     {
       return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -264,22 +264,6 @@ public abstract class TASTRDeclaration
       assert body.getType().equals(type.getReturnType());
     }
 
-    public @Nonnull List<TASTDFunctionArgument> getArguments()
-    {
-      return this.arguments;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.arguments.hashCode();
-      result = (prime * result) + this.body.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -308,6 +292,11 @@ public abstract class TASTRDeclaration
       return true;
     }
 
+    public @Nonnull List<TASTDFunctionArgument> getArguments()
+    {
+      return this.arguments;
+    }
+
     public @Nonnull TASTExpression getBody()
     {
       return this.body;
@@ -326,6 +315,28 @@ public abstract class TASTRDeclaration
     @Override public @Nonnull TFunction getType()
     {
       return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.arguments.hashCode();
+      result = (prime * result) + this.body.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends TASTTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitFunctionDefined(this);
     }
 
     @Override public String toString()
@@ -353,15 +364,17 @@ public abstract class TASTRDeclaration
     private final @Nonnull TokenIdentifierLower        name;
     private final @Nonnull TFunction                   type;
 
-    @Override public int hashCode()
+    public TASTDFunctionExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull List<TASTDFunctionArgument> arguments,
+      final @Nonnull TFunction type,
+      final @Nonnull TASTDExternal external)
+      throws ConstraintError
     {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.arguments.hashCode();
-      result = (prime * result) + this.external.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+      this.type = Constraints.constrainNotNull(type, "Type");
+      this.external = Constraints.constrainNotNull(external, "External");
     }
 
     @Override public boolean equals(
@@ -392,19 +405,6 @@ public abstract class TASTRDeclaration
       return true;
     }
 
-    public TASTDFunctionExternal(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<TASTDFunctionArgument> arguments,
-      final @Nonnull TFunction type,
-      final @Nonnull TASTDExternal external)
-      throws ConstraintError
-    {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
-      this.type = Constraints.constrainNotNull(type, "Type");
-      this.external = Constraints.constrainNotNull(external, "External");
-    }
-
     public @Nonnull List<TASTDFunctionArgument> getArguments()
     {
       return this.arguments;
@@ -423,6 +423,28 @@ public abstract class TASTRDeclaration
     @Override public @Nonnull TFunction getType()
     {
       return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.arguments.hashCode();
+      result = (prime * result) + this.external.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends TASTTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitFunctionExternal(this);
     }
 
     @Override public String toString()
@@ -459,15 +481,6 @@ public abstract class TASTRDeclaration
       this.rename = Constraints.constrainNotNull(rename, "Rename");
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.path.hashCode();
-      result = (prime * result) + this.rename.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -498,6 +511,15 @@ public abstract class TASTRDeclaration
     public @Nonnull Option<TokenIdentifierUpper> getRename()
     {
       return this.rename;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.path.hashCode();
+      result = (prime * result) + this.rename.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -562,46 +584,14 @@ public abstract class TASTRDeclaration
       this.terms = Constraints.constrainNotNull(terms, "Terms");
       this.term_topology =
         Constraints.constrainNotNull(term_topology, "Term topology");
+
       this.types = Constraints.constrainNotNull(types, "Types");
       this.type_topology =
         Constraints.constrainNotNull(type_topology, "Type topology");
+
       this.shaders = Constraints.constrainNotNull(shaders, "Shaders");
       this.shader_topology =
         Constraints.constrainNotNull(shader_topology, "Shader topology");
-    }
-
-    public @Nonnull List<TASTDeclarationModuleLevel> getDeclarations()
-    {
-      return this.declarations;
-    }
-
-    public @Nonnull List<TASTDImport> getImports()
-    {
-      return this.imports;
-    }
-
-    public @Nonnull List<String> getShaderTopology()
-    {
-      return this.shader_topology;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.declarations.hashCode();
-      result = (prime * result) + this.imported_modules.hashCode();
-      result = (prime * result) + this.imported_names.hashCode();
-      result = (prime * result) + this.imported_renames.hashCode();
-      result = (prime * result) + this.imports.hashCode();
-      result = (prime * result) + this.path.hashCode();
-      result = (prime * result) + this.shader_topology.hashCode();
-      result = (prime * result) + this.shaders.hashCode();
-      result = (prime * result) + this.term_topology.hashCode();
-      result = (prime * result) + this.terms.hashCode();
-      result = (prime * result) + this.type_topology.hashCode();
-      result = (prime * result) + this.types.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -656,6 +646,16 @@ public abstract class TASTRDeclaration
       return true;
     }
 
+    public @Nonnull List<TASTDeclarationModuleLevel> getDeclarations()
+    {
+      return this.declarations;
+    }
+
+    public @Nonnull List<TASTDImport> getImports()
+    {
+      return this.imports;
+    }
+
     public @Nonnull ModulePath getPath()
     {
       return this.path;
@@ -666,6 +666,11 @@ public abstract class TASTRDeclaration
       return this.shaders;
     }
 
+    public @Nonnull List<String> getShaderTopology()
+    {
+      return this.shader_topology;
+    }
+
     public @Nonnull Map<String, TASTDTerm> getTerms()
     {
       return this.terms;
@@ -674,6 +679,25 @@ public abstract class TASTRDeclaration
     public @Nonnull Map<String, TASTDType> getTypes()
     {
       return this.types;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.declarations.hashCode();
+      result = (prime * result) + this.imported_modules.hashCode();
+      result = (prime * result) + this.imported_names.hashCode();
+      result = (prime * result) + this.imported_renames.hashCode();
+      result = (prime * result) + this.imports.hashCode();
+      result = (prime * result) + this.path.hashCode();
+      result = (prime * result) + this.shader_topology.hashCode();
+      result = (prime * result) + this.shaders.hashCode();
+      result = (prime * result) + this.term_topology.hashCode();
+      result = (prime * result) + this.terms.hashCode();
+      result = (prime * result) + this.type_topology.hashCode();
+      result = (prime * result) + this.types.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -739,19 +763,6 @@ public abstract class TASTRDeclaration
       this.path = Constraints.constrainNotNull(path, "Path");
     }
 
-    public @Nonnull PackagePath getPath()
-    {
-      return this.path;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.path.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -769,6 +780,19 @@ public abstract class TASTRDeclaration
         return false;
       }
       return true;
+    }
+
+    public @Nonnull PackagePath getPath()
+    {
+      return this.path;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.path.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -797,14 +821,6 @@ public abstract class TASTRDeclaration
       this.name = Constraints.constrainNotNull(name, "Name");
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -827,6 +843,14 @@ public abstract class TASTRDeclaration
     @Override public final @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      return result;
     }
   }
 
@@ -854,28 +878,6 @@ public abstract class TASTRDeclaration
         Constraints.constrainNotNull(parameters, "Parameters");
       this.locals = Constraints.constrainNotNull(locals, "Locals");
       this.writes = Constraints.constrainNotNull(writes, "Writes");
-    }
-
-    public @Nonnull List<TASTDShaderFragmentInput> getInputs()
-    {
-      return this.inputs;
-    }
-
-    public @Nonnull List<TASTDShaderFragmentLocal> getLocals()
-    {
-      return this.locals;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.inputs.hashCode();
-      result = (prime * result) + this.locals.hashCode();
-      result = (prime * result) + this.outputs.hashCode();
-      result = (prime * result) + this.parameters.hashCode();
-      result = (prime * result) + this.writes.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -909,6 +911,16 @@ public abstract class TASTRDeclaration
       return true;
     }
 
+    public @Nonnull List<TASTDShaderFragmentInput> getInputs()
+    {
+      return this.inputs;
+    }
+
+    public @Nonnull List<TASTDShaderFragmentLocal> getLocals()
+    {
+      return this.locals;
+    }
+
     public @Nonnull List<TASTDShaderFragmentOutput> getOutputs()
     {
       return this.outputs;
@@ -922,6 +934,18 @@ public abstract class TASTRDeclaration
     public @Nonnull List<TASTDShaderFragmentOutputAssignment> getWrites()
     {
       return this.writes;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.inputs.hashCode();
+      result = (prime * result) + this.locals.hashCode();
+      result = (prime * result) + this.outputs.hashCode();
+      result = (prime * result) + this.parameters.hashCode();
+      result = (prime * result) + this.writes.hashCode();
+      return result;
     }
 
     @Override public
@@ -967,19 +991,6 @@ public abstract class TASTRDeclaration
       this.name = Constraints.constrainNotNull(name, "Name");
     }
 
-    public @Nonnull TASTTermNameLocal getName()
-    {
-      return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -997,6 +1008,19 @@ public abstract class TASTRDeclaration
         return false;
       }
       return true;
+    }
+
+    public @Nonnull TASTTermNameLocal getName()
+    {
+      return this.name;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -1031,20 +1055,6 @@ public abstract class TASTRDeclaration
         Constraints.constrainNotNull(expression, "Expression");
     }
 
-    public @Nonnull TokenDiscard getDiscard()
-    {
-      return this.discard;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.discard.hashCode();
-      result = (prime * result) + this.expression.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -1068,9 +1078,23 @@ public abstract class TASTRDeclaration
       return true;
     }
 
+    public @Nonnull TokenDiscard getDiscard()
+    {
+      return this.discard;
+    }
+
     public @Nonnull TASTExpression getExpression()
     {
       return this.expression;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.discard.hashCode();
+      result = (prime * result) + this.expression.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -1095,19 +1119,6 @@ public abstract class TASTRDeclaration
       this.value = Constraints.constrainNotNull(value, "Value");
     }
 
-    public @Nonnull TASTDValueLocal getValue()
-    {
-      return this.value;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.value.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -1126,6 +1137,19 @@ public abstract class TASTRDeclaration
         return false;
       }
       return true;
+    }
+
+    public @Nonnull TASTDValueLocal getValue()
+    {
+      return this.value;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.value.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -1153,15 +1177,6 @@ public abstract class TASTRDeclaration
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
       this.index = index;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.index;
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -1196,6 +1211,15 @@ public abstract class TASTRDeclaration
       return this.name;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.index;
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -1223,20 +1247,6 @@ public abstract class TASTRDeclaration
       this.variable = Constraints.constrainNotNull(variable, "Variable");
     }
 
-    public @Nonnull TokenIdentifierLower getName()
-    {
-      return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.variable.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -1260,9 +1270,23 @@ public abstract class TASTRDeclaration
       return true;
     }
 
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
     public @Nonnull TASTEVariable getVariable()
     {
       return this.variable;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.variable.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -1291,14 +1315,6 @@ public abstract class TASTRDeclaration
       this.name = Constraints.constrainNotNull(name, "Name");
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -1322,6 +1338,14 @@ public abstract class TASTRDeclaration
     public @Nonnull TASTTermNameLocal getName()
     {
       return this.name;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -1357,14 +1381,6 @@ public abstract class TASTRDeclaration
       this.type = Constraints.constrainNotNull(type, "Type");
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.type.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -1388,6 +1404,14 @@ public abstract class TASTRDeclaration
     {
       return this.type;
     }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
   }
 
   public static final class TASTDShaderProgram extends TASTDShader
@@ -1406,15 +1430,6 @@ public abstract class TASTRDeclaration
         Constraints.constrainNotNull(vertex_shader, "Vertex shader");
       this.fragment_shader =
         Constraints.constrainNotNull(fragment_shader, "Fragment shader");
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.fragment_shader.hashCode();
-      result = (prime * result) + this.vertex_shader.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -1447,6 +1462,15 @@ public abstract class TASTRDeclaration
     public @Nonnull TASTShaderName getVertexShader()
     {
       return this.vertex_shader;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.fragment_shader.hashCode();
+      result = (prime * result) + this.vertex_shader.hashCode();
+      return result;
     }
 
     @Override public
@@ -1496,18 +1520,6 @@ public abstract class TASTRDeclaration
         Constraints.constrainNotNull(parameters, "Parameters");
       this.values = Constraints.constrainNotNull(values, "Values");
       this.writes = Constraints.constrainNotNull(writes, "Writes");
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.inputs.hashCode();
-      result = (prime * result) + this.outputs.hashCode();
-      result = (prime * result) + this.parameters.hashCode();
-      result = (prime * result) + this.values.hashCode();
-      result = (prime * result) + this.writes.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -1566,6 +1578,18 @@ public abstract class TASTRDeclaration
       return this.writes;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.inputs.hashCode();
+      result = (prime * result) + this.outputs.hashCode();
+      result = (prime * result) + this.parameters.hashCode();
+      result = (prime * result) + this.values.hashCode();
+      result = (prime * result) + this.writes.hashCode();
+      return result;
+    }
+
     @Override public
       <T, E extends Throwable, V extends TASTShaderVisitor<T, E>>
       T
@@ -1600,12 +1624,13 @@ public abstract class TASTRDeclaration
   {
     private final @Nonnull TASTTermNameLocal name;
 
-    @Override public int hashCode()
+    public TASTDShaderVertexInput(
+      final @Nonnull TASTTermNameLocal name,
+      final @Nonnull TValueType type)
+      throws ConstraintError
     {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
+      super(type);
+      this.name = Constraints.constrainNotNull(name, "Name");
     }
 
     @Override public boolean equals(
@@ -1627,18 +1652,17 @@ public abstract class TASTRDeclaration
       return true;
     }
 
-    public TASTDShaderVertexInput(
-      final @Nonnull TASTTermNameLocal name,
-      final @Nonnull TValueType type)
-      throws ConstraintError
-    {
-      super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
-    }
-
     public @Nonnull TASTTermNameLocal getName()
     {
       return this.name;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
     }
 
     @Override public String toString()
@@ -1661,14 +1685,6 @@ public abstract class TASTRDeclaration
       throws ConstraintError
     {
       this.value = Constraints.constrainNotNull(value, "Value");
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.value.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -1696,6 +1712,14 @@ public abstract class TASTRDeclaration
       return this.value;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.value.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -1718,14 +1742,6 @@ public abstract class TASTRDeclaration
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -1752,6 +1768,14 @@ public abstract class TASTRDeclaration
       return this.name;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -1775,15 +1799,6 @@ public abstract class TASTRDeclaration
     {
       this.name = Constraints.constrainNotNull(name, "Name");
       this.variable = Constraints.constrainNotNull(variable, "Variable");
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.variable.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -1819,6 +1834,15 @@ public abstract class TASTRDeclaration
       return this.variable;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.variable.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -1843,14 +1867,6 @@ public abstract class TASTRDeclaration
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -1878,6 +1894,14 @@ public abstract class TASTRDeclaration
       return this.name;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -1903,7 +1927,8 @@ public abstract class TASTRDeclaration
    * The type of term declarations.
    */
 
-  public static abstract class TASTDTerm extends TASTDeclarationModuleLevel
+  public static abstract class TASTDTerm extends TASTDeclarationModuleLevel implements
+    TASTTermVisitable
   {
     public abstract @Nonnull TType getType();
   }
@@ -1922,7 +1947,8 @@ public abstract class TASTRDeclaration
    * The type of type declarations.
    */
 
-  public static abstract class TASTDType extends TASTDeclarationModuleLevel
+  public static abstract class TASTDType extends TASTDeclarationModuleLevel implements
+    TASTTypeVisitable
   {
     public abstract @Nonnull TType getType();
   }
@@ -1946,16 +1972,6 @@ public abstract class TASTRDeclaration
       this.name = Constraints.constrainNotNull(name, "Name");
       this.type = Constraints.constrainNotNull(type, "Type");
       this.fields = Constraints.constrainNotNull(fields, "Fields");
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.fields.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -1998,6 +2014,16 @@ public abstract class TASTRDeclaration
       return this.type;
     }
 
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.fields.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -2007,6 +2033,17 @@ public abstract class TASTRDeclaration
       builder.append(this.fields);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends TASTTypeVisitor<T, E>>
+      T
+      typeVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.typeVisitTypeRecord(this);
     }
   }
 
@@ -2022,16 +2059,6 @@ public abstract class TASTRDeclaration
     {
       this.name = Constraints.constrainNotNull(name, "Name");
       this.type = Constraints.constrainNotNull(type, "Type");
-    }
-
-    public @Nonnull TokenIdentifierLower getName()
-    {
-      return this.name;
-    }
-
-    public @Nonnull TManifestType getType()
-    {
-      return this.type;
     }
 
     @Override public int hashCode()
@@ -2065,6 +2092,16 @@ public abstract class TASTRDeclaration
       return true;
     }
 
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull TManifestType getType()
+    {
+      return this.type;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -2096,20 +2133,6 @@ public abstract class TASTRDeclaration
         Constraints.constrainNotNull(expression, "Expression");
     }
 
-    public @Nonnull TASTExpression getExpression()
-    {
-      return this.expression;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.expression.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -2132,6 +2155,11 @@ public abstract class TASTRDeclaration
       return true;
     }
 
+    public @Nonnull TASTExpression getExpression()
+    {
+      return this.expression;
+    }
+
     @Override public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
@@ -2140,6 +2168,26 @@ public abstract class TASTRDeclaration
     @Override public TType getType()
     {
       return this.expression.getType();
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.expression.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends TASTTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitValue(this);
     }
 
     @Override public String toString()
@@ -2173,20 +2221,6 @@ public abstract class TASTRDeclaration
         Constraints.constrainNotNull(expression, "Expression");
     }
 
-    public @Nonnull TASTExpression getExpression()
-    {
-      return this.expression;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.expression.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -2209,9 +2243,23 @@ public abstract class TASTRDeclaration
       return true;
     }
 
+    public @Nonnull TASTExpression getExpression()
+    {
+      return this.expression;
+    }
+
     public @Nonnull TASTTermNameLocal getName()
     {
       return this.name;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.expression.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
     }
 
     @Override public String toString()

@@ -19,18 +19,14 @@ package com.io7m.jparasol.typed.ast;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.typed.ast.TASTTypeName.TASTTypeNameBuiltIn;
-import com.io7m.jparasol.typed.ast.TASTTypeName.TASTTypeNameGlobal;
 
-public interface TASTTypeNameVisitor<A, E extends Throwable>
+public interface TASTModuleVisitable
 {
-  public A typeNameVisitBuiltIn(
-    final @Nonnull TASTTypeNameBuiltIn t)
-    throws ConstraintError,
-      E;
-
-  public A typeNameVisitGlobal(
-    final @Nonnull TASTTypeNameGlobal t)
-    throws ConstraintError,
-      E;
+  public
+    <M, I, D, DTE extends D, DTY extends D, DS extends D, E extends Throwable, V extends TASTModuleVisitor<M, I, D, DTE, DTY, DS, E>>
+    M
+    moduleVisitableAccept(
+      final @Nonnull V v)
+      throws E,
+        ConstraintError;
 }

@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -64,6 +65,8 @@ import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragment;
 import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDTypeRecord;
 import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDValue;
+import com.io7m.jparasol.typed.ast.TASTReference;
+import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 import com.io7m.jparasol.untyped.ModuleStructure;
 import com.io7m.jparasol.untyped.ModuleStructureError;
 import com.io7m.jparasol.untyped.Resolver;
@@ -278,6 +281,205 @@ public final class TypeCheckerTest
     }
 
     return units;
+  }
+
+  @SuppressWarnings("static-method") @Test public void testAllOK_0()
+    throws TypeCheckerError,
+      ConstraintError
+  {
+    TypeCheckerTest.checkedInternal(new String[] { "all.p" });
+  }
+
+  @SuppressWarnings("static-method") @Test public void testBugOld_b77370072()
+    throws TypeCheckerError,
+      ConstraintError
+  {
+    TypeCheckerTest.checked(new String[] { "bug-old-b77370072.p" });
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderAssignmentBadType_0()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "fragment-shader-assignment-bad-type-0.p" },
+      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderAssignmentBadType_1()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "fragment-shader-assignment-bad-type-1.p" },
+      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderAssignmentBadType_2()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "fragment-shader-assignment-bad-type-2.p" },
+      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderAssignmentBadType_3()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "fragment-shader-assignment-bad-type-3.p" },
+      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderAssignmentBadType_4()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "fragment-shader-assignment-bad-type-4.p" },
+      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderAssignmentBadType_5()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "fragment-shader-assignment-bad-type-5.p" },
+      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderAssignmentBadType_6()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "fragment-shader-assignment-bad-type-6.p" },
+      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testFragmentShaderAssignmentOK_0()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    final TASTCompilation r =
+      TypeCheckerTest.checked(new String[] { "fragment-shader-ok-0.p" });
+
+    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDShaderFragment v =
+      (TASTDShaderFragment) m.getShaders().get("f");
+
+    Assert.assertEquals("f", v.getName().getActual());
+
+    Assert.assertEquals("in_0", v.getInputs().get(0).getName().getCurrent());
+    Assert.assertEquals(TVector4F.get(), v.getInputs().get(0).getType());
+
+    Assert.assertEquals("p_0", v
+      .getParameters()
+      .get(0)
+      .getName()
+      .getCurrent());
+    Assert.assertEquals(TVector4F.get(), v.getParameters().get(0).getType());
+
+    Assert.assertEquals("out_0", v.getOutputs().get(0).getName().getActual());
+    Assert.assertEquals(TVector4F.get(), v.getOutputs().get(0).getType());
+    Assert.assertEquals("out_1", v.getOutputs().get(1).getName().getActual());
+    Assert.assertEquals(TVector4F.get(), v.getOutputs().get(1).getType());
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderDiscardNotBoolean_0()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "fragment-shader-discard-not-boolean-0.p" },
+      Code.TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN);
+  }
+
+  @SuppressWarnings("static-method") @Test public void testGraphTermTerm_0()
+    throws TypeCheckerError,
+      ConstraintError
+  {
+    final TASTCompilation r =
+      TypeCheckerTest.checked(new String[] { "graph-term-term-0.p" });
+
+    final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> ttg =
+      r.getTermGraph();
+
+    for (final ModulePathFlat k : r.getModules().keySet()) {
+      final TASTDModule m = r.getModules().get(k);
+      for (final String tn : m.getTerms().keySet()) {
+        final TASTTermNameFlat p = new TASTTermNameFlat(k, tn);
+        System.out.println("Check " + p);
+        Assert.assertTrue(ttg.containsVertex(p));
+      }
+    }
+
+    Assert.assertEquals(9, ttg.vertexSet().size());
+  }
+
+  @SuppressWarnings("static-method") @Test public void testGraphTypeType_0()
+    throws TypeCheckerError,
+      ConstraintError
+  {
+    final TASTCompilation r =
+      TypeCheckerTest.checked(new String[] { "graph-type-type-0.p" });
+
+    final DirectedAcyclicGraph<TTypeNameFlat, TASTReference> ttg =
+      r.getTypeGraph();
+
+    for (final ModulePathFlat k : r.getModules().keySet()) {
+      final TASTDModule m = r.getModules().get(k);
+      for (final String tn : m.getTypes().keySet()) {
+        final TTypeNameFlat p = new TTypeNameFlat(k, tn);
+        System.out.println("Check " + p);
+        Assert.assertTrue(ttg.containsVertex(p));
+      }
+    }
+
+    Assert.assertEquals(9, ttg.vertexSet().size());
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testProgramShaderWrongShaderType_0()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "program-shader-wrong-shader-type-0.p" },
+      Code.TYPE_ERROR_SHADER_WRONG_SHADER_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testProgramShaderWrongShaderType_1()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "program-shader-wrong-shader-type-1.p" },
+      Code.TYPE_ERROR_SHADER_WRONG_SHADER_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
@@ -917,7 +1119,8 @@ public final class TypeCheckerTest
 
     Assert.assertEquals("t", t.getName().getActual());
     final TRecord tr = t.getType();
-    Assert.assertEquals("t", tr.getName());
+    Assert.assertEquals("x.y.M", tr.getName().getFlat().getActual());
+    Assert.assertEquals("t", tr.getName().getName().getActual());
     final List<TRecordField> tr_fields = tr.getFields();
     Assert.assertEquals(3, tr_fields.size());
     Assert.assertEquals("x", tr_fields.get(0).getName());
@@ -940,7 +1143,7 @@ public final class TypeCheckerTest
 
     Assert.assertEquals("u", u.getName().getActual());
     final TRecord ur = u.getType();
-    Assert.assertEquals("u", ur.getName());
+    Assert.assertEquals("u", ur.getName().getName().getActual());
     final List<TRecordField> ur_fields = ur.getFields();
     Assert.assertEquals(1, ur_fields.size());
     Assert.assertEquals("x", ur_fields.get(0).getName());
@@ -948,7 +1151,7 @@ public final class TypeCheckerTest
 
     Assert.assertEquals("t", t.getName().getActual());
     final TRecord tr = t.getType();
-    Assert.assertEquals("t", tr.getName());
+    Assert.assertEquals("t", tr.getName().getName().getActual());
     final List<TRecordField> tr_fields = tr.getFields();
     Assert.assertEquals(1, tr_fields.size());
     Assert.assertEquals("x", tr_fields.get(0).getName());
@@ -970,7 +1173,7 @@ public final class TypeCheckerTest
 
     Assert.assertEquals("u", u.getName().getActual());
     final TRecord ur = u.getType();
-    Assert.assertEquals("u", ur.getName());
+    Assert.assertEquals("u", ur.getName().getName().getActual());
     final List<TRecordField> ur_fields = ur.getFields();
     Assert.assertEquals(1, ur_fields.size());
     Assert.assertEquals("x", ur_fields.get(0).getName());
@@ -978,7 +1181,7 @@ public final class TypeCheckerTest
 
     Assert.assertEquals("t", t.getName().getActual());
     final TRecord tr = t.getType();
-    Assert.assertEquals("t", tr.getName());
+    Assert.assertEquals("t", tr.getName().getName().getActual());
     final List<TRecordField> tr_fields = tr.getFields();
     Assert.assertEquals(1, tr_fields.size());
     Assert.assertEquals("x", tr_fields.get(0).getName());
@@ -1074,142 +1277,5 @@ public final class TypeCheckerTest
     Assert.assertEquals(TVector4F.get(), v.getParameters().get(0).getType());
     Assert.assertEquals("out_0", v.getOutputs().get(0).getName().getActual());
     Assert.assertEquals(TVector4F.get(), v.getOutputs().get(0).getType());
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testProgramShaderWrongShaderType_0()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "program-shader-wrong-shader-type-0.p" },
-      Code.TYPE_ERROR_SHADER_WRONG_SHADER_TYPE);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testProgramShaderWrongShaderType_1()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "program-shader-wrong-shader-type-1.p" },
-      Code.TYPE_ERROR_SHADER_WRONG_SHADER_TYPE);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testFragmentShaderAssignmentBadType_0()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-0.p" },
-      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testFragmentShaderAssignmentBadType_1()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-1.p" },
-      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testFragmentShaderAssignmentBadType_2()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-2.p" },
-      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testFragmentShaderAssignmentBadType_3()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-3.p" },
-      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testFragmentShaderAssignmentBadType_4()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-4.p" },
-      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testFragmentShaderAssignmentBadType_5()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-5.p" },
-      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testFragmentShaderAssignmentBadType_6()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-6.p" },
-      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
-  }
-
-  @SuppressWarnings("static-method") @Test public
-    void
-    testFragmentShaderAssignmentOK_0()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "fragment-shader-ok-0.p" });
-
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
-    final TASTDShaderFragment v =
-      (TASTDShaderFragment) m.getShaders().get("f");
-
-    Assert.assertEquals("f", v.getName().getActual());
-
-    Assert.assertEquals("in_0", v.getInputs().get(0).getName().getCurrent());
-    Assert.assertEquals(TVector4F.get(), v.getInputs().get(0).getType());
-
-    Assert.assertEquals("p_0", v
-      .getParameters()
-      .get(0)
-      .getName()
-      .getCurrent());
-    Assert.assertEquals(TVector4F.get(), v.getParameters().get(0).getType());
-
-    Assert.assertEquals("out_0", v.getOutputs().get(0).getName().getActual());
-    Assert.assertEquals(TVector4F.get(), v.getOutputs().get(0).getType());
-    Assert.assertEquals("out_1", v.getOutputs().get(1).getName().getActual());
-    Assert.assertEquals(TVector4F.get(), v.getOutputs().get(1).getType());
-  }
-
-  @SuppressWarnings("static-method") @Test public void testBugOld_b77370072()
-    throws TypeCheckerError,
-      ConstraintError
-  {
-    TypeCheckerTest.checked(new String[] { "bug-old-b77370072.p" });
   }
 }

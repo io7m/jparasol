@@ -14,27 +14,34 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol;
+package com.io7m.jparasol.typed.ast;
 
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 
-public final class ModulePath
+public final class TASTTermNameFlat
 {
-  private final @Nonnull TokenIdentifierUpper name;
-  private final @Nonnull PackagePath          package_path;
+  private final @Nonnull String         name;
+  private final @Nonnull ModulePathFlat path;
 
-  public ModulePath(
-    final @Nonnull PackagePath package_path,
-    final @Nonnull TokenIdentifierUpper name)
+  public TASTTermNameFlat(
+    final @Nonnull ModulePathFlat path,
+    final @Nonnull String name)
     throws ConstraintError
   {
-    this.package_path =
-      Constraints.constrainNotNull(package_path, "Package path");
-    this.name = Constraints.constrainNotNull(name, "Module name");
+    this.path = Constraints.constrainNotNull(path, "Path");
+    this.name = Constraints.constrainNotNull(name, "Name");
+  }
+
+  public static @Nonnull TASTTermNameFlat fromTermNameGlobal(
+    final @Nonnull TASTTermNameGlobal name)
+    throws ConstraintError
+  {
+    return new TASTTermNameFlat(name.getFlat(), name.getName().getActual());
   }
 
   @Override public boolean equals(
@@ -49,35 +56,24 @@ public final class ModulePath
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    final ModulePath other = (ModulePath) obj;
+    final TASTTermNameFlat other = (TASTTermNameFlat) obj;
     if (!this.name.equals(other.name)) {
       return false;
     }
-    if (!this.package_path.equals(other.package_path)) {
+    if (!this.path.equals(other.path)) {
       return false;
     }
     return true;
   }
 
-  @Override public String toString()
-  {
-    final StringBuilder builder = new StringBuilder();
-    builder.append("[ModulePath ");
-    builder.append(this.package_path);
-    builder.append(" ");
-    builder.append(this.name);
-    builder.append("]");
-    return builder.toString();
-  }
-
-  public @Nonnull TokenIdentifierUpper getName()
+  public @Nonnull String getName()
   {
     return this.name;
   }
 
-  public @Nonnull PackagePath getPackagePath()
+  public @Nonnull ModulePathFlat getPath()
   {
-    return this.package_path;
+    return this.path;
   }
 
   @Override public int hashCode()
@@ -85,8 +81,18 @@ public final class ModulePath
     final int prime = 31;
     int result = 1;
     result = (prime * result) + this.name.hashCode();
-    result = (prime * result) + this.package_path.hashCode();
+    result = (prime * result) + this.path.hashCode();
     return result;
   }
 
+  @Override public String toString()
+  {
+    final StringBuilder builder = new StringBuilder();
+    builder.append("[TASTTermNameFlat ");
+    builder.append(this.path);
+    builder.append(" ");
+    builder.append(this.name);
+    builder.append("]");
+    return builder.toString();
+  }
 }
