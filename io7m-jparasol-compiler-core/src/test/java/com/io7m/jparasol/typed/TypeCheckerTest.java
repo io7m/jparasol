@@ -542,6 +542,28 @@ public final class TypeCheckerTest
     }
   }
 
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testProgramShaderNotCompatible_0()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "program-shader-not-compatible-0.p" },
+      Code.TYPE_ERROR_SHADERS_INCOMPATIBLE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testProgramShaderNotCompatible_1()
+      throws TypeCheckerError,
+        ConstraintError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "program-shader-not-compatible-1.p" },
+      Code.TYPE_ERROR_SHADERS_INCOMPATIBLE);
+  }
+
   @SuppressWarnings("static-method") @Test public
     void
     testProgramShaderOK_0()
@@ -594,28 +616,6 @@ public final class TypeCheckerTest
         }
       }
     }
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testProgramShaderNotCompatible_0()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "program-shader-not-compatible-0.p" },
-      Code.TYPE_ERROR_SHADERS_INCOMPATIBLE);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testProgramShaderNotCompatible_1()
-      throws TypeCheckerError,
-        ConstraintError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "program-shader-not-compatible-1.p" },
-      Code.TYPE_ERROR_SHADERS_INCOMPATIBLE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
