@@ -29,7 +29,7 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.typed.TTypeNameFlat;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDModule;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
 
 public final class TASTCompilation
 {

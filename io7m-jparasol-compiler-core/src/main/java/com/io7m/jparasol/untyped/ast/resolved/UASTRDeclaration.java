@@ -494,6 +494,21 @@ public abstract class UASTRDeclaration
       return this.types;
     }
 
+    public @Nonnull Map<ModulePathFlat, UASTRDImport> getImportedModules()
+    {
+      return this.imported_modules;
+    }
+
+    public @Nonnull Map<String, UASTRDImport> getImportedNames()
+    {
+      return this.imported_names;
+    }
+
+    public @Nonnull Map<String, UASTRDImport> getImportedRenames()
+    {
+      return this.imported_renames;
+    }
+
     public @Nonnull List<String> getTypeTopology()
     {
       return this.type_topology;

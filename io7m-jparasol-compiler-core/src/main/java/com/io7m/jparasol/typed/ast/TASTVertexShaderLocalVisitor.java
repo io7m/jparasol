@@ -19,7 +19,7 @@ package com.io7m.jparasol.typed.ast;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertexLocalValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexLocalValue;
 
 public interface TASTVertexShaderLocalVisitor<L, E extends Throwable>
 {

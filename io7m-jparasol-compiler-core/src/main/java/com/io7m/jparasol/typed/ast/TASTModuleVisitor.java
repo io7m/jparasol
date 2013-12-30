@@ -22,8 +22,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDImport;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDModule;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDImport;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
 
 public interface TASTModuleVisitor<M, I, D, DTE extends D, DTY extends D, DS extends D, E extends Throwable>
 {

@@ -22,7 +22,7 @@ import com.io7m.jparasol.parser.Parser;
 import com.io7m.jparasol.typed.TypeChecker;
 import com.io7m.jparasol.typed.TypeCheckerError;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDModule;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
 import com.io7m.jparasol.untyped.ModuleStructure;
 import com.io7m.jparasol.untyped.ModuleStructureError;
 import com.io7m.jparasol.untyped.Resolver;

@@ -21,11 +21,11 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragment;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentInput;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentOutput;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentOutputAssignment;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentParameter;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentInput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentParameter;
 
 public interface TASTFragmentShaderVisitor<F, PI, PP, PO, L, O, E extends Throwable>
 {

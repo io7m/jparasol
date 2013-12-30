@@ -21,11 +21,11 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertex;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertexInput;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertexOutput;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertexOutputAssignment;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertexParameter;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexInput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexOutput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexOutputAssignment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexParameter;
 
 public interface TASTVertexShaderVisitor<V, PI, PP, PO, L, O, E extends Throwable>
 {

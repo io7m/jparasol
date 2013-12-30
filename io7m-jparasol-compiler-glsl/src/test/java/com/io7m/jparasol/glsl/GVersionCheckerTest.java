@@ -26,8 +26,8 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDModule;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
 
 public final class GVersionCheckerTest
 {

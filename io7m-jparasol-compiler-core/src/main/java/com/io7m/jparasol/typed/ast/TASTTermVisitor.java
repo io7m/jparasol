@@ -19,9 +19,9 @@ package com.io7m.jparasol.typed.ast;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDFunctionDefined;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDFunctionExternal;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionDefined;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
 
 public interface TASTTermVisitor<T, E extends Throwable>
 {

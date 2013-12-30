@@ -37,7 +37,7 @@ public final class ModulePathFlat
 
   private final @Nonnull String actual;
 
-  private ModulePathFlat(
+  public ModulePathFlat(
     final @Nonnull String actual)
   {
     this.actual = actual;

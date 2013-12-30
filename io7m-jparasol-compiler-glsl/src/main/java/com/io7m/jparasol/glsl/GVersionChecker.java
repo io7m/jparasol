@@ -30,8 +30,8 @@ import com.io7m.jlog.Log;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragment;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertex;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 
 public final class GVersionChecker
 {

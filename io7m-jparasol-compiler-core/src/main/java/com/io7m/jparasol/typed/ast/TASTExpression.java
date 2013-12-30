@@ -38,7 +38,7 @@ import com.io7m.jparasol.typed.TType.TInteger;
 import com.io7m.jparasol.typed.TType.TRecord;
 import com.io7m.jparasol.typed.TType.TValueType;
 import com.io7m.jparasol.typed.TType.TVectorType;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDValueLocal;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
 
 public abstract class TASTExpression implements TASTExpressionVisitable
 {

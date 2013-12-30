@@ -49,6 +49,34 @@ import com.io7m.jparasol.typed.TType.TVectorType;
 import com.io7m.jparasol.typed.TTypeName.TTypeNameBuiltIn;
 import com.io7m.jparasol.typed.TTypeName.TTypeNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDExternal;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionArgument;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionDefined;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDImport;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShader;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentInput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentLocal;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentLocalDiscard;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentLocalValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentParameter;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderProgram;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexInput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexLocalValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexOutput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexOutputAssignment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexParameter;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTerm;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDType;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecord;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecordField;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
 import com.io7m.jparasol.typed.ast.TASTExpression;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEBoolean;
@@ -62,35 +90,6 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecordProjection;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTESwizzle;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDExternal;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDFunctionArgument;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDFunctionDefined;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDFunctionExternal;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDImport;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDModule;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShader;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragment;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentInput;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentLocal;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentLocalDiscard;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentLocalValue;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentOutput;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentOutputAssignment;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentParameter;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderProgram;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertex;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertexInput;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertexLocalValue;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertexOutput;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertexOutputAssignment;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertexParameter;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDTerm;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDType;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDTypeRecord;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDTypeRecordField;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDValue;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDValueLocal;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDeclarationModuleLevel;
 import com.io7m.jparasol.typed.ast.TASTShaderName;
 import com.io7m.jparasol.typed.ast.TASTTermName;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameBuiltIn;
@@ -101,6 +100,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDExternal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDFunctionExternal;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDImport;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDModule;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShader;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragment;
@@ -1013,6 +1013,13 @@ public final class TypeChecker
         new HashMap<String, TASTDShader>();
 
       /**
+       * Terms, types, and shaders are checked in (reverse) topological order.
+       * That is, for each term/type/shader t checked, all of the dependencies
+       * of t have already been checked and are available during checking of
+       * t.
+       */
+
+      /**
        * Check type declarations.
        */
 
@@ -1109,16 +1116,43 @@ public final class TypeChecker
        * Assemble the rest of the module metadata.
        */
 
-      final List<TASTDeclarationModuleLevel> checked_declarations =
-        new ArrayList<TASTDeclarationModuleLevel>();
-
       final List<TASTDImport> imports = new ArrayList<TASTDImport>();
+      for (final UASTRDImport i : this.module.getImports()) {
+        imports.add(new TASTDImport(i.getPath(), i.getRename()));
+      }
+
       final Map<ModulePathFlat, TASTDImport> imported_modules =
         new HashMap<ModulePathFlat, TASTDImport>();
+
+      final Map<ModulePathFlat, UASTRDImport> oim =
+        this.module.getImportedModules();
+      for (final ModulePathFlat p : oim.keySet()) {
+        final UASTRDImport i = oim.get(p);
+        imported_modules.put(p, new TASTDImport(i.getPath(), i.getRename()));
+      }
+
       final Map<String, TASTDImport> imported_names =
         new HashMap<String, TASTDImport>();
+
+      final Map<String, UASTRDImport> oin = this.module.getImportedNames();
+      for (final String p : oin.keySet()) {
+        final UASTRDImport i = oin.get(p);
+        imported_names.put(p, new TASTDImport(i.getPath(), i.getRename()));
+      }
+
       final Map<String, TASTDImport> imported_renames =
         new HashMap<String, TASTDImport>();
+
+      final Map<String, UASTRDImport> oir = this.module.getImportedRenames();
+      for (final String p : oir.keySet()) {
+        final UASTRDImport i = oir.get(p);
+        imported_renames.put(p, new TASTDImport(i.getPath(), i.getRename()));
+      }
+
+      assert imports.size() == this.module.getImports().size();
+      assert imported_modules.size() == oim.size();
+      assert imported_names.size() == oin.size();
+      assert imported_renames.size() == oir.size();
 
       return new TASTDModule(
         this.module.getPath(),
@@ -1126,7 +1160,6 @@ public final class TypeChecker
         imported_modules,
         imported_names,
         imported_renames,
-        checked_declarations,
         checked_terms,
         terms_topo,
         checked_types,
@@ -1938,6 +1971,10 @@ public final class TypeChecker
       m.append(" modules in topology");
       this.log.debug(m.toString());
     }
+
+    /**
+     * Type check modules in (reverse) topological order.
+     */
 
     for (int index = topology.size() - 1; index >= 0; --index) {
       final ModulePathFlat path = topology.get(index);

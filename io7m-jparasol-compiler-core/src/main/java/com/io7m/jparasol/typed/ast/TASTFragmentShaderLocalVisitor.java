@@ -19,8 +19,8 @@ package com.io7m.jparasol.typed.ast;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentLocalDiscard;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragmentLocalValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentLocalDiscard;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentLocalValue;
 
 public interface TASTFragmentShaderLocalVisitor<L, E extends Throwable>
 {

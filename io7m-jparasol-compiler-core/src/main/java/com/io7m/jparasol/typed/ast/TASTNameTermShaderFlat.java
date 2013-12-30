@@ -131,7 +131,7 @@ public abstract class TASTNameTermShaderFlat implements
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
-      builder.append("[Type ");
+      builder.append("[Term ");
       builder.append(this.name);
       builder.append("]");
       return builder.toString();

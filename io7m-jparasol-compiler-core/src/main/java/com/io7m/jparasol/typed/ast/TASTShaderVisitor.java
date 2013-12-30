@@ -19,9 +19,9 @@ package com.io7m.jparasol.typed.ast;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderFragment;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderProgram;
-import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDShaderVertex;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderProgram;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 
 public interface TASTShaderVisitor<T, E extends Throwable>
 {

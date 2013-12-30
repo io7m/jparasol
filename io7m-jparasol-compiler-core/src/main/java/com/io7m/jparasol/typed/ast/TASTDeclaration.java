@@ -39,14 +39,14 @@ import com.io7m.jparasol.typed.TType.TValueType;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 
-public abstract class TASTRDeclaration
+public abstract class TASTDeclaration
 {
   /**
    * The type of local declarations.
    */
 
   public static abstract class TASTDeclarationLocalLevel extends
-    TASTRDeclaration
+    TASTDeclaration
   {
     // Nothing
   }
@@ -56,7 +56,7 @@ public abstract class TASTRDeclaration
    */
 
   public static abstract class TASTDeclarationModuleLevel extends
-    TASTRDeclaration
+    TASTDeclaration
   {
     public abstract @Nonnull TokenIdentifierLower getName();
   }
@@ -66,7 +66,7 @@ public abstract class TASTRDeclaration
    */
 
   public static abstract class TASTDeclarationShaderLevel extends
-    TASTRDeclaration
+    TASTDeclaration
   {
     // Nothing
   }
@@ -76,7 +76,7 @@ public abstract class TASTRDeclaration
    */
 
   public static abstract class TASTDeclarationUnitLevel extends
-    TASTRDeclaration
+    TASTDeclaration
   {
     // Nothing
   }
@@ -468,7 +468,7 @@ public abstract class TASTRDeclaration
    * Import declarations.
    */
 
-  public static final class TASTDImport extends TASTRDeclaration
+  public static final class TASTDImport extends TASTDeclaration
   {
     private final @Nonnull ModulePath                   path;
     private final @Nonnull Option<TokenIdentifierUpper> rename;
@@ -541,7 +541,6 @@ public abstract class TASTRDeclaration
 
   public static final class TASTDModule extends TASTDeclarationUnitLevel
   {
-    private final @Nonnull List<TASTDeclarationModuleLevel> declarations;
     private final @Nonnull Map<ModulePathFlat, TASTDImport> imported_modules;
     private final @Nonnull Map<String, TASTDImport>         imported_names;
     private final @Nonnull Map<String, TASTDImport>         imported_renames;
@@ -560,7 +559,6 @@ public abstract class TASTRDeclaration
       final @Nonnull Map<ModulePathFlat, TASTDImport> imported_modules,
       final @Nonnull Map<String, TASTDImport> imported_names,
       final @Nonnull Map<String, TASTDImport> imported_renames,
-      final @Nonnull List<TASTDeclarationModuleLevel> declarations,
       final @Nonnull Map<String, TASTDTerm> terms,
       final @Nonnull List<String> term_topology,
       final @Nonnull Map<String, TASTDType> types,
@@ -578,9 +576,6 @@ public abstract class TASTRDeclaration
         Constraints.constrainNotNull(imported_names, "Imported names");
       this.imported_renames =
         Constraints.constrainNotNull(imported_renames, "Imported renames");
-
-      this.declarations =
-        Constraints.constrainNotNull(declarations, "Declarations");
 
       this.terms = Constraints.constrainNotNull(terms, "Terms");
       this.term_topology =
@@ -608,9 +603,6 @@ public abstract class TASTRDeclaration
         return false;
       }
       final TASTDModule other = (TASTDModule) obj;
-      if (!this.declarations.equals(other.declarations)) {
-        return false;
-      }
       if (!this.imported_modules.equals(other.imported_modules)) {
         return false;
       }
@@ -647,11 +639,6 @@ public abstract class TASTRDeclaration
       return true;
     }
 
-    public @Nonnull List<TASTDeclarationModuleLevel> getDeclarations()
-    {
-      return this.declarations;
-    }
-
     public @Nonnull List<TASTDImport> getImports()
     {
       return this.imports;
@@ -686,7 +673,6 @@ public abstract class TASTRDeclaration
     {
       final int prime = 31;
       int result = 1;
-      result = (prime * result) + this.declarations.hashCode();
       result = (prime * result) + this.imported_modules.hashCode();
       result = (prime * result) + this.imported_names.hashCode();
       result = (prime * result) + this.imported_renames.hashCode();
@@ -706,44 +692,6 @@ public abstract class TASTRDeclaration
       final StringBuilder builder = new StringBuilder();
       builder.append("[TASTDModule ");
       builder.append(ModulePathFlat.fromModulePath(this.path).getActual());
-      builder.append("\n");
-
-      if (this.imports.isEmpty()) {
-        builder.append("  []\n");
-      } else {
-        for (int index = 0; index < this.imports.size(); ++index) {
-          if (index == 0) {
-            builder.append("  [");
-          } else {
-            builder.append("  ");
-          }
-          builder.append(this.imports.get(index));
-          if ((index + 1) == this.imports.size()) {
-            builder.append("]\n");
-          } else {
-            builder.append("\n");
-          }
-        }
-      }
-
-      if (this.declarations.isEmpty()) {
-        builder.append("  []\n");
-      } else {
-        for (int index = 0; index < this.declarations.size(); ++index) {
-          if (index == 0) {
-            builder.append("  [\n    ");
-          } else {
-            builder.append("    ");
-          }
-          builder.append(this.declarations.get(index));
-          if ((index + 1) == this.declarations.size()) {
-            builder.append("\n  ]\n");
-          } else {
-            builder.append("\n");
-          }
-        }
-      }
-
       builder.append("]");
       return builder.toString();
     }
