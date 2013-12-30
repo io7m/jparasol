@@ -40,16 +40,6 @@ public final class TASTShaderName
     this.name = Constraints.constrainNotNull(name, "Name");
   }
 
-  @Override public int hashCode()
-  {
-    final int prime = 31;
-    int result = 1;
-    result = (prime * result) + this.flat.hashCode();
-    result = (prime * result) + this.name.hashCode();
-    result = (prime * result) + this.path.hashCode();
-    return result;
-  }
-
   @Override public boolean equals(
     final Object obj)
   {
@@ -88,6 +78,16 @@ public final class TASTShaderName
   public @Nonnull ModulePath getPath()
   {
     return this.path;
+  }
+
+  @Override public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = (prime * result) + this.flat.hashCode();
+    result = (prime * result) + this.name.hashCode();
+    result = (prime * result) + this.path.hashCode();
+    return result;
   }
 
   public @Nonnull String show()

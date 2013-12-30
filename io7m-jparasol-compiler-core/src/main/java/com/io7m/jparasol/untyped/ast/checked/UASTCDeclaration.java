@@ -76,6 +76,52 @@ public abstract class UASTCDeclaration
     // Nothing
   }
 
+  public static final class UASTCDExternal
+  {
+    private final boolean                       fragment_shader_allowed;
+    private final @Nonnull TokenIdentifierLower name;
+    private final boolean                       vertex_shader_allowed;
+
+    public UASTCDExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final boolean vertex_shader_allowed,
+      final boolean fragment_shader_allowed)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.vertex_shader_allowed = vertex_shader_allowed;
+      this.fragment_shader_allowed = fragment_shader_allowed;
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public boolean isFragmentShaderAllowed()
+    {
+      return this.fragment_shader_allowed;
+    }
+
+    public boolean isVertexShaderAllowed()
+    {
+      return this.vertex_shader_allowed;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTCDExternal ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.vertex_shader_allowed);
+      builder.append(" ");
+      builder.append(this.fragment_shader_allowed);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
   /**
    * The type of function declarations.
    */
@@ -197,52 +243,6 @@ public abstract class UASTCDeclaration
       builder.append(this.body);
       builder.append("]");
       return builder.toString();
-    }
-  }
-
-  public static final class UASTCDExternal
-  {
-    private final @Nonnull TokenIdentifierLower name;
-    private final boolean                       vertex_shader_allowed;
-    private final boolean                       fragment_shader_allowed;
-
-    public UASTCDExternal(
-      final @Nonnull TokenIdentifierLower name,
-      final boolean vertex_shader_allowed,
-      final boolean fragment_shader_allowed)
-      throws ConstraintError
-    {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.vertex_shader_allowed = vertex_shader_allowed;
-      this.fragment_shader_allowed = fragment_shader_allowed;
-    }
-
-    public @Nonnull TokenIdentifierLower getName()
-    {
-      return this.name;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTCDExternal ");
-      builder.append(this.name);
-      builder.append(" ");
-      builder.append(this.vertex_shader_allowed);
-      builder.append(" ");
-      builder.append(this.fragment_shader_allowed);
-      builder.append("]");
-      return builder.toString();
-    }
-
-    public boolean isVertexShaderAllowed()
-    {
-      return this.vertex_shader_allowed;
-    }
-
-    public boolean isFragmentShaderAllowed()
-    {
-      return this.fragment_shader_allowed;
     }
   }
 

@@ -53,6 +53,11 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
       return this.actual;
     }
 
+    @Override public TokenIdentifierLower getName()
+    {
+      return this.actual;
+    }
+
     @Override public String show()
     {
       final StringBuilder s = new StringBuilder();
@@ -79,11 +84,6 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
       builder.append(this.actual);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public TokenIdentifierLower getName()
-    {
-      return this.actual;
     }
   }
 
@@ -184,6 +184,11 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
       return this.current;
     }
 
+    @Override public TokenIdentifierLower getName()
+    {
+      return this.original;
+    }
+
     public @Nonnull TokenIdentifierLower getOriginal()
     {
       return this.original;
@@ -218,11 +223,6 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
       builder.append("]");
       return builder.toString();
     }
-
-    @Override public TokenIdentifierLower getName()
-    {
-      return this.original;
-    }
   }
 
   private final @Nonnull File     file;
@@ -242,12 +242,12 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
     return this.file;
   }
 
+  public abstract @Nonnull TokenIdentifierLower getName();
+
   public final @Nonnull Position getPosition()
   {
     return this.position;
   }
 
   public abstract @Nonnull String show();
-
-  public abstract @Nonnull TokenIdentifierLower getName();
 }

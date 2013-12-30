@@ -16,6 +16,7 @@
 
 package com.io7m.jparasol.typed.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -854,7 +855,8 @@ public abstract class TASTRDeclaration
     }
   }
 
-  public static final class TASTDShaderFragment extends TASTDShader
+  public static final class TASTDShaderFragment extends TASTDShader implements
+    TASTFragmentShaderVisitable
   {
     private final @Nonnull List<TASTDShaderFragmentInput>            inputs;
     private final @Nonnull List<TASTDShaderFragmentLocal>            locals;
@@ -909,6 +911,56 @@ public abstract class TASTRDeclaration
         return false;
       }
       return true;
+    }
+
+    @Override public
+      <F, PI, PP, PO, L, O, E extends Throwable, V extends TASTFragmentShaderVisitor<F, PI, PP, PO, L, O, E>>
+      F
+      fragmentShaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      final List<PI> r_inputs = new ArrayList<PI>();
+      for (final TASTDShaderFragmentInput i : this.inputs) {
+        final PI ri = v.fragmentShaderVisitInput(i);
+        r_inputs.add(ri);
+      }
+
+      final List<PO> r_outputs = new ArrayList<PO>();
+      for (final TASTDShaderFragmentOutput o : this.outputs) {
+        final PO ro = v.fragmentShaderVisitOutput(o);
+        r_outputs.add(ro);
+      }
+
+      final List<PP> r_parameters = new ArrayList<PP>();
+      for (final TASTDShaderFragmentParameter p : this.parameters) {
+        final PP rp = v.fragmentShaderVisitParameter(p);
+        r_parameters.add(rp);
+      }
+
+      final TASTFragmentShaderLocalVisitor<L, E> lv =
+        v.fragmentShaderVisitLocalsPre();
+
+      final ArrayList<L> r_locals = new ArrayList<L>();
+      for (final TASTDShaderFragmentLocal l : this.locals) {
+        final L rl = l.fragmentShaderLocalVisitableAccept(lv);
+        r_locals.add(rl);
+      }
+
+      final ArrayList<O> r_assigns = new ArrayList<O>();
+      for (final TASTDShaderFragmentOutputAssignment w : this.writes) {
+        final O rw = v.fragmentShaderVisitOutputAssignment(w);
+        r_assigns.add(rw);
+      }
+
+      return v.fragmentShaderVisit(
+        r_inputs,
+        r_parameters,
+        r_outputs,
+        r_locals,
+        r_assigns,
+        this);
     }
 
     public @Nonnull List<TASTDShaderFragmentInput> getInputs()
@@ -1034,7 +1086,7 @@ public abstract class TASTRDeclaration
   }
 
   public static abstract class TASTDShaderFragmentLocal extends
-    TASTDeclarationShaderLevel
+    TASTDeclarationShaderLevel implements TASTFragmentShaderLocalVisitable
   {
     // Nothing
   }
@@ -1076,6 +1128,17 @@ public abstract class TASTRDeclaration
         return false;
       }
       return true;
+    }
+
+    @Override public
+      <L, E extends Throwable, V extends TASTFragmentShaderLocalVisitor<L, E>>
+      L
+      fragmentShaderLocalVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitLocalDiscard(this);
     }
 
     public @Nonnull TokenDiscard getDiscard()
@@ -1137,6 +1200,17 @@ public abstract class TASTRDeclaration
         return false;
       }
       return true;
+    }
+
+    @Override public
+      <L, E extends Throwable, V extends TASTFragmentShaderLocalVisitor<L, E>>
+      L
+      fragmentShaderLocalVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitLocalValue(this);
     }
 
     public @Nonnull TASTDValueLocal getValue()
@@ -1496,7 +1570,8 @@ public abstract class TASTRDeclaration
     }
   }
 
-  public static final class TASTDShaderVertex extends TASTDShader
+  public static final class TASTDShaderVertex extends TASTDShader implements
+    TASTVertexShaderVisitable
   {
     private final @Nonnull List<TASTDShaderVertexInput>            inputs;
     private final @Nonnull List<TASTDShaderVertexOutput>           outputs;
@@ -1616,6 +1691,56 @@ public abstract class TASTRDeclaration
       builder.append(this.writes);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public
+      <VS, PI, PP, PO, L, O, E extends Throwable, V extends TASTVertexShaderVisitor<VS, PI, PP, PO, L, O, E>>
+      VS
+      vertexShaderVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      final List<PI> r_inputs = new ArrayList<PI>();
+      for (final TASTDShaderVertexInput i : this.inputs) {
+        final PI ri = v.vertexShaderVisitInput(i);
+        r_inputs.add(ri);
+      }
+
+      final List<PO> r_outputs = new ArrayList<PO>();
+      for (final TASTDShaderVertexOutput o : this.outputs) {
+        final PO ro = v.vertexShaderVisitOutput(o);
+        r_outputs.add(ro);
+      }
+
+      final List<PP> r_parameters = new ArrayList<PP>();
+      for (final TASTDShaderVertexParameter p : this.parameters) {
+        final PP rp = v.vertexShaderVisitParameter(p);
+        r_parameters.add(rp);
+      }
+
+      final TASTVertexShaderLocalVisitor<L, E> lv =
+        v.vertexShaderVisitLocalsPre();
+
+      final ArrayList<L> r_locals = new ArrayList<L>();
+      for (final TASTDShaderVertexLocalValue l : this.values) {
+        final L rl = lv.vertexShaderVisitLocalValue(l);
+        r_locals.add(rl);
+      }
+
+      final ArrayList<O> r_assigns = new ArrayList<O>();
+      for (final TASTDShaderVertexOutputAssignment w : this.writes) {
+        final O rw = v.vertexShaderVisitOutputAssignment(w);
+        r_assigns.add(rw);
+      }
+
+      return v.vertexShaderVisit(
+        r_inputs,
+        r_parameters,
+        r_outputs,
+        r_locals,
+        r_assigns,
+        this);
     }
   }
 
@@ -2061,15 +2186,6 @@ public abstract class TASTRDeclaration
       this.type = Constraints.constrainNotNull(type, "Type");
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -2100,6 +2216,15 @@ public abstract class TASTRDeclaration
     public @Nonnull TManifestType getType()
     {
       return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
     }
 
     @Override public String toString()

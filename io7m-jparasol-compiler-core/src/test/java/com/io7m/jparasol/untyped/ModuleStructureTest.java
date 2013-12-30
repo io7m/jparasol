@@ -440,6 +440,18 @@ public final class ModuleStructureTest
       Code.MODULE_STRUCTURE_SHADER_CONFLICT);
   }
 
+  @SuppressWarnings("static-method") @Test public
+    void
+    testModuleShaderFragmentBuiltInInput_0()
+      throws ConstraintError,
+        ModuleStructureError
+  {
+    final UASTCCompilation r =
+      ModuleStructureTest
+        .check(new String[] { "module-shader-f-builtin-input-0.p" });
+
+  }
+
   @SuppressWarnings("static-method") @Test(
     expected = ModuleStructureError.class) public
     void
@@ -687,17 +699,5 @@ public final class ModuleStructureTest
 
     System.err.println("Checked " + checked + ", caught " + caught);
     Assert.assertEquals(caught, checked);
-  }
-
-  @SuppressWarnings("static-method") @Test public
-    void
-    testModuleShaderFragmentBuiltInInput_0()
-      throws ConstraintError,
-        ModuleStructureError
-  {
-    final UASTCCompilation r =
-      ModuleStructureTest
-        .check(new String[] { "module-shader-f-builtin-input-0.p" });
-
   }
 }

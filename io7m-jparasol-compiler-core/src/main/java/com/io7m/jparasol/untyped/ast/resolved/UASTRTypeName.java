@@ -111,7 +111,7 @@ public abstract class UASTRTypeName implements UASTRTypeNameVisitable
     }
   }
 
-  public abstract @Nonnull String show();
-
   public abstract @Nonnull TokenIdentifierLower getName();
+
+  public abstract @Nonnull String show();
 }

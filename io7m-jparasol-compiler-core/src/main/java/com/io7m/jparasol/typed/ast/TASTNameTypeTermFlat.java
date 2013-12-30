@@ -26,13 +26,14 @@ import com.io7m.jparasol.typed.TTypeNameFlat;
  * Either a type name or a term name.
  */
 
-public abstract class TASTEitherTypeTerm
+public abstract class TASTNameTypeTermFlat implements
+  TASTNameTypeTermFlatVisitable
 {
-  public static final class TASTEitherTerm extends TASTEitherTypeTerm
+  public static final class Term extends TASTNameTypeTermFlat
   {
     private final @Nonnull TASTTermNameFlat name;
 
-    public TASTEitherTerm(
+    public Term(
       final @Nonnull TASTTermNameFlat name)
       throws ConstraintError
     {
@@ -51,7 +52,7 @@ public abstract class TASTEitherTypeTerm
       if (this.getClass() != obj.getClass()) {
         return false;
       }
-      final TASTEitherTerm other = (TASTEitherTerm) obj;
+      final Term other = (Term) obj;
       if (!this.name.equals(other.name)) {
         return false;
       }
@@ -63,21 +64,31 @@ public abstract class TASTEitherTypeTerm
       return this.name.hashCode();
     }
 
+    @Override public
+      <A, E extends Throwable, V extends TASTNameTypeTermFlatVisitor<A, E>>
+      A
+      nameTypeTermVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.nameTypeTermVisitTerm(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
-      builder.append("[TASTEitherTerm ");
+      builder.append("[Term ");
       builder.append(this.name);
       builder.append("]");
       return builder.toString();
     }
   }
 
-  public static final class TASTEitherType extends TASTEitherTypeTerm
+  public static final class Type extends TASTNameTypeTermFlat
   {
     private final @Nonnull TTypeNameFlat name;
 
-    public TASTEitherType(
+    public Type(
       final @Nonnull TTypeNameFlat name)
       throws ConstraintError
     {
@@ -96,7 +107,7 @@ public abstract class TASTEitherTypeTerm
       if (this.getClass() != obj.getClass()) {
         return false;
       }
-      final TASTEitherType other = (TASTEitherType) obj;
+      final Type other = (Type) obj;
       if (!this.name.equals(other.name)) {
         return false;
       }
@@ -108,10 +119,20 @@ public abstract class TASTEitherTypeTerm
       return this.name.hashCode();
     }
 
+    @Override public
+      <A, E extends Throwable, V extends TASTNameTypeTermFlatVisitor<A, E>>
+      A
+      nameTypeTermVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.nameTypeTermVisitType(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
-      builder.append("[TASTEitherType ");
+      builder.append("[Type ");
       builder.append(this.name);
       builder.append("]");
       return builder.toString();

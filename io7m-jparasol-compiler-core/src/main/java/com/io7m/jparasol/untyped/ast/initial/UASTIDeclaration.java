@@ -73,6 +73,39 @@ public abstract class UASTIDeclaration
     // Nothing
   }
 
+  public static final class UASTIDExternal
+  {
+    private final boolean                       fragment_shader_allowed;
+    private final @Nonnull TokenIdentifierLower name;
+    private final boolean                       vertex_shader_allowed;
+
+    public UASTIDExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final boolean vertex_shader_allowed,
+      final boolean fragment_shader_allowed)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.vertex_shader_allowed = vertex_shader_allowed;
+      this.fragment_shader_allowed = fragment_shader_allowed;
+    }
+
+    public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public boolean isFragmentShaderAllowed()
+    {
+      return this.fragment_shader_allowed;
+    }
+
+    public boolean isVertexShaderAllowed()
+    {
+      return this.vertex_shader_allowed;
+    }
+  }
+
   /**
    * The type of function declarations.
    */
@@ -179,39 +212,6 @@ public abstract class UASTIDeclaration
           ConstraintError
     {
       return v.moduleVisitFunctionDefined(this);
-    }
-  }
-
-  public static final class UASTIDExternal
-  {
-    private final @Nonnull TokenIdentifierLower name;
-    private final boolean                       vertex_shader_allowed;
-    private final boolean                       fragment_shader_allowed;
-
-    public UASTIDExternal(
-      final @Nonnull TokenIdentifierLower name,
-      final boolean vertex_shader_allowed,
-      final boolean fragment_shader_allowed)
-      throws ConstraintError
-    {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.vertex_shader_allowed = vertex_shader_allowed;
-      this.fragment_shader_allowed = fragment_shader_allowed;
-    }
-
-    public @Nonnull TokenIdentifierLower getName()
-    {
-      return this.name;
-    }
-
-    public boolean isVertexShaderAllowed()
-    {
-      return this.vertex_shader_allowed;
-    }
-
-    public boolean isFragmentShaderAllowed()
-    {
-      return this.fragment_shader_allowed;
     }
   }
 

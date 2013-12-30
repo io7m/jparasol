@@ -171,6 +171,11 @@ public abstract class UASTCExpression implements UASTCExpressionVisitable
       return this.condition;
     }
 
+    public @Nonnull TokenIf getIf()
+    {
+      return this.token;
+    }
+
     public @Nonnull UASTCExpression getLeft()
     {
       return this.left;
@@ -192,11 +197,6 @@ public abstract class UASTCExpression implements UASTCExpressionVisitable
       builder.append(this.right);
       builder.append("]");
       return builder.toString();
-    }
-
-    public @Nonnull TokenIf getIf()
-    {
-      return this.token;
     }
   }
 

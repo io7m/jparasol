@@ -59,17 +59,6 @@ public final class ModulePath
     return true;
   }
 
-  @Override public String toString()
-  {
-    final StringBuilder builder = new StringBuilder();
-    builder.append("[ModulePath ");
-    builder.append(this.package_path);
-    builder.append(" ");
-    builder.append(this.name);
-    builder.append("]");
-    return builder.toString();
-  }
-
   public @Nonnull TokenIdentifierUpper getName()
   {
     return this.name;
@@ -87,6 +76,17 @@ public final class ModulePath
     result = (prime * result) + this.name.hashCode();
     result = (prime * result) + this.package_path.hashCode();
     return result;
+  }
+
+  @Override public String toString()
+  {
+    final StringBuilder builder = new StringBuilder();
+    builder.append("[ModulePath ");
+    builder.append(this.package_path);
+    builder.append(" ");
+    builder.append(this.name);
+    builder.append("]");
+    return builder.toString();
   }
 
 }

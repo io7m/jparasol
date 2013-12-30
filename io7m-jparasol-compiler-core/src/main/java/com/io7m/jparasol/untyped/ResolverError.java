@@ -39,14 +39,14 @@ public final class ResolverError extends CompilerError
     RESOLVER_IMPORT_UNKNOWN,
     RESOLVER_MODULE_REFERENCE_UNKNOWN,
     RESOLVER_SHADER_NONEXISTENT,
+    RESOLVER_SHADER_RECURSIVE_LOCAL,
+    RESOLVER_SHADER_RECURSIVE_MUTUAL,
     RESOLVER_TERM_NONEXISTENT,
     RESOLVER_TERM_RECURSIVE_LOCAL,
     RESOLVER_TERM_RECURSIVE_MUTUAL,
     RESOLVER_TYPE_NONEXISTENT,
     RESOLVER_TYPE_RECURSIVE_LOCAL,
     RESOLVER_TYPE_RECURSIVE_MUTUAL,
-    RESOLVER_SHADER_RECURSIVE_LOCAL,
-    RESOLVER_SHADER_RECURSIVE_MUTUAL,
   }
 
   private static final long serialVersionUID = 2073538624493476012L;
@@ -134,6 +134,62 @@ public final class ResolverError extends CompilerError
 
     return new ResolverError(
       Code.RESOLVER_SHADER_NONEXISTENT,
+      name.getFile(),
+      name.getPosition(),
+      m.toString());
+  }
+
+  public static @Nonnull ResolverError shaderRecursiveLocal(
+    final @Nonnull TokenIdentifierLower source_name,
+    final @Nonnull TokenIdentifierLower target_name)
+    throws ConstraintError
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("Referring to the shader ");
+    m.append(target_name.getActual());
+    m.append(" defined at ");
+    m.append(target_name.getFile());
+    m.append(":");
+    m.append(target_name.getPosition());
+    m.append(" would result in a recursive shader");
+    return new ResolverError(
+      Code.RESOLVER_SHADER_RECURSIVE_LOCAL,
+      source_name.getFile(),
+      source_name.getPosition(),
+      m.toString());
+  }
+
+  public static @Nonnull ResolverError shaderRecursiveMutual(
+    final @Nonnull TokenIdentifierLower name,
+    final @Nonnull List<TokenIdentifierLower> tokens)
+    throws ConstraintError
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("The reference to ");
+    m.append(name.getActual());
+    m.append(" results in a mutually recursive shader\n");
+    m.append("The sequence of shaders that led to a cycle is:\n");
+
+    m.append("  Shader ");
+    m.append(name.getActual());
+    m.append(" at ");
+    m.append(name.getFile());
+    m.append(":");
+    m.append(name.getPosition());
+    m.append("\n");
+
+    for (final TokenIdentifierLower t : tokens) {
+      m.append("  -> Shader ");
+      m.append(t.getActual());
+      m.append(" at ");
+      m.append(t.getFile());
+      m.append(":");
+      m.append(t.getPosition());
+      m.append("\n");
+    }
+
+    return new ResolverError(
+      Code.RESOLVER_SHADER_RECURSIVE_MUTUAL,
       name.getFile(),
       name.getPosition(),
       m.toString());
@@ -303,61 +359,5 @@ public final class ResolverError extends CompilerError
   public @Nonnull Code getCode()
   {
     return this.code;
-  }
-
-  public static @Nonnull ResolverError shaderRecursiveLocal(
-    final @Nonnull TokenIdentifierLower source_name,
-    final @Nonnull TokenIdentifierLower target_name)
-    throws ConstraintError
-  {
-    final StringBuilder m = new StringBuilder();
-    m.append("Referring to the shader ");
-    m.append(target_name.getActual());
-    m.append(" defined at ");
-    m.append(target_name.getFile());
-    m.append(":");
-    m.append(target_name.getPosition());
-    m.append(" would result in a recursive shader");
-    return new ResolverError(
-      Code.RESOLVER_SHADER_RECURSIVE_LOCAL,
-      source_name.getFile(),
-      source_name.getPosition(),
-      m.toString());
-  }
-
-  public static @Nonnull ResolverError shaderRecursiveMutual(
-    final @Nonnull TokenIdentifierLower name,
-    final @Nonnull List<TokenIdentifierLower> tokens)
-    throws ConstraintError
-  {
-    final StringBuilder m = new StringBuilder();
-    m.append("The reference to ");
-    m.append(name.getActual());
-    m.append(" results in a mutually recursive shader\n");
-    m.append("The sequence of shaders that led to a cycle is:\n");
-
-    m.append("  Shader ");
-    m.append(name.getActual());
-    m.append(" at ");
-    m.append(name.getFile());
-    m.append(":");
-    m.append(name.getPosition());
-    m.append("\n");
-
-    for (final TokenIdentifierLower t : tokens) {
-      m.append("  -> Shader ");
-      m.append(t.getActual());
-      m.append(" at ");
-      m.append(t.getFile());
-      m.append(":");
-      m.append(t.getPosition());
-      m.append("\n");
-    }
-
-    return new ResolverError(
-      Code.RESOLVER_SHADER_RECURSIVE_MUTUAL,
-      name.getFile(),
-      name.getPosition(),
-      m.toString());
   }
 }

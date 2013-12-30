@@ -18,16 +18,13 @@ package com.io7m.jparasol.typed.ast;
 
 import javax.annotation.Nonnull;
 
-import com.io7m.jparasol.typed.ast.TASTEitherTypeTerm.TASTEitherTerm;
-import com.io7m.jparasol.typed.ast.TASTEitherTypeTerm.TASTEitherType;
-
-public interface TASTEitherTypeTermVisitor<A, E extends Throwable>
+public interface TASTNameTermShaderFlatVisitor<A, E extends Throwable>
 {
-  public A eitherVisitTerm(
-    final @Nonnull TASTEitherTerm t)
+  public A nameTypeShaderVisitShader(
+    final @Nonnull TASTNameTermShaderFlat.Shader t)
     throws E;
 
-  public A eitherVisitType(
-    final @Nonnull TASTEitherType t)
+  public A nameTypeShaderVisitTerm(
+    final @Nonnull TASTNameTermShaderFlat.Term t)
     throws E;
 }

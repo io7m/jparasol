@@ -18,11 +18,11 @@ package com.io7m.jparasol.typed.ast;
 
 import javax.annotation.Nonnull;
 
-public interface TASTEitherTypeTermVisitable
+public interface TASTNameTermShaderFlatVisitable
 {
-    <A, E extends Throwable, V extends TASTEitherTypeTermVisitor<A, E>>
+    <A, E extends Throwable, V extends TASTNameTermShaderFlatVisitor<A, E>>
     A
-    eitherTypeTermVisitableAccept(
+    nameTermShaderVisitableAccept(
       final @Nonnull V v)
       throws E;
 }

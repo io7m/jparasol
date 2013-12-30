@@ -179,6 +179,11 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
       return this.condition;
     }
 
+    public @Nonnull TokenIf getIf()
+    {
+      return this.token;
+    }
+
     public @Nonnull UASTRExpression getLeft()
     {
       return this.left;
@@ -200,11 +205,6 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
       builder.append(this.right);
       builder.append("]");
       return builder.toString();
-    }
-
-    public @Nonnull TokenIf getIf()
-    {
-      return this.token;
     }
   }
 

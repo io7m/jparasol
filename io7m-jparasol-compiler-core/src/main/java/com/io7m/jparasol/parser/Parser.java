@@ -130,6 +130,34 @@ public final class Parser
     this.token = lexer.token();
   }
 
+  public @Nonnull UASTIDExternal declarationExternal()
+    throws ParserError,
+      LexerError,
+      IOException,
+      ConstraintError
+  {
+    this.parserConsumeExact(Type.TOKEN_EXTERNAL);
+    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(Type.TOKEN_IS);
+
+    this.parserConsumeExact(Type.TOKEN_VERTEX);
+    this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
+    final TokenLiteralBoolean vallow = (TokenLiteralBoolean) this.token;
+    this.parserConsumeExact(Type.TOKEN_LITERAL_BOOLEAN);
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
+    this.parserConsumeExact(Type.TOKEN_FRAGMENT);
+    this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
+    final TokenLiteralBoolean fallow = (TokenLiteralBoolean) this.token;
+    this.parserConsumeExact(Type.TOKEN_LITERAL_BOOLEAN);
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
+    this.parserConsumeExact(Type.TOKEN_END);
+    return new UASTIDExternal(name, vallow.getValue(), fallow.getValue());
+  }
+
   public @Nonnull UASTIDShaderFragment declarationFragmentShader()
     throws ParserError,
       IOException,
@@ -393,34 +421,6 @@ public final class Parser
           return declarations;
       }
     }
-  }
-
-  public @Nonnull UASTIDExternal declarationExternal()
-    throws ParserError,
-      LexerError,
-      IOException,
-      ConstraintError
-  {
-    this.parserConsumeExact(Type.TOKEN_EXTERNAL);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
-    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_IS);
-
-    this.parserConsumeExact(Type.TOKEN_VERTEX);
-    this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
-    final TokenLiteralBoolean vallow = (TokenLiteralBoolean) this.token;
-    this.parserConsumeExact(Type.TOKEN_LITERAL_BOOLEAN);
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
-
-    this.parserConsumeExact(Type.TOKEN_FRAGMENT);
-    this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
-    final TokenLiteralBoolean fallow = (TokenLiteralBoolean) this.token;
-    this.parserConsumeExact(Type.TOKEN_LITERAL_BOOLEAN);
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
-
-    this.parserConsumeExact(Type.TOKEN_END);
-    return new UASTIDExternal(name, vallow.getValue(), fallow.getValue());
   }
 
   public @Nonnull UASTIDFunction declarationFunction()

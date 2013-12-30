@@ -58,6 +58,9 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTENew;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTESwizzle;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
+import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlat;
+import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlat;
+import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlat;
 import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDFunctionDefined;
 import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDFunctionExternal;
 import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDModule;
@@ -228,8 +231,8 @@ public final class TypeCheckerTest
 
     final File file = new File("<stdin>");
     final Position pos = new Position(0, 0);
-    for (int index = 0; index < segments.length; ++index) {
-      tokens.add(new TokenIdentifierLower(file, pos, segments[index]));
+    for (final String segment : segments) {
+      tokens.add(new TokenIdentifierLower(file, pos, segment));
     }
 
     final TokenIdentifierUpper tname =
@@ -423,19 +426,57 @@ public final class TypeCheckerTest
     final TASTCompilation r =
       TypeCheckerTest.checked(new String[] { "graph-term-term-0.p" });
 
-    final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> ttg =
-      r.getTermGraph();
+    {
+      final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> g =
+        r.getTermGraph();
 
-    for (final ModulePathFlat k : r.getModules().keySet()) {
-      final TASTDModule m = r.getModules().get(k);
-      for (final String tn : m.getTerms().keySet()) {
-        final TASTTermNameFlat p = new TASTTermNameFlat(k, tn);
-        System.out.println("Check " + p);
-        Assert.assertTrue(ttg.containsVertex(p));
+      for (final ModulePathFlat k : r.getModules().keySet()) {
+        final TASTDModule m = r.getModules().get(k);
+        for (final String tn : m.getTerms().keySet()) {
+          final TASTTermNameFlat p = new TASTTermNameFlat(k, tn);
+          System.out.println("Check " + p);
+          Assert.assertTrue(g.containsVertex(p));
+        }
       }
+
+      Assert.assertEquals(9, g.vertexSet().size());
     }
 
-    Assert.assertEquals(9, ttg.vertexSet().size());
+    {
+      final DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference> g =
+        r.getTermTypeGraph();
+
+      for (final ModulePathFlat k : r.getModules().keySet()) {
+        final TASTDModule m = r.getModules().get(k);
+        for (final String tn : m.getTerms().keySet()) {
+          final TASTTermNameFlat p = new TASTTermNameFlat(k, tn);
+          final TASTNameTypeTermFlat.Term q =
+            new TASTNameTypeTermFlat.Term(p);
+          System.out.println("Check " + q);
+          Assert.assertTrue(g.containsVertex(q));
+        }
+      }
+
+      Assert.assertEquals(9, g.vertexSet().size());
+    }
+
+    {
+      final DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> g =
+        r.getShaderTermGraph();
+
+      for (final ModulePathFlat k : r.getModules().keySet()) {
+        final TASTDModule m = r.getModules().get(k);
+        for (final String tn : m.getTerms().keySet()) {
+          final TASTTermNameFlat p = new TASTTermNameFlat(k, tn);
+          final TASTNameTermShaderFlat.Term q =
+            new TASTNameTermShaderFlat.Term(p);
+          System.out.println("Check " + q);
+          Assert.assertTrue(g.containsVertex(q));
+        }
+      }
+
+      Assert.assertEquals(9, g.vertexSet().size());
+    }
   }
 
   @SuppressWarnings("static-method") @Test public void testGraphTypeType_0()
@@ -445,19 +486,57 @@ public final class TypeCheckerTest
     final TASTCompilation r =
       TypeCheckerTest.checked(new String[] { "graph-type-type-0.p" });
 
-    final DirectedAcyclicGraph<TTypeNameFlat, TASTReference> ttg =
-      r.getTypeGraph();
+    {
+      final DirectedAcyclicGraph<TTypeNameFlat, TASTReference> g =
+        r.getTypeGraph();
 
-    for (final ModulePathFlat k : r.getModules().keySet()) {
-      final TASTDModule m = r.getModules().get(k);
-      for (final String tn : m.getTypes().keySet()) {
-        final TTypeNameFlat p = new TTypeNameFlat(k, tn);
-        System.out.println("Check " + p);
-        Assert.assertTrue(ttg.containsVertex(p));
+      for (final ModulePathFlat k : r.getModules().keySet()) {
+        final TASTDModule m = r.getModules().get(k);
+        for (final String tn : m.getTypes().keySet()) {
+          final TTypeNameFlat p = new TTypeNameFlat(k, tn);
+          System.out.println("Check " + p);
+          Assert.assertTrue(g.containsVertex(p));
+        }
       }
+
+      Assert.assertEquals(9, g.vertexSet().size());
     }
 
-    Assert.assertEquals(9, ttg.vertexSet().size());
+    {
+      final DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference> g =
+        r.getTermTypeGraph();
+
+      for (final ModulePathFlat k : r.getModules().keySet()) {
+        final TASTDModule m = r.getModules().get(k);
+        for (final String tn : m.getTypes().keySet()) {
+          final TTypeNameFlat p = new TTypeNameFlat(k, tn);
+          final TASTNameTypeTermFlat.Type q =
+            new TASTNameTypeTermFlat.Type(p);
+          System.out.println("Check " + q);
+          Assert.assertTrue(g.containsVertex(q));
+        }
+      }
+
+      Assert.assertEquals(9, g.vertexSet().size());
+    }
+
+    {
+      final DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference> g =
+        r.getShaderTypeGraph();
+
+      for (final ModulePathFlat k : r.getModules().keySet()) {
+        final TASTDModule m = r.getModules().get(k);
+        for (final String tn : m.getTypes().keySet()) {
+          final TTypeNameFlat p = new TTypeNameFlat(k, tn);
+          final TASTNameTypeShaderFlat.Type q =
+            new TASTNameTypeShaderFlat.Type(p);
+          System.out.println("Check " + q);
+          Assert.assertTrue(g.containsVertex(q));
+        }
+      }
+
+      Assert.assertEquals(9, g.vertexSet().size());
+    }
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public

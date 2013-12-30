@@ -151,6 +151,11 @@ public abstract class UASTIExpression implements UASTIExpressionVisitable
       return this.condition;
     }
 
+    public @Nonnull TokenIf getIf()
+    {
+      return this.token;
+    }
+
     public @Nonnull UASTIExpression getLeft()
     {
       return this.left;
@@ -159,11 +164,6 @@ public abstract class UASTIExpression implements UASTIExpressionVisitable
     public @Nonnull UASTIExpression getRight()
     {
       return this.right;
-    }
-
-    public @Nonnull TokenIf getIf()
-    {
-      return this.token;
     }
   }
 

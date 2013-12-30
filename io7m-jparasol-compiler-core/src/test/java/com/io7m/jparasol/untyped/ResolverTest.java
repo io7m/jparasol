@@ -159,8 +159,8 @@ public final class ResolverTest
 
     final File file = new File("<stdin>");
     final Position pos = new Position(0, 0);
-    for (int index = 0; index < segments.length; ++index) {
-      tokens.add(new TokenIdentifierLower(file, pos, segments[index]));
+    for (final String segment : segments) {
+      tokens.add(new TokenIdentifierLower(file, pos, segment));
     }
 
     final TokenIdentifierUpper tname =
@@ -642,28 +642,6 @@ public final class ResolverTest
 
   @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
     void
-    testProgramShaderRecursive0()
-      throws ResolverError,
-        ConstraintError
-  {
-    ResolverTest.checkMustFailWithCode(
-      new String[] { "resolver/program-shader-recursive-0.p" },
-      ResolverError.Code.RESOLVER_SHADER_RECURSIVE_LOCAL);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
-    void
-    testProgramShaderRecursive1()
-      throws ResolverError,
-        ConstraintError
-  {
-    ResolverTest.checkMustFailWithCode(
-      new String[] { "resolver/program-shader-recursive-1.p" },
-      ResolverError.Code.RESOLVER_SHADER_RECURSIVE_MUTUAL);
-  }
-
-  @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
-    void
     testProgramShaderNonexistent0()
       throws ResolverError,
         ConstraintError
@@ -727,6 +705,28 @@ public final class ResolverTest
     Assert.assertEquals("v", p.getVertexShader().getName().getActual());
     Assert.assertEquals("x.y.N", p.getFragmentShader().getFlat().getActual());
     Assert.assertEquals("f", p.getFragmentShader().getName().getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
+    void
+    testProgramShaderRecursive0()
+      throws ResolverError,
+        ConstraintError
+  {
+    ResolverTest.checkMustFailWithCode(
+      new String[] { "resolver/program-shader-recursive-0.p" },
+      ResolverError.Code.RESOLVER_SHADER_RECURSIVE_LOCAL);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
+    void
+    testProgramShaderRecursive1()
+      throws ResolverError,
+        ConstraintError
+  {
+    ResolverTest.checkMustFailWithCode(
+      new String[] { "resolver/program-shader-recursive-1.p" },
+      ResolverError.Code.RESOLVER_SHADER_RECURSIVE_MUTUAL);
   }
 
   @SuppressWarnings("static-method") @Test public

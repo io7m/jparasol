@@ -33,20 +33,24 @@ import com.io7m.jparasol.typed.ast.TASTRDeclaration.TASTDModule;
 
 public final class TASTCompilation
 {
-  private final @Nonnull List<ModulePathFlat>                                    module_topology;
-  private final @Nonnull Map<ModulePathFlat, TASTDModule>                        modules;
-  private final @Nonnull Map<ModulePathFlat, ModulePath>                         paths;
-  private final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>   term_graph;
-  private final @Nonnull DirectedAcyclicGraph<TASTEitherTypeTerm, TASTReference> term_type_graph;
-  private final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference>      type_graph;
+  private final @Nonnull List<ModulePathFlat>                                        module_topology;
+  private final @Nonnull Map<ModulePathFlat, TASTDModule>                            modules;
+  private final @Nonnull Map<ModulePathFlat, ModulePath>                             paths;
+  private final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> shader_term_graph;
+  private final @Nonnull DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference> shader_type_graph;
+  private final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>       term_graph;
+  private final @Nonnull DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference>   term_type_graph;
+  private final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference>          type_graph;
 
   public TASTCompilation(
     final @Nonnull List<ModulePathFlat> module_topology,
     final @Nonnull Map<ModulePathFlat, TASTDModule> modules,
     final @Nonnull Map<ModulePathFlat, ModulePath> paths,
     final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> term_graph,
-    final @Nonnull DirectedAcyclicGraph<TASTEitherTypeTerm, TASTReference> term_type_graph,
-    final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference> type_graph)
+    final @Nonnull DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference> term_type_graph,
+    final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference> type_graph,
+    final @Nonnull DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference> shader_type_graph,
+    final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> shader_term_graph)
     throws ConstraintError
   {
     this.module_topology =
@@ -58,6 +62,10 @@ public final class TASTCompilation
     this.type_graph = Constraints.constrainNotNull(type_graph, "Type graph");
     this.term_type_graph =
       Constraints.constrainNotNull(term_type_graph, "Term/type graph");
+    this.shader_term_graph =
+      Constraints.constrainNotNull(shader_term_graph, "Shader/Term graph");
+    this.shader_type_graph =
+      Constraints.constrainNotNull(shader_type_graph, "Shader/Type graph");
   }
 
   public @Nonnull Map<ModulePathFlat, TASTDModule> getModules()
@@ -76,6 +84,20 @@ public final class TASTCompilation
   }
 
   public @Nonnull
+    DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference>
+    getShaderTermGraph()
+  {
+    return this.shader_term_graph;
+  }
+
+  public @Nonnull
+    DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference>
+    getShaderTypeGraph()
+  {
+    return this.shader_type_graph;
+  }
+
+  public @Nonnull
     DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>
     getTermGraph()
   {
@@ -83,7 +105,7 @@ public final class TASTCompilation
   }
 
   public @Nonnull
-    DirectedAcyclicGraph<TASTEitherTypeTerm, TASTReference>
+    DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference>
     getTermTypeGraph()
   {
     return this.term_type_graph;

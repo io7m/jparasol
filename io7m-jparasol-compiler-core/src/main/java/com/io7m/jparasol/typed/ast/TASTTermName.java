@@ -48,14 +48,6 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       this.actual = actual;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.actual.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -78,6 +70,14 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     public @Nonnull TokenIdentifierLower getActual()
     {
       return this.actual;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.actual.hashCode();
+      return result;
     }
 
     @Override public String show()
@@ -132,16 +132,6 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       this.name = actual;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.flat.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.path.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -180,6 +170,16 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     public @Nonnull ModulePath getPath()
     {
       return this.path;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.flat.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.path.hashCode();
+      return result;
     }
 
     @Override public String show()
@@ -236,15 +236,6 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       this.current = Constraints.constrainNotNull(current, "Current");
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.current.hashCode();
-      result = (prime * result) + this.original.hashCode();
-      return result;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -275,6 +266,15 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     public @Nonnull TokenIdentifierLower getOriginal()
     {
       return this.original;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.current.hashCode();
+      result = (prime * result) + this.original.hashCode();
+      return result;
     }
 
     @Override public String show()
@@ -320,15 +320,6 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     this.position = Constraints.constrainNotNull(position, "Position");
   }
 
-  @Override public int hashCode()
-  {
-    final int prime = 31;
-    int result = 1;
-    result = (prime * result) + this.file.hashCode();
-    result = (prime * result) + this.position.hashCode();
-    return result;
-  }
-
   @Override public boolean equals(
     final Object obj)
   {
@@ -359,6 +350,15 @@ public abstract class TASTTermName implements TASTTermNameVisitable
   public final @Nonnull Position getPosition()
   {
     return this.position;
+  }
+
+  @Override public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = (prime * result) + this.file.hashCode();
+    result = (prime * result) + this.position.hashCode();
+    return result;
   }
 
   public abstract @Nonnull String show();

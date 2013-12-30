@@ -25,7 +25,15 @@ import com.io7m.jparasol.typed.TTypeName.TTypeNameGlobal;
 
 public final class TTypeNameFlat
 {
+  public static @Nonnull TTypeNameFlat fromTypeNameGlobal(
+    final @Nonnull TTypeNameGlobal target)
+    throws ConstraintError
+  {
+    return new TTypeNameFlat(target.getFlat(), target.getName().getActual());
+  }
+
   private final @Nonnull String         name;
+
   private final @Nonnull ModulePathFlat path;
 
   public TTypeNameFlat(
@@ -87,12 +95,5 @@ public final class TTypeNameFlat
     builder.append(this.name);
     builder.append("]");
     return builder.toString();
-  }
-
-  public static @Nonnull TTypeNameFlat fromTypeNameGlobal(
-    final @Nonnull TTypeNameGlobal target)
-    throws ConstraintError
-  {
-    return new TTypeNameFlat(target.getFlat(), target.getName().getActual());
   }
 }

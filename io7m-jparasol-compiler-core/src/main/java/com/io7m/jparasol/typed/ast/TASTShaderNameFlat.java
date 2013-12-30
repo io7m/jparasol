@@ -21,22 +21,21 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.ModulePathFlat;
-import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 
-public final class TASTTermNameFlat
+public final class TASTShaderNameFlat
 {
-  public static @Nonnull TASTTermNameFlat fromTermNameGlobal(
-    final @Nonnull TASTTermNameGlobal name)
+  public static @Nonnull TASTShaderNameFlat fromShaderName(
+    final @Nonnull TASTShaderName name)
     throws ConstraintError
   {
-    return new TASTTermNameFlat(name.getFlat(), name.getName().getActual());
+    return new TASTShaderNameFlat(name.getFlat(), name.getName().getActual());
   }
 
   private final @Nonnull String         name;
 
   private final @Nonnull ModulePathFlat path;
 
-  public TASTTermNameFlat(
+  public TASTShaderNameFlat(
     final @Nonnull ModulePathFlat path,
     final @Nonnull String name)
     throws ConstraintError
@@ -57,7 +56,7 @@ public final class TASTTermNameFlat
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    final TASTTermNameFlat other = (TASTTermNameFlat) obj;
+    final TASTShaderNameFlat other = (TASTShaderNameFlat) obj;
     if (!this.name.equals(other.name)) {
       return false;
     }
@@ -89,7 +88,7 @@ public final class TASTTermNameFlat
   @Override public String toString()
   {
     final StringBuilder builder = new StringBuilder();
-    builder.append("[TASTTermNameFlat ");
+    builder.append("[TASTShaderNameFlat ");
     builder.append(this.path);
     builder.append(" ");
     builder.append(this.name);

@@ -229,12 +229,6 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderVisitor;
 
 public final class ModuleStructure
 {
-  static final @Nonnull Set<String> NO_OVERRIDES;
-
-  static {
-    NO_OVERRIDES = Collections.unmodifiableSet(new HashSet<String>());
-  }
-
   private static class ExpressionChecker implements
     UASTIExpressionVisitor<UASTCExpression, UASTCDValueLocal, ModuleStructureError>
   {
@@ -641,8 +635,8 @@ public final class ModuleStructure
   private static class FragmentShaderLocalChecker implements
     UASTIFragmentShaderLocalVisitor<UASTCDShaderFragmentLocal, ModuleStructureError>
   {
-    private final @Nonnull HashMap<String, UASTIDShaderFragmentLocalValue> locals;
     private final @Nonnull Set<String>                                     builtins;
+    private final @Nonnull HashMap<String, UASTIDShaderFragmentLocalValue> locals;
 
     public FragmentShaderLocalChecker()
     {
@@ -790,8 +784,8 @@ public final class ModuleStructure
   private static class LocalChecker implements
     UASTILocalLevelVisitor<UASTCDValueLocal, ModuleStructureError>
   {
-    private final @Nonnull HashMap<String, UASTIDValueLocal> values;
     private final @Nonnull Set<String>                       builtins;
+    private final @Nonnull HashMap<String, UASTIDValueLocal> values;
 
     public LocalChecker(
       final @Nonnull Set<String> builtins)
@@ -1439,6 +1433,12 @@ public final class ModuleStructure
         throw new ModuleStructureError(x);
       }
     }
+  }
+
+  static final @Nonnull Set<String> NO_OVERRIDES;
+
+  static {
+    NO_OVERRIDES = Collections.unmodifiableSet(new HashSet<String>());
   }
 
   static @Nonnull Option<UASTCTypePath> mapTypePath(

@@ -1957,6 +1957,8 @@ public final class TypeChecker
       this.compilation.getPaths(),
       gg.getTermTermGraph().getGraph(),
       gg.getTermTypeGraph().getGraph(),
-      gg.getTypeTypeGraph().getGraph());
+      gg.getTypeTypeGraph().getGraph(),
+      gg.getTypeShader().getGraph(),
+      gg.getTermShader().getGraph());
   }
 }

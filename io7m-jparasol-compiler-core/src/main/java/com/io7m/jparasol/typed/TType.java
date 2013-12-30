@@ -271,8 +271,8 @@ public abstract class TType
   public static final class TFunction extends TType
   {
     private final @Nonnull List<TFunctionArgument> arguments;
-    private final @Nonnull TValueType              return_type;
     private final @Nonnull TTypeNameBuiltIn        name;
+    private final @Nonnull TValueType              return_type;
 
     public TFunction(
       final @Nonnull List<TFunctionArgument> arguments,
@@ -900,56 +900,6 @@ public abstract class TType
     // Nothing
   }
 
-  public static abstract class TVectorFType extends TVectorType
-  {
-    @Override public final TValueType getComponentType()
-    {
-      return TFloat.get();
-    }
-
-    @Override public TManifestType getSwizzleType(
-      final int size)
-    {
-      switch (size) {
-        case 1:
-          return TFloat.get();
-        case 2:
-          return TVector2F.get();
-        case 3:
-          return TVector3F.get();
-        case 4:
-          return TVector4F.get();
-        default:
-          throw new UnreachableCodeException();
-      }
-    }
-  }
-
-  public static abstract class TVectorIType extends TVectorType
-  {
-    @Override public final TValueType getComponentType()
-    {
-      return TInteger.get();
-    }
-
-    @Override public TManifestType getSwizzleType(
-      final int size)
-    {
-      switch (size) {
-        case 1:
-          return TInteger.get();
-        case 2:
-          return TVector2I.get();
-        case 3:
-          return TVector3I.get();
-        case 4:
-          return TVector4I.get();
-        default:
-          throw new UnreachableCodeException();
-      }
-    }
-  }
-
   /**
    * 2D floating point vector type.
    */
@@ -1503,6 +1453,56 @@ public abstract class TType
     @Override public String toString()
     {
       return "[TVector4I]";
+    }
+  }
+
+  public static abstract class TVectorFType extends TVectorType
+  {
+    @Override public final TValueType getComponentType()
+    {
+      return TFloat.get();
+    }
+
+    @Override public TManifestType getSwizzleType(
+      final int size)
+    {
+      switch (size) {
+        case 1:
+          return TFloat.get();
+        case 2:
+          return TVector2F.get();
+        case 3:
+          return TVector3F.get();
+        case 4:
+          return TVector4F.get();
+        default:
+          throw new UnreachableCodeException();
+      }
+    }
+  }
+
+  public static abstract class TVectorIType extends TVectorType
+  {
+    @Override public final TValueType getComponentType()
+    {
+      return TInteger.get();
+    }
+
+    @Override public TManifestType getSwizzleType(
+      final int size)
+    {
+      switch (size) {
+        case 1:
+          return TInteger.get();
+        case 2:
+          return TVector2I.get();
+        case 3:
+          return TVector3I.get();
+        case 4:
+          return TVector4I.get();
+        default:
+          throw new UnreachableCodeException();
+      }
     }
   }
 
