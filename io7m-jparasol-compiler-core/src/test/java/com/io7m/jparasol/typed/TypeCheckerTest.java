@@ -29,11 +29,10 @@ import org.junit.Test;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jlog.Log;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
-import com.io7m.jparasol.TestUtilities;
+import com.io7m.jparasol.TestPipeline;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
@@ -58,7 +57,6 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentInput;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderProgram;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexOutput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecord;
@@ -73,111 +71,23 @@ import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlat;
 import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlat;
 import com.io7m.jparasol.typed.ast.TASTReference;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
-import com.io7m.jparasol.untyped.ModuleStructure;
-import com.io7m.jparasol.untyped.ModuleStructureError;
-import com.io7m.jparasol.untyped.Resolver;
-import com.io7m.jparasol.untyped.ResolverError;
-import com.io7m.jparasol.untyped.UniqueBinders;
-import com.io7m.jparasol.untyped.UniqueBindersError;
-import com.io7m.jparasol.untyped.UnitCombinerError;
-import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
-import com.io7m.jparasol.untyped.ast.initial.UASTICompilation;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRCompilation;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 
 public final class TypeCheckerTest
 {
-  static TASTCompilation checked(
-    final String[] names)
-    throws ConstraintError,
-      TypeCheckerError
-  {
-    TypeChecker tc;
-
-    try {
-      final Log log = TestUtilities.getLog();
-      final List<UASTIUnit> units = TypeCheckerTest.parseUnits(names);
-      final UASTICompilation initial = UASTICompilation.fromUnits(units);
-      final ModuleStructure mc =
-        ModuleStructure.newModuleStructureChecker(initial, log);
-      final UASTCCompilation checked = mc.check();
-      final UniqueBinders ub = UniqueBinders.newUniqueBinders(checked, log);
-      final UASTUCompilation unique = ub.run();
-      final Resolver nr = Resolver.newResolver(unique, log);
-      final UASTRCompilation resolved = nr.run();
-      tc = TypeChecker.newTypeChecker(resolved, log);
-    } catch (final ConstraintError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final UniqueBindersError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final UnitCombinerError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final ModuleStructureError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final ResolverError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    }
-
-    return tc.check();
-  }
-
-  static TASTCompilation checkedInternal(
-    final String[] names)
-    throws ConstraintError,
-      TypeCheckerError
-  {
-    TypeChecker tc;
-
-    try {
-      final Log log = TestUtilities.getLog();
-      final List<UASTIUnit> units = TypeCheckerTest.parseUnitsInternal(names);
-      final UASTICompilation initial = UASTICompilation.fromUnits(units);
-      final ModuleStructure mc =
-        ModuleStructure.newModuleStructureChecker(initial, log);
-      final UASTCCompilation checked = mc.check();
-      final UniqueBinders ub = UniqueBinders.newUniqueBinders(checked, log);
-      final UASTUCompilation unique = ub.run();
-      final Resolver nr = Resolver.newResolver(unique, log);
-      final UASTRCompilation resolved = nr.run();
-      tc = TypeChecker.newTypeChecker(resolved, log);
-    } catch (final ConstraintError e) {
-      throw new UnreachableCodeException(e);
-    } catch (final UniqueBindersError e) {
-      throw new UnreachableCodeException(e);
-    } catch (final UnitCombinerError e) {
-      throw new UnreachableCodeException(e);
-    } catch (final ModuleStructureError e) {
-      throw new UnreachableCodeException(e);
-    } catch (final ResolverError e) {
-      throw new UnreachableCodeException(e);
-    }
-
-    return tc.check();
-  }
-
   static void checkMustFailWithCode(
     final @Nonnull String[] names,
     final @Nonnull TypeCheckerError.Code code)
-    throws ConstraintError,
-      TypeCheckerError
+    throws TypeCheckerError
   {
     boolean caught = false;
 
     try {
-      TypeCheckerTest.checked(names);
+      TestPipeline.typed(names);
     } catch (final TypeCheckerError e) {
       caught = true;
       Assert.assertEquals(code, e.getCode());
       System.err.println(e);
-      throw e;
-    } catch (final ConstraintError e) {
-      e.printStackTrace();
       throw e;
     }
 
@@ -187,19 +97,15 @@ public final class TypeCheckerTest
   static void checkMustFailWithCodeInternal(
     final @Nonnull String[] names,
     final @Nonnull TypeCheckerError.Code code)
-    throws ConstraintError,
-      TypeCheckerError
+    throws TypeCheckerError
   {
     boolean caught = false;
 
     try {
-      TypeCheckerTest.checkedInternal(names);
+      TestPipeline.typedInternal(names);
     } catch (final TypeCheckerError e) {
       caught = true;
       Assert.assertEquals(code, e.getCode());
-      throw e;
-    } catch (final ConstraintError e) {
-      e.printStackTrace();
       throw e;
     }
 
@@ -290,93 +196,84 @@ public final class TypeCheckerTest
   }
 
   @SuppressWarnings("static-method") @Test public void testAllOK_0()
-    throws TypeCheckerError,
-      ConstraintError
+    throws TypeCheckerError
   {
-    TypeCheckerTest.checkedInternal(new String[] { "all.p" });
+    TestPipeline.typedInternal(new String[] { "typed/all.p" });
   }
 
   @SuppressWarnings("static-method") @Test public void testBugOld_b77370072()
-    throws TypeCheckerError,
-      ConstraintError
+    throws TypeCheckerError
   {
-    TypeCheckerTest.checked(new String[] { "bug-old-b77370072.p" });
+    TestPipeline.typed(new String[] { "typed/bug-old-b77370072.p" });
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testFragmentShaderAssignmentBadType_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-0.p" },
+      new String[] { "typed/fragment-shader-assignment-bad-type-0.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testFragmentShaderAssignmentBadType_1()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-1.p" },
+      new String[] { "typed/fragment-shader-assignment-bad-type-1.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testFragmentShaderAssignmentBadType_2()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-2.p" },
+      new String[] { "typed/fragment-shader-assignment-bad-type-2.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testFragmentShaderAssignmentBadType_3()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-3.p" },
+      new String[] { "typed/fragment-shader-assignment-bad-type-3.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testFragmentShaderAssignmentBadType_4()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-4.p" },
+      new String[] { "typed/fragment-shader-assignment-bad-type-4.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testFragmentShaderAssignmentBadType_5()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-5.p" },
+      new String[] { "typed/fragment-shader-assignment-bad-type-5.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testFragmentShaderAssignmentBadType_6()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-assignment-bad-type-6.p" },
+      new String[] { "typed/fragment-shader-assignment-bad-type-6.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
@@ -387,7 +284,7 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "fragment-shader-ok-0.p" });
+      TestPipeline.typed(new String[] { "typed/fragment-shader-ok-0.p" });
 
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
     final TASTDShaderFragment v =
@@ -414,11 +311,10 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testFragmentShaderDiscardNotBoolean_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "fragment-shader-discard-not-boolean-0.p" },
+      new String[] { "typed/fragment-shader-discard-not-boolean-0.p" },
       Code.TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN);
   }
 
@@ -427,7 +323,7 @@ public final class TypeCheckerTest
       ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "graph-term-term-0.p" });
+      TestPipeline.typed(new String[] { "typed/graph-term-term-0.p" });
 
     {
       final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> g =
@@ -487,7 +383,7 @@ public final class TypeCheckerTest
       ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "graph-type-type-0.p" });
+      TestPipeline.typed(new String[] { "typed/graph-type-type-0.p" });
 
     {
       final DirectedAcyclicGraph<TTypeNameFlat, TASTReference> g =
@@ -545,22 +441,20 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testProgramShaderNotCompatible_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "program-shader-not-compatible-0.p" },
+      new String[] { "typed/program-shader-not-compatible-0.p" },
       Code.TYPE_ERROR_SHADERS_INCOMPATIBLE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testProgramShaderNotCompatible_1()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "program-shader-not-compatible-1.p" },
+      new String[] { "typed/program-shader-not-compatible-1.p" },
       Code.TYPE_ERROR_SHADERS_INCOMPATIBLE);
   }
 
@@ -571,10 +465,9 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "program-shader-ok-0.p" });
+      TestPipeline.typed(new String[] { "typed/program-shader-ok-0.p" });
 
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
-    final TASTDShaderProgram p = (TASTDShaderProgram) m.getShaders().get("p");
     final TASTDShaderVertex v = (TASTDShaderVertex) m.getShaders().get("v");
     final TASTDShaderFragment f =
       (TASTDShaderFragment) m.getShaders().get("f");
@@ -595,17 +488,12 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "program-shader-ok-1.p" });
+      TestPipeline.typed(new String[] { "typed/program-shader-ok-1.p" });
 
     final TASTDModule mm = TypeCheckerTest.getModule(r, "x.y", "M");
     final TASTDModule mn = TypeCheckerTest.getModule(r, "x.y", "N");
-    final TASTDModule mo = TypeCheckerTest.getModule(r, "x.y", "O");
-
-    final TASTDShaderProgram p =
-      (TASTDShaderProgram) mo.getShaders().get("p");
 
     final TASTDShaderVertex v = (TASTDShaderVertex) mm.getShaders().get("v");
-
     final TASTDShaderFragment f =
       (TASTDShaderFragment) mn.getShaders().get("f");
 
@@ -621,55 +509,50 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testProgramShaderWrongShaderType_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "program-shader-wrong-shader-type-0.p" },
+      new String[] { "typed/program-shader-wrong-shader-type-0.p" },
       Code.TYPE_ERROR_SHADER_WRONG_SHADER_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testProgramShaderWrongShaderType_1()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "program-shader-wrong-shader-type-1.p" },
+      new String[] { "typed/program-shader-wrong-shader-type-1.p" },
       Code.TYPE_ERROR_SHADER_WRONG_SHADER_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionApplicationBadCount_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-app-bad-count-0.p" },
+      new String[] { "typed/term-expression-app-bad-count-0.p" },
       Code.TYPE_ERROR_EXPRESSION_APPLICATION_BAD_TYPES);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionApplicationBadTypes_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-app-bad-types-0.p" },
+      new String[] { "typed/term-expression-app-bad-types-0.p" },
       Code.TYPE_ERROR_EXPRESSION_APPLICATION_BAD_TYPES);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionApplicationNotFunction_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-app-not-function-0.p" },
+      new String[] { "typed/term-expression-app-not-function-0.p" },
       Code.TYPE_ERROR_EXPRESSION_APPLICATION_NOT_FUNCTION_TYPE);
   }
 
@@ -680,7 +563,7 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "term-expression-app-ok-0.p" });
+      TestPipeline.typed(new String[] { "typed/term-expression-app-ok-0.p" });
 
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
     final TASTDValue z = (TASTDValue) m.getTerms().get("z");
@@ -693,11 +576,10 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionConditionalNotBoolean_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-conditional-not-boolean-0.p" },
+      new String[] { "typed/term-expression-conditional-not-boolean-0.p" },
       Code.TYPE_ERROR_EXPRESSION_CONDITION_NOT_BOOLEAN);
   }
 
@@ -708,8 +590,8 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest
-        .checked(new String[] { "term-expression-conditional-ok-0.p" });
+      TestPipeline
+        .typed(new String[] { "typed/term-expression-conditional-ok-0.p" });
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
 
     final TASTDValue v = (TASTDValue) m.getTerms().get("z");
@@ -720,11 +602,10 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionLetBadAscription_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-let-bad-ascription-0.p" },
+      new String[] { "typed/term-expression-let-bad-ascription-0.p" },
       Code.TYPE_ERROR_VALUE_ASCRIPTION_MISMATCH);
   }
 
@@ -735,7 +616,7 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "term-expression-let-ok-0.p" });
+      TestPipeline.typed(new String[] { "typed/term-expression-let-ok-0.p" });
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
 
     final TASTDValue v = (TASTDValue) m.getTerms().get("z");
@@ -746,44 +627,40 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionNewNoConstructors_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-new-no-constructors-0.p" },
+      new String[] { "typed/term-expression-new-no-constructors-0.p" },
       Code.TYPE_ERROR_EXPRESSION_NEW_NO_APPROPRIATE_CONSTRUCTORS);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionNewNoConstructors_1()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-new-no-constructors-1.p" },
+      new String[] { "typed/term-expression-new-no-constructors-1.p" },
       Code.TYPE_ERROR_EXPRESSION_NEW_NO_APPROPRIATE_CONSTRUCTORS);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionNewNotConstructable_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-new-not-constructable-0.p" },
+      new String[] { "typed/term-expression-new-not-constructable-0.p" },
       Code.TYPE_ERROR_EXPRESSION_NEW_TYPE_NOT_CONSTRUCTABLE);
   }
 
   @SuppressWarnings("static-method") @Test public
     void
     testTermExpressionNewOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "term-expression-new-ok-0.p" });
+      TestPipeline.typed(new String[] { "typed/term-expression-new-ok-0.p" });
     final TASTDModule m = TypeCheckerTest.firstModule(r);
 
     for (int index = 0; index < TInteger.get().getConstructors().size(); ++index) {
@@ -832,33 +709,30 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionRecordFieldBadType_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-record-field-bad-type-0.p" },
+      new String[] { "typed/term-expression-record-field-bad-type-0.p" },
       Code.TYPE_ERROR_EXPRESSION_RECORD_FIELD_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionRecordFieldNotAssigned_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-record-field-not-assigned-0.p" },
+      new String[] { "typed/term-expression-record-field-not-assigned-0.p" },
       Code.TYPE_ERROR_EXPRESSION_RECORD_FIELDS_UNASSIGNED);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionRecordNotRecordType_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-record-not-record-0.p" },
+      new String[] { "typed/term-expression-record-not-record-0.p" },
       Code.TYPE_ERROR_EXPRESSION_RECORD_NOT_RECORD_TYPE);
   }
 
@@ -869,8 +743,8 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest
-        .checked(new String[] { "term-expression-record-ok-0.p" });
+      TestPipeline
+        .typed(new String[] { "typed/term-expression-record-ok-0.p" });
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
     final TASTDValue x = (TASTDValue) m.getTerms().get("x");
     final TASTERecord e = (TASTERecord) x.getExpression();
@@ -890,23 +764,23 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionRecordProjectionNoSuchField_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-record-projection-no-such-field-0.p" },
-      Code.TYPE_ERROR_EXPRESSION_RECORD_PROJECTION_NO_SUCH_FIELD);
+    TypeCheckerTest
+      .checkMustFailWithCode(
+        new String[] { "typed/term-expression-record-projection-no-such-field-0.p" },
+        Code.TYPE_ERROR_EXPRESSION_RECORD_PROJECTION_NO_SUCH_FIELD);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionRecordProjectionNotRecord_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-record-projection-not-record-0.p" },
-      Code.TYPE_ERROR_EXPRESSION_RECORD_PROJECTION_NOT_RECORD);
+    TypeCheckerTest
+      .checkMustFailWithCode(
+        new String[] { "typed/term-expression-record-projection-not-record-0.p" },
+        Code.TYPE_ERROR_EXPRESSION_RECORD_PROJECTION_NOT_RECORD);
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -916,8 +790,8 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest
-        .checked(new String[] { "term-expression-record-projection-ok-0.p" });
+      TestPipeline
+        .typed(new String[] { "typed/term-expression-record-projection-ok-0.p" });
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
 
     final TASTDValue v = (TASTDValue) m.getTerms().get("x");
@@ -928,33 +802,30 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionRecordUnknownField_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-record-unknown-field-0.p" },
+      new String[] { "typed/term-expression-record-unknown-field-0.p" },
       Code.TYPE_ERROR_EXPRESSION_RECORD_FIELD_UNKNOWN);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionSwizzleNotVector_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-swizzle-not-vector-0.p" },
+      new String[] { "typed/term-expression-swizzle-not-vector-0.p" },
       Code.TYPE_ERROR_EXPRESSION_SWIZZLE_NOT_VECTOR);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionSwizzleTooMany_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-swizzle-too-many-0.p" },
+      new String[] { "typed/term-expression-swizzle-too-many-0.p" },
       Code.TYPE_ERROR_EXPRESSION_SWIZZLE_TOO_MANY_COMPONENTS);
   }
 
@@ -965,8 +836,8 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest
-        .checked(new String[] { "term-expression-swizzle-types-ok-0.p" });
+      TestPipeline
+        .typed(new String[] { "typed/term-expression-swizzle-types-ok-0.p" });
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
 
     for (int index = 1; index <= 4; ++index) {
@@ -1034,8 +905,8 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest
-        .checked(new String[] { "term-expression-swizzle-types-ok-1.p" });
+      TestPipeline
+        .typed(new String[] { "typed/term-expression-swizzle-types-ok-1.p" });
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
 
     for (int index = 1; index <= 4; ++index) {
@@ -1099,34 +970,31 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermExpressionSwizzleUnknownComponent_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-expression-swizzle-unknown-component-0.p" },
+      new String[] { "typed/term-expression-swizzle-unknown-component-0.p" },
       Code.TYPE_ERROR_EXPRESSION_SWIZZLE_UNKNOWN_COMPONENT);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermFunctionBadType_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-function-bad-type-0.p" },
+      new String[] { "typed/term-function-bad-type-0.p" },
       Code.TYPE_ERROR_FUNCTION_BODY_RETURN_INCOMPATIBLE);
   }
 
   @SuppressWarnings("static-method") @Test public
     void
     testTermFunctionExternalTypeOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
-      TypeCheckerTest
-        .checkedInternal(new String[] { "term-function-external-type-ok-0.p" });
+      TestPipeline
+        .typedInternal(new String[] { "typed/term-function-external-type-ok-0.p" });
 
     final TASTDModule m = TypeCheckerTest.firstModule(r);
     final TASTDFunctionExternal f =
@@ -1141,11 +1009,10 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermFunctionTypeOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "term-function-type-ok-0.p" });
+      TestPipeline.typed(new String[] { "typed/term-function-type-ok-0.p" });
 
     final TASTDModule m = TypeCheckerTest.firstModule(r);
     final TASTDFunctionDefined f =
@@ -1161,11 +1028,10 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermFunctionTypeOK_1()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "term-function-type-ok-1.p" });
+      TestPipeline.typed(new String[] { "typed/term-function-type-ok-1.p" });
 
     final TASTDModule m = TypeCheckerTest.firstModule(r);
     final TASTDFunctionDefined f =
@@ -1185,11 +1051,9 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "term-function-type-ok-2.p" });
+      TestPipeline.typed(new String[] { "typed/term-function-type-ok-2.p" });
 
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
-    final TASTDModule n = TypeCheckerTest.getModule(r, "x.y", "N");
-
     final TASTDFunctionDefined f =
       (TASTDFunctionDefined) m.getTerms().get("f");
 
@@ -1203,22 +1067,20 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermValueBadAscription_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-value-bad-ascription-0.p" },
+      new String[] { "typed/term-value-bad-ascription-0.p" },
       Code.TYPE_ERROR_VALUE_ASCRIPTION_MISMATCH);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTermValueTypeFunction_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "term-value-type-function-0.p" },
+      new String[] { "typed/term-value-type-function-0.p" },
       Code.TYPE_ERROR_VALUE_NON_VALUE_TYPE);
   }
 
@@ -1229,7 +1091,7 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "term-value-type-ok-0.p" });
+      TestPipeline.typed(new String[] { "typed/term-value-type-ok-0.p" });
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
     final TASTDValue x = (TASTDValue) m.getTerms().get("z");
     Assert.assertEquals(TInteger.get(), x.getType());
@@ -1242,36 +1104,33 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "term-value-type-ok-1.p" });
+      TestPipeline.typed(new String[] { "typed/term-value-type-ok-1.p" });
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
     final TASTDValue x = (TASTDValue) m.getTerms().get("z");
     Assert.assertEquals(TInteger.get(), x.getType());
   }
 
   @SuppressWarnings("static-method") @Test public void testTrivialOK_0()
-    throws TypeCheckerError,
-      ConstraintError
+    throws TypeCheckerError
   {
-    TypeCheckerTest.checked(new String[] { "trivial-0.p" });
+    TestPipeline.typed(new String[] { "typed/trivial-0.p" });
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testTypeRecordNotManifest_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "type-record-not-manifest-0.p" },
+      new String[] { "typed/type-record-not-manifest-0.p" },
       Code.TYPE_ERROR_RECORD_FIELD_NOT_MANIFEST);
   }
 
   @SuppressWarnings("static-method") @Test public void testTypeRecordOK_0()
-    throws TypeCheckerError,
-      ConstraintError
+    throws TypeCheckerError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "type-record-0.p" });
+      TestPipeline.typed(new String[] { "typed/type-record-0.p" });
     final TASTDModule m = TypeCheckerTest.firstModule(r);
     final TASTDTypeRecord t = (TASTDTypeRecord) m.getTypes().get("t");
 
@@ -1290,11 +1149,10 @@ public final class TypeCheckerTest
   }
 
   @SuppressWarnings("static-method") @Test public void testTypeRecordOK_1()
-    throws TypeCheckerError,
-      ConstraintError
+    throws TypeCheckerError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "type-record-1.p" });
+      TestPipeline.typed(new String[] { "typed/type-record-1.p" });
     final TASTDModule m = TypeCheckerTest.firstModule(r);
     final TASTDTypeRecord t = (TASTDTypeRecord) m.getTypes().get("t");
     final TASTDTypeRecord u = (TASTDTypeRecord) m.getTypes().get("u");
@@ -1321,7 +1179,7 @@ public final class TypeCheckerTest
       ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "type-record-2.p" });
+      TestPipeline.typed(new String[] { "typed/type-record-2.p" });
 
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
     final TASTDModule n = TypeCheckerTest.getModule(r, "x.y", "N");
@@ -1349,66 +1207,60 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testVertexShaderAssignmentBadType_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "vertex-shader-assignment-bad-type-0.p" },
+      new String[] { "typed/vertex-shader-assignment-bad-type-0.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testVertexShaderAssignmentBadType_1()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "vertex-shader-assignment-bad-type-1.p" },
+      new String[] { "typed/vertex-shader-assignment-bad-type-1.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testVertexShaderAssignmentBadType_2()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "vertex-shader-assignment-bad-type-2.p" },
+      new String[] { "typed/vertex-shader-assignment-bad-type-2.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testVertexShaderAssignmentBadType_3()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "vertex-shader-assignment-bad-type-3.p" },
+      new String[] { "typed/vertex-shader-assignment-bad-type-3.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testVertexShaderAssignmentBadType_4()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "vertex-shader-assignment-bad-type-4.p" },
+      new String[] { "typed/vertex-shader-assignment-bad-type-4.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
     testVertexShaderAssignmentBadType_5()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "vertex-shader-assignment-bad-type-5.p" },
+      new String[] { "typed/vertex-shader-assignment-bad-type-5.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
@@ -1419,7 +1271,7 @@ public final class TypeCheckerTest
         ConstraintError
   {
     final TASTCompilation r =
-      TypeCheckerTest.checked(new String[] { "vertex-shader-ok-0.p" });
+      TestPipeline.typed(new String[] { "typed/vertex-shader-ok-0.p" });
 
     final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
     final TASTDShaderVertex v = (TASTDShaderVertex) m.getShaders().get("v");
