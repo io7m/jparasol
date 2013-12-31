@@ -58,6 +58,7 @@ import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlat;
 import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlat;
 import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlat;
 import com.io7m.jparasol.typed.ast.TASTReference;
+import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 
 public final class TypeCheckerTest
@@ -209,6 +210,50 @@ public final class TypeCheckerTest
     TypeCheckerTest.checkMustFailWithCode(
       new String[] { "typed/fragment-shader-discard-not-boolean-0.p" },
       Code.TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN);
+  }
+
+  @SuppressWarnings("static-method") @Test public void testGraphShader_0()
+    throws TypeCheckerError,
+      ConstraintError
+  {
+    final TASTCompilation r =
+      TestPipeline.typed(new String[] { "typed/graph-shader-0.p" });
+
+    {
+      final DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> g =
+        r.getShaderTermGraph();
+
+      for (final ModulePathFlat k : r.getModules().keySet()) {
+        final TASTDModule m = r.getModules().get(k);
+        for (final String tn : m.getShaders().keySet()) {
+          final TASTShaderNameFlat p = new TASTShaderNameFlat(k, tn);
+          final TASTNameTermShaderFlat.Shader n =
+            new TASTNameTermShaderFlat.Shader(p);
+          System.out.println("Check " + n);
+          Assert.assertTrue(g.containsVertex(n));
+        }
+      }
+
+      Assert.assertEquals(9, g.vertexSet().size());
+    }
+
+    {
+      final DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference> g =
+        r.getShaderTypeGraph();
+
+      for (final ModulePathFlat k : r.getModules().keySet()) {
+        final TASTDModule m = r.getModules().get(k);
+        for (final String tn : m.getShaders().keySet()) {
+          final TASTShaderNameFlat p = new TASTShaderNameFlat(k, tn);
+          final TASTNameTypeShaderFlat.Shader n =
+            new TASTNameTypeShaderFlat.Shader(p);
+          System.out.println("Check " + n);
+          Assert.assertTrue(g.containsVertex(n));
+        }
+      }
+
+      Assert.assertEquals(9, g.vertexSet().size());
+    }
   }
 
   @SuppressWarnings("static-method") @Test public void testGraphTermTerm_0()

@@ -945,6 +945,9 @@ final class TGraphs
       throws ConstraintError,
         ConstraintError
     {
+      final TASTShaderName source =
+        new TASTShaderName(this.module_path, p.getName());
+      this.graph.addShader(source);
       this.graph.addShader(p.getFragmentShader());
       this.graph.addShader(p.getVertexShader());
       return p;
