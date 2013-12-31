@@ -96,4 +96,13 @@ public final class TTypeNameFlat
     builder.append("]");
     return builder.toString();
   }
+
+  public @Nonnull String show()
+  {
+    final StringBuilder builder = new StringBuilder();
+    builder.append(this.path.getActual());
+    builder.append(".");
+    builder.append(this.name);
+    return builder.toString();
+  }
 }

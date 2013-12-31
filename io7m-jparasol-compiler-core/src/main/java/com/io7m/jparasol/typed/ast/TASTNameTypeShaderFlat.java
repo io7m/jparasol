@@ -114,6 +114,11 @@ public abstract class TASTNameTypeShaderFlat implements
       return true;
     }
 
+    public @Nonnull TTypeNameFlat getName()
+    {
+      return this.name;
+    }
+
     @Override public int hashCode()
     {
       return this.name.hashCode();
@@ -136,6 +141,11 @@ public abstract class TASTNameTypeShaderFlat implements
       builder.append(this.name);
       builder.append("]");
       return builder.toString();
+    }
+
+    public @Nonnull String show()
+    {
+      return this.name.show();
     }
   }
 }
