@@ -926,6 +926,7 @@ final class TGraphs
     {
       final TASTShaderName source =
         new TASTShaderName(this.module_path, f.getName());
+      this.graph.addShader(source);
 
       f.fragmentShaderVisitableAccept(new GraphBuilderFragmentShader(
         source,
@@ -956,6 +957,7 @@ final class TGraphs
     {
       final TASTShaderName source =
         new TASTShaderName(this.module_path, v.getName());
+      this.graph.addShader(source);
 
       v.vertexShaderVisitableAccept(new GraphBuilderVertexShader(
         source,

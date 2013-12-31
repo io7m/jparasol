@@ -99,6 +99,13 @@ public final class Externals
       final TASTNameTermShaderFlat.Shader start_shader =
         new TASTNameTermShaderFlat.Shader(shader_name);
 
+      if (this.log.enabled(Level.LOG_DEBUG)) {
+        this.log.debug(String.format(
+          "Checking dependencies for %s %s",
+          start_shader.show(),
+          required));
+      }
+
       final Set<TASTReference> direct_terms =
         this.term_shader.outgoingEdgesOf(start_shader);
 
