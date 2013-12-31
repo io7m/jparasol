@@ -16,9 +16,6 @@
 
 package com.io7m.jparasol.typed;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -28,17 +25,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
-import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.TestPipeline;
-import com.io7m.jparasol.lexer.Lexer;
-import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
-import com.io7m.jparasol.parser.Parser;
-import com.io7m.jparasol.parser.ParserTest;
 import com.io7m.jparasol.typed.TType.TBoolean;
 import com.io7m.jparasol.typed.TType.TFloat;
 import com.io7m.jparasol.typed.TType.TInteger;
@@ -71,7 +59,6 @@ import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlat;
 import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlat;
 import com.io7m.jparasol.typed.ast.TASTReference;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
-import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
 
 public final class TypeCheckerTest
 {
@@ -110,89 +97,6 @@ public final class TypeCheckerTest
     }
 
     Assert.assertTrue("Caught exception", caught);
-  }
-
-  private static TASTDModule firstModule(
-    final TASTCompilation r)
-  {
-    return r.getModules().entrySet().iterator().next().getValue();
-  }
-
-  private static TASTDModule getModule(
-    final @Nonnull TASTCompilation comp,
-    final @Nonnull String pp,
-    final @Nonnull String name)
-    throws ConstraintError
-  {
-    final ModulePath path = TypeCheckerTest.getModuleMakePath(pp, name);
-    final ModulePathFlat flat = ModulePathFlat.fromModulePath(path);
-    return comp.getModules().get(flat);
-  }
-
-  private static @Nonnull ModulePath getModuleMakePath(
-    final @Nonnull String pp,
-    final @Nonnull String name)
-    throws ConstraintError
-  {
-    final String[] segments = pp.split("\\.");
-    final ArrayList<TokenIdentifierLower> tokens =
-      new ArrayList<TokenIdentifierLower>();
-
-    final File file = new File("<stdin>");
-    final Position pos = new Position(0, 0);
-    for (final String segment : segments) {
-      tokens.add(new TokenIdentifierLower(file, pos, segment));
-    }
-
-    final TokenIdentifierUpper tname =
-      new TokenIdentifierUpper(file, pos, name);
-    return new ModulePath(new PackagePath(tokens), tname);
-  }
-
-  @SuppressWarnings("resource") private static UASTIUnit parseUnit(
-    final String name,
-    final boolean internal)
-  {
-    try {
-      final InputStream is =
-        ParserTest.class.getResourceAsStream("/com/io7m/jparasol/typed/"
-          + name);
-      final Lexer lexer = new Lexer(is);
-      if (internal) {
-        final Parser p = Parser.newInternalParser(lexer);
-        return p.unit();
-      }
-      final Parser p = Parser.newParser(lexer);
-      return p.unit();
-    } catch (final Throwable x) {
-      x.printStackTrace();
-      System.err.println("UNREACHABLE: " + x);
-      throw new UnreachableCodeException(x);
-    }
-  }
-
-  public static List<UASTIUnit> parseUnits(
-    final String[] names)
-  {
-    final List<UASTIUnit> units = new ArrayList<UASTIUnit>();
-
-    for (final String name : names) {
-      units.add(TypeCheckerTest.parseUnit(name, false));
-    }
-
-    return units;
-  }
-
-  public static List<UASTIUnit> parseUnitsInternal(
-    final String[] names)
-  {
-    final List<UASTIUnit> units = new ArrayList<UASTIUnit>();
-
-    for (final String name : names) {
-      units.add(TypeCheckerTest.parseUnit(name, true));
-    }
-
-    return units;
   }
 
   @SuppressWarnings("static-method") @Test public void testAllOK_0()
@@ -280,13 +184,12 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testFragmentShaderAssignmentOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/fragment-shader-ok-0.p" });
 
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDShaderFragment v =
       (TASTDShaderFragment) m.getShaders().get("f");
 
@@ -461,13 +364,12 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testProgramShaderOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/program-shader-ok-0.p" });
 
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDShaderVertex v = (TASTDShaderVertex) m.getShaders().get("v");
     final TASTDShaderFragment f =
       (TASTDShaderFragment) m.getShaders().get("f");
@@ -484,14 +386,13 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testProgramShaderOK_1()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/program-shader-ok-1.p" });
 
-    final TASTDModule mm = TypeCheckerTest.getModule(r, "x.y", "M");
-    final TASTDModule mn = TypeCheckerTest.getModule(r, "x.y", "N");
+    final TASTDModule mm = TestPipeline.getModule(r, "x.y", "M");
+    final TASTDModule mn = TestPipeline.getModule(r, "x.y", "N");
 
     final TASTDShaderVertex v = (TASTDShaderVertex) mm.getShaders().get("v");
     final TASTDShaderFragment f =
@@ -559,13 +460,12 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermExpressionApplicationOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/term-expression-app-ok-0.p" });
 
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDValue z = (TASTDValue) m.getTerms().get("z");
 
     final TASTEApplication app = (TASTEApplication) z.getExpression();
@@ -586,13 +486,12 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermExpressionConditionalOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline
         .typed(new String[] { "typed/term-expression-conditional-ok-0.p" });
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
     final TASTDValue v = (TASTDValue) m.getTerms().get("z");
     Assert.assertEquals("z", v.getName().getActual());
@@ -612,12 +511,11 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermExpressionLetOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/term-expression-let-ok-0.p" });
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
     final TASTDValue v = (TASTDValue) m.getTerms().get("z");
     Assert.assertEquals("z", v.getName().getActual());
@@ -661,7 +559,7 @@ public final class TypeCheckerTest
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/term-expression-new-ok-0.p" });
-    final TASTDModule m = TypeCheckerTest.firstModule(r);
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
     for (int index = 0; index < TInteger.get().getConstructors().size(); ++index) {
       final TASTDValue v = (TASTDValue) m.getTerms().get("z" + index);
@@ -739,13 +637,12 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermExpressionRecordOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline
         .typed(new String[] { "typed/term-expression-record-ok-0.p" });
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDValue x = (TASTDValue) m.getTerms().get("x");
     final TASTERecord e = (TASTERecord) x.getExpression();
 
@@ -786,13 +683,12 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermExpressionRecordProjectionOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline
         .typed(new String[] { "typed/term-expression-record-projection-ok-0.p" });
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
     final TASTDValue v = (TASTDValue) m.getTerms().get("x");
     Assert.assertEquals("x", v.getName().getActual());
@@ -832,13 +728,12 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermExpressionSwizzleTypesOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline
         .typed(new String[] { "typed/term-expression-swizzle-types-ok-0.p" });
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
     for (int index = 1; index <= 4; ++index) {
       final TASTDValue v = (TASTDValue) m.getTerms().get("v2f" + index);
@@ -901,13 +796,12 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermExpressionSwizzleTypesOK_1()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline
         .typed(new String[] { "typed/term-expression-swizzle-types-ok-1.p" });
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
     for (int index = 1; index <= 4; ++index) {
       final TASTDValue v = (TASTDValue) m.getTerms().get("v2i" + index);
@@ -996,7 +890,7 @@ public final class TypeCheckerTest
       TestPipeline
         .typedInternal(new String[] { "typed/term-function-external-type-ok-0.p" });
 
-    final TASTDModule m = TypeCheckerTest.firstModule(r);
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDFunctionExternal f =
       (TASTDFunctionExternal) m.getTerms().get("f");
 
@@ -1014,7 +908,7 @@ public final class TypeCheckerTest
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/term-function-type-ok-0.p" });
 
-    final TASTDModule m = TypeCheckerTest.firstModule(r);
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDFunctionDefined f =
       (TASTDFunctionDefined) m.getTerms().get("f");
 
@@ -1033,7 +927,7 @@ public final class TypeCheckerTest
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/term-function-type-ok-1.p" });
 
-    final TASTDModule m = TypeCheckerTest.firstModule(r);
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDFunctionDefined f =
       (TASTDFunctionDefined) m.getTerms().get("f");
 
@@ -1047,13 +941,12 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermFunctionTypeOK_2()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/term-function-type-ok-2.p" });
 
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDFunctionDefined f =
       (TASTDFunctionDefined) m.getTerms().get("f");
 
@@ -1087,12 +980,11 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermValueTypeOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/term-value-type-ok-0.p" });
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDValue x = (TASTDValue) m.getTerms().get("z");
     Assert.assertEquals(TInteger.get(), x.getType());
   }
@@ -1100,12 +992,11 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testTermValueTypeOK_1()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/term-value-type-ok-1.p" });
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDValue x = (TASTDValue) m.getTerms().get("z");
     Assert.assertEquals(TInteger.get(), x.getType());
   }
@@ -1131,7 +1022,7 @@ public final class TypeCheckerTest
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/type-record-0.p" });
-    final TASTDModule m = TypeCheckerTest.firstModule(r);
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDTypeRecord t = (TASTDTypeRecord) m.getTypes().get("t");
 
     Assert.assertEquals("t", t.getName().getActual());
@@ -1153,7 +1044,7 @@ public final class TypeCheckerTest
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/type-record-1.p" });
-    final TASTDModule m = TypeCheckerTest.firstModule(r);
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDTypeRecord t = (TASTDTypeRecord) m.getTypes().get("t");
     final TASTDTypeRecord u = (TASTDTypeRecord) m.getTypes().get("u");
 
@@ -1175,14 +1066,13 @@ public final class TypeCheckerTest
   }
 
   @SuppressWarnings("static-method") @Test public void testTypeRecordOK_2()
-    throws TypeCheckerError,
-      ConstraintError
+    throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/type-record-2.p" });
 
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
-    final TASTDModule n = TypeCheckerTest.getModule(r, "x.y", "N");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
+    final TASTDModule n = TestPipeline.getModule(r, "x.y", "N");
 
     final TASTDTypeRecord t = (TASTDTypeRecord) m.getTypes().get("t");
     final TASTDTypeRecord u = (TASTDTypeRecord) n.getTypes().get("u");
@@ -1267,13 +1157,12 @@ public final class TypeCheckerTest
   @SuppressWarnings("static-method") @Test public
     void
     testVertexShaderAssignmentOK_0()
-      throws TypeCheckerError,
-        ConstraintError
+      throws TypeCheckerError
   {
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/vertex-shader-ok-0.p" });
 
-    final TASTDModule m = TypeCheckerTest.getModule(r, "x.y", "M");
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
     final TASTDShaderVertex v = (TASTDShaderVertex) m.getShaders().get("v");
 
     Assert.assertEquals("v", v.getName().getActual());

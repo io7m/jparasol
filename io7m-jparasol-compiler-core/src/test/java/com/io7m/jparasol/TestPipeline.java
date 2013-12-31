@@ -174,11 +174,14 @@ public final class TestPipeline
     final @Nonnull TASTCompilation comp,
     final @Nonnull String pp,
     final @Nonnull String name)
-    throws ConstraintError
   {
-    final ModulePath path = TestPipeline.getModuleMakePath(pp, name);
-    final ModulePathFlat flat = ModulePathFlat.fromModulePath(path);
-    return comp.getModules().get(flat);
+    try {
+      final ModulePath path = TestPipeline.getModuleMakePath(pp, name);
+      final ModulePathFlat flat = ModulePathFlat.fromModulePath(path);
+      return comp.getModules().get(flat);
+    } catch (final ConstraintError x) {
+      throw new UnreachableCodeException(x);
+    }
   }
 
   public static @Nonnull ModulePath getModuleMakePath(
