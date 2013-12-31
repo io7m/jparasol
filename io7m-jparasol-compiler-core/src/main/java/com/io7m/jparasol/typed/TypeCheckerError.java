@@ -38,6 +38,7 @@ import com.io7m.jparasol.typed.TType.TManifestType;
 import com.io7m.jparasol.typed.TType.TRecord;
 import com.io7m.jparasol.typed.TType.TRecordField;
 import com.io7m.jparasol.typed.TType.TValueType;
+import com.io7m.jparasol.typed.TType.TVector4F;
 import com.io7m.jparasol.typed.TType.TVectorType;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShader;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
@@ -47,6 +48,7 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTExpression;
 import com.io7m.jparasol.typed.ast.TASTShaderVisitor;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderVertexOutput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName;
@@ -76,6 +78,7 @@ public final class TypeCheckerError extends CompilerError
     TYPE_ERROR_RECORD_FIELD_NOT_MANIFEST,
     TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE,
     TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN,
+    TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE,
     TYPE_ERROR_SHADER_WRONG_SHADER_TYPE,
     TYPE_ERROR_SHADERS_INCOMPATIBLE,
     TYPE_ERROR_VALUE_ASCRIPTION_MISMATCH,
@@ -250,6 +253,24 @@ public final class TypeCheckerError extends CompilerError
       program.getFile(),
       program.getPosition(),
       Code.TYPE_ERROR_SHADERS_INCOMPATIBLE,
+      m.toString());
+  }
+
+  public static @Nonnull TypeCheckerError shaderVertexMainOutputBadType(
+    final @Nonnull UASTRDShaderVertexOutput o,
+    final @Nonnull TType t)
+    throws ConstraintError
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("The main output of a vertex shader must be of type ");
+    m.append(TVector4F.get().getShowName());
+    m.append(" but the given output is of type ");
+    m.append(t.getShowName());
+
+    return new TypeCheckerError(
+      o.getName().getFile(),
+      o.getName().getPosition(),
+      Code.TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE,
       m.toString());
   }
 

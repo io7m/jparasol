@@ -8,10 +8,11 @@ module M is
   end;
 
   shader vertex v is
+    out vertex out_0 : vector_4f;
   with
     value x = new vector_4f (1.0, 1.0, 1.0, 1.0);
   as
-    out gl_Position = x;
+    out out_0 = x;
   end;
 
   shader fragment f is

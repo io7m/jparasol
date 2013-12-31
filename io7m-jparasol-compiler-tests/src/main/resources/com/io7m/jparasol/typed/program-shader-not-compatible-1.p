@@ -6,10 +6,11 @@ module M is
   value y = new vector_3f (0.0, 1.0, 2.0);
 
   shader vertex v is
-    out xyz : vector_3f;
+    out xyz          : vector_3f;
+    out vertex out_0 : vector_4f;
   as
-    out gl_Position = x;
-    out xyz         = y;
+    out out_0 = x;
+    out xyz   = y;
   end;
 
   shader fragment f is

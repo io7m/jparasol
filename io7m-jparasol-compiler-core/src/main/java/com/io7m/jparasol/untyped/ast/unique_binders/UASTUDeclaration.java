@@ -1313,12 +1313,21 @@ public abstract class UASTUDeclaration
   public static final class UASTUDShaderVertexOutput extends
     UASTUDShaderVertexParameters
   {
+    private final boolean main;
+
     public UASTUDShaderVertexOutput(
       final @Nonnull UniqueNameLocal name,
-      final @Nonnull UASTUTypePath type)
+      final @Nonnull UASTUTypePath type,
+      final boolean main)
       throws ConstraintError
     {
       super(name, type);
+      this.main = main;
+    }
+
+    public boolean isMain()
+    {
+      return this.main;
     }
 
     @Override public String toString()
@@ -1328,6 +1337,8 @@ public abstract class UASTUDeclaration
       builder.append(this.getName());
       builder.append(" ");
       builder.append(this.getType());
+      builder.append(" ");
+      builder.append(this.main);
       builder.append("]");
       return builder.toString();
     }

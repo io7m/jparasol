@@ -17,12 +17,9 @@
 package com.io7m.jparasol.untyped;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.CheckForNull;
@@ -39,7 +36,6 @@ import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.NameRestrictions;
 import com.io7m.jparasol.NameRestrictions.NameRestricted;
-import com.io7m.jparasol.NamesBuiltIn;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
@@ -142,7 +138,6 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTURecordF
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUShaderPath;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTypePath;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName;
-import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameNonLocal;
 
@@ -160,11 +155,9 @@ public final class UniqueBinders
         null,
         term,
         new HashMap<String, UniqueNameLocal>(),
-        new HashSet<String>(),
         log);
     }
 
-    private final @Nonnull Set<String>                  builtins;
     private final int                                   depth;
     private final @Nonnull Log                          log;
     private final @Nonnull ModuleContext                module;
@@ -177,13 +170,11 @@ public final class UniqueBinders
       final @CheckForNull Context parent,
       final @CheckForNull UASTCDTerm root,
       final @Nonnull Map<String, UniqueNameLocal> names,
-      final @Nonnull Set<String> builtins,
       final @Nonnull Log log)
     {
       this.module = module;
       this.parent = parent;
       this.names = names;
-      this.builtins = builtins;
       this.log = log;
       this.root = root;
       this.depth = this.parent == null ? 1 : this.parent.getDepth() + 1;
@@ -200,7 +191,7 @@ public final class UniqueBinders
         final String name_s = s.toString();
         final boolean exists = this.nameExists(name_s);
         final boolean restricted =
-          NameRestrictions.checkRestricted(UniqueBinders.EMPTY, name_s) != NameRestricted.NAME_OK;
+          NameRestrictions.checkRestricted(name_s) != NameRestricted.NAME_OK;
 
         if (exists || restricted) {
           s.setLength(0);
@@ -267,9 +258,6 @@ public final class UniqueBinders
       final @Nonnull TokenIdentifierLower name)
       throws ConstraintError
     {
-      if (this.builtins.contains(name.getActual())) {
-        return new UniqueNameBuiltIn(name);
-      }
       if (this.names.containsKey(name.getActual())) {
         return this.names.get(name.getActual());
       }
@@ -309,23 +297,6 @@ public final class UniqueBinders
         this,
         this.root,
         new HashMap<String, UniqueName.UniqueNameLocal>(),
-        this.builtins,
-        this.log);
-    }
-
-    public @Nonnull Context withNewPlusBuiltins(
-      final @Nonnull Set<String> new_builtins)
-    {
-      final HashSet<String> s = new HashSet<String>();
-      s.addAll(this.builtins);
-      s.addAll(new_builtins);
-
-      return new Context(
-        this.module,
-        this,
-        this.root,
-        new HashMap<String, UniqueName.UniqueNameLocal>(),
-        s,
         this.log);
     }
   }
@@ -518,9 +489,7 @@ public final class UniqueBinders
     public FragmentShaderTransformer(
       final @Nonnull Context context)
     {
-      this.context =
-        context.withNewPlusBuiltins(NamesBuiltIn.FRAGMENT_SHADER_INPUTS
-          .keySet());
+      this.context = context.withNew();
     }
 
     @Override public
@@ -1001,7 +970,7 @@ public final class UniqueBinders
       final UniqueNameLocal name =
         new UniqueNameLocal(o.getName(), o.getName().getActual());
       final UASTUTypePath type = UniqueBinders.mapTypePath(o.getType());
-      return new UASTUDShaderVertexOutput(name, type);
+      return new UASTUDShaderVertexOutput(name, type, o.isMain());
     }
 
     @Override public
@@ -1026,12 +995,6 @@ public final class UniqueBinders
       final UASTUTypePath type = UniqueBinders.mapTypePath(p.getType());
       return new UASTUDShaderVertexParameter(name, type);
     }
-  }
-
-  static final @Nonnull Set<String> EMPTY;
-
-  static {
-    EMPTY = Collections.unmodifiableSet(new HashSet<String>());
   }
 
   static @Nonnull Option<UASTUTypePath> mapAscription(

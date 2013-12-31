@@ -1093,12 +1093,21 @@ public abstract class UASTCDeclaration
   public static final class UASTCDShaderVertexOutput extends
     UASTCDShaderVertexParameters
   {
+    private final boolean main;
+
     public UASTCDShaderVertexOutput(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTCTypePath type)
+      final @Nonnull UASTCTypePath type,
+      final boolean main)
       throws ConstraintError
     {
       super(name, type);
+      this.main = main;
+    }
+
+    public final boolean isMain()
+    {
+      return this.main;
     }
   }
 

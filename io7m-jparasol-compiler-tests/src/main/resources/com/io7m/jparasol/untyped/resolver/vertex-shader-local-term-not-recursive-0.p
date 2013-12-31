@@ -3,10 +3,11 @@ package x.y;
 module M is
 
   shader vertex v is
+    out vertex out_0 : vector_4f;
   with
     value x = x;
   as
-    out gl_Position = x;
+    out out_0 = x;
   end;
 
 end;

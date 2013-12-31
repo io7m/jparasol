@@ -17,12 +17,9 @@
 package com.io7m.jparasol.untyped;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -37,7 +34,6 @@ import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.NameRestrictions;
 import com.io7m.jparasol.NameRestrictions.NameRestrictionsException;
-import com.io7m.jparasol.NamesBuiltIn;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
@@ -205,8 +201,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderVisitor;
  * For vertex shaders:
  * 
  * <ul>
- * <li>Require that exactly one output assignment exists to the built-in
- * output <code>gl_Position</code></li>
+ * <li>Require that exactly one "main" output exists</li>
  * </ul>
  * 
  * For fragment shaders:
@@ -232,12 +227,9 @@ public final class ModuleStructure
   private static class ExpressionChecker implements
     UASTIExpressionVisitor<UASTCExpression, UASTCDValueLocal, ModuleStructureError>
   {
-    private final @Nonnull Set<String> builtins;
-
-    public ExpressionChecker(
-      final @Nonnull Set<String> builtins)
+    public ExpressionChecker()
     {
-      this.builtins = builtins;
+      // Nothing
     }
 
     @Override public UASTCEApplication expressionVisitApplication(
@@ -309,7 +301,7 @@ public final class ModuleStructure
       throws ModuleStructureError,
         ConstraintError
     {
-      return new LocalChecker(this.builtins);
+      return new LocalChecker();
     }
 
     @Override public UASTCENew expressionVisitNew(
@@ -351,9 +343,7 @@ public final class ModuleStructure
         for (final UASTIRecordFieldAssignment f : e.getAssignments()) {
           final String name = f.getName().getActual();
 
-          NameRestrictions.checkRestrictedExceptional(
-            ModuleStructure.NO_OVERRIDES,
-            f.getName());
+          NameRestrictions.checkRestrictedExceptional(f.getName());
 
           if (fields.containsKey(name)) {
             throw ModuleStructureError.moduleRecordExpressionFieldDuplicate(
@@ -362,7 +352,7 @@ public final class ModuleStructure
           }
 
           final UASTIExpression r = f.getExpression();
-          final ExpressionChecker ec = new ExpressionChecker(this.builtins);
+          final ExpressionChecker ec = new ExpressionChecker();
           final UASTCExpression rx = r.expressionVisitableAccept(ec);
 
           assignments.add(new UASTCRecordFieldAssignment(f.getName(), rx));
@@ -417,9 +407,7 @@ public final class ModuleStructure
         ConstraintError
     {
       try {
-        NameRestrictions.checkRestrictedExceptional(this.builtins, e
-          .getName()
-          .getName());
+        NameRestrictions.checkRestrictedExceptional(e.getName().getName());
         return new UASTCEVariable(ModuleStructure.valuePath(e.getName()));
       } catch (final NameRestrictionsException x) {
         throw new ModuleStructureError(x);
@@ -464,8 +452,7 @@ public final class ModuleStructure
           this.output_assignments.get(name).getName());
       }
 
-      final ExpressionChecker ec =
-        new ExpressionChecker(NamesBuiltIn.FRAGMENT_SHADER_INPUTS.keySet());
+      final ExpressionChecker ec = new ExpressionChecker();
 
       a.getVariable().expressionVisitableAccept(ec);
       this.output_assignments.put(name, a);
@@ -477,9 +464,7 @@ public final class ModuleStructure
         ConstraintError
     {
       try {
-        NameRestrictions.checkRestrictedExceptional(
-          ModuleStructure.NO_OVERRIDES,
-          p.getName());
+        NameRestrictions.checkRestrictedExceptional(p.getName());
 
         final String name = p.getName().getActual();
         if (this.parameters.containsKey(name)) {
@@ -635,13 +620,11 @@ public final class ModuleStructure
   private static class FragmentShaderLocalChecker implements
     UASTIFragmentShaderLocalVisitor<UASTCDShaderFragmentLocal, ModuleStructureError>
   {
-    private final @Nonnull Set<String>                                     builtins;
     private final @Nonnull HashMap<String, UASTIDShaderFragmentLocalValue> locals;
 
     public FragmentShaderLocalChecker()
     {
       this.locals = new HashMap<String, UASTIDShaderFragmentLocalValue>();
-      this.builtins = NamesBuiltIn.FRAGMENT_SHADER_INPUTS.keySet();
     }
 
     @Override public
@@ -652,8 +635,7 @@ public final class ModuleStructure
           ConstraintError
     {
       final UASTCExpression ex =
-        d.getExpression().expressionVisitableAccept(
-          new ExpressionChecker(this.builtins));
+        d.getExpression().expressionVisitableAccept(new ExpressionChecker());
 
       return new UASTCDShaderFragmentLocalDiscard(d.getDiscard(), ex);
     }
@@ -667,9 +649,7 @@ public final class ModuleStructure
     {
       try {
         final UASTIDValueLocal original = v.getValue();
-        NameRestrictions.checkRestrictedExceptional(
-          ModuleStructure.NO_OVERRIDES,
-          original.getName());
+        NameRestrictions.checkRestrictedExceptional(original.getName());
 
         final String name = original.getName().getActual();
         if (this.locals.containsKey(name)) {
@@ -679,7 +659,7 @@ public final class ModuleStructure
         }
         this.locals.put(name, v);
 
-        final ExpressionChecker ec = new ExpressionChecker(this.builtins);
+        final ExpressionChecker ec = new ExpressionChecker();
         final UASTCExpression ex =
           original.getExpression().expressionVisitableAccept(ec);
         final UASTCDValueLocal value =
@@ -712,9 +692,7 @@ public final class ModuleStructure
       try {
         final String name = a.getName().getActual();
 
-        NameRestrictions.checkRestrictedExceptional(
-          ModuleStructure.NO_OVERRIDES,
-          a.getName());
+        NameRestrictions.checkRestrictedExceptional(a.getName());
 
         if (this.args.containsKey(name)) {
           throw ModuleStructureError.moduleFunctionArgumentDuplicate(
@@ -736,8 +714,7 @@ public final class ModuleStructure
       throws ModuleStructureError,
         ConstraintError
     {
-      final ExpressionChecker ec =
-        new ExpressionChecker(ModuleStructure.NO_OVERRIDES);
+      final ExpressionChecker ec = new ExpressionChecker();
       final UASTCExpression ex = f.getBody().expressionVisitableAccept(ec);
       return new UASTCDFunctionDefined(
         f.getName(),
@@ -784,14 +761,11 @@ public final class ModuleStructure
   private static class LocalChecker implements
     UASTILocalLevelVisitor<UASTCDValueLocal, ModuleStructureError>
   {
-    private final @Nonnull Set<String>                       builtins;
     private final @Nonnull HashMap<String, UASTIDValueLocal> values;
 
-    public LocalChecker(
-      final @Nonnull Set<String> builtins)
+    public LocalChecker()
     {
       this.values = new HashMap<String, UASTIDValueLocal>();
-      this.builtins = builtins;
     }
 
     @Override public UASTCDValueLocal localVisitValueLocal(
@@ -801,9 +775,7 @@ public final class ModuleStructure
     {
       try {
         final String name = v.getName().getActual();
-        NameRestrictions.checkRestrictedExceptional(
-          ModuleStructure.NO_OVERRIDES,
-          v.getName());
+        NameRestrictions.checkRestrictedExceptional(v.getName());
 
         if (this.values.containsKey(name)) {
           throw ModuleStructureError.moduleShaderLocalConflict(
@@ -812,7 +784,7 @@ public final class ModuleStructure
         }
         this.values.put(name, v);
 
-        final ExpressionChecker ec = new ExpressionChecker(this.builtins);
+        final ExpressionChecker ec = new ExpressionChecker();
         final UASTCExpression ex =
           v.getExpression().expressionVisitableAccept(ec);
         return new UASTCDValueLocal(
@@ -874,9 +846,7 @@ public final class ModuleStructure
           final TokenIdentifierUpper rename =
             ((Some<TokenIdentifierUpper>) rename_opt).value;
 
-          NameRestrictions.checkRestrictedExceptional(
-            ModuleStructure.NO_OVERRIDES,
-            rename);
+          NameRestrictions.checkRestrictedExceptional(rename);
 
           if (import_name.getActual().equals(rename.getActual())) {
             throw ModuleStructureError.moduleImportRedundantRename(i);
@@ -960,16 +930,12 @@ public final class ModuleStructure
           ConstraintError
     {
       try {
-        NameRestrictions.checkRestrictedExceptional(
-          ModuleStructure.NO_OVERRIDES,
-          m.getPath().getName());
+        NameRestrictions.checkRestrictedExceptional(m.getPath().getName());
 
         final List<TokenIdentifierLower> c =
           this.current_path.getPackagePath().getComponents();
         for (final TokenIdentifierLower pc : c) {
-          NameRestrictions.checkRestrictedExceptional(
-            ModuleStructure.NO_OVERRIDES,
-            pc);
+          NameRestrictions.checkRestrictedExceptional(pc);
         }
 
         this.declaration_checker =
@@ -1018,9 +984,7 @@ public final class ModuleStructure
           token.getPosition()));
 
         final String name = token.getActual();
-        NameRestrictions.checkRestrictedExceptional(
-          ModuleStructure.NO_OVERRIDES,
-          token);
+        NameRestrictions.checkRestrictedExceptional(token);
 
         if (this.shaders.containsKey(name)) {
           final UASTCDShader original = this.shaders.get(name);
@@ -1047,9 +1011,7 @@ public final class ModuleStructure
           token.getPosition()));
 
         final String name = token.getActual();
-        NameRestrictions.checkRestrictedExceptional(
-          ModuleStructure.NO_OVERRIDES,
-          token);
+        NameRestrictions.checkRestrictedExceptional(token);
 
         if (this.terms.containsKey(name)) {
           final UASTCDTerm original = this.terms.get(name);
@@ -1075,9 +1037,7 @@ public final class ModuleStructure
           token.getActual(),
           token.getPosition()));
 
-        NameRestrictions.checkRestrictedExceptional(
-          ModuleStructure.NO_OVERRIDES,
-          token);
+        NameRestrictions.checkRestrictedExceptional(token);
 
         final String name = token.getActual();
         if (this.types.containsKey(name)) {
@@ -1157,8 +1117,7 @@ public final class ModuleStructure
         ConstraintError
     {
       final UASTCExpression e =
-        v.getExpression().expressionVisitableAccept(
-          new ExpressionChecker(ModuleStructure.NO_OVERRIDES));
+        v.getExpression().expressionVisitableAccept(new ExpressionChecker());
       final UASTCDValue rv =
         new UASTCDValue(v.getName(), ModuleStructure.mapTypePath(v
           .getAscription()), e);
@@ -1232,6 +1191,7 @@ public final class ModuleStructure
     private final @Nonnull HashMap<String, UASTIDShaderVertexOutput>           outputs;
     private final @Nonnull HashMap<String, UASTIDShaderParameters>             parameters;
     private final @Nonnull UASTIDShaderVertex                                  shader;
+    private @CheckForNull UASTIDShaderVertexOutput                             main;
 
     public VertexShaderChecker(
       final @Nonnull UASTIDShaderVertex shader)
@@ -1255,8 +1215,7 @@ public final class ModuleStructure
           a.getName(),
           this.output_assignments.get(name).getName());
       }
-      a.getVariable().expressionVisitableAccept(
-        new ExpressionChecker(ModuleStructure.NO_OVERRIDES));
+      a.getVariable().expressionVisitableAccept(new ExpressionChecker());
       this.output_assignments.put(name, a);
     }
 
@@ -1266,9 +1225,7 @@ public final class ModuleStructure
         ConstraintError
     {
       try {
-        NameRestrictions.checkRestrictedExceptional(
-          ModuleStructure.NO_OVERRIDES,
-          p.getName());
+        NameRestrictions.checkRestrictedExceptional(p.getName());
 
         final String name = p.getName().getActual();
         if (this.parameters.containsKey(name)) {
@@ -1320,6 +1277,11 @@ public final class ModuleStructure
         throws ModuleStructureError,
           ConstraintError
     {
+      if (this.main == null) {
+        throw ModuleStructureError.moduleShaderVertexOutputMissingMain(v
+          .getName());
+      }
+
       return new UASTCDShaderVertex(
         v.getName(),
         r_inputs,
@@ -1354,10 +1316,20 @@ public final class ModuleStructure
       throws ModuleStructureError,
         ConstraintError
     {
+      if (o.isMain()) {
+        if (this.main != null) {
+          throw ModuleStructureError.moduleShaderVertexOutputMultipleMains(
+            this.main,
+            o);
+        }
+        this.main = o;
+      }
+
       this.addShaderParameter(o);
       return new UASTCDShaderVertexOutput(
         o.getName(),
-        ModuleStructure.typePath(o.getType()));
+        ModuleStructure.typePath(o.getType()),
+        o.isMain());
     }
 
     @Override public
@@ -1406,9 +1378,7 @@ public final class ModuleStructure
     {
       try {
         final UASTIDValueLocal original = v.getValue();
-        NameRestrictions.checkRestrictedExceptional(
-          ModuleStructure.NO_OVERRIDES,
-          original.getName());
+        NameRestrictions.checkRestrictedExceptional(original.getName());
 
         final String name = original.getName().getActual();
         if (this.locals.containsKey(name)) {
@@ -1418,8 +1388,7 @@ public final class ModuleStructure
         }
         this.locals.put(name, v);
 
-        final ExpressionChecker ec =
-          new ExpressionChecker(ModuleStructure.NO_OVERRIDES);
+        final ExpressionChecker ec = new ExpressionChecker();
         final UASTCExpression ex =
           original.getExpression().expressionVisitableAccept(ec);
         final UASTCDValueLocal value =
@@ -1433,12 +1402,6 @@ public final class ModuleStructure
         throw new ModuleStructureError(x);
       }
     }
-  }
-
-  static final @Nonnull Set<String> NO_OVERRIDES;
-
-  static {
-    NO_OVERRIDES = Collections.unmodifiableSet(new HashSet<String>());
   }
 
   static @Nonnull Option<UASTCTypePath> mapTypePath(

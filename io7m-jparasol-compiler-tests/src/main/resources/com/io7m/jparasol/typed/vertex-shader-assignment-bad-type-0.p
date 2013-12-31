@@ -9,10 +9,9 @@ module M is
     new vector_3f (0.0, 1.0, 2.0);
 
   shader vertex v is
-    out out_0 : vector_4f;
+    out vertex out_0 : vector_4f;
   as
-    out gl_Position = x;
-    out out_0       = y;  
+    out out_0 = y;  
   end;
 
 end;

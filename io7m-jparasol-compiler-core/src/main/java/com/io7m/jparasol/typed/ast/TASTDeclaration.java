@@ -1807,14 +1807,22 @@ public abstract class TASTDeclaration
     TASTDShaderVertexParameters
   {
     private final @Nonnull TokenIdentifierLower name;
+    private final boolean                       main;
 
     public TASTDShaderVertexOutput(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TValueType type)
+      final @Nonnull TValueType type,
+      final boolean main)
       throws ConstraintError
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
+      this.main = main;
+    }
+
+    public boolean isMain()
+    {
+      return this.main;
     }
 
     @Override public boolean equals(
@@ -1830,6 +1838,9 @@ public abstract class TASTDeclaration
         return false;
       }
       final TASTDShaderVertexOutput other = (TASTDShaderVertexOutput) obj;
+      if (this.main != other.main) {
+        return false;
+      }
       if (!this.name.equals(other.name)) {
         return false;
       }
@@ -1845,6 +1856,7 @@ public abstract class TASTDeclaration
     {
       final int prime = 31;
       int result = super.hashCode();
+      result = (prime * result) + (this.main ? 1231 : 1237);
       result = (prime * result) + this.name.hashCode();
       return result;
     }
@@ -1853,7 +1865,9 @@ public abstract class TASTDeclaration
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[TASTDShaderVertexOutput ");
-      builder.append(this.name.getActual());
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.main);
       builder.append("]");
       return builder.toString();
     }

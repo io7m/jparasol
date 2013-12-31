@@ -39,6 +39,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgu
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderParameters;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
@@ -63,6 +64,8 @@ public final class ModuleStructureError extends CompilerError
     MODULE_STRUCTURE_SHADER_OUTPUT_INDEX_DUPLICATE,
     MODULE_STRUCTURE_SHADER_OUTPUT_INDEX_INVALID,
     MODULE_STRUCTURE_SHADER_OUTPUT_INDEX_MISSING,
+    MODULE_STRUCTURE_SHADER_OUTPUT_MISSING_MAIN,
+    MODULE_STRUCTURE_SHADER_OUTPUT_MULTIPLE_MAIN,
     MODULE_STRUCTURE_SHADER_PARAMETER_CONFLICT,
     MODULE_STRUCTURE_TERM_CONFLICT,
     MODULE_STRUCTURE_TYPE_CONFLICT,
@@ -455,6 +458,57 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
+  public static @Nonnull
+    ModuleStructureError
+    moduleShaderVertexOutputMultipleMains(
+      final @Nonnull UASTIDShaderVertexOutput main,
+      final @Nonnull UASTIDShaderVertexOutput o)
+      throws ConstraintError
+  {
+    final StringBuilder m = new StringBuilder();
+    m
+      .append("Multiple vertex shader outputs are marked as the main vertex output\n");
+    m.append("First output: ");
+    m.append(main.getName().getActual());
+    m.append(" (");
+    m.append(main.getName().getFile());
+    m.append(":");
+    m.append(main.getName().getPosition());
+    m.append(")\n");
+
+    m.append("Conflicting output: ");
+    m.append(o.getName().getActual());
+    m.append(" (");
+    m.append(o.getName().getFile());
+    m.append(":");
+    m.append(o.getName().getPosition());
+    m.append(")");
+
+    return new ModuleStructureError(
+      Code.MODULE_STRUCTURE_SHADER_OUTPUT_MULTIPLE_MAIN,
+      m.toString(),
+      o.getName().getFile(),
+      o.getName().getPosition());
+  }
+
+  public static @Nonnull
+    ModuleStructureError
+    moduleShaderVertexOutputMissingMain(
+      final @Nonnull TokenIdentifierLower name)
+      throws ConstraintError
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("The vertex shader ");
+    m.append(name.getActual());
+    m.append(" is missing a main output");
+
+    return new ModuleStructureError(
+      Code.MODULE_STRUCTURE_SHADER_OUTPUT_MISSING_MAIN,
+      m.toString(),
+      name.getFile(),
+      name.getPosition());
+  }
+
   public static ModuleStructureError moduleTermConflict(
     final @Nonnull UASTCDTerm term,
     final @Nonnull UASTCDTerm original)
@@ -475,7 +529,7 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
-  public static ModuleStructureError moduleTypeConflict(
+  public static @Nonnull ModuleStructureError moduleTypeConflict(
     final @Nonnull UASTCDType type,
     final @Nonnull UASTCDType original)
     throws ConstraintError

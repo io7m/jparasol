@@ -74,10 +74,9 @@ module M is
     end;
 
   shader vertex v is
-    out out0 : vector_4f;
+    out vertex out0 : vector_4f;
   as
     out out0 = z4;
-    out gl_Position = z4;
   end;
   
   shader fragment f is
