@@ -89,7 +89,6 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREVariable;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameGlobal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermNameVisitor;
@@ -149,7 +148,6 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTypeVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUVertexShaderLocalVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUVertexShaderVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName;
-import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameNonLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitor;
@@ -189,14 +187,6 @@ public final class Resolver
       if (this.term_graph != null) {
         name
           .termNameVisitableAccept(new UASTRTermNameVisitor<Unit, ResolverError>() {
-            @Override public Unit termNameVisitBuiltIn(
-              final @Nonnull UASTRTermNameBuiltIn t)
-              throws ConstraintError,
-                ResolverError
-            {
-              return Unit.unit();
-            }
-
             @SuppressWarnings("synthetic-access") @Override public
               Unit
               termNameVisitGlobal(
@@ -2192,7 +2182,10 @@ public final class Resolver
           otype.getModule(),
           otype.getName());
 
-      return new UASTRDShaderVertexOutput(oname.getOriginal(), type);
+      return new UASTRDShaderVertexOutput(
+        oname.getOriginal(),
+        type,
+        o.isMain());
     }
 
     @Override public
@@ -2296,14 +2289,6 @@ public final class Resolver
   {
     return name
       .uniqueNameVisitableAccept(new UniqueNameVisitor<UASTRTermName, ResolverError>() {
-        @Override public UASTRTermNameBuiltIn uniqueNameVisitBuiltIn(
-          final @Nonnull UniqueNameBuiltIn n)
-          throws ResolverError,
-            ConstraintError
-        {
-          return new UASTRTermNameBuiltIn(n.getName());
-        }
-
         @Override public @Nonnull UASTRTermName uniqueNameVisitLocal(
           final UniqueNameLocal name_actual)
           throws ResolverError,

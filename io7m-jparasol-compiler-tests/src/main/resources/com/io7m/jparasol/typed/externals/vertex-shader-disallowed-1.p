@@ -16,8 +16,9 @@ module M is
   value x = N.f (23);
 
   shader vertex vert is
+    out vertex out_0 : vector_4f;
   as
-    out gl_Position = x;
+    out out_0 = x;
   end;
 
 end;

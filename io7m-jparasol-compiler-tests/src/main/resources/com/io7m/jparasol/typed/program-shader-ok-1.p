@@ -8,10 +8,9 @@ module M is
   import x.y.Q;
   
   shader vertex v is
-    out xyz : vector_4f;
+    out vertex xyz : vector_4f;
   as
-    out gl_Position = Q.x;
-    out xyz         = Q.x;
+    out xyz = Q.x;
   end;
 end;
 

@@ -1034,7 +1034,7 @@ public final class ResolverTest
 
     Assert.assertEquals(1, vs.getInputs().size());
     Assert.assertEquals(1, vs.getParameters().size());
-    Assert.assertEquals(1, vs.getOutputs().size());
+    Assert.assertEquals(2, vs.getOutputs().size());
 
     Assert.assertEquals("in_0", vs.getInputs().get(0).getName().getCurrent());
     Assert.assertEquals("p_0", vs

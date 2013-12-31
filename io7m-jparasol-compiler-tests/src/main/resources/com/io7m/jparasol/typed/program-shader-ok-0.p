@@ -5,9 +5,8 @@ module M is
   value x = new vector_4f (0.0, 1.0, 2.0, 3.0);
 
   shader vertex v is
-    out xyz : vector_4f;
+    out vertex xyz : vector_4f;
   as
-    out gl_Position = x;
     out xyz         = x;
   end;
 

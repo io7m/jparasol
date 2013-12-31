@@ -1114,11 +1114,37 @@ public final class Parser
       ConstraintError
   {
     this.parserConsumeExact(Type.TOKEN_OUT);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
-    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_COLON);
-    return new UASTIDShaderVertexOutput(name, this.declarationTypePath());
+    this.parserExpectOneOf(new Type[] {
+      Type.TOKEN_IDENTIFIER_LOWER,
+      Type.TOKEN_VERTEX });
+
+    switch (this.token.getType()) {
+      case TOKEN_IDENTIFIER_LOWER:
+      {
+        final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(Type.TOKEN_COLON);
+        return new UASTIDShaderVertexOutput(
+          name,
+          this.declarationTypePath(),
+          false);
+      }
+      case TOKEN_VERTEX:
+      {
+        this.parserConsumeExact(Type.TOKEN_VERTEX);
+        this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+        final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(Type.TOKEN_COLON);
+        return new UASTIDShaderVertexOutput(
+          name,
+          this.declarationTypePath(),
+          true);
+      }
+      // $CASES-OMITTED$
+      default:
+        throw new UnreachableCodeException();
+    }
   }
 
   public @Nonnull

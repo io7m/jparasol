@@ -59,9 +59,7 @@ public final class UASTICompilation
         final PackagePath pp = u.getPackageName().getPath();
 
         for (final TokenIdentifierLower pc : pp.getComponents()) {
-          NameRestrictions.checkRestrictedExceptional(
-            UASTICompilation.EMPTY,
-            pc);
+          NameRestrictions.checkRestrictedExceptional(pc);
         }
 
         for (final UASTIDModule um : u.getModules()) {

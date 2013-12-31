@@ -948,6 +948,23 @@ public class ParserTest
     final UASTIDShaderVertexOutput r = p.declarationVertexShaderOutput();
     Assert.assertEquals("x", r.getName().getActual());
     Assert.assertEquals("integer", r.getType().getName().getActual());
+    Assert.assertFalse(r.isMain());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testDVertexShaderOutput_1()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p =
+      ParserTest.makeStringInternalParser("out vertex x : integer");
+    final UASTIDShaderVertexOutput r = p.declarationVertexShaderOutput();
+    Assert.assertEquals("x", r.getName().getActual());
+    Assert.assertEquals("integer", r.getType().getName().getActual());
+    Assert.assertTrue(r.isMain());
   }
 
   @SuppressWarnings("static-method") @Test public

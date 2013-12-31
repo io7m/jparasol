@@ -16,8 +16,6 @@
 
 package com.io7m.jparasol;
 
-import java.util.HashSet;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,7 +27,7 @@ public class NameRestrictionsTest
   {
     Assert.assertEquals(
       NameRestricted.NAME_RESTRICTED_CONTAINS_DOUBLE_UNDERSCORE,
-      NameRestrictions.checkRestricted(new HashSet<String>(), "a__b"));
+      NameRestrictions.checkRestricted("a__b"));
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -38,21 +36,21 @@ public class NameRestrictionsTest
   {
     Assert.assertEquals(
       NameRestricted.NAME_RESTRICTED_ENDS_WITH_UNDERSCORE,
-      NameRestrictions.checkRestricted(new HashSet<String>(), "a_"));
+      NameRestrictions.checkRestricted("a_"));
   }
 
   @SuppressWarnings("static-method") @Test public void testglPrefix()
   {
     Assert.assertEquals(
       NameRestricted.NAME_RESTRICTED_PREFIX_GL_UPPER,
-      NameRestrictions.checkRestricted(new HashSet<String>(), "GL"));
+      NameRestrictions.checkRestricted("GL"));
   }
 
   @SuppressWarnings("static-method") @Test public void testGLPrefix()
   {
     Assert.assertEquals(
       NameRestricted.NAME_RESTRICTED_PREFIX_GL_LOWER,
-      NameRestrictions.checkRestricted(new HashSet<String>(), "gl"));
+      NameRestrictions.checkRestricted("gl"));
   }
 
   @SuppressWarnings("static-method") @Test public void testKeywords()
@@ -60,17 +58,7 @@ public class NameRestrictionsTest
     for (final String k : NameRestrictions.KEYWORDS) {
       Assert.assertEquals(
         NameRestricted.NAME_RESTRICTED_KEYWORD,
-        NameRestrictions.checkRestricted(new HashSet<String>(), k));
+        NameRestrictions.checkRestricted(k));
     }
-  }
-
-  @SuppressWarnings("static-method") @Test public void testOverride()
-  {
-    final HashSet<String> override = new HashSet<String>();
-    override.add("gl_FragCoord");
-
-    Assert.assertEquals(
-      NameRestricted.NAME_OK,
-      NameRestrictions.checkRestricted(override, "gl_FragCoord"));
   }
 }

@@ -171,16 +171,6 @@ public final class TypeCheckerTest
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testFragmentShaderAssignmentBadType_6()
-      throws TypeCheckerError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "typed/fragment-shader-assignment-bad-type-6.p" },
-      Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
-  }
-
   @SuppressWarnings("static-method") @Test public
     void
     testFragmentShaderAssignmentOK_0()
@@ -1152,6 +1142,16 @@ public final class TypeCheckerTest
     TypeCheckerTest.checkMustFailWithCode(
       new String[] { "typed/vertex-shader-assignment-bad-type-5.p" },
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testVertexShaderOutputMainWrongType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/vertex-shader-output-main-bad-type-0.p" },
+      Code.TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE);
   }
 
   @SuppressWarnings("static-method") @Test public

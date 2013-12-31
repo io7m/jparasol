@@ -30,64 +30,6 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 public abstract class UASTRTermName implements UASTRTermNameVisitable
 {
   /**
-   * A name that refers to something built-in (such as a built-in name for a
-   * shader input or output).
-   */
-
-  public static final class UASTRTermNameBuiltIn extends UASTRTermName
-  {
-    private final @Nonnull TokenIdentifierLower actual;
-
-    public UASTRTermNameBuiltIn(
-      final @Nonnull TokenIdentifierLower actual)
-      throws ConstraintError
-    {
-      super(
-        Constraints.constrainNotNull(actual, "Actual").getFile(),
-        Constraints.constrainNotNull(actual, "Actual").getPosition());
-      this.actual = actual;
-    }
-
-    public @Nonnull TokenIdentifierLower getActual()
-    {
-      return this.actual;
-    }
-
-    @Override public TokenIdentifierLower getName()
-    {
-      return this.actual;
-    }
-
-    @Override public String show()
-    {
-      final StringBuilder s = new StringBuilder();
-      s.append("*");
-      s.append(this.actual.getActual());
-      return s.toString();
-    }
-
-    @Override public
-      <A, E extends Throwable, V extends UASTRTermNameVisitor<A, E>>
-      A
-      termNameVisitableAccept(
-        final @Nonnull V v)
-        throws ConstraintError,
-          E
-    {
-      return v.termNameVisitBuiltIn(this);
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTRNameBuiltIn ");
-      builder.append(this.actual);
-      builder.append("]");
-      return builder.toString();
-    }
-  }
-
-  /**
    * A fully qualified name.
    */
 

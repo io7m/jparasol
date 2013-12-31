@@ -81,12 +81,8 @@ public final class NameRestrictions
   }
 
   public static @Nonnull NameRestricted checkRestricted(
-    final @Nonnull Set<String> override,
     final @Nonnull String name)
   {
-    if (override.contains(name)) {
-      return NameRestricted.NAME_OK;
-    }
     if (name.startsWith("gl")) {
       return NameRestricted.NAME_RESTRICTED_PREFIX_GL_LOWER;
     }
@@ -106,14 +102,12 @@ public final class NameRestrictions
   }
 
   public static void checkRestrictedExceptional(
-    final @Nonnull Set<String> override,
     final @Nonnull TokenIdentifier token)
     throws NameRestrictionsException,
       ConstraintError
   {
     final String actual = token.getActual();
-    final NameRestricted code =
-      NameRestrictions.checkRestricted(override, actual);
+    final NameRestricted code = NameRestrictions.checkRestricted(actual);
 
     switch (code) {
       case NAME_OK:

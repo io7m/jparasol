@@ -962,12 +962,21 @@ public abstract class UASTIDeclaration
   public static final class UASTIDShaderVertexOutput extends
     UASTIDShaderVertexParameters
   {
+    private final boolean main;
+
     public UASTIDShaderVertexOutput(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type)
+      final @Nonnull UASTITypePath type,
+      final boolean main)
       throws ConstraintError
     {
       super(name, type);
+      this.main = main;
+    }
+
+    public boolean isMain()
+    {
+      return this.main;
     }
   }
 

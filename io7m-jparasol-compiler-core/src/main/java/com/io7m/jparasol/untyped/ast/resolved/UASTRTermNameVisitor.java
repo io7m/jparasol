@@ -19,17 +19,11 @@ package com.io7m.jparasol.untyped.ast.resolved;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameGlobal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
 
 public interface UASTRTermNameVisitor<A, E extends Throwable>
 {
-  public A termNameVisitBuiltIn(
-    final @Nonnull UASTRTermNameBuiltIn t)
-    throws ConstraintError,
-      E;
-
   public A termNameVisitGlobal(
     final @Nonnull UASTRTermNameGlobal t)
     throws ConstraintError,

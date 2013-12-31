@@ -1299,14 +1299,22 @@ public abstract class UASTRDeclaration
     UASTRDShaderVertexParameters
   {
     private final @Nonnull TokenIdentifierLower name;
+    private final boolean                       main;
 
     public UASTRDShaderVertexOutput(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTRTypeName type)
+      final @Nonnull UASTRTypeName type,
+      final boolean main)
       throws ConstraintError
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
+      this.main = main;
+    }
+
+    public boolean isMain()
+    {
+      return this.main;
     }
 
     public @Nonnull TokenIdentifierLower getName()
@@ -1318,7 +1326,9 @@ public abstract class UASTRDeclaration
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[UASTRDShaderVertexOutput ");
-      builder.append(this.name.getActual());
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.main);
       builder.append("]");
       return builder.toString();
     }
