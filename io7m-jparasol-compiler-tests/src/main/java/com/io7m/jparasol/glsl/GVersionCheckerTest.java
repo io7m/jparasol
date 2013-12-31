@@ -23,6 +23,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.TestPipeline;
+import com.io7m.jparasol.TestUtilities;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
@@ -39,15 +41,15 @@ public final class GVersionCheckerTest
         GVersionCheckerError
   {
     final TASTCompilation c =
-      GLSLTestUtilities
-        .typed(new String[] { "version_checker/fragment-outputs-bad-es100-0.p" });
-    final TASTDModule m = GLSLTestUtilities.getModule(c, "x.y", "M");
+      TestPipeline
+        .completeTyped(new String[] { "glsl/version_checker/fragment-outputs-bad-es100-0.p" });
+    final TASTDModule m = TestPipeline.getModule(c, "x.y", "M");
 
     final TASTDShaderFragment fs =
       (TASTDShaderFragment) m.getShaders().get("f");
 
     final GVersionChecker vc =
-      GVersionChecker.newVersionChecker(GLSLTestUtilities.getLog());
+      GVersionChecker.newVersionChecker(TestUtilities.getLog());
     final SortedSet<GVersionFull> required_full =
       new TreeSet<GVersion.GVersionFull>();
     final SortedSet<GVersionES> required_es =
@@ -64,15 +66,15 @@ public final class GVersionCheckerTest
         GVersionCheckerError
   {
     final TASTCompilation c =
-      GLSLTestUtilities
-        .typed(new String[] { "version_checker/fragment-outputs-ok-es100-0.p" });
-    final TASTDModule m = GLSLTestUtilities.getModule(c, "x.y", "M");
+      TestPipeline
+        .completeTyped(new String[] { "glsl/version_checker/fragment-outputs-ok-es100-0.p" });
+    final TASTDModule m = TestPipeline.getModule(c, "x.y", "M");
 
     final TASTDShaderFragment fs =
       (TASTDShaderFragment) m.getShaders().get("f");
 
     final GVersionChecker vc =
-      GVersionChecker.newVersionChecker(GLSLTestUtilities.getLog());
+      GVersionChecker.newVersionChecker(TestUtilities.getLog());
     final SortedSet<GVersionFull> required_full =
       new TreeSet<GVersion.GVersionFull>();
     final SortedSet<GVersionES> required_es =

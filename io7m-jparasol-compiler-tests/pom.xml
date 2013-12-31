@@ -4,12 +4,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.io7m.jparasol.compiler.core</groupId>
-  <artifactId>io7m-jparasol-compiler-core</artifactId>
-  <name>io7m-jparasol-compiler-core</name>
+  <groupId>com.io7m.jparasol.compiler.tests</groupId>
+  <artifactId>io7m-jparasol-compiler-tests</artifactId>
+  <name>io7m-jparasol-compiler-tests</name>
   <version>0.1.0</version>
-  <description>Minimalist pure functional shading language (core)</description>
-  <url>http://mvn.io7m.com/jparasol-compiler-core/</url>
+  <description>Minimalist pure functional shading language (Unit tests)</description>
+  <url>http://mvn.io7m.com/jparasol-compiler-tests/</url>
 
   <licenses>
     <license>
@@ -34,7 +34,7 @@
   </developers>
 
   <issueManagement>
-    <url>http://fossil.io7m.com/repo.cgi/io7m-jparasol-compiler-core</url>
+    <url>http://fossil.io7m.com/repo.cgi/io7m-jparasol-compiler-tests</url>
     <system>Fossil</system>
   </issueManagement>
 
@@ -75,6 +75,16 @@
       <groupId>com.io7m.jlog</groupId>
       <artifactId>io7m-jlog</artifactId>
       <version>[2.4.0, 3.0.0)</version>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jparasol.compiler.core</groupId>
+      <artifactId>io7m-jparasol-compiler-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jparasol.compiler.glsl</groupId>
+      <artifactId>io7m-jparasol-compiler-glsl</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jgrapht</groupId>
