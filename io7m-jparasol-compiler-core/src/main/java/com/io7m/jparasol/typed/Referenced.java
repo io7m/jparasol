@@ -181,7 +181,9 @@ public final class Referenced
     final @Nonnull Log log)
     throws ConstraintError
   {
-    final Log log_actual = new Log(log, "referenced");
+    Constraints.constrainNotNull(compilation, "Compilation");
+    Constraints.constrainNotNull(shader_name, "Shader name");
+    Constraints.constrainNotNull(log, "Log");
 
     final Map<ModulePathFlat, TASTDModule> modules = compilation.getModules();
     Constraints.constrainArbitrary(
@@ -192,6 +194,8 @@ public final class Referenced
       m.getShaders().containsKey(shader_name.getName()),
       "Shader exists");
 
+    final Log log_actual = new Log(log, "referenced");
+
     final Set<TASTTermNameFlat> terms = new HashSet<TASTTermNameFlat>();
     Referenced.collectTerms(compilation, shader_name, log_actual, terms);
 
@@ -201,21 +205,26 @@ public final class Referenced
     }
 
     Referenced.collectTypes(compilation, types, shader_name, log_actual);
-    return new Referenced(terms, types, log_actual);
+    return new Referenced(shader_name, terms, types);
   }
 
-  private final @Nonnull Log                   log;
+  private final @Nonnull TASTShaderNameFlat    shader_name;
   private final @Nonnull Set<TASTTermNameFlat> terms;
   private final @Nonnull Set<TTypeNameFlat>    types;
 
   private Referenced(
+    final @Nonnull TASTShaderNameFlat shader_name,
     final @Nonnull Set<TASTTermNameFlat> terms,
-    final @Nonnull Set<TTypeNameFlat> types,
-    final @Nonnull Log log)
+    final @Nonnull Set<TTypeNameFlat> types)
   {
-    this.log = log;
+    this.shader_name = shader_name;
     this.terms = terms;
     this.types = types;
+  }
+
+  public @Nonnull TASTShaderNameFlat getShaderName()
+  {
+    return this.shader_name;
   }
 
   public @Nonnull Set<TASTTermNameFlat> getTerms()
