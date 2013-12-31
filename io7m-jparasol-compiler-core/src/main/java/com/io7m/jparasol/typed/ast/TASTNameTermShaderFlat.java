@@ -39,11 +39,6 @@ public abstract class TASTNameTermShaderFlat implements
       this.name = Constraints.constrainNotNull(name, "Name");
     }
 
-    public @Nonnull String show()
-    {
-      return this.name.show();
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -76,6 +71,11 @@ public abstract class TASTNameTermShaderFlat implements
         throws E
     {
       return v.nameTypeShaderVisitShader(this);
+    }
+
+    public @Nonnull String show()
+    {
+      return this.name.show();
     }
 
     @Override public String toString()

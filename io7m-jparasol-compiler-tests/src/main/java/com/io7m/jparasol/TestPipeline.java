@@ -56,65 +56,6 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 
 public final class TestPipeline
 {
-  public static TASTCompilation completeTyped(
-    final String[] names)
-  {
-    try {
-      final Log log = TestUtilities.getLog();
-      final TASTCompilation typed = TestPipeline.typed(names);
-      final Externals ec = Externals.newExternalsChecker(log);
-      ec.check(typed);
-      return typed;
-    } catch (final ConstraintError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final TypeCheckerError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final ExternalsError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    }
-  }
-
-  public static TASTCompilation externalChecked(
-    final String[] names)
-    throws ExternalsError
-  {
-    try {
-      final Log log = TestUtilities.getLog();
-      final TASTCompilation typed = TestPipeline.typed(names);
-      final Externals ec = Externals.newExternalsChecker(log);
-      ec.check(typed);
-      return typed;
-    } catch (final ConstraintError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final TypeCheckerError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    }
-  }
-
-  public static TASTCompilation externalCheckedInternal(
-    final String[] names)
-    throws ExternalsError
-  {
-    try {
-      final Log log = TestUtilities.getLog();
-      final TASTCompilation typed = TestPipeline.typedInternal(names);
-      final Externals ec = Externals.newExternalsChecker(log);
-      ec.check(typed);
-      return typed;
-    } catch (final ConstraintError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final TypeCheckerError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    }
-  }
-
   public static UASTCCompilation checked(
     final String[] names)
     throws ConstraintError,
@@ -186,6 +127,65 @@ public final class TestPipeline
       e.printStackTrace();
       throw new UnreachableCodeException(e);
     } catch (final IOException e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    }
+  }
+
+  public static TASTCompilation completeTyped(
+    final String[] names)
+  {
+    try {
+      final Log log = TestUtilities.getLog();
+      final TASTCompilation typed = TestPipeline.typed(names);
+      final Externals ec = Externals.newExternalsChecker(log);
+      ec.check(typed);
+      return typed;
+    } catch (final ConstraintError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final TypeCheckerError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final ExternalsError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    }
+  }
+
+  public static TASTCompilation externalChecked(
+    final String[] names)
+    throws ExternalsError
+  {
+    try {
+      final Log log = TestUtilities.getLog();
+      final TASTCompilation typed = TestPipeline.typed(names);
+      final Externals ec = Externals.newExternalsChecker(log);
+      ec.check(typed);
+      return typed;
+    } catch (final ConstraintError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final TypeCheckerError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    }
+  }
+
+  public static TASTCompilation externalCheckedInternal(
+    final String[] names)
+    throws ExternalsError
+  {
+    try {
+      final Log log = TestUtilities.getLog();
+      final TASTCompilation typed = TestPipeline.typedInternal(names);
+      final Externals ec = Externals.newExternalsChecker(log);
+      ec.check(typed);
+      return typed;
+    } catch (final ConstraintError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final TypeCheckerError e) {
       e.printStackTrace();
       throw new UnreachableCodeException(e);
     }

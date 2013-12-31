@@ -86,6 +86,15 @@ public final class TASTTermNameFlat
     return result;
   }
 
+  public @Nonnull String show()
+  {
+    final StringBuilder builder = new StringBuilder();
+    builder.append(this.path.getActual());
+    builder.append(".");
+    builder.append(this.name);
+    return builder.toString();
+  }
+
   @Override public String toString()
   {
     final StringBuilder builder = new StringBuilder();
@@ -94,15 +103,6 @@ public final class TASTTermNameFlat
     builder.append(" ");
     builder.append(this.name);
     builder.append("]");
-    return builder.toString();
-  }
-
-  public @Nonnull String show()
-  {
-    final StringBuilder builder = new StringBuilder();
-    builder.append(this.path.getActual());
-    builder.append(".");
-    builder.append(this.name);
     return builder.toString();
   }
 }

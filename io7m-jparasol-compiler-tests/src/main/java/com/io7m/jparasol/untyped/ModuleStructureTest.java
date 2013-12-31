@@ -575,30 +575,6 @@ public final class ModuleStructureTest
   @SuppressWarnings("static-method") @Test(
     expected = ModuleStructureError.class) public
     void
-    testModuleShaderVertexMultipleMain_0()
-      throws ConstraintError,
-        ModuleStructureError
-  {
-    ModuleStructureTest.checkMustFailWithCode(
-      new String[] { "module-shader-v-multiple-main-0.p" },
-      Code.MODULE_STRUCTURE_SHADER_OUTPUT_MULTIPLE_MAIN);
-  }
-
-  @SuppressWarnings("static-method") @Test(
-    expected = ModuleStructureError.class) public
-    void
-    testModuleShaderVertexMissingMain_0()
-      throws ConstraintError,
-        ModuleStructureError
-  {
-    ModuleStructureTest.checkMustFailWithCode(
-      new String[] { "module-shader-v-missing-main-0.p" },
-      Code.MODULE_STRUCTURE_SHADER_OUTPUT_MISSING_MAIN);
-  }
-
-  @SuppressWarnings("static-method") @Test(
-    expected = ModuleStructureError.class) public
-    void
     testModuleShaderVertexDuplicateParam_0()
       throws ConstraintError,
         ModuleStructureError
@@ -671,6 +647,18 @@ public final class ModuleStructureTest
   @SuppressWarnings("static-method") @Test(
     expected = ModuleStructureError.class) public
     void
+    testModuleShaderVertexMissingMain_0()
+      throws ConstraintError,
+        ModuleStructureError
+  {
+    ModuleStructureTest.checkMustFailWithCode(
+      new String[] { "module-shader-v-missing-main-0.p" },
+      Code.MODULE_STRUCTURE_SHADER_OUTPUT_MISSING_MAIN);
+  }
+
+  @SuppressWarnings("static-method") @Test(
+    expected = ModuleStructureError.class) public
+    void
     testModuleShaderVertexMissingWrite_0()
       throws ConstraintError,
         ModuleStructureError
@@ -678,6 +666,18 @@ public final class ModuleStructureTest
     ModuleStructureTest.checkMustFailWithCode(
       new String[] { "module-shader-v-missing-write-0.p" },
       Code.MODULE_STRUCTURE_SHADER_OUTPUT_ASSIGNMENT_MISSING);
+  }
+
+  @SuppressWarnings("static-method") @Test(
+    expected = ModuleStructureError.class) public
+    void
+    testModuleShaderVertexMultipleMain_0()
+      throws ConstraintError,
+        ModuleStructureError
+  {
+    ModuleStructureTest.checkMustFailWithCode(
+      new String[] { "module-shader-v-multiple-main-0.p" },
+      Code.MODULE_STRUCTURE_SHADER_OUTPUT_MULTIPLE_MAIN);
   }
 
   @SuppressWarnings({ "boxing", "static-method" }) @Test public

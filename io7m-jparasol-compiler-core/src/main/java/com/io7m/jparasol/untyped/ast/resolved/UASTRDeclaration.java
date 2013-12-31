@@ -1298,8 +1298,8 @@ public abstract class UASTRDeclaration
   public static final class UASTRDShaderVertexOutput extends
     UASTRDShaderVertexParameters
   {
-    private final @Nonnull TokenIdentifierLower name;
     private final boolean                       main;
+    private final @Nonnull TokenIdentifierLower name;
 
     public UASTRDShaderVertexOutput(
       final @Nonnull TokenIdentifierLower name,
@@ -1312,14 +1312,14 @@ public abstract class UASTRDeclaration
       this.main = main;
     }
 
-    public boolean isMain()
-    {
-      return this.main;
-    }
-
     public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
+    }
+
+    public boolean isMain()
+    {
+      return this.main;
     }
 
     @Override public String toString()

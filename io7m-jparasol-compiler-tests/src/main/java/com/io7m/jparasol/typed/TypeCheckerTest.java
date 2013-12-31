@@ -1189,16 +1189,6 @@ public final class TypeCheckerTest
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
-  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
-    void
-    testVertexShaderOutputMainWrongType_0()
-      throws TypeCheckerError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "typed/vertex-shader-output-main-bad-type-0.p" },
-      Code.TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE);
-  }
-
   @SuppressWarnings("static-method") @Test public
     void
     testVertexShaderAssignmentOK_0()
@@ -1221,5 +1211,15 @@ public final class TypeCheckerTest
     Assert.assertEquals(TVector4F.get(), v.getParameters().get(0).getType());
     Assert.assertEquals("out_0", v.getOutputs().get(0).getName().getActual());
     Assert.assertEquals(TVector4F.get(), v.getOutputs().get(0).getType());
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testVertexShaderOutputMainWrongType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/vertex-shader-output-main-bad-type-0.p" },
+      Code.TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE);
   }
 }

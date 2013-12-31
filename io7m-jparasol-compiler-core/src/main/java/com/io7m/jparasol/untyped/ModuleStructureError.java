@@ -460,6 +460,24 @@ public final class ModuleStructureError extends CompilerError
 
   public static @Nonnull
     ModuleStructureError
+    moduleShaderVertexOutputMissingMain(
+      final @Nonnull TokenIdentifierLower name)
+      throws ConstraintError
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("The vertex shader ");
+    m.append(name.getActual());
+    m.append(" is missing a main output");
+
+    return new ModuleStructureError(
+      Code.MODULE_STRUCTURE_SHADER_OUTPUT_MISSING_MAIN,
+      m.toString(),
+      name.getFile(),
+      name.getPosition());
+  }
+
+  public static @Nonnull
+    ModuleStructureError
     moduleShaderVertexOutputMultipleMains(
       final @Nonnull UASTIDShaderVertexOutput main,
       final @Nonnull UASTIDShaderVertexOutput o)
@@ -489,24 +507,6 @@ public final class ModuleStructureError extends CompilerError
       m.toString(),
       o.getName().getFile(),
       o.getName().getPosition());
-  }
-
-  public static @Nonnull
-    ModuleStructureError
-    moduleShaderVertexOutputMissingMain(
-      final @Nonnull TokenIdentifierLower name)
-      throws ConstraintError
-  {
-    final StringBuilder m = new StringBuilder();
-    m.append("The vertex shader ");
-    m.append(name.getActual());
-    m.append(" is missing a main output");
-
-    return new ModuleStructureError(
-      Code.MODULE_STRUCTURE_SHADER_OUTPUT_MISSING_MAIN,
-      m.toString(),
-      name.getFile(),
-      name.getPosition());
   }
 
   public static ModuleStructureError moduleTermConflict(

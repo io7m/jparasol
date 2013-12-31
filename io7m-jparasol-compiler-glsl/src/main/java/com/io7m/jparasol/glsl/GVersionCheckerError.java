@@ -36,15 +36,6 @@ public final class GVersionCheckerError extends CompilerError
     serialVersionUID = -5916767962958997985L;
   }
 
-  private GVersionCheckerError(
-    final @Nonnull File file,
-    final @Nonnull Position position,
-    final @Nonnull String message)
-    throws ConstraintError
-  {
-    super(message, file, position);
-  }
-
   public static @Nonnull
     GVersionCheckerError
     requiredVersionsExcluded(
@@ -92,5 +83,14 @@ public final class GVersionCheckerError extends CompilerError
       new File("<multiple>"),
       new Position(0, 0),
       m.toString());
+  }
+
+  private GVersionCheckerError(
+    final @Nonnull File file,
+    final @Nonnull Position position,
+    final @Nonnull String message)
+    throws ConstraintError
+  {
+    super(message, file, position);
   }
 }

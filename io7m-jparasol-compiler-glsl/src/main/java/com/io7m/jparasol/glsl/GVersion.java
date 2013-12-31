@@ -82,6 +82,11 @@ public abstract class GVersion implements GVersionVisitable
       return true;
     }
 
+    @Override public String getLongName()
+    {
+      return "GLSL ES " + this.number;
+    }
+
     @Override public int getNumber()
     {
       return this.number;
@@ -112,11 +117,6 @@ public abstract class GVersion implements GVersionVisitable
         throws E
     {
       return v.versionVisitES(this);
-    }
-
-    @Override public String getLongName()
-    {
-      return "GLSL ES " + this.number;
     }
   }
 
@@ -205,6 +205,11 @@ public abstract class GVersion implements GVersionVisitable
       return true;
     }
 
+    @Override public String getLongName()
+    {
+      return "GLSL " + this.number;
+    }
+
     @Override public int getNumber()
     {
       return this.number;
@@ -236,14 +241,9 @@ public abstract class GVersion implements GVersionVisitable
     {
       return v.versionVisitFull(this);
     }
-
-    @Override public String getLongName()
-    {
-      return "GLSL " + this.number;
-    }
   }
 
-  public abstract int getNumber();
-
   public abstract @Nonnull String getLongName();
+
+  public abstract int getNumber();
 }

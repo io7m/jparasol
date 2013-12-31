@@ -52,33 +52,43 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 
 public final class Referenced
 {
-  public static @Nonnull Referenced fromShader(
+  private static void collectTerms(
     final @Nonnull TASTCompilation compilation,
     final @Nonnull TASTShaderNameFlat shader_name,
-    final @Nonnull Log log)
+    final @Nonnull Log log_actual,
+    final @Nonnull Set<TASTTermNameFlat> terms)
     throws ConstraintError
   {
-    final Log log_actual = new Log(log, "referenced");
+    final TASTNameTermShaderFlat shader_term_name =
+      new TASTNameTermShaderFlat.Shader(shader_name);
 
-    final Map<ModulePathFlat, TASTDModule> modules = compilation.getModules();
-    Constraints.constrainArbitrary(
-      modules.containsKey(shader_name.getPath()),
-      "Module exists");
-    final TASTDModule m = modules.get(shader_name.getPath());
-    Constraints.constrainArbitrary(
-      m.getShaders().containsKey(shader_name.getName()),
-      "Shader exists");
+    final DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> shader_term_graph =
+      compilation.getShaderTermGraph();
+    final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> term_term_graph =
+      compilation.getTermGraph();
 
-    final Set<TASTTermNameFlat> terms = new HashSet<TASTTermNameFlat>();
-    Referenced.collectTerms(compilation, shader_name, log_actual, terms);
+    for (final TASTReference d : shader_term_graph
+      .outgoingEdgesOf(shader_term_name)) {
+      final ModulePathFlat term_module = d.getTargetModuleFlat();
+      final TokenIdentifierLower term_name = d.getTargetName();
+      final TASTTermNameFlat term =
+        new TASTTermNameFlat(term_module, term_name.getActual());
 
-    final Set<TTypeNameFlat> types = new HashSet<TTypeNameFlat>();
-    for (final TASTTermNameFlat t : terms) {
-      Referenced.collectTypesForTerm(compilation, types, t, log_actual);
+      final BreadthFirstIterator<TASTTermNameFlat, TASTReference> bfi =
+        new BreadthFirstIterator<TASTTermNameFlat, TASTReference>(
+          term_term_graph,
+          term);
+
+      while (bfi.hasNext()) {
+        final TASTTermNameFlat current = bfi.next();
+        if (log_actual.enabled(Level.LOG_DEBUG)) {
+          log_actual.debug(String.format("Adding term %s.%s", current
+            .getPath()
+            .getActual(), current.getName()));
+        }
+        terms.add(new TASTTermNameFlat(current.getPath(), current.getName()));
+      }
     }
-
-    Referenced.collectTypes(compilation, types, shader_name, log_actual);
-    return new Referenced(terms, types, log_actual);
   }
 
   private static void collectTypes(
@@ -165,43 +175,33 @@ public final class Referenced
     }
   }
 
-  private static void collectTerms(
+  public static @Nonnull Referenced fromShader(
     final @Nonnull TASTCompilation compilation,
     final @Nonnull TASTShaderNameFlat shader_name,
-    final @Nonnull Log log_actual,
-    final @Nonnull Set<TASTTermNameFlat> terms)
+    final @Nonnull Log log)
     throws ConstraintError
   {
-    final TASTNameTermShaderFlat shader_term_name =
-      new TASTNameTermShaderFlat.Shader(shader_name);
+    final Log log_actual = new Log(log, "referenced");
 
-    final DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> shader_term_graph =
-      compilation.getShaderTermGraph();
-    final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> term_term_graph =
-      compilation.getTermGraph();
+    final Map<ModulePathFlat, TASTDModule> modules = compilation.getModules();
+    Constraints.constrainArbitrary(
+      modules.containsKey(shader_name.getPath()),
+      "Module exists");
+    final TASTDModule m = modules.get(shader_name.getPath());
+    Constraints.constrainArbitrary(
+      m.getShaders().containsKey(shader_name.getName()),
+      "Shader exists");
 
-    for (final TASTReference d : shader_term_graph
-      .outgoingEdgesOf(shader_term_name)) {
-      final ModulePathFlat term_module = d.getTargetModuleFlat();
-      final TokenIdentifierLower term_name = d.getTargetName();
-      final TASTTermNameFlat term =
-        new TASTTermNameFlat(term_module, term_name.getActual());
+    final Set<TASTTermNameFlat> terms = new HashSet<TASTTermNameFlat>();
+    Referenced.collectTerms(compilation, shader_name, log_actual, terms);
 
-      final BreadthFirstIterator<TASTTermNameFlat, TASTReference> bfi =
-        new BreadthFirstIterator<TASTTermNameFlat, TASTReference>(
-          term_term_graph,
-          term);
-
-      while (bfi.hasNext()) {
-        final TASTTermNameFlat current = bfi.next();
-        if (log_actual.enabled(Level.LOG_DEBUG)) {
-          log_actual.debug(String.format("Adding term %s.%s", current
-            .getPath()
-            .getActual(), current.getName()));
-        }
-        terms.add(new TASTTermNameFlat(current.getPath(), current.getName()));
-      }
+    final Set<TTypeNameFlat> types = new HashSet<TTypeNameFlat>();
+    for (final TASTTermNameFlat t : terms) {
+      Referenced.collectTypesForTerm(compilation, types, t, log_actual);
     }
+
+    Referenced.collectTypes(compilation, types, shader_name, log_actual);
+    return new Referenced(terms, types, log_actual);
   }
 
   private final @Nonnull Log                   log;

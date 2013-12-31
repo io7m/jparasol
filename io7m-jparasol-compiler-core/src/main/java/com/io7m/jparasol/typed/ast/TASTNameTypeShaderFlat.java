@@ -134,6 +134,11 @@ public abstract class TASTNameTypeShaderFlat implements
       return v.nameTypeShaderVisitType(this);
     }
 
+    public @Nonnull String show()
+    {
+      return this.name.show();
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -141,11 +146,6 @@ public abstract class TASTNameTypeShaderFlat implements
       builder.append(this.name);
       builder.append("]");
       return builder.toString();
-    }
-
-    public @Nonnull String show()
-    {
-      return this.name.show();
     }
   }
 }

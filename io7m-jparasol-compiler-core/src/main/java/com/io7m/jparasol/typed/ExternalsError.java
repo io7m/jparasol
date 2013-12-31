@@ -38,25 +38,7 @@ public final class ExternalsError extends CompilerError
     EXTERNALS_DISALLOWED_IN_VERTEX_SHADER
   }
 
-  private static final long   serialVersionUID = -4604639514273970019L;
-
-  private final @Nonnull Code code;
-
-  private ExternalsError(
-    final @Nonnull Code code,
-    final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
-  {
-    super(message, file, position);
-    this.code = Constraints.constrainNotNull(code, "Code");
-  }
-
-  public @Nonnull Code getCode()
-  {
-    return this.code;
-  }
+  private static final long serialVersionUID = -4604639514273970019L;
 
   public static @Nonnull ExternalsError termDisallowedInFragmentShader(
     final @Nonnull TASTNameTermShaderFlat.Shader start_shader,
@@ -152,5 +134,23 @@ public final class ExternalsError extends CompilerError
       m.toString(),
       start_term_reference.getSourceName().getFile(),
       start_term_reference.getSourceName().getPosition());
+  }
+
+  private final @Nonnull Code code;
+
+  private ExternalsError(
+    final @Nonnull Code code,
+    final @Nonnull String message,
+    final @Nonnull File file,
+    final @Nonnull Position position)
+    throws ConstraintError
+  {
+    super(message, file, position);
+    this.code = Constraints.constrainNotNull(code, "Code");
+  }
+
+  public @Nonnull Code getCode()
+  {
+    return this.code;
   }
 }

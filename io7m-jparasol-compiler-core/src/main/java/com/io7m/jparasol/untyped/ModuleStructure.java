@@ -1187,11 +1187,11 @@ public final class ModuleStructure
     UASTIVertexShaderVisitor<UASTCDShaderVertex, UASTCDShaderVertexInput, UASTCDShaderVertexParameter, UASTCDShaderVertexOutput, UASTCDShaderVertexLocalValue, UASTCDShaderVertexOutputAssignment, ModuleStructureError>
   {
     private final @Nonnull HashMap<String, UASTIDShaderVertexLocalValue>       locals;
+    private @CheckForNull UASTIDShaderVertexOutput                             main;
     private final @Nonnull HashMap<String, UASTIDShaderVertexOutputAssignment> output_assignments;
     private final @Nonnull HashMap<String, UASTIDShaderVertexOutput>           outputs;
     private final @Nonnull HashMap<String, UASTIDShaderParameters>             parameters;
     private final @Nonnull UASTIDShaderVertex                                  shader;
-    private @CheckForNull UASTIDShaderVertexOutput                             main;
 
     public VertexShaderChecker(
       final @Nonnull UASTIDShaderVertex shader)

@@ -1806,8 +1806,8 @@ public abstract class TASTDeclaration
   public static final class TASTDShaderVertexOutput extends
     TASTDShaderVertexParameters
   {
-    private final @Nonnull TokenIdentifierLower name;
     private final boolean                       main;
+    private final @Nonnull TokenIdentifierLower name;
 
     public TASTDShaderVertexOutput(
       final @Nonnull TokenIdentifierLower name,
@@ -1818,11 +1818,6 @@ public abstract class TASTDeclaration
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
       this.main = main;
-    }
-
-    public boolean isMain()
-    {
-      return this.main;
     }
 
     @Override public boolean equals(
@@ -1859,6 +1854,11 @@ public abstract class TASTDeclaration
       result = (prime * result) + (this.main ? 1231 : 1237);
       result = (prime * result) + this.name.hashCode();
       return result;
+    }
+
+    public boolean isMain()
+    {
+      return this.main;
     }
 
     @Override public String toString()

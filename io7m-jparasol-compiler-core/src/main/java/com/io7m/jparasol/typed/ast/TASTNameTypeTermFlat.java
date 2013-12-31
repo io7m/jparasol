@@ -29,8 +29,6 @@ import com.io7m.jparasol.typed.TTypeNameFlat;
 public abstract class TASTNameTypeTermFlat implements
   TASTNameTypeTermFlatVisitable
 {
-  public abstract @Nonnull String show();
-
   public static final class Term extends TASTNameTypeTermFlat
   {
     private final @Nonnull TASTTermNameFlat name;
@@ -76,6 +74,11 @@ public abstract class TASTNameTypeTermFlat implements
       return v.nameTypeTermVisitTerm(this);
     }
 
+    @Override public @Nonnull String show()
+    {
+      return this.name.show();
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -83,11 +86,6 @@ public abstract class TASTNameTypeTermFlat implements
       builder.append(this.name);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public @Nonnull String show()
-    {
-      return this.name.show();
     }
   }
 
@@ -121,6 +119,11 @@ public abstract class TASTNameTypeTermFlat implements
       return true;
     }
 
+    public @Nonnull TTypeNameFlat getName()
+    {
+      return this.name;
+    }
+
     @Override public int hashCode()
     {
       return this.name.hashCode();
@@ -136,6 +139,11 @@ public abstract class TASTNameTypeTermFlat implements
       return v.nameTypeTermVisitType(this);
     }
 
+    @Override public @Nonnull String show()
+    {
+      return this.name.show();
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -144,15 +152,7 @@ public abstract class TASTNameTypeTermFlat implements
       builder.append("]");
       return builder.toString();
     }
-
-    @Override public @Nonnull String show()
-    {
-      return this.name.show();
-    }
-
-    public @Nonnull TTypeNameFlat getName()
-    {
-      return this.name;
-    }
   }
+
+  public abstract @Nonnull String show();
 }
