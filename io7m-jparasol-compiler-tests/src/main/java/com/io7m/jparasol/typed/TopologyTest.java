@@ -34,6 +34,25 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 
 public final class TopologyTest
 {
+  private static @Nonnull Pair<TASTCompilation, Referenced> referenced(
+    final @Nonnull String[] names,
+    final @Nonnull TASTShaderNameFlat shader)
+    throws ConstraintError
+  {
+    final TASTCompilation r = TestPipeline.completeTyped(names);
+    final Referenced ref =
+      Referenced.fromShader(r, shader, TestUtilities.getLog());
+    return new Pair<TASTCompilation, Referenced>(r, ref);
+  }
+
+  private static @Nonnull TASTShaderNameFlat shaderName(
+    final @Nonnull String module,
+    final @Nonnull String name)
+    throws ConstraintError
+  {
+    return new TASTShaderNameFlat(new ModulePathFlat(module), name);
+  }
+
   @SuppressWarnings("static-method") @Test public
     void
     testVertexShaderTerm_3()
@@ -58,24 +77,5 @@ public final class TopologyTest
     Assert.assertEquals(2, terms.size());
     Assert.assertEquals(terms.get(0), TestPipeline.termName("x.y.M", "x"));
     Assert.assertEquals(terms.get(1), TestPipeline.termName("x.y.M", "y"));
-  }
-
-  private static @Nonnull TASTShaderNameFlat shaderName(
-    final @Nonnull String module,
-    final @Nonnull String name)
-    throws ConstraintError
-  {
-    return new TASTShaderNameFlat(new ModulePathFlat(module), name);
-  }
-
-  private static @Nonnull Pair<TASTCompilation, Referenced> referenced(
-    final @Nonnull String[] names,
-    final @Nonnull TASTShaderNameFlat shader)
-    throws ConstraintError
-  {
-    final TASTCompilation r = TestPipeline.completeTyped(names);
-    final Referenced ref =
-      Referenced.fromShader(r, shader, TestUtilities.getLog());
-    return new Pair<TASTCompilation, Referenced>(r, ref);
   }
 }

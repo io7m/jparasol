@@ -56,6 +56,11 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
       return result;
     }
 
+    @Override public @Nonnull String show()
+    {
+      return this.name;
+    }
+
     @Override public
       <A, E extends Throwable, V extends GTermNameVisitor<A, E>>
       A
@@ -73,11 +78,6 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
       builder.append(this.name);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public @Nonnull String show()
-    {
-      return this.name;
     }
   }
 
@@ -115,6 +115,11 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
       return result;
     }
 
+    @Override public String show()
+    {
+      return this.name;
+    }
+
     @Override public
       <A, E extends Throwable, V extends GTermNameVisitor<A, E>>
       A
@@ -132,11 +137,6 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
       builder.append(this.name);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public String show()
-    {
-      return this.name;
     }
   }
 }

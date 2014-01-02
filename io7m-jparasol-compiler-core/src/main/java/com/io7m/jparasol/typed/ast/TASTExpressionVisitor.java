@@ -52,11 +52,6 @@ public interface TASTExpressionVisitor<A, L, E extends Throwable>
     throws E,
       ConstraintError;
 
-  public boolean expressionVisitConditionalPre(
-    final @Nonnull TASTEConditional e)
-    throws E,
-      ConstraintError;
-
   public A expressionVisitConditional(
     final @CheckForNull A condition,
     final @CheckForNull A left,
@@ -81,6 +76,11 @@ public interface TASTExpressionVisitor<A, L, E extends Throwable>
       ConstraintError;
 
   public void expressionVisitConditionalLeftPre(
+    final @Nonnull TASTEConditional e)
+    throws E,
+      ConstraintError;
+
+  public boolean expressionVisitConditionalPre(
     final @Nonnull TASTEConditional e)
     throws E,
       ConstraintError;

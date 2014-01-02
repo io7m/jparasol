@@ -25,12 +25,10 @@ import com.io7m.jaux.functional.Pair;
 public abstract class GASTTypeDeclaration implements
   GASTTypeDeclarationVisitable
 {
-  public abstract @Nonnull GTypeName getName();
-
   public static final class GASTTypeRecord extends GASTTypeDeclaration
   {
-    private final @Nonnull GTypeName                         name;
     private final @Nonnull List<Pair<GFieldName, GTypeName>> fields;
+    private final @Nonnull GTypeName                         name;
 
     public GASTTypeRecord(
       final @Nonnull GTypeName name,
@@ -38,25 +36,6 @@ public abstract class GASTTypeDeclaration implements
     {
       this.name = name;
       this.fields = fields;
-    }
-
-    @Override public @Nonnull GTypeName getName()
-    {
-      return this.name;
-    }
-
-    public @Nonnull List<Pair<GFieldName, GTypeName>> getFields()
-    {
-      return this.fields;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.fields.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public boolean equals(
@@ -81,6 +60,25 @@ public abstract class GASTTypeDeclaration implements
       return true;
     }
 
+    public @Nonnull List<Pair<GFieldName, GTypeName>> getFields()
+    {
+      return this.fields;
+    }
+
+    @Override public @Nonnull GTypeName getName()
+    {
+      return this.name;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.fields.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
     @Override public
       <A, E extends Throwable, V extends GASTTypeDeclarationVisitor<A, E>>
       A
@@ -91,4 +89,6 @@ public abstract class GASTTypeDeclaration implements
       return v.typeVisitRecord(this);
     }
   }
+
+  public abstract @Nonnull GTypeName getName();
 }

@@ -66,6 +66,11 @@ public final class TASTShaderNameFlat implements NameFlat
     return true;
   }
 
+  @Override public ModulePathFlat getModulePath()
+  {
+    return this.path;
+  }
+
   @Override public @Nonnull String getName()
   {
     return this.name;
@@ -98,10 +103,5 @@ public final class TASTShaderNameFlat implements NameFlat
     builder.append(this.name);
     builder.append("]");
     return builder.toString();
-  }
-
-  @Override public ModulePathFlat getModulePath()
-  {
-    return this.path;
   }
 }

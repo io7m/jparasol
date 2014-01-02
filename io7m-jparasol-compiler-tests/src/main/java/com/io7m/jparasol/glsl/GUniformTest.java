@@ -67,129 +67,6 @@ public final class GUniformTest
       name);
   }
 
-  @SuppressWarnings("static-method") @Test public void testVertexUniforms()
-    throws ConstraintError
-  {
-    final Map<TTypeNameBuiltIn, TType> types = TType.getBaseTypesByName();
-    for (final TTypeNameBuiltIn name : types.keySet()) {
-      final TType type = types.get(name);
-      final TASTTermNameLocal p_name = GUniformTest.nameLocal("xyz");
-      final List<Pair<String, TType>> expanded =
-        GUniform.expandUniformVertex(new TASTDShaderVertexParameter(
-          p_name,
-          (TValueType) type));
-      Assert.assertEquals(1, expanded.size());
-      Assert.assertEquals("xyz", expanded.get(0).first);
-      Assert.assertEquals(type, expanded.get(0).second);
-    }
-  }
-
-  @SuppressWarnings("static-method") @Test public
-    void
-    testUniformsVertexRecord_0()
-      throws ConstraintError
-  {
-    final TTypeNameGlobal name =
-      new TTypeNameGlobal(
-        TestPipeline.getModuleMakePath("x.y", "M"),
-        GUniformTest.token("t"));
-    final List<TRecordField> fields = new ArrayList<TType.TRecordField>();
-    fields.add(new TRecordField("x", TInteger.get()));
-    final TRecord tr = new TRecord(name, fields);
-    final TASTTermNameLocal p_name = GUniformTest.nameLocal("xyz");
-    final TASTDShaderVertexParameter p =
-      new TASTDShaderVertexParameter(p_name, tr);
-
-    final List<Pair<String, TType>> expanded =
-      GUniform.expandUniformVertex(p);
-    Assert.assertEquals(1, expanded.size());
-    Assert.assertEquals("xyz.x", expanded.get(0).first);
-    Assert.assertEquals(TInteger.get(), expanded.get(0).second);
-  }
-
-  @SuppressWarnings("static-method") @Test public
-    void
-    testUniformsVertexRecord_1()
-      throws ConstraintError
-  {
-    final TTypeNameGlobal name =
-      new TTypeNameGlobal(
-        TestPipeline.getModuleMakePath("x.y", "M"),
-        GUniformTest.token("t"));
-
-    final List<TRecordField> fields = new ArrayList<TType.TRecordField>();
-    fields.add(new TRecordField("x", TInteger.get()));
-    fields.add(new TRecordField("y", TFloat.get()));
-    fields.add(new TRecordField("z", TBoolean.get()));
-    final TRecord tr = new TRecord(name, fields);
-
-    final TASTTermNameLocal p_name = GUniformTest.nameLocal("xyz");
-    final TASTDShaderVertexParameter p =
-      new TASTDShaderVertexParameter(p_name, tr);
-
-    final List<Pair<String, TType>> expanded =
-      GUniform.expandUniformVertex(p);
-    Assert.assertEquals(3, expanded.size());
-    Assert.assertEquals("xyz.x", expanded.get(0).first);
-    Assert.assertEquals(TInteger.get(), expanded.get(0).second);
-    Assert.assertEquals("xyz.y", expanded.get(1).first);
-    Assert.assertEquals(TFloat.get(), expanded.get(1).second);
-    Assert.assertEquals("xyz.z", expanded.get(2).first);
-    Assert.assertEquals(TBoolean.get(), expanded.get(2).second);
-  }
-
-  @SuppressWarnings("static-method") @Test public
-    void
-    testUniformsVertexRecord_2()
-      throws ConstraintError
-  {
-    final TTypeNameGlobal name =
-      new TTypeNameGlobal(
-        TestPipeline.getModuleMakePath("x.y", "M"),
-        GUniformTest.token("t"));
-
-    final List<TRecordField> fields = new ArrayList<TType.TRecordField>();
-    fields.add(new TRecordField("x", TInteger.get()));
-    fields.add(new TRecordField("y", TFloat.get()));
-    fields.add(new TRecordField("z", TBoolean.get()));
-    final TRecord tr = new TRecord(name, fields);
-
-    final List<TRecordField> outer_fields =
-      new ArrayList<TType.TRecordField>();
-    outer_fields.add(new TRecordField("t0", tr));
-    outer_fields.add(new TRecordField("t1", tr));
-    outer_fields.add(new TRecordField("t2", tr));
-    final TRecord outer = new TRecord(name, outer_fields);
-
-    final TASTTermNameLocal p_name = GUniformTest.nameLocal("xyz");
-    final TASTDShaderVertexParameter p =
-      new TASTDShaderVertexParameter(p_name, outer);
-
-    final List<Pair<String, TType>> expanded =
-      GUniform.expandUniformVertex(p);
-    Assert.assertEquals(9, expanded.size());
-    Assert.assertEquals("xyz.t0.x", expanded.get(0).first);
-    Assert.assertEquals(TInteger.get(), expanded.get(0).second);
-    Assert.assertEquals("xyz.t0.y", expanded.get(1).first);
-    Assert.assertEquals(TFloat.get(), expanded.get(1).second);
-    Assert.assertEquals("xyz.t0.z", expanded.get(2).first);
-    Assert.assertEquals(TBoolean.get(), expanded.get(2).second);
-
-    Assert.assertEquals("xyz.t1.x", expanded.get(3).first);
-    Assert.assertEquals(TInteger.get(), expanded.get(3).second);
-    Assert.assertEquals("xyz.t1.y", expanded.get(4).first);
-    Assert.assertEquals(TFloat.get(), expanded.get(4).second);
-    Assert.assertEquals("xyz.t1.z", expanded.get(5).first);
-    Assert.assertEquals(TBoolean.get(), expanded.get(5).second);
-
-    Assert.assertEquals("xyz.t2.x", expanded.get(6).first);
-    Assert.assertEquals(TInteger.get(), expanded.get(6).second);
-    Assert.assertEquals("xyz.t2.y", expanded.get(7).first);
-    Assert.assertEquals(TFloat.get(), expanded.get(7).second);
-    Assert.assertEquals("xyz.t2.z", expanded.get(8).first);
-    Assert.assertEquals(TBoolean.get(), expanded.get(8).second);
-  }
-
   @SuppressWarnings("static-method") @Test public void testFragmentUniforms()
     throws ConstraintError
   {
@@ -311,5 +188,128 @@ public final class GUniformTest
     Assert.assertEquals(TFloat.get(), expanded.get(7).second);
     Assert.assertEquals("xyz.t2.z", expanded.get(8).first);
     Assert.assertEquals(TBoolean.get(), expanded.get(8).second);
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testUniformsVertexRecord_0()
+      throws ConstraintError
+  {
+    final TTypeNameGlobal name =
+      new TTypeNameGlobal(
+        TestPipeline.getModuleMakePath("x.y", "M"),
+        GUniformTest.token("t"));
+    final List<TRecordField> fields = new ArrayList<TType.TRecordField>();
+    fields.add(new TRecordField("x", TInteger.get()));
+    final TRecord tr = new TRecord(name, fields);
+    final TASTTermNameLocal p_name = GUniformTest.nameLocal("xyz");
+    final TASTDShaderVertexParameter p =
+      new TASTDShaderVertexParameter(p_name, tr);
+
+    final List<Pair<String, TType>> expanded =
+      GUniform.expandUniformVertex(p);
+    Assert.assertEquals(1, expanded.size());
+    Assert.assertEquals("xyz.x", expanded.get(0).first);
+    Assert.assertEquals(TInteger.get(), expanded.get(0).second);
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testUniformsVertexRecord_1()
+      throws ConstraintError
+  {
+    final TTypeNameGlobal name =
+      new TTypeNameGlobal(
+        TestPipeline.getModuleMakePath("x.y", "M"),
+        GUniformTest.token("t"));
+
+    final List<TRecordField> fields = new ArrayList<TType.TRecordField>();
+    fields.add(new TRecordField("x", TInteger.get()));
+    fields.add(new TRecordField("y", TFloat.get()));
+    fields.add(new TRecordField("z", TBoolean.get()));
+    final TRecord tr = new TRecord(name, fields);
+
+    final TASTTermNameLocal p_name = GUniformTest.nameLocal("xyz");
+    final TASTDShaderVertexParameter p =
+      new TASTDShaderVertexParameter(p_name, tr);
+
+    final List<Pair<String, TType>> expanded =
+      GUniform.expandUniformVertex(p);
+    Assert.assertEquals(3, expanded.size());
+    Assert.assertEquals("xyz.x", expanded.get(0).first);
+    Assert.assertEquals(TInteger.get(), expanded.get(0).second);
+    Assert.assertEquals("xyz.y", expanded.get(1).first);
+    Assert.assertEquals(TFloat.get(), expanded.get(1).second);
+    Assert.assertEquals("xyz.z", expanded.get(2).first);
+    Assert.assertEquals(TBoolean.get(), expanded.get(2).second);
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testUniformsVertexRecord_2()
+      throws ConstraintError
+  {
+    final TTypeNameGlobal name =
+      new TTypeNameGlobal(
+        TestPipeline.getModuleMakePath("x.y", "M"),
+        GUniformTest.token("t"));
+
+    final List<TRecordField> fields = new ArrayList<TType.TRecordField>();
+    fields.add(new TRecordField("x", TInteger.get()));
+    fields.add(new TRecordField("y", TFloat.get()));
+    fields.add(new TRecordField("z", TBoolean.get()));
+    final TRecord tr = new TRecord(name, fields);
+
+    final List<TRecordField> outer_fields =
+      new ArrayList<TType.TRecordField>();
+    outer_fields.add(new TRecordField("t0", tr));
+    outer_fields.add(new TRecordField("t1", tr));
+    outer_fields.add(new TRecordField("t2", tr));
+    final TRecord outer = new TRecord(name, outer_fields);
+
+    final TASTTermNameLocal p_name = GUniformTest.nameLocal("xyz");
+    final TASTDShaderVertexParameter p =
+      new TASTDShaderVertexParameter(p_name, outer);
+
+    final List<Pair<String, TType>> expanded =
+      GUniform.expandUniformVertex(p);
+    Assert.assertEquals(9, expanded.size());
+    Assert.assertEquals("xyz.t0.x", expanded.get(0).first);
+    Assert.assertEquals(TInteger.get(), expanded.get(0).second);
+    Assert.assertEquals("xyz.t0.y", expanded.get(1).first);
+    Assert.assertEquals(TFloat.get(), expanded.get(1).second);
+    Assert.assertEquals("xyz.t0.z", expanded.get(2).first);
+    Assert.assertEquals(TBoolean.get(), expanded.get(2).second);
+
+    Assert.assertEquals("xyz.t1.x", expanded.get(3).first);
+    Assert.assertEquals(TInteger.get(), expanded.get(3).second);
+    Assert.assertEquals("xyz.t1.y", expanded.get(4).first);
+    Assert.assertEquals(TFloat.get(), expanded.get(4).second);
+    Assert.assertEquals("xyz.t1.z", expanded.get(5).first);
+    Assert.assertEquals(TBoolean.get(), expanded.get(5).second);
+
+    Assert.assertEquals("xyz.t2.x", expanded.get(6).first);
+    Assert.assertEquals(TInteger.get(), expanded.get(6).second);
+    Assert.assertEquals("xyz.t2.y", expanded.get(7).first);
+    Assert.assertEquals(TFloat.get(), expanded.get(7).second);
+    Assert.assertEquals("xyz.t2.z", expanded.get(8).first);
+    Assert.assertEquals(TBoolean.get(), expanded.get(8).second);
+  }
+
+  @SuppressWarnings("static-method") @Test public void testVertexUniforms()
+    throws ConstraintError
+  {
+    final Map<TTypeNameBuiltIn, TType> types = TType.getBaseTypesByName();
+    for (final TTypeNameBuiltIn name : types.keySet()) {
+      final TType type = types.get(name);
+      final TASTTermNameLocal p_name = GUniformTest.nameLocal("xyz");
+      final List<Pair<String, TType>> expanded =
+        GUniform.expandUniformVertex(new TASTDShaderVertexParameter(
+          p_name,
+          (TValueType) type));
+      Assert.assertEquals(1, expanded.size());
+      Assert.assertEquals("xyz", expanded.get(0).first);
+      Assert.assertEquals(type, expanded.get(0).second);
+    }
   }
 }

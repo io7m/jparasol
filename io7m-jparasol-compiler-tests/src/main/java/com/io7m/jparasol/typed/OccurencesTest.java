@@ -32,6 +32,89 @@ public final class OccurencesTest
 {
   @SuppressWarnings("static-method") @Test public
     void
+    testOccurencesConditional_0()
+      throws ConstraintError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .completeTyped(new String[] { "typed/occurences/conditional-0.p" });
+    final TASTDFunctionDefined f =
+      (TASTDFunctionDefined) r
+        .lookupTerm(TestPipeline.termName("x.y.M", "f"));
+
+    final Set<String> check = new HashSet<String>();
+    check.add("x");
+    check.add("y");
+    check.add("z");
+
+    final Set<String> found = Occurences.occursIn(f.getBody(), check);
+    Assert.assertEquals(1, found.size());
+    Assert.assertTrue(found.contains("x"));
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testOccurencesFunction_0()
+      throws ConstraintError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .completeTyped(new String[] { "typed/occurences/function-0.p" });
+    final TASTDFunctionDefined f =
+      (TASTDFunctionDefined) r
+        .lookupTerm(TestPipeline.termName("x.y.M", "f"));
+
+    final Set<String> check = new HashSet<String>();
+    check.add("x");
+    check.add("y");
+    check.add("z");
+
+    final Set<String> found = Occurences.occursIn(f.getBody(), check);
+    Assert.assertEquals(1, found.size());
+    Assert.assertTrue(found.contains("x"));
+  }
+
+  @SuppressWarnings("static-method") @Test public void testOccurencesNew_0()
+    throws ConstraintError
+  {
+    final TASTCompilation r =
+      TestPipeline.completeTyped(new String[] { "typed/occurences/new-0.p" });
+    final TASTDValue f =
+      (TASTDValue) r.lookupTerm(TestPipeline.termName("x.y.M", "x"));
+
+    final Set<String> check = new HashSet<String>();
+    check.add("x");
+    check.add("y");
+    check.add("z");
+
+    final Set<String> found = Occurences.occursIn(f.getExpression(), check);
+    Assert.assertEquals(0, found.size());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testOccurencesProjection_0()
+      throws ConstraintError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .completeTyped(new String[] { "typed/occurences/projection-0.p" });
+    final TASTDFunctionDefined f =
+      (TASTDFunctionDefined) r
+        .lookupTerm(TestPipeline.termName("x.y.M", "f"));
+
+    final Set<String> check = new HashSet<String>();
+    check.add("x");
+    check.add("y");
+    check.add("z");
+
+    final Set<String> found = Occurences.occursIn(f.getBody(), check);
+    Assert.assertEquals(1, found.size());
+    Assert.assertTrue(found.contains("x"));
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
     testOccurencesRecord_0()
       throws ConstraintError
   {
@@ -113,45 +196,6 @@ public final class OccurencesTest
     Assert.assertEquals(0, found.size());
   }
 
-  @SuppressWarnings("static-method") @Test public void testOccurencesNew_0()
-    throws ConstraintError
-  {
-    final TASTCompilation r =
-      TestPipeline.completeTyped(new String[] { "typed/occurences/new-0.p" });
-    final TASTDValue f =
-      (TASTDValue) r.lookupTerm(TestPipeline.termName("x.y.M", "x"));
-
-    final Set<String> check = new HashSet<String>();
-    check.add("x");
-    check.add("y");
-    check.add("z");
-
-    final Set<String> found = Occurences.occursIn(f.getExpression(), check);
-    Assert.assertEquals(0, found.size());
-  }
-
-  @SuppressWarnings("static-method") @Test public
-    void
-    testOccurencesFunction_0()
-      throws ConstraintError
-  {
-    final TASTCompilation r =
-      TestPipeline
-        .completeTyped(new String[] { "typed/occurences/function-0.p" });
-    final TASTDFunctionDefined f =
-      (TASTDFunctionDefined) r
-        .lookupTerm(TestPipeline.termName("x.y.M", "f"));
-
-    final Set<String> check = new HashSet<String>();
-    check.add("x");
-    check.add("y");
-    check.add("z");
-
-    final Set<String> found = Occurences.occursIn(f.getBody(), check);
-    Assert.assertEquals(1, found.size());
-    Assert.assertTrue(found.contains("x"));
-  }
-
   @SuppressWarnings("static-method") @Test public
     void
     testOccurencesSwizzle_0()
@@ -160,50 +204,6 @@ public final class OccurencesTest
     final TASTCompilation r =
       TestPipeline
         .completeTyped(new String[] { "typed/occurences/swizzle-0.p" });
-    final TASTDFunctionDefined f =
-      (TASTDFunctionDefined) r
-        .lookupTerm(TestPipeline.termName("x.y.M", "f"));
-
-    final Set<String> check = new HashSet<String>();
-    check.add("x");
-    check.add("y");
-    check.add("z");
-
-    final Set<String> found = Occurences.occursIn(f.getBody(), check);
-    Assert.assertEquals(1, found.size());
-    Assert.assertTrue(found.contains("x"));
-  }
-
-  @SuppressWarnings("static-method") @Test public
-    void
-    testOccurencesProjection_0()
-      throws ConstraintError
-  {
-    final TASTCompilation r =
-      TestPipeline
-        .completeTyped(new String[] { "typed/occurences/projection-0.p" });
-    final TASTDFunctionDefined f =
-      (TASTDFunctionDefined) r
-        .lookupTerm(TestPipeline.termName("x.y.M", "f"));
-
-    final Set<String> check = new HashSet<String>();
-    check.add("x");
-    check.add("y");
-    check.add("z");
-
-    final Set<String> found = Occurences.occursIn(f.getBody(), check);
-    Assert.assertEquals(1, found.size());
-    Assert.assertTrue(found.contains("x"));
-  }
-
-  @SuppressWarnings("static-method") @Test public
-    void
-    testOccurencesConditional_0()
-      throws ConstraintError
-  {
-    final TASTCompilation r =
-      TestPipeline
-        .completeTyped(new String[] { "typed/occurences/conditional-0.p" });
     final TASTDFunctionDefined f =
       (TASTDFunctionDefined) r
         .lookupTerm(TestPipeline.termName("x.y.M", "f"));

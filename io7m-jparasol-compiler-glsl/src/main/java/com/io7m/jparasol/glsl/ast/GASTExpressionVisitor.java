@@ -50,18 +50,14 @@ public interface GASTExpressionVisitor<A, E extends Throwable>
     final @Nonnull GASTEApplication e)
     throws E;
 
-  public void expressionBinaryOpDivideVisitPre(
-    final @Nonnull GASTEBinaryOpDivide e)
-    throws E;
-
   public A expressionBinaryOpDivideVisit(
     final @Nonnull A left,
     final @Nonnull A right,
     final @Nonnull GASTEBinaryOpDivide e)
     throws E;
 
-  public void expressionBinaryOpEqualVisitPre(
-    final @Nonnull GASTEBinaryOpEqual e)
+  public void expressionBinaryOpDivideVisitPre(
+    final @Nonnull GASTEBinaryOpDivide e)
     throws E;
 
   public A expressionBinaryOpEqualVisit(
@@ -70,8 +66,8 @@ public interface GASTExpressionVisitor<A, E extends Throwable>
     final @Nonnull GASTEBinaryOpEqual e)
     throws E;
 
-  public void expressionBinaryOpGreaterThanOrEqualVisitPre(
-    final @Nonnull GASTEBinaryOpGreaterThanOrEqual e)
+  public void expressionBinaryOpEqualVisitPre(
+    final @Nonnull GASTEBinaryOpEqual e)
     throws E;
 
   public A expressionBinaryOpGreaterThanOrEqualVisit(
@@ -80,8 +76,8 @@ public interface GASTExpressionVisitor<A, E extends Throwable>
     final @Nonnull GASTEBinaryOpGreaterThanOrEqual e)
     throws E;
 
-  public void expressionBinaryOpGreaterThanVisitPre(
-    final @Nonnull GASTEBinaryOpGreaterThan e)
+  public void expressionBinaryOpGreaterThanOrEqualVisitPre(
+    final @Nonnull GASTEBinaryOpGreaterThanOrEqual e)
     throws E;
 
   public A expressionBinaryOpGreaterThanVisit(
@@ -90,8 +86,8 @@ public interface GASTExpressionVisitor<A, E extends Throwable>
     final @Nonnull GASTEBinaryOpGreaterThan e)
     throws E;
 
-  public void expressionBinaryOpLesserThanOrEqualVisitPre(
-    final @Nonnull GASTEBinaryOpLesserThanOrEqual e)
+  public void expressionBinaryOpGreaterThanVisitPre(
+    final @Nonnull GASTEBinaryOpGreaterThan e)
     throws E;
 
   public A expressionBinaryOpLesserThanOrEqualVisit(
@@ -100,8 +96,8 @@ public interface GASTExpressionVisitor<A, E extends Throwable>
     final @Nonnull GASTEBinaryOpLesserThanOrEqual e)
     throws E;
 
-  public void expressionBinaryOpLesserThanVisitPre(
-    final @Nonnull GASTEBinaryOpLesserThan e)
+  public void expressionBinaryOpLesserThanOrEqualVisitPre(
+    final @Nonnull GASTEBinaryOpLesserThanOrEqual e)
     throws E;
 
   public A expressionBinaryOpLesserThanVisit(
@@ -110,8 +106,8 @@ public interface GASTExpressionVisitor<A, E extends Throwable>
     final @Nonnull GASTEBinaryOpLesserThan e)
     throws E;
 
-  public void expressionBinaryOpMultiplyVisitPre(
-    final @Nonnull GASTEBinaryOpMultiply e)
+  public void expressionBinaryOpLesserThanVisitPre(
+    final @Nonnull GASTEBinaryOpLesserThan e)
     throws E;
 
   public A expressionBinaryOpMultiplyVisit(
@@ -120,8 +116,8 @@ public interface GASTExpressionVisitor<A, E extends Throwable>
     final @Nonnull GASTEBinaryOpMultiply e)
     throws E;
 
-  public void expressionBinaryOpPlusVisitPre(
-    final @Nonnull GASTEBinaryOpPlus e)
+  public void expressionBinaryOpMultiplyVisitPre(
+    final @Nonnull GASTEBinaryOpMultiply e)
     throws E;
 
   public A expressionBinaryOpPlusVisit(
@@ -130,13 +126,17 @@ public interface GASTExpressionVisitor<A, E extends Throwable>
     final @Nonnull GASTEBinaryOpPlus e)
     throws E;
 
-  public void expressionBinaryOpSubtractVisitPre(
-    final @Nonnull GASTEBinaryOpSubtract e)
+  public void expressionBinaryOpPlusVisitPre(
+    final @Nonnull GASTEBinaryOpPlus e)
     throws E;
 
   public A expressionBinaryOpSubtractVisit(
     final @Nonnull A left,
     final @Nonnull A right,
+    final @Nonnull GASTEBinaryOpSubtract e)
+    throws E;
+
+  public void expressionBinaryOpSubtractVisitPre(
     final @Nonnull GASTEBinaryOpSubtract e)
     throws E;
 
@@ -179,12 +179,12 @@ public interface GASTExpressionVisitor<A, E extends Throwable>
     final @Nonnull GASTESwizzle e)
     throws E;
 
-  public void expressionUnaryOpNegateVisitPre(
+  public A expressionUnaryOpNegateVisit(
+    final @Nonnull A body,
     final @Nonnull GASTEUnaryOpNegate e)
     throws E;
 
-  public A expressionUnaryOpNegateVisit(
-    final @Nonnull A body,
+  public void expressionUnaryOpNegateVisitPre(
     final @Nonnull GASTEUnaryOpNegate e)
     throws E;
 

@@ -54,6 +54,16 @@ public abstract class GASTFragmentShaderStatement implements
       return true;
     }
 
+    @Override public
+      <A, E extends Throwable, V extends GASTFragmentShaderStatementVisitor<A, E>>
+      A
+      fragmentStatementVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.fragmentShaderConditionalDiscardVisit(this);
+    }
+
     public @Nonnull GASTExpression getCondition()
     {
       return this.condition;
@@ -75,6 +85,49 @@ public abstract class GASTFragmentShaderStatement implements
       builder.append("]");
       return builder.toString();
     }
+  }
+
+  public static final class GASTFragmentLocalVariable extends
+    GASTFragmentShaderStatement
+  {
+    private final @Nonnull GASTExpression expression;
+    private final @Nonnull GTermNameLocal name;
+    private final @Nonnull GTypeName      type;
+
+    public GASTFragmentLocalVariable(
+      final @Nonnull GTermNameLocal name,
+      final @Nonnull GTypeName type,
+      final @Nonnull GASTExpression expression)
+    {
+      this.name = name;
+      this.type = type;
+      this.expression = expression;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final GASTFragmentLocalVariable other = (GASTFragmentLocalVariable) obj;
+      if (!this.expression.equals(other.expression)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
 
     @Override public
       <A, E extends Throwable, V extends GASTFragmentShaderStatementVisitor<A, E>>
@@ -83,7 +136,45 @@ public abstract class GASTFragmentShaderStatement implements
         final V v)
         throws E
     {
-      return v.fragmentShaderConditionalDiscardVisit(this);
+      return v.fragmentShaderLocalVariableVisit(this);
+    }
+
+    public @Nonnull GASTExpression getExpression()
+    {
+      return this.expression;
+    }
+
+    public @Nonnull GTermNameLocal getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.expression.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[GASTFragmentLocalVariable ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.type);
+      builder.append(" ");
+      builder.append(this.expression);
+      builder.append("]");
+      return builder.toString();
     }
   }
 
@@ -157,97 +248,6 @@ public abstract class GASTFragmentShaderStatement implements
       result = (prime * result) + this.name.hashCode();
       result = (prime * result) + this.value.hashCode();
       return result;
-    }
-  }
-
-  public static final class GASTFragmentLocalVariable extends
-    GASTFragmentShaderStatement
-  {
-    private final @Nonnull GASTExpression expression;
-    private final @Nonnull GTermNameLocal name;
-    private final @Nonnull GTypeName      type;
-
-    public GASTFragmentLocalVariable(
-      final @Nonnull GTermNameLocal name,
-      final @Nonnull GTypeName type,
-      final @Nonnull GASTExpression expression)
-    {
-      this.name = name;
-      this.type = type;
-      this.expression = expression;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTFragmentLocalVariable other = (GASTFragmentLocalVariable) obj;
-      if (!this.expression.equals(other.expression)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull GASTExpression getExpression()
-    {
-      return this.expression;
-    }
-
-    public @Nonnull GTermNameLocal getName()
-    {
-      return this.name;
-    }
-
-    public @Nonnull GTypeName getType()
-    {
-      return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.expression.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[GASTFragmentLocalVariable ");
-      builder.append(this.name);
-      builder.append(" ");
-      builder.append(this.type);
-      builder.append(" ");
-      builder.append(this.expression);
-      builder.append("]");
-      return builder.toString();
-    }
-
-    @Override public
-      <A, E extends Throwable, V extends GASTFragmentShaderStatementVisitor<A, E>>
-      A
-      fragmentStatementVisitableAccept(
-        final V v)
-        throws E
-    {
-      return v.fragmentShaderLocalVariableVisit(this);
     }
   }
 }

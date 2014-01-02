@@ -106,6 +106,16 @@ public abstract class GASTTermDeclaration implements
       return result;
     }
 
+    @Override public
+      <A, E extends Throwable, V extends GASTTermDeclarationVisitor<A, E>>
+      A
+      termDeclarationVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.termVisitFunction(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -119,16 +129,6 @@ public abstract class GASTTermDeclaration implements
       builder.append(this.statement);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public
-      <A, E extends Throwable, V extends GASTTermDeclarationVisitor<A, E>>
-      A
-      termDeclarationVisitableAccept(
-        final V v)
-        throws E
-    {
-      return v.termVisitFunction(this);
     }
   }
 
@@ -198,6 +198,16 @@ public abstract class GASTTermDeclaration implements
       return result;
     }
 
+    @Override public
+      <A, E extends Throwable, V extends GASTTermDeclarationVisitor<A, E>>
+      A
+      termDeclarationVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.termVisitValue(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -209,16 +219,6 @@ public abstract class GASTTermDeclaration implements
       builder.append(this.expression);
       builder.append("]");
       return builder.toString();
-    }
-
-    @Override public
-      <A, E extends Throwable, V extends GASTTermDeclarationVisitor<A, E>>
-      A
-      termDeclarationVisitableAccept(
-        final V v)
-        throws E
-    {
-      return v.termVisitValue(this);
     }
   }
 

@@ -331,6 +331,14 @@ public final class TestPipeline
     }
   }
 
+  public static TASTTermNameFlat termName(
+    final @Nonnull String module,
+    final @Nonnull String name)
+    throws ConstraintError
+  {
+    return new TASTTermNameFlat(new ModulePathFlat(module), name);
+  }
+
   public static TASTCompilation typed(
     final String[] names)
     throws TypeCheckerError
@@ -367,6 +375,14 @@ public final class TestPipeline
     }
   }
 
+  public static TTypeNameFlat typeName(
+    final String module,
+    final String name)
+    throws ConstraintError
+  {
+    return new TTypeNameFlat(new ModulePathFlat(module), name);
+  }
+
   public static UASTUCompilation unique(
     final String[] names)
     throws UniqueBindersError
@@ -401,21 +417,5 @@ public final class TestPipeline
       e.printStackTrace();
       throw new UnreachableCodeException(e);
     }
-  }
-
-  public static TASTTermNameFlat termName(
-    final @Nonnull String module,
-    final @Nonnull String name)
-    throws ConstraintError
-  {
-    return new TASTTermNameFlat(new ModulePathFlat(module), name);
-  }
-
-  public static TTypeNameFlat typeName(
-    final String module,
-    final String name)
-    throws ConstraintError
-  {
-    return new TTypeNameFlat(new ModulePathFlat(module), name);
   }
 }

@@ -54,6 +54,11 @@ public final class GShaderInputName implements NameShow
     return result;
   }
 
+  @Override public String show()
+  {
+    return this.name;
+  }
+
   @Override public String toString()
   {
     final StringBuilder builder = new StringBuilder();
@@ -61,10 +66,5 @@ public final class GShaderInputName implements NameShow
     builder.append(this.name);
     builder.append("]");
     return builder.toString();
-  }
-
-  @Override public String show()
-  {
-    return this.name;
   }
 }

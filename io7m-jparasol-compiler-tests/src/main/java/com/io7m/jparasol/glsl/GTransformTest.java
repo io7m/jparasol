@@ -38,10 +38,10 @@ public final class GTransformTest
 {
   static class Prepared
   {
-    final @Nonnull TASTCompilation typed;
+    final @Nonnull Log             log;
     final @Nonnull Referenced      referenced;
     final @Nonnull Topology        topology;
-    final @Nonnull Log             log;
+    final @Nonnull TASTCompilation typed;
 
     Prepared(
       final TASTShaderNameFlat shader,
@@ -59,24 +59,15 @@ public final class GTransformTest
     }
   }
 
-  @SuppressWarnings("static-method") @Test public void testVertexSimple_0()
-    throws ConstraintError
+  private static @Nonnull TASTShaderNameFlat shaderName(
+    final @Nonnull String module,
+    final @Nonnull String name)
   {
-    final TASTShaderNameFlat shader = GTransformTest.shaderName("x.y.M", "v");
-    final Prepared p =
-      new Prepared(
-        shader,
-        new String[] { "glsl/transform/vertex-simple-0.p" });
-
-    final GASTShaderVertex s =
-      GTransform.transformVertex(
-        p.typed,
-        p.topology,
-        shader,
-        GVersionFull.GLSL_UPPER,
-        p.log);
-
-    GWriter.writeVertexShader(System.out, s, GVersion.GVersionFull.GLSL_110);
+    try {
+      return new TASTShaderNameFlat(new ModulePathFlat(module), name);
+    } catch (final ConstraintError e) {
+      throw new UnreachableCodeException(e);
+    }
   }
 
   @SuppressWarnings("static-method") @Test public void testFragmentSimple_0()
@@ -100,14 +91,23 @@ public final class GTransformTest
       .writeFragmentShader(System.out, s, GVersion.GVersionFull.GLSL_110);
   }
 
-  private static @Nonnull TASTShaderNameFlat shaderName(
-    final @Nonnull String module,
-    final @Nonnull String name)
+  @SuppressWarnings("static-method") @Test public void testVertexSimple_0()
+    throws ConstraintError
   {
-    try {
-      return new TASTShaderNameFlat(new ModulePathFlat(module), name);
-    } catch (final ConstraintError e) {
-      throw new UnreachableCodeException(e);
-    }
+    final TASTShaderNameFlat shader = GTransformTest.shaderName("x.y.M", "v");
+    final Prepared p =
+      new Prepared(
+        shader,
+        new String[] { "glsl/transform/vertex-simple-0.p" });
+
+    final GASTShaderVertex s =
+      GTransform.transformVertex(
+        p.typed,
+        p.topology,
+        shader,
+        GVersionFull.GLSL_UPPER,
+        p.log);
+
+    GWriter.writeVertexShader(System.out, s, GVersion.GVersionFull.GLSL_110);
   }
 }

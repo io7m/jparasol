@@ -221,6 +221,13 @@ public final class GTransform
       return new GTermNameGlobal(name);
     }
 
+    public @Nonnull GTermNameGlobal getGlobalTermName(
+      final @Nonnull TASTTermNameFlat term)
+    {
+      final String actual = this.terms_names.getName(term).show();
+      return new GTermNameGlobal(Context.PREFIX_TERM + actual);
+    }
+
     public @Nonnull Log getLog()
     {
       return this.log;
@@ -229,39 +236,6 @@ public final class GTransform
     public @Nonnull TASTShaderNameFlat getShaderName()
     {
       return this.shader_name;
-    }
-
-    public @Nonnull GTermNameGlobal getGlobalTermName(
-      final @Nonnull TASTTermNameFlat term)
-    {
-      final String actual = this.terms_names.getName(term).show();
-      return new GTermNameGlobal(Context.PREFIX_TERM + actual);
-    }
-
-    public @Nonnull GTermName lookupTermName(
-      final @Nonnull TASTTermName name)
-      throws ConstraintError
-    {
-      return name
-        .termNameVisitableAccept(new TASTTermNameVisitor<GTermName, ConstraintError>() {
-          @Override public GTermName termNameVisitGlobal(
-            final TASTTermNameGlobal t)
-            throws ConstraintError,
-              ConstraintError
-          {
-            final TASTTermNameFlat flat =
-              TASTTermNameFlat.fromTermNameGlobal(t);
-            return Context.this.getGlobalTermName(flat);
-          }
-
-          @Override public GTermName termNameVisitLocal(
-            final TASTTermNameLocal t)
-            throws ConstraintError,
-              ConstraintError
-          {
-            return new GTermNameLocal(t.getCurrent());
-          }
-        });
     }
 
     public @Nonnull Topology getTopology()
@@ -383,6 +357,32 @@ public final class GTransform
             throws ConstraintError
           {
             return new GTypeName("ivec4");
+          }
+        });
+    }
+
+    public @Nonnull GTermName lookupTermName(
+      final @Nonnull TASTTermName name)
+      throws ConstraintError
+    {
+      return name
+        .termNameVisitableAccept(new TASTTermNameVisitor<GTermName, ConstraintError>() {
+          @Override public GTermName termNameVisitGlobal(
+            final TASTTermNameGlobal t)
+            throws ConstraintError,
+              ConstraintError
+          {
+            final TASTTermNameFlat flat =
+              TASTTermNameFlat.fromTermNameGlobal(t);
+            return Context.this.getGlobalTermName(flat);
+          }
+
+          @Override public GTermName termNameVisitLocal(
+            final TASTTermNameLocal t)
+            throws ConstraintError,
+              ConstraintError
+          {
+            return new GTermNameLocal(t.getCurrent());
           }
         });
     }
@@ -1221,6 +1221,161 @@ public final class GTransform
     return m;
   }
 
+  private static @Nonnull TASTDShaderFragmentOutput findFragmentOutput(
+    final @Nonnull TASTDShaderFragment shader,
+    final @Nonnull String name)
+  {
+    for (final TASTDShaderFragmentOutput o : shader.getOutputs()) {
+      if (o.getName().getActual().equals(name)) {
+        return o;
+      }
+    }
+    throw new UnreachableCodeException();
+  }
+
+  private static @Nonnull TASTDShaderVertexOutput findVertexOutput(
+    final @Nonnull TASTDShaderVertex shader,
+    final @Nonnull String name)
+  {
+    for (final TASTDShaderVertexOutput o : shader.getOutputs()) {
+      if (o.getName().getActual().equals(name)) {
+        return o;
+      }
+    }
+    throw new UnreachableCodeException();
+  }
+
+  private static @Nonnull List<GASTShaderFragmentInput> makeFragmentInputs(
+    final @Nonnull Context context,
+    final @Nonnull List<TASTDShaderFragmentInput> inputs)
+    throws ConstraintError
+  {
+    final ArrayList<GASTShaderFragmentInput> results =
+      new ArrayList<GASTShaderFragmentInput>();
+
+    for (final TASTDShaderFragmentInput i : inputs) {
+      final GShaderInputName name =
+        new GShaderInputName(i.getName().getCurrent());
+      final GTypeName type = context.getTypeName(i.getType());
+      results.add(new GASTShaderFragmentInput(name, type));
+    }
+
+    return results;
+  }
+
+  private static @Nonnull GASTShaderMainFragment makeFragmentMain(
+    final @Nonnull Context context,
+    final @Nonnull TASTDShaderFragment fragment,
+    final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms)
+    throws ConstraintError
+  {
+    final List<GASTFragmentShaderStatement> statements =
+      new ArrayList<GASTFragmentShaderStatement>();
+    final List<Pair<String, TValueType>> bindings =
+      new ArrayList<Pair<String, TValueType>>();
+
+    /**
+     * Translate locals and conditional discards to statements.
+     */
+
+    for (final TASTDShaderFragmentLocal l : fragment.getLocals()) {
+      l
+        .fragmentShaderLocalVisitableAccept(new TASTFragmentShaderLocalVisitor<Unit, ConstraintError>() {
+          @Override public Unit fragmentShaderVisitLocalDiscard(
+            final TASTDShaderFragmentLocalDiscard d)
+            throws ConstraintError,
+              ConstraintError
+          {
+            final GASTExpression expression =
+              d.getExpression().expressionVisitableAccept(
+                new ExpressionTransformer(context, terms, bindings));
+            statements.add(new GASTFragmentConditionalDiscard(expression));
+            return Unit.unit();
+          }
+
+          @SuppressWarnings("synthetic-access") @Override public
+            Unit
+            fragmentShaderVisitLocalValue(
+              final TASTDShaderFragmentLocalValue v)
+              throws ConstraintError,
+                ConstraintError
+          {
+            GTransform.processFragmentLocal(
+              context,
+              terms,
+              statements,
+              bindings,
+              v.getValue());
+            return Unit.unit();
+          }
+        });
+    }
+
+    /**
+     * Translate writes to named and numbered outputs.
+     */
+
+    final List<GASTFragmentOutputAssignment> writes =
+      new ArrayList<GASTFragmentOutputAssignment>();
+
+    for (final TASTDShaderFragmentOutputAssignment f : fragment.getWrites()) {
+      final TokenIdentifierLower f_name = f.getName();
+      final TASTDShaderFragmentOutput output =
+        GTransform.findFragmentOutput(fragment, f_name.getActual());
+
+      final GShaderOutputName name =
+        new GShaderOutputName(f_name.getActual());
+      final GTermName value =
+        context.lookupTermName(f.getVariable().getName());
+      writes.add(new GASTFragmentOutputAssignment(
+        name,
+        output.getIndex(),
+        value));
+    }
+
+    return new GASTShaderMainFragment(statements, writes);
+  }
+
+  private static @Nonnull List<GASTShaderFragmentOutput> makeFragmentOutputs(
+    final @Nonnull Context context,
+    final @Nonnull List<TASTDShaderFragmentOutput> outputs)
+    throws ConstraintError
+  {
+    final ArrayList<GASTShaderFragmentOutput> results =
+      new ArrayList<GASTShaderFragmentOutput>();
+
+    for (final TASTDShaderFragmentOutput o : outputs) {
+      final GShaderOutputName name =
+        new GShaderOutputName(o.getName().getActual());
+      final GTypeName type = context.getTypeName(o.getType());
+      results.add(new GASTShaderFragmentOutput(name, o.getIndex(), type));
+    }
+
+    return results;
+  }
+
+  private static @Nonnull
+    List<GASTShaderFragmentParameter>
+    makeFragmentParameters(
+      final @Nonnull Context context,
+      final @Nonnull List<TASTDShaderFragmentParameter> parameters)
+      throws ConstraintError
+  {
+    final ArrayList<GASTShaderFragmentParameter> results =
+      new ArrayList<GASTShaderFragmentParameter>();
+
+    for (final TASTDShaderFragmentParameter p : parameters) {
+      final GShaderParameterName name =
+        new GShaderParameterName(p.getName().getCurrent());
+      final GTypeName type = context.getTypeName(p.getType());
+      final List<Pair<String, TType>> expanded =
+        GUniform.expandUniformFragment(p);
+      results.add(new GASTShaderFragmentParameter(name, type, expanded));
+    }
+
+    return results;
+  }
+
   private static @Nonnull
     List<Pair<GTermNameGlobal, GASTTermDeclaration>>
     makeTerms(
@@ -1326,6 +1481,188 @@ public final class GTransform
     return declarations;
   }
 
+  private static @Nonnull List<GASTShaderVertexInput> makeVertexInputs(
+    final @Nonnull Context context,
+    final @Nonnull List<TASTDShaderVertexInput> inputs)
+    throws ConstraintError
+  {
+    final ArrayList<GASTShaderVertexInput> results =
+      new ArrayList<GASTShaderVertexInput>();
+
+    for (final TASTDShaderVertexInput i : inputs) {
+      final GShaderInputName name =
+        new GShaderInputName(i.getName().getCurrent());
+      final GTypeName type = context.getTypeName(i.getType());
+      results.add(new GASTShaderVertexInput(name, type));
+    }
+
+    return results;
+  }
+
+  private static @Nonnull GASTShaderMainVertex makeVertexMain(
+    final @Nonnull Context context,
+    final @Nonnull TASTDShaderVertex vertex,
+    final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms)
+    throws ConstraintError
+  {
+    final List<GASTStatement> statements = new ArrayList<GASTStatement>();
+    final List<Pair<String, TValueType>> bindings =
+      new ArrayList<Pair<String, TValueType>>();
+    final List<TASTDValueLocal> locals =
+      new ArrayList<TASTDeclaration.TASTDValueLocal>();
+
+    for (final TASTDShaderVertexLocalValue v : vertex.getValues()) {
+      locals.add(v.getValue());
+    }
+
+    GTransform.processLocals(context, terms, statements, bindings, locals);
+
+    final List<GASTVertexOutputAssignment> writes =
+      new ArrayList<GASTVertexOutputAssignment>();
+
+    for (final TASTDShaderVertexOutputAssignment w : vertex.getWrites()) {
+
+      /**
+       * Look up the name of the variable used.
+       */
+
+      final GTermName value =
+        context.lookupTermName(w.getVariable().getName());
+
+      /**
+       * If the shader output in question is a "main" output, then it assigns
+       * to "gl_Position", not the named output.
+       */
+
+      final TokenIdentifierLower written_name = w.getName();
+      final TASTDShaderVertexOutput output =
+        GTransform.findVertexOutput(vertex, written_name.getActual());
+
+      final GShaderOutputName resulting_name;
+      if (output.isMain()) {
+        resulting_name = new GShaderOutputName("gl_Position");
+      } else {
+        resulting_name = new GShaderOutputName(written_name.getActual());
+      }
+
+      writes.add(new GASTVertexOutputAssignment(resulting_name, value));
+    }
+
+    return new GASTShaderMainVertex(statements, writes);
+  }
+
+  private static @Nonnull List<GASTShaderVertexOutput> makeVertexOutputs(
+    final @Nonnull Context context,
+    final @Nonnull List<TASTDShaderVertexOutput> outputs)
+    throws ConstraintError
+  {
+    final ArrayList<GASTShaderVertexOutput> results =
+      new ArrayList<GASTShaderVertexOutput>();
+
+    for (final TASTDShaderVertexOutput o : outputs) {
+      if (o.isMain() == false) {
+        final GShaderOutputName name =
+          new GShaderOutputName(o.getName().getActual());
+        final GTypeName type = context.getTypeName(o.getType());
+        results.add(new GASTShaderVertexOutput(name, type));
+      }
+    }
+
+    return results;
+  }
+
+  private static @Nonnull
+    List<GASTShaderVertexParameter>
+    makeVertexParameters(
+      final @Nonnull Context context,
+      final @Nonnull List<TASTDShaderVertexParameter> parameters)
+      throws ConstraintError
+  {
+    final ArrayList<GASTShaderVertexParameter> results =
+      new ArrayList<GASTShaderVertexParameter>();
+
+    for (final TASTDShaderVertexParameter p : parameters) {
+      final GShaderParameterName name =
+        new GShaderParameterName(p.getName().getCurrent());
+      final GTypeName type = context.getTypeName(p.getType());
+      final List<Pair<String, TType>> expanded =
+        GUniform.expandUniformVertex(p);
+      results.add(new GASTShaderVertexParameter(name, type, expanded));
+    }
+
+    return results;
+  }
+
+  private static
+    void
+    processFragmentLocal(
+      final @Nonnull Context context,
+      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
+      final @Nonnull List<GASTFragmentShaderStatement> statements,
+      final @Nonnull List<Pair<String, TValueType>> bindings,
+      final @Nonnull TASTDValueLocal b)
+      throws ConstraintError
+  {
+    final GASTExpression ex =
+      b.getExpression().expressionVisitableAccept(
+        new ExpressionTransformer(context, declarations, bindings));
+    final GTermNameLocal name = new GTermNameLocal(b.getName().show());
+    final TValueType type = (TValueType) b.getExpression().getType();
+    final GASTFragmentLocalVariable l =
+      new GASTFragmentLocalVariable(name, context.getTypeName(type), ex);
+
+    statements.add(l);
+    final Pair<String, TValueType> p =
+      new Pair<String, TValueType>(name.show(), type);
+    bindings.add(p);
+  }
+
+  private static
+    void
+    processLocal(
+      final @Nonnull Context context,
+      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
+      final @Nonnull List<GASTStatement> statements,
+      final @Nonnull List<Pair<String, TValueType>> bindings,
+      final @Nonnull TASTDValueLocal b)
+      throws ConstraintError
+  {
+    final GASTExpression ex =
+      b.getExpression().expressionVisitableAccept(
+        new ExpressionTransformer(context, declarations, bindings));
+    final GTermNameLocal name = new GTermNameLocal(b.getName().show());
+    final TValueType type = (TValueType) b.getExpression().getType();
+    final GASTLocalVariable l =
+      new GASTStatement.GASTLocalVariable(name, context.getTypeName(type), ex);
+
+    statements.add(l);
+    final Pair<String, TValueType> p =
+      new Pair<String, TValueType>(name.show(), type);
+    bindings.add(p);
+  }
+
+  /**
+   * Create new local variables for each local value and add each successive
+   * variable to <code>bindings</code>. Any temporary functions generated will
+   * be added to <code>declarations</code> and local variable statements will
+   * be added to <code>statements</code>.
+   */
+
+  private static
+    void
+    processLocals(
+      final @Nonnull Context context,
+      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
+      final @Nonnull List<GASTStatement> statements,
+      final @Nonnull List<Pair<String, TValueType>> bindings,
+      final @Nonnull List<TASTDValueLocal> locals)
+      throws ConstraintError
+  {
+    for (final TASTDValueLocal b : locals) {
+      GTransform.processLocal(context, declarations, statements, bindings, b);
+    }
+  }
+
   public static @Nonnull GASTShaderFragment transformFragment(
     final @Nonnull TASTCompilation compilation,
     final @Nonnull Topology topology,
@@ -1383,197 +1720,6 @@ public final class GTransform
       types);
   }
 
-  private static @Nonnull GASTShaderMainFragment makeFragmentMain(
-    final @Nonnull Context context,
-    final @Nonnull TASTDShaderFragment fragment,
-    final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms)
-    throws ConstraintError
-  {
-    final List<GASTFragmentShaderStatement> statements =
-      new ArrayList<GASTFragmentShaderStatement>();
-    final List<Pair<String, TValueType>> bindings =
-      new ArrayList<Pair<String, TValueType>>();
-
-    /**
-     * Translate locals and conditional discards to statements.
-     */
-
-    for (final TASTDShaderFragmentLocal l : fragment.getLocals()) {
-      l
-        .fragmentShaderLocalVisitableAccept(new TASTFragmentShaderLocalVisitor<Unit, ConstraintError>() {
-          @Override public Unit fragmentShaderVisitLocalDiscard(
-            final TASTDShaderFragmentLocalDiscard d)
-            throws ConstraintError,
-              ConstraintError
-          {
-            final GASTExpression expression =
-              d.getExpression().expressionVisitableAccept(
-                new ExpressionTransformer(context, terms, bindings));
-            statements.add(new GASTFragmentConditionalDiscard(expression));
-            return Unit.unit();
-          }
-
-          @SuppressWarnings("synthetic-access") @Override public
-            Unit
-            fragmentShaderVisitLocalValue(
-              final TASTDShaderFragmentLocalValue v)
-              throws ConstraintError,
-                ConstraintError
-          {
-            GTransform.processFragmentLocal(
-              context,
-              terms,
-              statements,
-              bindings,
-              v.getValue());
-            return Unit.unit();
-          }
-        });
-    }
-
-    /**
-     * Translate writes to named and numbered outputs.
-     */
-
-    final List<GASTFragmentOutputAssignment> writes =
-      new ArrayList<GASTFragmentOutputAssignment>();
-
-    for (final TASTDShaderFragmentOutputAssignment f : fragment.getWrites()) {
-      final TokenIdentifierLower f_name = f.getName();
-      final TASTDShaderFragmentOutput output =
-        GTransform.findFragmentOutput(fragment, f_name.getActual());
-
-      final GShaderOutputName name =
-        new GShaderOutputName(f_name.getActual());
-      final GTermName value =
-        context.lookupTermName(f.getVariable().getName());
-      writes.add(new GASTFragmentOutputAssignment(
-        name,
-        output.getIndex(),
-        value));
-    }
-
-    return new GASTShaderMainFragment(statements, writes);
-  }
-
-  private static @Nonnull
-    List<GASTShaderFragmentParameter>
-    makeFragmentParameters(
-      final @Nonnull Context context,
-      final @Nonnull List<TASTDShaderFragmentParameter> parameters)
-      throws ConstraintError
-  {
-    final ArrayList<GASTShaderFragmentParameter> results =
-      new ArrayList<GASTShaderFragmentParameter>();
-
-    for (final TASTDShaderFragmentParameter p : parameters) {
-      final GShaderParameterName name =
-        new GShaderParameterName(p.getName().getCurrent());
-      final GTypeName type = context.getTypeName(p.getType());
-      final List<Pair<String, TType>> expanded =
-        GUniform.expandUniformFragment(p);
-      results.add(new GASTShaderFragmentParameter(name, type, expanded));
-    }
-
-    return results;
-  }
-
-  private static @Nonnull List<GASTShaderFragmentOutput> makeFragmentOutputs(
-    final @Nonnull Context context,
-    final @Nonnull List<TASTDShaderFragmentOutput> outputs)
-    throws ConstraintError
-  {
-    final ArrayList<GASTShaderFragmentOutput> results =
-      new ArrayList<GASTShaderFragmentOutput>();
-
-    for (final TASTDShaderFragmentOutput o : outputs) {
-      final GShaderOutputName name =
-        new GShaderOutputName(o.getName().getActual());
-      final GTypeName type = context.getTypeName(o.getType());
-      results.add(new GASTShaderFragmentOutput(name, o.getIndex(), type));
-    }
-
-    return results;
-  }
-
-  private static @Nonnull List<GASTShaderFragmentInput> makeFragmentInputs(
-    final @Nonnull Context context,
-    final @Nonnull List<TASTDShaderFragmentInput> inputs)
-    throws ConstraintError
-  {
-    final ArrayList<GASTShaderFragmentInput> results =
-      new ArrayList<GASTShaderFragmentInput>();
-
-    for (final TASTDShaderFragmentInput i : inputs) {
-      final GShaderInputName name =
-        new GShaderInputName(i.getName().getCurrent());
-      final GTypeName type = context.getTypeName(i.getType());
-      results.add(new GASTShaderFragmentInput(name, type));
-    }
-
-    return results;
-  }
-
-  private static @Nonnull
-    List<GASTShaderVertexParameter>
-    makeVertexParameters(
-      final @Nonnull Context context,
-      final @Nonnull List<TASTDShaderVertexParameter> parameters)
-      throws ConstraintError
-  {
-    final ArrayList<GASTShaderVertexParameter> results =
-      new ArrayList<GASTShaderVertexParameter>();
-
-    for (final TASTDShaderVertexParameter p : parameters) {
-      final GShaderParameterName name =
-        new GShaderParameterName(p.getName().getCurrent());
-      final GTypeName type = context.getTypeName(p.getType());
-      final List<Pair<String, TType>> expanded =
-        GUniform.expandUniformVertex(p);
-      results.add(new GASTShaderVertexParameter(name, type, expanded));
-    }
-
-    return results;
-  }
-
-  private static @Nonnull List<GASTShaderVertexOutput> makeVertexOutputs(
-    final @Nonnull Context context,
-    final @Nonnull List<TASTDShaderVertexOutput> outputs)
-    throws ConstraintError
-  {
-    final ArrayList<GASTShaderVertexOutput> results =
-      new ArrayList<GASTShaderVertexOutput>();
-
-    for (final TASTDShaderVertexOutput o : outputs) {
-      if (o.isMain() == false) {
-        final GShaderOutputName name =
-          new GShaderOutputName(o.getName().getActual());
-        final GTypeName type = context.getTypeName(o.getType());
-        results.add(new GASTShaderVertexOutput(name, type));
-      }
-    }
-
-    return results;
-  }
-
-  private static @Nonnull List<GASTShaderVertexInput> makeVertexInputs(
-    final @Nonnull Context context,
-    final @Nonnull List<TASTDShaderVertexInput> inputs)
-    throws ConstraintError
-  {
-    final ArrayList<GASTShaderVertexInput> results =
-      new ArrayList<GASTShaderVertexInput>();
-
-    for (final TASTDShaderVertexInput i : inputs) {
-      final GShaderInputName name =
-        new GShaderInputName(i.getName().getCurrent());
-      final GTypeName type = context.getTypeName(i.getType());
-      results.add(new GASTShaderVertexInput(name, type));
-    }
-
-    return results;
-  }
-
   public static @Nonnull GASTShaderVertex transformVertex(
     final @Nonnull TASTCompilation compilation,
     final @Nonnull Topology topology,
@@ -1628,151 +1774,5 @@ public final class GTransform
       parameters,
       terms,
       types);
-  }
-
-  private static @Nonnull GASTShaderMainVertex makeVertexMain(
-    final @Nonnull Context context,
-    final @Nonnull TASTDShaderVertex vertex,
-    final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms)
-    throws ConstraintError
-  {
-    final List<GASTStatement> statements = new ArrayList<GASTStatement>();
-    final List<Pair<String, TValueType>> bindings =
-      new ArrayList<Pair<String, TValueType>>();
-    final List<TASTDValueLocal> locals =
-      new ArrayList<TASTDeclaration.TASTDValueLocal>();
-
-    for (final TASTDShaderVertexLocalValue v : vertex.getValues()) {
-      locals.add(v.getValue());
-    }
-
-    GTransform.processLocals(context, terms, statements, bindings, locals);
-
-    final List<GASTVertexOutputAssignment> writes =
-      new ArrayList<GASTVertexOutputAssignment>();
-
-    for (final TASTDShaderVertexOutputAssignment w : vertex.getWrites()) {
-
-      /**
-       * Look up the name of the variable used.
-       */
-
-      final GTermName value =
-        context.lookupTermName(w.getVariable().getName());
-
-      /**
-       * If the shader output in question is a "main" output, then it assigns
-       * to "gl_Position", not the named output.
-       */
-
-      final TokenIdentifierLower written_name = w.getName();
-      final TASTDShaderVertexOutput output =
-        GTransform.findVertexOutput(vertex, written_name.getActual());
-
-      final GShaderOutputName resulting_name;
-      if (output.isMain()) {
-        resulting_name = new GShaderOutputName("gl_Position");
-      } else {
-        resulting_name = new GShaderOutputName(written_name.getActual());
-      }
-
-      writes.add(new GASTVertexOutputAssignment(resulting_name, value));
-    }
-
-    return new GASTShaderMainVertex(statements, writes);
-  }
-
-  private static @Nonnull TASTDShaderVertexOutput findVertexOutput(
-    final @Nonnull TASTDShaderVertex shader,
-    final @Nonnull String name)
-  {
-    for (final TASTDShaderVertexOutput o : shader.getOutputs()) {
-      if (o.getName().getActual().equals(name)) {
-        return o;
-      }
-    }
-    throw new UnreachableCodeException();
-  }
-
-  private static @Nonnull TASTDShaderFragmentOutput findFragmentOutput(
-    final @Nonnull TASTDShaderFragment shader,
-    final @Nonnull String name)
-  {
-    for (final TASTDShaderFragmentOutput o : shader.getOutputs()) {
-      if (o.getName().getActual().equals(name)) {
-        return o;
-      }
-    }
-    throw new UnreachableCodeException();
-  }
-
-  /**
-   * Create new local variables for each local value and add each successive
-   * variable to <code>bindings</code>. Any temporary functions generated will
-   * be added to <code>declarations</code> and local variable statements will
-   * be added to <code>statements</code>.
-   */
-
-  private static
-    void
-    processLocals(
-      final @Nonnull Context context,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-      final @Nonnull List<GASTStatement> statements,
-      final @Nonnull List<Pair<String, TValueType>> bindings,
-      final @Nonnull List<TASTDValueLocal> locals)
-      throws ConstraintError
-  {
-    for (final TASTDValueLocal b : locals) {
-      GTransform.processLocal(context, declarations, statements, bindings, b);
-    }
-  }
-
-  private static
-    void
-    processLocal(
-      final @Nonnull Context context,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-      final @Nonnull List<GASTStatement> statements,
-      final @Nonnull List<Pair<String, TValueType>> bindings,
-      final @Nonnull TASTDValueLocal b)
-      throws ConstraintError
-  {
-    final GASTExpression ex =
-      b.getExpression().expressionVisitableAccept(
-        new ExpressionTransformer(context, declarations, bindings));
-    final GTermNameLocal name = new GTermNameLocal(b.getName().show());
-    final TValueType type = (TValueType) b.getExpression().getType();
-    final GASTLocalVariable l =
-      new GASTStatement.GASTLocalVariable(name, context.getTypeName(type), ex);
-
-    statements.add(l);
-    final Pair<String, TValueType> p =
-      new Pair<String, TValueType>(name.show(), type);
-    bindings.add(p);
-  }
-
-  private static
-    void
-    processFragmentLocal(
-      final @Nonnull Context context,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-      final @Nonnull List<GASTFragmentShaderStatement> statements,
-      final @Nonnull List<Pair<String, TValueType>> bindings,
-      final @Nonnull TASTDValueLocal b)
-      throws ConstraintError
-  {
-    final GASTExpression ex =
-      b.getExpression().expressionVisitableAccept(
-        new ExpressionTransformer(context, declarations, bindings));
-    final GTermNameLocal name = new GTermNameLocal(b.getName().show());
-    final TValueType type = (TValueType) b.getExpression().getType();
-    final GASTFragmentLocalVariable l =
-      new GASTFragmentLocalVariable(name, context.getTypeName(type), ex);
-
-    statements.add(l);
-    final Pair<String, TValueType> p =
-      new Pair<String, TValueType>(name.show(), type);
-    bindings.add(p);
   }
 }

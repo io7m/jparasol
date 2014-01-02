@@ -165,16 +165,6 @@ public abstract class GASTShader
       this.type = type;
     }
 
-    public @Nonnull GShaderInputName getName()
-    {
-      return this.name;
-    }
-
-    public @Nonnull GTypeName getType()
-    {
-      return this.type;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -195,6 +185,16 @@ public abstract class GASTShader
         return false;
       }
       return true;
+    }
+
+    public @Nonnull GShaderInputName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
     }
 
     @Override public int hashCode()
@@ -234,21 +234,6 @@ public abstract class GASTShader
       this.type = type;
     }
 
-    public int getIndex()
-    {
-      return this.index;
-    }
-
-    public @Nonnull GShaderOutputName getName()
-    {
-      return this.name;
-    }
-
-    public @Nonnull GTypeName getType()
-    {
-      return this.type;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -272,6 +257,21 @@ public abstract class GASTShader
         return false;
       }
       return true;
+    }
+
+    public int getIndex()
+    {
+      return this.index;
+    }
+
+    public @Nonnull GShaderOutputName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
     }
 
     @Override public int hashCode()
@@ -314,16 +314,6 @@ public abstract class GASTShader
       this.expanded = expanded;
     }
 
-    public @Nonnull GShaderParameterName getName()
-    {
-      return this.name;
-    }
-
-    public @Nonnull GTypeName getType()
-    {
-      return this.type;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -348,6 +338,16 @@ public abstract class GASTShader
         return false;
       }
       return true;
+    }
+
+    public @Nonnull GShaderParameterName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
     }
 
     @Override public int hashCode()
@@ -511,16 +511,6 @@ public abstract class GASTShader
       this.type = type;
     }
 
-    public @Nonnull GShaderInputName getName()
-    {
-      return this.name;
-    }
-
-    public @Nonnull GTypeName getType()
-    {
-      return this.type;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -541,6 +531,16 @@ public abstract class GASTShader
         return false;
       }
       return true;
+    }
+
+    public @Nonnull GShaderInputName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
     }
 
     @Override public int hashCode()
@@ -577,16 +577,6 @@ public abstract class GASTShader
       this.type = type;
     }
 
-    public @Nonnull GShaderOutputName getName()
-    {
-      return this.name;
-    }
-
-    public @Nonnull GTypeName getType()
-    {
-      return this.type;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -607,6 +597,16 @@ public abstract class GASTShader
         return false;
       }
       return true;
+    }
+
+    public @Nonnull GShaderOutputName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
     }
 
     @Override public int hashCode()
@@ -646,16 +646,6 @@ public abstract class GASTShader
       this.expanded = expanded;
     }
 
-    public @Nonnull GShaderParameterName getName()
-    {
-      return this.name;
-    }
-
-    public @Nonnull GTypeName getType()
-    {
-      return this.type;
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -679,6 +669,16 @@ public abstract class GASTShader
         return false;
       }
       return true;
+    }
+
+    public @Nonnull GShaderParameterName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
     }
 
     @Override public int hashCode()
