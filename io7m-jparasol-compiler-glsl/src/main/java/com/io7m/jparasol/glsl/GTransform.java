@@ -28,7 +28,6 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnimplementedCodeException;
 import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jaux.functional.Function;
 import com.io7m.jaux.functional.Pair;
@@ -36,6 +35,8 @@ import com.io7m.jaux.functional.Unit;
 import com.io7m.jlog.Level;
 import com.io7m.jlog.Log;
 import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.glsl.GFFIExpression.GFFIBuiltIn;
+import com.io7m.jparasol.glsl.GFFIExpression.GFFIDefined;
 import com.io7m.jparasol.glsl.ast.GASTExpression;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplication;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBoolean;
@@ -163,6 +164,7 @@ public final class GTransform
     }
 
     private final @Nonnull TASTCompilation                                 compilation;
+    private final @Nonnull GFFI                                            ffi;
     private final @Nonnull Log                                             log;
     private final @Nonnull TASTShaderNameFlat                              shader_name;
     private final @Nonnull AtomicInteger                                   temporary_prime;
@@ -178,6 +180,7 @@ public final class GTransform
     {
       this.log = new Log(log, "context");
 
+      this.ffi = GFFI.newFFI(this.log);
       this.compilation = compilation;
       this.topology = topology;
       this.shader_name = shader_name;
@@ -207,6 +210,11 @@ public final class GTransform
     public @Nonnull TASTCompilation getCompilation()
     {
       return this.compilation;
+    }
+
+    public @Nonnull GFFI getFFI()
+    {
+      return this.ffi;
     }
 
     public @Nonnull GTermNameGlobal getFreshTemporaryName()
@@ -389,27 +397,30 @@ public final class GTransform
   }
 
   private static final class ExpressionStatementTransformer implements
-    TASTExpressionVisitor<GASTScope, TASTDValueLocal, ConstraintError>
+    TASTExpressionVisitor<GASTScope, TASTDValueLocal, GFFIError>
   {
     private final @Nonnull List<Pair<String, TValueType>>                   bindings;
     private final @Nonnull Context                                          context;
     private final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
+    private final @Nonnull GVersion                                         version;
 
     public ExpressionStatementTransformer(
       final @Nonnull Context context,
       final @Nonnull List<Pair<String, TValueType>> bindings,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations)
+      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
+      final @Nonnull GVersion version)
     {
       this.context = context;
       this.bindings = bindings;
       this.declarations = declarations;
+      this.version = version;
     }
 
     @Override public GASTScope expressionVisitApplication(
       final @Nonnull List<GASTScope> arguments,
       final @Nonnull TASTEApplication e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapReturn(e);
     }
@@ -417,7 +428,7 @@ public final class GTransform
     @Override public boolean expressionVisitApplicationPre(
       final @Nonnull TASTEApplication e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return false;
     }
@@ -425,7 +436,7 @@ public final class GTransform
     @Override public GASTScope expressionVisitBoolean(
       final @Nonnull TASTEBoolean e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapReturn(e);
     }
@@ -436,28 +447,31 @@ public final class GTransform
       final @Nonnull GASTScope right,
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       final GASTExpression ec =
         e.getCondition().expressionVisitableAccept(
           new ExpressionTransformer(
             this.context,
             this.declarations,
-            this.bindings));
+            this.bindings,
+            this.version));
 
       final GASTScope sl =
         e.getLeft().expressionVisitableAccept(
           new ExpressionStatementTransformer(
             this.context,
             this.bindings,
-            this.declarations));
+            this.declarations,
+            this.version));
 
       final GASTScope sr =
         e.getRight().expressionVisitableAccept(
           new ExpressionStatementTransformer(
             this.context,
             this.bindings,
-            this.declarations));
+            this.declarations,
+            this.version));
 
       final GASTConditional gc =
         new GASTStatement.GASTConditional(ec, sl, sr);
@@ -470,7 +484,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalConditionPost(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -478,7 +492,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalConditionPre(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -486,7 +500,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalLeftPost(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -494,7 +508,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalLeftPre(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -502,7 +516,7 @@ public final class GTransform
     @Override public boolean expressionVisitConditionalPre(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return false;
     }
@@ -510,7 +524,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalRightPost(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -518,7 +532,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalRightPre(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -526,17 +540,19 @@ public final class GTransform
     @Override public GASTScope expressionVisitInteger(
       final @Nonnull TASTEInteger e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapReturn(e);
     }
 
-    @Override public GASTScope expressionVisitLet(
-      final @Nonnull List<TASTDValueLocal> k_bindings,
-      final @Nonnull GASTScope body,
-      final @Nonnull TASTELet e)
-      throws ConstraintError,
-        ConstraintError
+    @SuppressWarnings("synthetic-access") @Override public
+      GASTScope
+      expressionVisitLet(
+        final @Nonnull List<TASTDValueLocal> k_bindings,
+        final @Nonnull GASTScope body,
+        final @Nonnull TASTELet e)
+        throws ConstraintError,
+          GFFIError
     {
       final ArrayList<GASTStatement> statements =
         new ArrayList<GASTStatement>();
@@ -551,7 +567,8 @@ public final class GTransform
         this.declarations,
         statements,
         bindings_new,
-        locals);
+        locals,
+        this.version);
 
       /**
        * Wrap the body in a scope statement, taking into account the bindings
@@ -563,18 +580,19 @@ public final class GTransform
           new ExpressionStatementTransformer(
             this.context,
             bindings_new,
-            this.declarations));
+            this.declarations,
+            this.version));
 
       statements.add(sbody);
       return new GASTScope(statements);
     }
 
     @Override public
-      TASTLocalLevelVisitor<TASTDValueLocal, ConstraintError>
+      TASTLocalLevelVisitor<TASTDValueLocal, GFFIError>
       expressionVisitLetPre(
         final @Nonnull TASTELet e)
         throws ConstraintError,
-          ConstraintError
+          GFFIError
     {
       return null;
     }
@@ -583,7 +601,7 @@ public final class GTransform
       final @Nonnull List<GASTScope> arguments,
       final @Nonnull TASTENew e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapReturn(e);
     }
@@ -591,7 +609,7 @@ public final class GTransform
     @Override public boolean expressionVisitNewPre(
       final @Nonnull TASTENew e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return false;
     }
@@ -599,7 +617,7 @@ public final class GTransform
     @Override public GASTScope expressionVisitReal(
       final @Nonnull TASTEReal e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapReturn(e);
     }
@@ -607,7 +625,7 @@ public final class GTransform
     @Override public GASTScope expressionVisitRecord(
       final @Nonnull TASTERecord e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       final ArrayList<GASTStatement> statements =
         new ArrayList<GASTStatement>();
@@ -627,7 +645,8 @@ public final class GTransform
             new ExpressionTransformer(
               this.context,
               this.declarations,
-              this.bindings));
+              this.bindings,
+              this.version));
 
         assert field_temporaries.containsKey(a.getName().getActual()) == false;
         field_temporaries.put(a.getName().getActual(), t);
@@ -664,7 +683,7 @@ public final class GTransform
       final @Nonnull GASTScope body,
       final @Nonnull TASTERecordProjection e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapReturn(e);
     }
@@ -672,7 +691,7 @@ public final class GTransform
     @Override public boolean expressionVisitRecordProjectionPre(
       final @Nonnull TASTERecordProjection e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return false;
     }
@@ -681,7 +700,7 @@ public final class GTransform
       final @Nonnull GASTScope body,
       final @Nonnull TASTESwizzle e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapReturn(e);
     }
@@ -689,7 +708,7 @@ public final class GTransform
     @Override public boolean expressionVisitSwizzlePre(
       final @Nonnull TASTESwizzle e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return false;
     }
@@ -697,20 +716,22 @@ public final class GTransform
     @Override public GASTScope expressionVisitVariable(
       final @Nonnull TASTEVariable e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapReturn(e);
     }
 
     private @Nonnull GASTScope wrapReturn(
       final @Nonnull TASTExpression e)
-      throws ConstraintError
+      throws ConstraintError,
+        GFFIError
     {
       final GASTExpression x =
         e.expressionVisitableAccept(new ExpressionTransformer(
           this.context,
           this.declarations,
-          this.bindings));
+          this.bindings,
+          this.version));
       final List<GASTStatement> r = new ArrayList<GASTStatement>();
       r.add(new GASTReturn(x));
       return new GASTScope(r);
@@ -724,36 +745,39 @@ public final class GTransform
    */
 
   private static final class ExpressionTransformer implements
-    TASTExpressionVisitor<GASTExpression, TASTDValueLocal, ConstraintError>
+    TASTExpressionVisitor<GASTExpression, TASTDValueLocal, GFFIError>
   {
     private final @Nonnull List<Pair<String, TValueType>>                   bindings;
     private final @Nonnull Context                                          context;
     private final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
+    private final @Nonnull GVersion                                         version;
 
     public ExpressionTransformer(
       final @Nonnull Context context,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-      final @Nonnull List<Pair<String, TValueType>> bindings)
+      final @Nonnull List<Pair<String, TValueType>> bindings,
+      final @Nonnull GVersion version)
     {
       this.context = context;
       this.declarations = declarations;
       this.bindings = bindings;
+      this.version = version;
     }
 
     @Override public GASTExpression expressionVisitApplication(
       final @Nonnull List<GASTExpression> arguments,
       final @Nonnull TASTEApplication e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return e.getName().termNameVisitableAccept(
-        new TASTTermNameVisitor<GASTExpression, ConstraintError>() {
+        new TASTTermNameVisitor<GASTExpression, GFFIError>() {
           @SuppressWarnings("synthetic-access") @Override public
             GASTExpression
             termNameVisitGlobal(
               final @Nonnull TASTTermNameGlobal t)
               throws ConstraintError,
-                ConstraintError
+                GFFIError
           {
             final TASTTermNameFlat term_name =
               TASTTermNameFlat.fromTermNameGlobal(t);
@@ -762,37 +786,78 @@ public final class GTransform
               ExpressionTransformer.this.context.getCompilation().lookupTerm(
                 term_name);
 
+            final GTermNameGlobal name =
+              ExpressionTransformer.this.context.getGlobalTermName(term_name);
+
             return term
-              .termVisitableAccept(new TASTTermVisitor<GASTExpression, ConstraintError>() {
+              .termVisitableAccept(new TASTTermVisitor<GASTExpression, GFFIError>() {
+
+                /**
+                 * The application of a defined function.
+                 */
+
                 @Override public GASTExpression termVisitFunctionDefined(
                   final @Nonnull TASTDFunctionDefined f)
                   throws ConstraintError,
-                    ConstraintError
+                    GFFIError
                 {
-                  final GTermNameGlobal name =
-                    ExpressionTransformer.this.context
-                      .getGlobalTermName(term_name);
                   return new GASTExpression.GASTEApplication(name, e
                     .getType(), arguments);
                 }
 
+                /**
+                 * The application of an external function: Either a direct
+                 * application of a defined function, or a replacement
+                 * expression produced by the FFI.
+                 */
+
                 @Override public GASTExpression termVisitFunctionExternal(
                   final @Nonnull TASTDFunctionExternal f)
                   throws ConstraintError,
-                    ConstraintError
+                    GFFIError
                 {
-                  throw new UnimplementedCodeException();
+                  final GFFI ffi =
+                    ExpressionTransformer.this.context.getFFI();
+                  final GFFIExpression g =
+                    ffi.getExpression(
+                      f,
+                      arguments,
+                      ExpressionTransformer.this.version);
+
+                  return g
+                    .ffiExpressionAccept(new GFFIExpressionVisitor<GASTExpression, ConstraintError>() {
+                      @Override public
+                        GASTExpression
+                        ffiExpressionVisitBuiltIn(
+                          final @Nonnull GFFIBuiltIn ge)
+                          throws ConstraintError
+                      {
+                        return ge.getExpression();
+                      }
+
+                      @Override public
+                        GASTExpression
+                        ffiExpressionVisitDefined(
+                          final @Nonnull GFFIDefined ge)
+                          throws ConstraintError
+                      {
+                        final TValueType returns =
+                          f.getType().getReturnType();
+                        return new GASTEApplication(name, returns, arguments);
+                      }
+                    });
                 }
+
+                /**
+                 * The application of a value is forbidden by the type
+                 * checker.
+                 */
 
                 @Override public GASTExpression termVisitValue(
                   final @Nonnull TASTDValue v)
                   throws ConstraintError,
-                    ConstraintError
+                    GFFIError
                 {
-                  /**
-                   * Forbidden by the type checker.
-                   */
-
                   throw new UnreachableCodeException();
                 }
               });
@@ -801,7 +866,7 @@ public final class GTransform
           @Override public GASTExpression termNameVisitLocal(
             final @Nonnull TASTTermNameLocal t)
             throws ConstraintError,
-              ConstraintError
+              GFFIError
           {
             /**
              * There's no way to define a local function, so there's no way a
@@ -815,7 +880,7 @@ public final class GTransform
     @Override public boolean expressionVisitApplicationPre(
       final @Nonnull TASTEApplication e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return true;
     }
@@ -823,7 +888,7 @@ public final class GTransform
     @Override public GASTExpression expressionVisitBoolean(
       final @Nonnull TASTEBoolean e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return new GASTEBoolean(e.getValue());
     }
@@ -834,7 +899,7 @@ public final class GTransform
       final @Nonnull GASTExpression right,
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapFunction(e);
     }
@@ -842,7 +907,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalConditionPost(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -850,7 +915,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalConditionPre(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -858,7 +923,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalLeftPost(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -866,7 +931,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalLeftPre(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -874,7 +939,7 @@ public final class GTransform
     @Override public boolean expressionVisitConditionalPre(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return false;
     }
@@ -882,7 +947,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalRightPost(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -890,7 +955,7 @@ public final class GTransform
     @Override public void expressionVisitConditionalRightPre(
       final @Nonnull TASTEConditional e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       // Nothing
     }
@@ -898,7 +963,7 @@ public final class GTransform
     @Override public GASTExpression expressionVisitInteger(
       final @Nonnull TASTEInteger e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return new GASTExpression.GASTEInteger(e.getValue());
     }
@@ -908,17 +973,17 @@ public final class GTransform
       final @Nonnull GASTExpression body,
       final @Nonnull TASTELet e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapFunction(e);
     }
 
     @Override public
-      TASTLocalLevelVisitor<TASTDValueLocal, ConstraintError>
+      TASTLocalLevelVisitor<TASTDValueLocal, GFFIError>
       expressionVisitLetPre(
         final @Nonnull TASTELet e)
         throws ConstraintError,
-          ConstraintError
+          GFFIError
     {
       return null;
     }
@@ -927,7 +992,7 @@ public final class GTransform
       final @Nonnull List<GASTExpression> arguments,
       final @Nonnull TASTENew e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       final GTypeName type = this.context.getTypeName(e.getType());
       return new GASTEConstruction(type, arguments);
@@ -936,7 +1001,7 @@ public final class GTransform
     @Override public boolean expressionVisitNewPre(
       final @Nonnull TASTENew e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return true;
     }
@@ -944,7 +1009,7 @@ public final class GTransform
     @Override public GASTExpression expressionVisitReal(
       final @Nonnull TASTEReal e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return new GASTExpression.GASTEFloat(e.getValue());
     }
@@ -952,7 +1017,7 @@ public final class GTransform
     @Override public GASTExpression expressionVisitRecord(
       final @Nonnull TASTERecord e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return this.wrapFunction(e);
     }
@@ -961,7 +1026,7 @@ public final class GTransform
       final @Nonnull GASTExpression body,
       final @Nonnull TASTERecordProjection e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       final GFieldName field = new GFieldName(e.getField().getActual());
       final TType type = e.getType();
@@ -971,7 +1036,7 @@ public final class GTransform
     @Override public boolean expressionVisitRecordProjectionPre(
       final @Nonnull TASTERecordProjection e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return true;
     }
@@ -980,7 +1045,7 @@ public final class GTransform
       final @Nonnull GASTExpression body,
       final @Nonnull TASTESwizzle e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       final TType type = e.getType();
       final List<GFieldName> fields = new ArrayList<GFieldName>();
@@ -993,7 +1058,7 @@ public final class GTransform
     @Override public boolean expressionVisitSwizzlePre(
       final @Nonnull TASTESwizzle e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       return true;
     }
@@ -1001,7 +1066,7 @@ public final class GTransform
     @Override public GASTExpression expressionVisitVariable(
       final @Nonnull TASTEVariable e)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       final GTypeName type = this.context.getTypeName(e.getType());
       final GTermName term =
@@ -1033,7 +1098,8 @@ public final class GTransform
 
     private @Nonnull GASTExpression wrapFunction(
       final @Nonnull TASTExpression e)
-      throws ConstraintError
+      throws ConstraintError,
+        GFFIError
     {
       /**
        * Produce the body for the target function.
@@ -1043,7 +1109,8 @@ public final class GTransform
         e.expressionVisitableAccept(new ExpressionStatementTransformer(
           this.context,
           this.bindings,
-          this.declarations));
+          this.declarations,
+          this.version));
 
       /**
        * Determine which of the current local variables actually occur in the
@@ -1104,26 +1171,29 @@ public final class GTransform
   }
 
   private static final class TermTransformer implements
-    TASTTermVisitor<GASTTermDeclaration, ConstraintError>
+    TASTTermVisitor<GASTTermDeclaration, GFFIError>
   {
     private final @Nonnull Context                                          context;
     private final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
     private final @Nonnull TASTTermNameFlat                                 name;
+    private final @Nonnull GVersion                                         version;
 
     public TermTransformer(
       final @Nonnull Context context,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-      final @Nonnull TASTTermNameFlat name)
+      final @Nonnull TASTTermNameFlat name,
+      final @Nonnull GVersion version)
     {
       this.context = context;
       this.declarations = declarations;
       this.name = name;
+      this.version = version;
     }
 
     @Override public GASTTermFunction termVisitFunctionDefined(
       final @Nonnull TASTDFunctionDefined f)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       final ArrayList<Pair<String, TValueType>> bindings =
         new ArrayList<Pair<String, TValueType>>();
@@ -1139,7 +1209,8 @@ public final class GTransform
           new ExpressionStatementTransformer(
             this.context,
             bindings,
-            this.declarations));
+            this.declarations,
+            this.version));
 
       final GTypeName returns =
         this.context.getTypeName(f.getType().getReturnType());
@@ -1169,22 +1240,23 @@ public final class GTransform
     @Override public GASTTermFunction termVisitFunctionExternal(
       final @Nonnull TASTDFunctionExternal f)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
-      throw new UnimplementedCodeException();
+      return this.context.getFFI().getDefinition(f);
     }
 
     @Override public GASTTermValue termVisitValue(
       final @Nonnull TASTDValue v)
       throws ConstraintError,
-        ConstraintError
+        GFFIError
     {
       final GASTExpression r =
         v.getExpression().expressionVisitableAccept(
           new ExpressionTransformer(
             this.context,
             this.declarations,
-            new ArrayList<Pair<String, TValueType>>()));
+            new ArrayList<Pair<String, TValueType>>(),
+            this.version));
 
       final GTermNameGlobal term_name =
         this.context.getGlobalTermName(this.name);
@@ -1266,8 +1338,10 @@ public final class GTransform
   private static @Nonnull GASTShaderMainFragment makeFragmentMain(
     final @Nonnull Context context,
     final @Nonnull TASTDShaderFragment fragment,
-    final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms)
-    throws ConstraintError
+    final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
+    final @Nonnull GVersion version)
+    throws ConstraintError,
+      GFFIError
   {
     final List<GASTFragmentShaderStatement> statements =
       new ArrayList<GASTFragmentShaderStatement>();
@@ -1276,19 +1350,21 @@ public final class GTransform
 
     /**
      * Translate locals and conditional discards to statements.
+     * 
+     * @throws GFFIError
      */
 
     for (final TASTDShaderFragmentLocal l : fragment.getLocals()) {
       l
-        .fragmentShaderLocalVisitableAccept(new TASTFragmentShaderLocalVisitor<Unit, ConstraintError>() {
+        .fragmentShaderLocalVisitableAccept(new TASTFragmentShaderLocalVisitor<Unit, GFFIError>() {
           @Override public Unit fragmentShaderVisitLocalDiscard(
             final TASTDShaderFragmentLocalDiscard d)
             throws ConstraintError,
-              ConstraintError
+              GFFIError
           {
             final GASTExpression expression =
               d.getExpression().expressionVisitableAccept(
-                new ExpressionTransformer(context, terms, bindings));
+                new ExpressionTransformer(context, terms, bindings, version));
             statements.add(new GASTFragmentConditionalDiscard(expression));
             return Unit.unit();
           }
@@ -1298,14 +1374,15 @@ public final class GTransform
             fragmentShaderVisitLocalValue(
               final TASTDShaderFragmentLocalValue v)
               throws ConstraintError,
-                ConstraintError
+                GFFIError
           {
             GTransform.processFragmentLocal(
               context,
               terms,
               statements,
               bindings,
-              v.getValue());
+              v.getValue(),
+              version);
             return Unit.unit();
           }
         });
@@ -1376,11 +1453,13 @@ public final class GTransform
     return results;
   }
 
-  private static @Nonnull
+  @SuppressWarnings("synthetic-access") private static @Nonnull
     List<Pair<GTermNameGlobal, GASTTermDeclaration>>
     makeTerms(
-      final @Nonnull Context context)
-      throws ConstraintError
+      final @Nonnull Context context,
+      final @Nonnull GVersion version)
+      throws ConstraintError,
+        GFFIError
   {
     final TASTCompilation compilation = context.getCompilation();
     final Topology topology = context.getTopology();
@@ -1409,16 +1488,22 @@ public final class GTransform
         term.termVisitableAccept(new TermTransformer(
           context,
           declarations,
-          name));
+          name,
+          version));
 
-      declarations.add(new Pair<GTermNameGlobal, GASTTermDeclaration>(result
-        .getName(), result));
+      if (result != null) {
+        final Pair<GTermNameGlobal, GASTTermDeclaration> p =
+          new Pair<GTermNameGlobal, GASTTermDeclaration>(
+            result.getName(),
+            result);
+        declarations.add(p);
+      }
     }
 
     return declarations;
   }
 
-  private static @Nonnull
+  @SuppressWarnings("synthetic-access") private static @Nonnull
     List<Pair<GTypeName, GASTTypeDeclaration>>
     makeTypes(
       final @Nonnull Context context)
@@ -1502,8 +1587,10 @@ public final class GTransform
   private static @Nonnull GASTShaderMainVertex makeVertexMain(
     final @Nonnull Context context,
     final @Nonnull TASTDShaderVertex vertex,
-    final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms)
-    throws ConstraintError
+    final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
+    final @Nonnull GVersion version)
+    throws ConstraintError,
+      GFFIError
   {
     final List<GASTStatement> statements = new ArrayList<GASTStatement>();
     final List<Pair<String, TValueType>> bindings =
@@ -1515,7 +1602,13 @@ public final class GTransform
       locals.add(v.getValue());
     }
 
-    GTransform.processLocals(context, terms, statements, bindings, locals);
+    GTransform.processLocals(
+      context,
+      terms,
+      statements,
+      bindings,
+      locals,
+      version);
 
     final List<GASTVertexOutputAssignment> writes =
       new ArrayList<GASTVertexOutputAssignment>();
@@ -1600,12 +1693,14 @@ public final class GTransform
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
       final @Nonnull List<GASTFragmentShaderStatement> statements,
       final @Nonnull List<Pair<String, TValueType>> bindings,
-      final @Nonnull TASTDValueLocal b)
-      throws ConstraintError
+      final @Nonnull TASTDValueLocal b,
+      final @Nonnull GVersion version)
+      throws ConstraintError,
+        GFFIError
   {
     final GASTExpression ex =
       b.getExpression().expressionVisitableAccept(
-        new ExpressionTransformer(context, declarations, bindings));
+        new ExpressionTransformer(context, declarations, bindings, version));
     final GTermNameLocal name = new GTermNameLocal(b.getName().show());
     final TValueType type = (TValueType) b.getExpression().getType();
     final GASTFragmentLocalVariable l =
@@ -1624,12 +1719,14 @@ public final class GTransform
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
       final @Nonnull List<GASTStatement> statements,
       final @Nonnull List<Pair<String, TValueType>> bindings,
-      final @Nonnull TASTDValueLocal b)
-      throws ConstraintError
+      final @Nonnull TASTDValueLocal b,
+      final @Nonnull GVersion version)
+      throws ConstraintError,
+        GFFIError
   {
     final GASTExpression ex =
       b.getExpression().expressionVisitableAccept(
-        new ExpressionTransformer(context, declarations, bindings));
+        new ExpressionTransformer(context, declarations, bindings, version));
     final GTermNameLocal name = new GTermNameLocal(b.getName().show());
     final TValueType type = (TValueType) b.getExpression().getType();
     final GASTLocalVariable l =
@@ -1646,6 +1743,8 @@ public final class GTransform
    * variable to <code>bindings</code>. Any temporary functions generated will
    * be added to <code>declarations</code> and local variable statements will
    * be added to <code>statements</code>.
+   * 
+   * @throws GFFIError
    */
 
   private static
@@ -1655,11 +1754,19 @@ public final class GTransform
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
       final @Nonnull List<GASTStatement> statements,
       final @Nonnull List<Pair<String, TValueType>> bindings,
-      final @Nonnull List<TASTDValueLocal> locals)
-      throws ConstraintError
+      final @Nonnull List<TASTDValueLocal> locals,
+      final @Nonnull GVersion version)
+      throws ConstraintError,
+        GFFIError
   {
     for (final TASTDValueLocal b : locals) {
-      GTransform.processLocal(context, declarations, statements, bindings, b);
+      GTransform.processLocal(
+        context,
+        declarations,
+        statements,
+        bindings,
+        b,
+        version);
     }
   }
 
@@ -1669,7 +1776,8 @@ public final class GTransform
     final @Nonnull TASTShaderNameFlat shader_name,
     final @Nonnull GVersion version,
     final @Nonnull Log log)
-    throws ConstraintError
+    throws ConstraintError,
+      GFFIError
   {
     final TASTDModule m =
       GTransform.checkConstraints(
@@ -1699,7 +1807,7 @@ public final class GTransform
     final List<Pair<GTypeName, GASTTypeDeclaration>> types =
       GTransform.makeTypes(context);
     final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
-      GTransform.makeTerms(context);
+      GTransform.makeTerms(context, version);
 
     final List<GASTShaderFragmentInput> inputs =
       GTransform.makeFragmentInputs(context, fragment.getInputs());
@@ -1709,7 +1817,7 @@ public final class GTransform
       GTransform.makeFragmentParameters(context, fragment.getParameters());
 
     final GASTShaderMainFragment main =
-      GTransform.makeFragmentMain(context, fragment, terms);
+      GTransform.makeFragmentMain(context, fragment, terms, version);
 
     return new GASTShaderFragment(
       inputs,
@@ -1726,7 +1834,8 @@ public final class GTransform
     final @Nonnull TASTShaderNameFlat shader_name,
     final @Nonnull GVersion version,
     final @Nonnull Log log)
-    throws ConstraintError
+    throws ConstraintError,
+      GFFIError
   {
     final TASTDModule m =
       GTransform.checkConstraints(
@@ -1756,7 +1865,7 @@ public final class GTransform
     final List<Pair<GTypeName, GASTTypeDeclaration>> types =
       GTransform.makeTypes(context);
     final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
-      GTransform.makeTerms(context);
+      GTransform.makeTerms(context, version);
 
     final List<GASTShaderVertexInput> inputs =
       GTransform.makeVertexInputs(context, vertex.getInputs());
@@ -1765,7 +1874,7 @@ public final class GTransform
     final List<GASTShaderVertexParameter> parameters =
       GTransform.makeVertexParameters(context, vertex.getParameters());
     final GASTShaderMainVertex main =
-      GTransform.makeVertexMain(context, vertex, terms);
+      GTransform.makeVertexMain(context, vertex, terms, version);
 
     return new GASTShaderVertex(
       inputs,

@@ -71,7 +71,8 @@ public final class GTransformTest
   }
 
   @SuppressWarnings("static-method") @Test public void testFragmentSimple_0()
-    throws ConstraintError
+    throws ConstraintError,
+      GFFIError
   {
     final TASTShaderNameFlat shader = GTransformTest.shaderName("x.y.M", "f");
     final Prepared p =
@@ -92,7 +93,8 @@ public final class GTransformTest
   }
 
   @SuppressWarnings("static-method") @Test public void testVertexSimple_0()
-    throws ConstraintError
+    throws ConstraintError,
+      GFFIError
   {
     final TASTShaderNameFlat shader = GTransformTest.shaderName("x.y.M", "v");
     final Prepared p =
