@@ -37,10 +37,12 @@ import com.io7m.jparasol.parser.ParserError;
 import com.io7m.jparasol.parser.ParserTest;
 import com.io7m.jparasol.typed.Externals;
 import com.io7m.jparasol.typed.ExternalsError;
+import com.io7m.jparasol.typed.TTypeNameFlat;
 import com.io7m.jparasol.typed.TypeChecker;
 import com.io7m.jparasol.typed.TypeCheckerError;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
+import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 import com.io7m.jparasol.untyped.ModuleStructure;
 import com.io7m.jparasol.untyped.ModuleStructureError;
 import com.io7m.jparasol.untyped.Resolver;
@@ -138,6 +140,27 @@ public final class TestPipeline
     try {
       final Log log = TestUtilities.getLog();
       final TASTCompilation typed = TestPipeline.typed(names);
+      final Externals ec = Externals.newExternalsChecker(log);
+      ec.check(typed);
+      return typed;
+    } catch (final ConstraintError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final TypeCheckerError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final ExternalsError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    }
+  }
+
+  public static TASTCompilation completeTypedInternal(
+    final String[] names)
+  {
+    try {
+      final Log log = TestUtilities.getLog();
+      final TASTCompilation typed = TestPipeline.typedInternal(names);
       final Externals ec = Externals.newExternalsChecker(log);
       ec.check(typed);
       return typed;
@@ -378,5 +401,21 @@ public final class TestPipeline
       e.printStackTrace();
       throw new UnreachableCodeException(e);
     }
+  }
+
+  public static TASTTermNameFlat termName(
+    final @Nonnull String module,
+    final @Nonnull String name)
+    throws ConstraintError
+  {
+    return new TASTTermNameFlat(new ModulePathFlat(module), name);
+  }
+
+  public static TTypeNameFlat typeName(
+    final String module,
+    final String name)
+    throws ConstraintError
+  {
+    return new TTypeNameFlat(new ModulePathFlat(module), name);
   }
 }

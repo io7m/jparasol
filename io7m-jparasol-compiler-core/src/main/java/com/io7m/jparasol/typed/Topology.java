@@ -71,9 +71,9 @@ public final class Topology
 
     final Map<ModulePathFlat, TASTDModule> modules = compilation.getModules();
     Constraints.constrainArbitrary(
-      modules.containsKey(shader_name.getPath()),
+      modules.containsKey(shader_name.getModulePath()),
       "Module exists");
-    final TASTDModule m = modules.get(shader_name.getPath());
+    final TASTDModule m = modules.get(shader_name.getModulePath());
     Constraints.constrainArbitrary(
       m.getShaders().containsKey(shader_name.getName()),
       "Shader exists");

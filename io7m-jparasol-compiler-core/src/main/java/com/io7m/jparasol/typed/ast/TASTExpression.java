@@ -92,12 +92,17 @@ public abstract class TASTExpression implements TASTExpressionVisitable
         throws E,
           ConstraintError
     {
-      v.expressionVisitApplicationPre(this);
-      final List<A> args = new ArrayList<A>();
-      for (final TASTExpression a : this.arguments) {
-        final A x = a.expressionVisitableAccept(v);
-        args.add(x);
+      final boolean traverse = v.expressionVisitApplicationPre(this);
+
+      List<A> args = null;
+      if (traverse) {
+        args = new ArrayList<A>();
+        for (final TASTExpression a : this.arguments) {
+          final A x = a.expressionVisitableAccept(v);
+          args.add(x);
+        }
       }
+
       return v.expressionVisitApplication(args, this);
     }
 
@@ -265,17 +270,25 @@ public abstract class TASTExpression implements TASTExpressionVisitable
         throws E,
           ConstraintError
     {
-      v.expressionVisitConditionalConditionPre(this);
-      final A c = this.condition.expressionVisitableAccept(v);
-      v.expressionVisitConditionalConditionPost(this);
+      final boolean traverse = v.expressionVisitConditionalPre(this);
 
-      v.expressionVisitConditionalLeftPre(this);
-      final A l = this.left.expressionVisitableAccept(v);
-      v.expressionVisitConditionalLeftPost(this);
+      A c = null;
+      A l = null;
+      A r = null;
 
-      v.expressionVisitConditionalRightPre(this);
-      final A r = this.right.expressionVisitableAccept(v);
-      v.expressionVisitConditionalRightPost(this);
+      if (traverse) {
+        v.expressionVisitConditionalConditionPre(this);
+        c = this.condition.expressionVisitableAccept(v);
+        v.expressionVisitConditionalConditionPost(this);
+
+        v.expressionVisitConditionalLeftPre(this);
+        l = this.left.expressionVisitableAccept(v);
+        v.expressionVisitConditionalLeftPost(this);
+
+        v.expressionVisitConditionalRightPre(this);
+        r = this.right.expressionVisitableAccept(v);
+        v.expressionVisitConditionalRightPost(this);
+      }
 
       return v.expressionVisitConditional(c, l, r, this);
     }
@@ -450,13 +463,18 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     {
       final TASTLocalLevelVisitor<L, E> bv = v.expressionVisitLetPre(this);
 
-      final ArrayList<L> r_bindings = new ArrayList<L>();
-      for (final TASTDValueLocal b : this.bindings) {
-        final L rb = bv.localVisitValueLocal(b);
-        r_bindings.add(rb);
+      List<L> r_bindings = null;
+      A x = null;
+
+      if (bv != null) {
+        r_bindings = new ArrayList<L>();
+        for (final TASTDValueLocal b : this.bindings) {
+          final L rb = bv.localVisitValueLocal(b);
+          r_bindings.add(rb);
+        }
+        x = this.body.expressionVisitableAccept(v);
       }
 
-      final A x = this.body.expressionVisitableAccept(v);
       return v.expressionVisitLet(r_bindings, x, this);
     }
 
@@ -546,11 +564,17 @@ public abstract class TASTExpression implements TASTExpressionVisitable
         throws E,
           ConstraintError
     {
-      final List<A> args = new ArrayList<A>();
-      for (final TASTExpression b : this.arguments) {
-        final A x = b.expressionVisitableAccept(v);
-        args.add(x);
+      final boolean traverse = v.expressionVisitNewPre(this);
+
+      List<A> args = null;
+      if (traverse) {
+        args = new ArrayList<A>();
+        for (final TASTExpression b : this.arguments) {
+          final A x = b.expressionVisitableAccept(v);
+          args.add(x);
+        }
       }
+
       return v.expressionVisitNew(args, this);
     }
 
@@ -789,8 +813,11 @@ public abstract class TASTExpression implements TASTExpressionVisitable
         throws E,
           ConstraintError
     {
-      v.expressionVisitRecordProjectionPre(this);
-      final A x = this.expression.expressionVisitableAccept(v);
+      final boolean traverse = v.expressionVisitRecordProjectionPre(this);
+      A x = null;
+      if (traverse) {
+        x = this.expression.expressionVisitableAccept(v);
+      }
       return v.expressionVisitRecordProjection(x, this);
     }
 
@@ -847,7 +874,6 @@ public abstract class TASTExpression implements TASTExpressionVisitable
       this.expression =
         Constraints.constrainNotNull(expression, "Expression");
       this.fields = Constraints.constrainNotNull(fields, "Fields");
-
       assert (this.expression.getType() instanceof TVectorType);
     }
 
@@ -884,8 +910,11 @@ public abstract class TASTExpression implements TASTExpressionVisitable
         throws E,
           ConstraintError
     {
-      v.expressionVisitSwizzlePre(this);
-      final A x = this.expression.expressionVisitableAccept(v);
+      final boolean traverse = v.expressionVisitSwizzlePre(this);
+      A x = null;
+      if (traverse) {
+        x = this.expression.expressionVisitableAccept(v);
+      }
       return v.expressionVisitSwizzle(x, this);
     }
 

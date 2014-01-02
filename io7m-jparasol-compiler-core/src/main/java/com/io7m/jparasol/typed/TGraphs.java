@@ -84,7 +84,6 @@ import com.io7m.jparasol.typed.ast.TASTShaderName;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jparasol.typed.ast.TASTShaderVisitor;
 import com.io7m.jparasol.typed.ast.TASTTermName;
-import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameBuiltIn;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
@@ -250,9 +249,7 @@ final class TGraphs
         new TASTNameTermShaderFlat.Shader(flat);
       if (this.graph.containsVertex(e_term) == false) {
         if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add shader %s.%s", flat
-            .getPath()
-            .getActual(), flat.getName()));
+          this.log.debug(String.format("Add shader %s", flat.show()));
         }
         this.graph.addVertex(e_term);
       }
@@ -266,9 +263,7 @@ final class TGraphs
         new TASTNameTermShaderFlat.Term(term);
       if (this.graph.containsVertex(e_term) == false) {
         if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add term %s.%s", term
-            .getPath()
-            .getActual(), term.getName()));
+          this.log.debug(String.format("Add term %s", term.show()));
         }
         this.graph.addVertex(e_term);
       }
@@ -348,9 +343,7 @@ final class TGraphs
     {
       if (this.graph.containsVertex(term) == false) {
         if (this.log.enabled(Level.LOG_DEBUG)) {
-          final String path = term.getPath().getActual();
-          this.log
-            .debug(String.format("Add term %s.%s", path, term.getName()));
+          this.log.debug(String.format("Add term %s", term.show()));
         }
         this.graph.addVertex(term);
       }
@@ -429,9 +422,7 @@ final class TGraphs
         new TASTNameTypeTermFlat.Term(flat);
       if (this.graph.containsVertex(e_term) == false) {
         if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add term %s.%s", flat
-            .getPath()
-            .getActual(), flat.getName()));
+          this.log.debug(String.format("Add term %s", flat.show()));
         }
         this.graph.addVertex(e_term);
       }
@@ -487,9 +478,7 @@ final class TGraphs
         new TASTNameTypeTermFlat.Type(type);
       if (this.graph.containsVertex(e_type) == false) {
         if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add type %s.%s", type
-            .getPath()
-            .getActual(), type.getName()));
+          this.log.debug(String.format("Add type %s", type.show()));
         }
         this.graph.addVertex(e_type);
       }
@@ -530,9 +519,7 @@ final class TGraphs
         new TASTNameTypeShaderFlat.Shader(flat);
       if (this.graph.containsVertex(e_term) == false) {
         if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add shader %s.%s", flat
-            .getPath()
-            .getActual(), flat.getName()));
+          this.log.debug(String.format("Add shader %s", flat.show()));
         }
         this.graph.addVertex(e_term);
       }
@@ -546,9 +533,7 @@ final class TGraphs
         new TASTNameTypeShaderFlat.Type(type);
       if (this.graph.containsVertex(e_type) == false) {
         if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add type %s.%s", type
-            .getPath()
-            .getActual(), type.getName()));
+          this.log.debug(String.format("Add type %s", type.show()));
         }
         this.graph.addVertex(e_type);
       }
@@ -628,9 +613,7 @@ final class TGraphs
     {
       if (this.graph.containsVertex(type) == false) {
         if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add type %s.%s", type
-            .getPath()
-            .getActual(), type.getName()));
+          this.log.debug(String.format("Add type %s", type.show()));
         }
         this.graph.addVertex(type);
       }
@@ -1015,14 +998,6 @@ final class TGraphs
     {
       name
         .termNameVisitableAccept(new TASTTermNameVisitor<Unit, ConstraintError>() {
-          @Override public Unit termNameVisitBuiltIn(
-            final TASTTermNameBuiltIn t)
-            throws ConstraintError,
-              ConstraintError
-          {
-            return Unit.unit();
-          }
-
           @Override public Unit termNameVisitGlobal(
             final TASTTermNameGlobal t)
             throws ConstraintError,
@@ -1083,12 +1058,12 @@ final class TGraphs
       return e;
     }
 
-    @Override public void expressionVisitApplicationPre(
+    @Override public boolean expressionVisitApplicationPre(
       final @Nonnull TASTEApplication e)
       throws ConstraintError,
         ConstraintError
     {
-      // Nothing
+      return true;
     }
 
     @Override public TASTExpression expressionVisitBoolean(
@@ -1140,6 +1115,14 @@ final class TGraphs
         ConstraintError
     {
       // Nothing
+    }
+
+    @Override public boolean expressionVisitConditionalPre(
+      final @Nonnull TASTEConditional e)
+      throws ConstraintError,
+        ConstraintError
+    {
+      return true;
     }
 
     @Override public void expressionVisitConditionalRightPost(
@@ -1203,12 +1186,12 @@ final class TGraphs
       return e;
     }
 
-    @Override public void expressionVisitNewPre(
+    @Override public boolean expressionVisitNewPre(
       final @Nonnull TASTENew e)
       throws ConstraintError,
         ConstraintError
     {
-      // Nothing
+      return true;
     }
 
     @Override public TASTExpression expressionVisitReal(
@@ -1238,12 +1221,12 @@ final class TGraphs
       return e;
     }
 
-    @Override public void expressionVisitRecordProjectionPre(
+    @Override public boolean expressionVisitRecordProjectionPre(
       final @Nonnull TASTERecordProjection e)
       throws ConstraintError,
         ConstraintError
     {
-      // Nothing
+      return true;
     }
 
     @Override public TASTExpression expressionVisitSwizzle(
@@ -1255,12 +1238,12 @@ final class TGraphs
       return e;
     }
 
-    @Override public void expressionVisitSwizzlePre(
+    @Override public boolean expressionVisitSwizzlePre(
       final @Nonnull TASTESwizzle e)
       throws ConstraintError,
         ConstraintError
     {
-      // Nothing
+      return true;
     }
 
     @Override public TASTExpression expressionVisitVariable(
@@ -1484,14 +1467,6 @@ final class TGraphs
     {
       name
         .termNameVisitableAccept(new TASTTermNameVisitor<Unit, ConstraintError>() {
-          @Override public Unit termNameVisitBuiltIn(
-            final TASTTermNameBuiltIn t)
-            throws ConstraintError,
-              ConstraintError
-          {
-            return Unit.unit();
-          }
-
           @Override public Unit termNameVisitGlobal(
             final TASTTermNameGlobal t)
             throws ConstraintError,
@@ -1552,12 +1527,12 @@ final class TGraphs
       return e;
     }
 
-    @Override public void expressionVisitApplicationPre(
+    @Override public boolean expressionVisitApplicationPre(
       final @Nonnull TASTEApplication e)
       throws ConstraintError,
         ConstraintError
     {
-      // Nothing
+      return true;
     }
 
     @Override public TASTExpression expressionVisitBoolean(
@@ -1609,6 +1584,14 @@ final class TGraphs
         ConstraintError
     {
       // Nothing
+    }
+
+    @Override public boolean expressionVisitConditionalPre(
+      final @Nonnull TASTEConditional e)
+      throws ConstraintError,
+        ConstraintError
+    {
+      return true;
     }
 
     @Override public void expressionVisitConditionalRightPost(
@@ -1684,12 +1667,12 @@ final class TGraphs
       return e;
     }
 
-    @Override public void expressionVisitNewPre(
+    @Override public boolean expressionVisitNewPre(
       final @Nonnull TASTENew e)
       throws ConstraintError,
         ConstraintError
     {
-      // Nothing
+      return true;
     }
 
     @Override public TASTExpression expressionVisitReal(
@@ -1719,12 +1702,12 @@ final class TGraphs
       return e;
     }
 
-    @Override public void expressionVisitRecordProjectionPre(
+    @Override public boolean expressionVisitRecordProjectionPre(
       final @Nonnull TASTERecordProjection e)
       throws ConstraintError,
         ConstraintError
     {
-      // Nothing
+      return true;
     }
 
     @Override public TASTExpression expressionVisitSwizzle(
@@ -1736,12 +1719,12 @@ final class TGraphs
       return e;
     }
 
-    @Override public void expressionVisitSwizzlePre(
+    @Override public boolean expressionVisitSwizzlePre(
       final @Nonnull TASTESwizzle e)
       throws ConstraintError,
         ConstraintError
     {
-      // Nothing
+      return true;
     }
 
     @Override public TASTExpression expressionVisitVariable(

@@ -34,22 +34,6 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 
 public final class TopologyTest
 {
-  private static @Nonnull TASTTermNameFlat termName(
-    final @Nonnull String module,
-    final @Nonnull String name)
-    throws ConstraintError
-  {
-    return new TASTTermNameFlat(new ModulePathFlat(module), name);
-  }
-
-  private static TTypeNameFlat typeName(
-    final @Nonnull String module,
-    final @Nonnull String name)
-    throws ConstraintError
-  {
-    return new TTypeNameFlat(new ModulePathFlat(module), name);
-  }
-
   @SuppressWarnings("static-method") @Test public
     void
     testVertexShaderTerm_3()
@@ -72,8 +56,8 @@ public final class TopologyTest
 
     final List<TASTTermNameFlat> terms = topo.getTerms();
     Assert.assertEquals(2, terms.size());
-    Assert.assertEquals(terms.get(0), TopologyTest.termName("x.y.M", "x"));
-    Assert.assertEquals(terms.get(1), TopologyTest.termName("x.y.M", "y"));
+    Assert.assertEquals(terms.get(0), TestPipeline.termName("x.y.M", "x"));
+    Assert.assertEquals(terms.get(1), TestPipeline.termName("x.y.M", "y"));
   }
 
   private static @Nonnull TASTShaderNameFlat shaderName(

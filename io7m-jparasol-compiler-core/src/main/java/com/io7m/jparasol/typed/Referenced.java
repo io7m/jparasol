@@ -82,11 +82,10 @@ public final class Referenced
       while (bfi.hasNext()) {
         final TASTTermNameFlat current = bfi.next();
         if (log_actual.enabled(Level.LOG_DEBUG)) {
-          log_actual.debug(String.format("Adding term %s.%s", current
-            .getPath()
-            .getActual(), current.getName()));
+          log_actual.debug(String.format("Adding term %s", current.show()));
         }
-        terms.add(new TASTTermNameFlat(current.getPath(), current.getName()));
+        terms.add(new TASTTermNameFlat(current.getModulePath(), current
+          .getName()));
       }
     }
   }
@@ -187,9 +186,9 @@ public final class Referenced
 
     final Map<ModulePathFlat, TASTDModule> modules = compilation.getModules();
     Constraints.constrainArbitrary(
-      modules.containsKey(shader_name.getPath()),
+      modules.containsKey(shader_name.getModulePath()),
       "Module exists");
-    final TASTDModule m = modules.get(shader_name.getPath());
+    final TASTDModule m = modules.get(shader_name.getModulePath());
     Constraints.constrainArbitrary(
       m.getShaders().containsKey(shader_name.getName()),
       "Shader exists");

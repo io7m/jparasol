@@ -16,13 +16,14 @@
 
 package com.io7m.jparasol.glsl.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 
-public abstract class GASTStatement
+public abstract class GASTStatement implements GASTStatementVisitable
 {
   public static final class GASTConditional extends GASTStatement
   {
@@ -90,6 +91,26 @@ public abstract class GASTStatement
       return result;
     }
 
+    @Override public
+      <A, E extends Throwable, V extends GASTStatementVisitor<A, E>>
+      A
+      statementVisitableAccept(
+        final V v)
+        throws E
+    {
+      v.statementVisitConditionalPre(this);
+
+      v.statementVisitConditionalLeftPre(this);
+      final A l = this.left.statementVisitableAccept(v);
+      v.statementVisitConditionalLeftPost(this);
+
+      v.statementVisitConditionalRightPre(this);
+      final A r = this.right.statementVisitableAccept(v);
+      v.statementVisitConditionalRightPost(this);
+
+      return v.statementVisitConditional(l, r, this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -101,132 +122,6 @@ public abstract class GASTStatement
       builder.append(this.right);
       builder.append("]");
       return builder.toString();
-    }
-  }
-
-  public static abstract class GASTFragmentShaderStatement
-  {
-    public static final class GASTFragmentConditionalDiscard extends
-      GASTFragmentShaderStatement
-    {
-      private final @Nonnull GASTExpression condition;
-
-      public GASTFragmentConditionalDiscard(
-        final @Nonnull GASTExpression condition)
-      {
-        this.condition = condition;
-      }
-
-      @Override public boolean equals(
-        final Object obj)
-      {
-        if (this == obj) {
-          return true;
-        }
-        if (obj == null) {
-          return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-          return false;
-        }
-        final GASTFragmentConditionalDiscard other =
-          (GASTFragmentConditionalDiscard) obj;
-        if (!this.condition.equals(other.condition)) {
-          return false;
-        }
-        return true;
-      }
-
-      public @Nonnull GASTExpression getCondition()
-      {
-        return this.condition;
-      }
-
-      @Override public int hashCode()
-      {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + this.condition.hashCode();
-        return result;
-      }
-
-      @Override public String toString()
-      {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("[GASTFragmentConditionalDiscard ");
-        builder.append(this.condition);
-        builder.append("]");
-        return builder.toString();
-      }
-    }
-
-    public static final class GASTFragmentOutputAssignment extends
-      GASTFragmentShaderStatement
-    {
-      private final int                        index;
-      private final @Nonnull GShaderOutputName name;
-      private final @Nonnull GTermName         value;
-
-      public GASTFragmentOutputAssignment(
-        final @Nonnull GShaderOutputName name,
-        final int index,
-        final @Nonnull GTermName value)
-      {
-        this.name = name;
-        this.index = index;
-        this.value = value;
-      }
-
-      @Override public boolean equals(
-        final Object obj)
-      {
-        if (this == obj) {
-          return true;
-        }
-        if (obj == null) {
-          return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-          return false;
-        }
-        final GASTFragmentOutputAssignment other =
-          (GASTFragmentOutputAssignment) obj;
-        if (this.index != other.index) {
-          return false;
-        }
-        if (!this.name.equals(other.name)) {
-          return false;
-        }
-        if (!this.value.equals(other.value)) {
-          return false;
-        }
-        return true;
-      }
-
-      public int getIndex()
-      {
-        return this.index;
-      }
-
-      public @Nonnull GShaderOutputName getName()
-      {
-        return this.name;
-      }
-
-      public @Nonnull GTermName getValue()
-      {
-        return this.value;
-      }
-
-      @Override public int hashCode()
-      {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + this.index;
-        result = (prime * result) + this.name.hashCode();
-        result = (prime * result) + this.value.hashCode();
-        return result;
-      }
     }
   }
 
@@ -296,6 +191,16 @@ public abstract class GASTStatement
       return result;
     }
 
+    @Override public
+      <A, E extends Throwable, V extends GASTStatementVisitor<A, E>>
+      A
+      statementVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.statementVisitLocalVariable(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -353,6 +258,16 @@ public abstract class GASTStatement
       return result;
     }
 
+    @Override public
+      <A, E extends Throwable, V extends GASTStatementVisitor<A, E>>
+      A
+      statementVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.statementVisitReturn(this);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -398,6 +313,21 @@ public abstract class GASTStatement
       int result = 1;
       result = (prime * result) + this.statements.hashCode();
       return result;
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends GASTStatementVisitor<A, E>>
+      A
+      statementVisitableAccept(
+        final V v)
+        throws E
+    {
+      v.statementVisitScopePre(this);
+      final List<A> xs = new ArrayList<A>();
+      for (final GASTStatement s : this.statements) {
+        xs.add(s.statementVisitableAccept(v));
+      }
+      return v.statementVisitScope(xs, this);
     }
 
     @Override public String toString()

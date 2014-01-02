@@ -18,8 +18,6 @@ package com.io7m.jparasol.typed;
 
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,22 +31,6 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 
 public final class ReferencedTest
 {
-  static TASTTermNameFlat termName(
-    final @Nonnull String module,
-    final @Nonnull String name)
-    throws ConstraintError
-  {
-    return new TASTTermNameFlat(new ModulePathFlat(module), name);
-  }
-
-  private static TTypeNameFlat typeName(
-    final String module,
-    final String name)
-    throws ConstraintError
-  {
-    return new TTypeNameFlat(new ModulePathFlat(module), name);
-  }
-
   @SuppressWarnings("static-method") @Test public
     void
     testVertexShaderTerm_0()
@@ -85,7 +67,7 @@ public final class ReferencedTest
 
     final Set<TASTTermNameFlat> terms = ref.getTerms();
     Assert.assertEquals(1, terms.size());
-    Assert.assertTrue(terms.contains(ReferencedTest.termName("x.y.M", "x")));
+    Assert.assertTrue(terms.contains(TestPipeline.termName("x.y.M", "x")));
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -106,8 +88,8 @@ public final class ReferencedTest
 
     final Set<TASTTermNameFlat> terms = ref.getTerms();
     Assert.assertEquals(2, terms.size());
-    Assert.assertTrue(terms.contains(ReferencedTest.termName("x.y.M", "x")));
-    Assert.assertTrue(terms.contains(ReferencedTest.termName("x.y.M", "y")));
+    Assert.assertTrue(terms.contains(TestPipeline.termName("x.y.M", "x")));
+    Assert.assertTrue(terms.contains(TestPipeline.termName("x.y.M", "y")));
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -128,8 +110,8 @@ public final class ReferencedTest
 
     final Set<TASTTermNameFlat> terms = ref.getTerms();
     Assert.assertEquals(2, terms.size());
-    Assert.assertTrue(terms.contains(ReferencedTest.termName("x.y.M", "x")));
-    Assert.assertTrue(terms.contains(ReferencedTest.termName("x.y.M", "y")));
+    Assert.assertTrue(terms.contains(TestPipeline.termName("x.y.M", "x")));
+    Assert.assertTrue(terms.contains(TestPipeline.termName("x.y.M", "y")));
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -150,7 +132,7 @@ public final class ReferencedTest
 
     final Set<TTypeNameFlat> types = ref.getTypes();
     Assert.assertEquals(1, types.size());
-    Assert.assertTrue(types.contains(ReferencedTest.typeName("x.y.M", "t")));
+    Assert.assertTrue(types.contains(TestPipeline.typeName("x.y.M", "t")));
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -169,10 +151,10 @@ public final class ReferencedTest
 
     final Set<TASTTermNameFlat> terms = ref.getTerms();
     Assert.assertEquals(1, terms.size());
-    Assert.assertTrue(terms.contains(ReferencedTest.termName("x.y.M", "x")));
+    Assert.assertTrue(terms.contains(TestPipeline.termName("x.y.M", "x")));
 
     final Set<TTypeNameFlat> types = ref.getTypes();
     Assert.assertEquals(1, types.size());
-    Assert.assertTrue(types.contains(ReferencedTest.typeName("x.y.M", "t")));
+    Assert.assertTrue(types.contains(TestPipeline.typeName("x.y.M", "t")));
   }
 }

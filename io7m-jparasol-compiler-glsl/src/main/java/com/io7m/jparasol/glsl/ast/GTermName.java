@@ -18,7 +18,9 @@ package com.io7m.jparasol.glsl.ast;
 
 import javax.annotation.Nonnull;
 
-public abstract class GTermName implements GTermNameVisitable
+import com.io7m.jparasol.NameShow;
+
+public abstract class GTermName implements GTermNameVisitable, NameShow
 {
   public static final class GTermNameGlobal extends GTermName
   {
@@ -71,6 +73,11 @@ public abstract class GTermName implements GTermNameVisitable
       builder.append(this.name);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public @Nonnull String show()
+    {
+      return this.name;
     }
   }
 
@@ -125,6 +132,11 @@ public abstract class GTermName implements GTermNameVisitable
       builder.append(this.name);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public String show()
+    {
+      return this.name;
     }
   }
 }

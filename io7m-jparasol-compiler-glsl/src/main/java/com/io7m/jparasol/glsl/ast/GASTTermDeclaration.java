@@ -21,82 +21,13 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.functional.Pair;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTFragmentShaderStatement.GASTFragmentOutputAssignment;
 import com.io7m.jparasol.glsl.ast.GASTStatement.GASTScope;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTVertexShaderStatement.GASTVertexOutputAssignment;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 
-public abstract class GASTTermDeclaration
+public abstract class GASTTermDeclaration implements
+  GASTTermDeclarationVisitable
 {
-  public static final class GASTTermFragmentMainFunction extends
-    GASTTermDeclaration
-  {
-    private final @Nonnull List<GASTStatement>                statements;
-    private final @Nonnull List<GASTFragmentOutputAssignment> writes;
-
-    public GASTTermFragmentMainFunction(
-      final @Nonnull List<GASTStatement> statements,
-      final @Nonnull List<GASTFragmentOutputAssignment> writes)
-    {
-      this.statements = statements;
-      this.writes = writes;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTTermFragmentMainFunction other =
-        (GASTTermFragmentMainFunction) obj;
-      if (!this.statements.equals(other.statements)) {
-        return false;
-      }
-      if (!this.writes.equals(other.writes)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull List<GASTStatement> getStatements()
-    {
-      return this.statements;
-    }
-
-    public @Nonnull List<GASTFragmentOutputAssignment> getWrites()
-    {
-      return this.writes;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.statements.hashCode();
-      result = (prime * result) + this.writes.hashCode();
-      return result;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[GASTTermFragmentMainFunction ");
-      builder.append(this.statements);
-      builder.append(" ");
-      builder.append(this.writes);
-      builder.append("]");
-      return builder.toString();
-    }
-  }
-
   public static final class GASTTermFunction extends GASTTermDeclaration
   {
     private final @Nonnull GTermNameGlobal                       name;
@@ -144,7 +75,7 @@ public abstract class GASTTermDeclaration
       return true;
     }
 
-    public @Nonnull GTermNameGlobal getName()
+    @Override public @Nonnull GTermNameGlobal getName()
     {
       return this.name;
     }
@@ -188,6 +119,16 @@ public abstract class GASTTermDeclaration
       builder.append(this.statement);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends GASTTermDeclarationVisitor<A, E>>
+      A
+      termDeclarationVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.termVisitFunction(this);
     }
   }
 
@@ -237,7 +178,7 @@ public abstract class GASTTermDeclaration
       return this.expression;
     }
 
-    public @Nonnull GTermNameGlobal getName()
+    @Override public @Nonnull GTermNameGlobal getName()
     {
       return this.name;
     }
@@ -269,73 +210,17 @@ public abstract class GASTTermDeclaration
       builder.append("]");
       return builder.toString();
     }
-  }
 
-  public static final class GASTTermVertexMainFunction extends
-    GASTTermDeclaration
-  {
-    private final @Nonnull List<GASTStatement>              statements;
-    private final @Nonnull List<GASTVertexOutputAssignment> writes;
-
-    public GASTTermVertexMainFunction(
-      final @Nonnull List<GASTStatement> statements,
-      final @Nonnull List<GASTVertexOutputAssignment> writes)
+    @Override public
+      <A, E extends Throwable, V extends GASTTermDeclarationVisitor<A, E>>
+      A
+      termDeclarationVisitableAccept(
+        final V v)
+        throws E
     {
-      this.statements = statements;
-      this.writes = writes;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTTermVertexMainFunction other =
-        (GASTTermVertexMainFunction) obj;
-      if (!this.statements.equals(other.statements)) {
-        return false;
-      }
-      if (!this.writes.equals(other.writes)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull List<GASTStatement> getStatements()
-    {
-      return this.statements;
-    }
-
-    public @Nonnull List<GASTVertexOutputAssignment> getWrites()
-    {
-      return this.writes;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.statements.hashCode();
-      result = (prime * result) + this.writes.hashCode();
-      return result;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[GASTTermVertexMainFunction ");
-      builder.append(this.statements);
-      builder.append(" ");
-      builder.append(this.writes);
-      builder.append("]");
-      return builder.toString();
+      return v.termVisitValue(this);
     }
   }
+
+  public abstract @Nonnull GTermNameGlobal getName();
 }

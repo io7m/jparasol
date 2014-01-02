@@ -18,7 +18,9 @@ package com.io7m.jparasol.glsl.ast;
 
 import javax.annotation.Nonnull;
 
-public final class GFieldName
+import com.io7m.jparasol.NameShow;
+
+public final class GFieldName implements NameShow
 {
   private final @Nonnull String name;
 
@@ -59,5 +61,10 @@ public final class GFieldName
     builder.append(this.name);
     builder.append("]");
     return builder.toString();
+  }
+
+  @Override public @Nonnull String show()
+  {
+    return this.name;
   }
 }

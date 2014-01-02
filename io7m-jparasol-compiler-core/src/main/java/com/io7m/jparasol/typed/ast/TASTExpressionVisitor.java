@@ -18,6 +18,7 @@ package com.io7m.jparasol.typed.ast;
 
 import java.util.List;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
@@ -36,12 +37,12 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
 public interface TASTExpressionVisitor<A, L, E extends Throwable>
 {
   public A expressionVisitApplication(
-    final @Nonnull List<A> arguments,
+    final @CheckForNull List<A> arguments,
     final @Nonnull TASTEApplication e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitApplicationPre(
+  public boolean expressionVisitApplicationPre(
     final @Nonnull TASTEApplication e)
     throws E,
       ConstraintError;
@@ -51,10 +52,15 @@ public interface TASTExpressionVisitor<A, L, E extends Throwable>
     throws E,
       ConstraintError;
 
+  public boolean expressionVisitConditionalPre(
+    final @Nonnull TASTEConditional e)
+    throws E,
+      ConstraintError;
+
   public A expressionVisitConditional(
-    final @Nonnull A condition,
-    final @Nonnull A left,
-    final @Nonnull A right,
+    final @CheckForNull A condition,
+    final @CheckForNull A left,
+    final @CheckForNull A right,
     final @Nonnull TASTEConditional e)
     throws E,
       ConstraintError;
@@ -95,24 +101,24 @@ public interface TASTExpressionVisitor<A, L, E extends Throwable>
       ConstraintError;
 
   public A expressionVisitLet(
-    final @Nonnull List<L> bindings,
-    final @Nonnull A body,
+    final @CheckForNull List<L> bindings,
+    final @CheckForNull A body,
     final @Nonnull TASTELet e)
     throws E,
       ConstraintError;
 
-  public @Nonnull TASTLocalLevelVisitor<L, E> expressionVisitLetPre(
+  public @CheckForNull TASTLocalLevelVisitor<L, E> expressionVisitLetPre(
     final @Nonnull TASTELet e)
     throws E,
       ConstraintError;
 
   public A expressionVisitNew(
-    final @Nonnull List<A> arguments,
+    final @CheckForNull List<A> arguments,
     final @Nonnull TASTENew e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitNewPre(
+  public boolean expressionVisitNewPre(
     final @Nonnull TASTENew e)
     throws E,
       ConstraintError;
@@ -128,23 +134,23 @@ public interface TASTExpressionVisitor<A, L, E extends Throwable>
       ConstraintError;
 
   public A expressionVisitRecordProjection(
-    final @Nonnull A body,
+    final @CheckForNull A body,
     final @Nonnull TASTERecordProjection e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitRecordProjectionPre(
-    final @Nonnull TASTERecordProjection e)
+  public boolean expressionVisitRecordProjectionPre(
+    final @CheckForNull TASTERecordProjection e)
     throws E,
       ConstraintError;
 
   public A expressionVisitSwizzle(
-    final @Nonnull A body,
+    final @CheckForNull A body,
     final @Nonnull TASTESwizzle e)
     throws E,
       ConstraintError;
 
-  public void expressionVisitSwizzlePre(
+  public boolean expressionVisitSwizzlePre(
     final @Nonnull TASTESwizzle e)
     throws E,
       ConstraintError;

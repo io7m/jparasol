@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
@@ -30,6 +31,8 @@ import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.typed.TTypeNameFlat;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTerm;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDType;
 
 public final class TASTCompilation
 {
@@ -116,5 +119,25 @@ public final class TASTCompilation
     getTypeGraph()
   {
     return this.type_graph;
+  }
+
+  public @CheckForNull TASTDTerm lookupTerm(
+    final @Nonnull TASTTermNameFlat name)
+  {
+    final TASTDModule m = this.modules.get(name.getModulePath());
+    if (m != null) {
+      return m.getTerms().get(name.getName());
+    }
+    return null;
+  }
+
+  public @CheckForNull TASTDType lookupType(
+    final @Nonnull TTypeNameFlat name)
+  {
+    final TASTDModule m = this.modules.get(name.getModulePath());
+    if (m != null) {
+      return m.getTypes().get(name.getName());
+    }
+    return null;
   }
 }

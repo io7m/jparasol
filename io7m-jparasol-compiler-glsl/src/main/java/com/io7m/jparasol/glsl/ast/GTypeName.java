@@ -18,7 +18,9 @@ package com.io7m.jparasol.glsl.ast;
 
 import javax.annotation.Nonnull;
 
-public final class GTypeName
+import com.io7m.jparasol.NameShow;
+
+public final class GTypeName implements NameShow
 {
   private final @Nonnull String name;
 
@@ -50,6 +52,11 @@ public final class GTypeName
     int result = 1;
     result = (prime * result) + this.name.hashCode();
     return result;
+  }
+
+  @Override public @Nonnull String show()
+  {
+    return this.name;
   }
 
   @Override public String toString()

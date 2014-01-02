@@ -32,7 +32,7 @@ import com.io7m.jparasol.typed.TTypeName.TTypeNameBuiltIn;
 import com.io7m.jparasol.typed.TTypeName.TTypeNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTExpression;
 
-public abstract class TType
+public abstract class TType implements TTypeVisitable
 {
   /**
    * The main boolean type.
@@ -99,6 +99,16 @@ public abstract class TType
     @Override public String toString()
     {
       return "[TBoolean]";
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitBoolean(this);
     }
   }
 
@@ -262,6 +272,16 @@ public abstract class TType
     {
       return "[TFloat]";
     }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitFloat(this);
+    }
   }
 
   /**
@@ -324,6 +344,16 @@ public abstract class TType
       builder.append(this.return_type);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitFunction(this);
     }
   }
 
@@ -451,6 +481,16 @@ public abstract class TType
     {
       return "[TInteger]";
     }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitInteger(this);
+    }
   }
 
   /**
@@ -532,6 +572,16 @@ public abstract class TType
     {
       return "[TMatrix3x3F]";
     }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitMatrix3x3F(this);
+    }
   }
 
   /**
@@ -602,6 +652,16 @@ public abstract class TType
     @Override public String toString()
     {
       return "[TMatrix4x4F]";
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitMatrix4x4F(this);
     }
   }
 
@@ -688,6 +748,16 @@ public abstract class TType
       builder.append(this.fields);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitRecord(this);
     }
   }
 
@@ -821,6 +891,16 @@ public abstract class TType
     {
       return "[TSampler2D]";
     }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitSampler2D(this);
+    }
   }
 
   /**
@@ -885,6 +965,16 @@ public abstract class TType
     @Override public String toString()
     {
       return "[TSamplerCube]";
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitSamplerCube(this);
     }
   }
 
@@ -976,6 +1066,16 @@ public abstract class TType
     {
       return "[TVector2F]";
     }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitVector2F(this);
+    }
   }
 
   /**
@@ -1053,6 +1153,16 @@ public abstract class TType
     @Override public String toString()
     {
       return "[TVector2I]";
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitVector2I(this);
     }
   }
 
@@ -1144,6 +1254,16 @@ public abstract class TType
     {
       return "[TVector3F]";
     }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitVector3F(this);
+    }
   }
 
   /**
@@ -1233,6 +1353,16 @@ public abstract class TType
     @Override public String toString()
     {
       return "[TVector3I]";
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitVector3I(this);
     }
   }
 
@@ -1344,6 +1474,16 @@ public abstract class TType
     {
       return "[TVector4F]";
     }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitVector4F(this);
+    }
   }
 
   /**
@@ -1453,6 +1593,16 @@ public abstract class TType
     @Override public String toString()
     {
       return "[TVector4I]";
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      A
+      ttypeVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.typeVisitVector4I(this);
     }
   }
 

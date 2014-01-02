@@ -125,9 +125,7 @@ public final class Externals
         while (di.hasNext()) {
           final TASTTermNameFlat current = di.next();
           if (this.log.enabled(Level.LOG_DEBUG)) {
-            this.log.debug(String.format("Term %s.%s", current
-              .getPath()
-              .getActual(), current.getName()));
+            this.log.debug(String.format("Term %s", current.show()));
           }
 
           final TASTDTerm term = this.lookupTerm(current);
@@ -146,7 +144,7 @@ public final class Externals
     private @Nonnull TASTDTerm lookupTerm(
       final @Nonnull TASTTermNameFlat current)
     {
-      final TASTDModule m = this.modules.get(current.getPath());
+      final TASTDModule m = this.modules.get(current.getModulePath());
       assert m.getTerms().containsKey(current.getName());
       return m.getTerms().get(current.getName());
     }

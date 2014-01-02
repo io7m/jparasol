@@ -21,9 +21,10 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.NameFlat;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 
-public final class TASTTermNameFlat
+public final class TASTTermNameFlat implements NameFlat
 {
   public static @Nonnull TASTTermNameFlat fromTermNameGlobal(
     final @Nonnull TASTTermNameGlobal name)
@@ -33,7 +34,6 @@ public final class TASTTermNameFlat
   }
 
   private final @Nonnull String         name;
-
   private final @Nonnull ModulePathFlat path;
 
   public TASTTermNameFlat(
@@ -67,14 +67,9 @@ public final class TASTTermNameFlat
     return true;
   }
 
-  public @Nonnull String getName()
+  @Override public @Nonnull String getName()
   {
     return this.name;
-  }
-
-  public @Nonnull ModulePathFlat getPath()
-  {
-    return this.path;
   }
 
   @Override public int hashCode()
@@ -86,7 +81,7 @@ public final class TASTTermNameFlat
     return result;
   }
 
-  public @Nonnull String show()
+  @Override public @Nonnull String show()
   {
     final StringBuilder builder = new StringBuilder();
     builder.append(this.path.getActual());
@@ -104,5 +99,10 @@ public final class TASTTermNameFlat
     builder.append(this.name);
     builder.append("]");
     return builder.toString();
+  }
+
+  @Override public ModulePathFlat getModulePath()
+  {
+    return this.path;
   }
 }

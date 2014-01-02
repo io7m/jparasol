@@ -21,16 +21,17 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.functional.Pair;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermFragmentMainFunction;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermVertexMainFunction;
+import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainFragment;
+import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainVertex;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
+import com.io7m.jparasol.typed.TType;
 
 public abstract class GASTShader
 {
   public static final class GASTShaderFragment extends GASTShader
   {
     private final @Nonnull List<GASTShaderFragmentInput>                    inputs;
-    private final @Nonnull GASTTermFragmentMainFunction                     main;
+    private final @Nonnull GASTShaderMainFragment                           main;
     private final @Nonnull List<GASTShaderFragmentOutput>                   outputs;
     private final @Nonnull List<GASTShaderFragmentParameter>                parameter;
     private final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms;
@@ -38,7 +39,7 @@ public abstract class GASTShader
 
     public GASTShaderFragment(
       final @Nonnull List<GASTShaderFragmentInput> inputs,
-      final @Nonnull GASTTermFragmentMainFunction main,
+      final @Nonnull GASTShaderMainFragment main,
       final @Nonnull List<GASTShaderFragmentOutput> outputs,
       final @Nonnull List<GASTShaderFragmentParameter> parameter,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
@@ -86,6 +87,38 @@ public abstract class GASTShader
       return true;
     }
 
+    public @Nonnull List<GASTShaderFragmentInput> getInputs()
+    {
+      return this.inputs;
+    }
+
+    public @Nonnull GASTShaderMainFragment getMain()
+    {
+      return this.main;
+    }
+
+    public @Nonnull List<GASTShaderFragmentOutput> getOutputs()
+    {
+      return this.outputs;
+    }
+
+    public @Nonnull List<GASTShaderFragmentParameter> getParameters()
+    {
+      return this.parameter;
+    }
+
+    public @Nonnull
+      List<Pair<GTermNameGlobal, GASTTermDeclaration>>
+      getTerms()
+    {
+      return this.terms;
+    }
+
+    public @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> getTypes()
+    {
+      return this.types;
+    }
+
     @Override public int hashCode()
     {
       final int prime = 31;
@@ -130,6 +163,16 @@ public abstract class GASTShader
     {
       this.name = name;
       this.type = type;
+    }
+
+    public @Nonnull GShaderInputName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
     }
 
     @Override public boolean equals(
@@ -191,6 +234,21 @@ public abstract class GASTShader
       this.type = type;
     }
 
+    public int getIndex()
+    {
+      return this.index;
+    }
+
+    public @Nonnull GShaderOutputName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
+    }
+
     @Override public boolean equals(
       final Object obj)
     {
@@ -242,18 +300,28 @@ public abstract class GASTShader
 
   public static final class GASTShaderFragmentParameter
   {
-    private final @Nonnull List<Pair<String, GTypeName>> expanded;
-    private final @Nonnull GShaderParameterName          name;
-    private final @Nonnull GTypeName                     type;
+    private final @Nonnull List<Pair<String, TType>> expanded;
+    private final @Nonnull GShaderParameterName      name;
+    private final @Nonnull GTypeName                 type;
 
     public GASTShaderFragmentParameter(
       final @Nonnull GShaderParameterName name,
       final @Nonnull GTypeName type,
-      final @Nonnull List<Pair<String, GTypeName>> expanded)
+      final @Nonnull List<Pair<String, TType>> expanded)
     {
       this.name = name;
       this.type = type;
       this.expanded = expanded;
+    }
+
+    public @Nonnull GShaderParameterName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
     }
 
     @Override public boolean equals(
@@ -309,7 +377,7 @@ public abstract class GASTShader
   public static final class GASTShaderVertex extends GASTShader
   {
     private final @Nonnull List<GASTShaderVertexInput>                      inputs;
-    private final @Nonnull GASTTermVertexMainFunction                       main;
+    private final @Nonnull GASTShaderMainVertex                             main;
     private final @Nonnull List<GASTShaderVertexOutput>                     outputs;
     private final @Nonnull List<GASTShaderVertexParameter>                  parameter;
     private final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms;
@@ -317,7 +385,7 @@ public abstract class GASTShader
 
     public GASTShaderVertex(
       final @Nonnull List<GASTShaderVertexInput> inputs,
-      final @Nonnull GASTTermVertexMainFunction main,
+      final @Nonnull GASTShaderMainVertex main,
       final @Nonnull List<GASTShaderVertexOutput> outputs,
       final @Nonnull List<GASTShaderVertexParameter> parameter,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
@@ -365,6 +433,38 @@ public abstract class GASTShader
       return true;
     }
 
+    public @Nonnull List<GASTShaderVertexInput> getInputs()
+    {
+      return this.inputs;
+    }
+
+    public @Nonnull GASTShaderMainVertex getMain()
+    {
+      return this.main;
+    }
+
+    public @Nonnull List<GASTShaderVertexOutput> getOutputs()
+    {
+      return this.outputs;
+    }
+
+    public @Nonnull List<GASTShaderVertexParameter> getParameters()
+    {
+      return this.parameter;
+    }
+
+    public @Nonnull
+      List<Pair<GTermNameGlobal, GASTTermDeclaration>>
+      getTerms()
+    {
+      return this.terms;
+    }
+
+    public @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> getTypes()
+    {
+      return this.types;
+    }
+
     @Override public int hashCode()
     {
       final int prime = 31;
@@ -409,6 +509,16 @@ public abstract class GASTShader
     {
       this.name = name;
       this.type = type;
+    }
+
+    public @Nonnull GShaderInputName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
     }
 
     @Override public boolean equals(
@@ -467,6 +577,16 @@ public abstract class GASTShader
       this.type = type;
     }
 
+    public @Nonnull GShaderOutputName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
+    }
+
     @Override public boolean equals(
       final Object obj)
     {
@@ -512,18 +632,28 @@ public abstract class GASTShader
 
   public static final class GASTShaderVertexParameter
   {
-    private final @Nonnull List<Pair<String, GTypeName>> expanded;
-    private final @Nonnull GShaderParameterName          name;
-    private final @Nonnull GTypeName                     type;
+    private final @Nonnull List<Pair<String, TType>> expanded;
+    private final @Nonnull GShaderParameterName      name;
+    private final @Nonnull GTypeName                 type;
 
     public GASTShaderVertexParameter(
       final @Nonnull GShaderParameterName name,
       final @Nonnull GTypeName type,
-      final @Nonnull List<Pair<String, GTypeName>> expanded)
+      final @Nonnull List<Pair<String, TType>> expanded)
     {
       this.name = name;
       this.type = type;
       this.expanded = expanded;
+    }
+
+    public @Nonnull GShaderParameterName getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull GTypeName getType()
+    {
+      return this.type;
     }
 
     @Override public boolean equals(

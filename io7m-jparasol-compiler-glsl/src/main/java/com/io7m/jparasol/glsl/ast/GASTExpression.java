@@ -24,7 +24,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
-import com.io7m.jparasol.typed.TType.TValueType;
+import com.io7m.jparasol.typed.TType;
 
 public abstract class GASTExpression implements GASTExpressionVisitable
 {
@@ -32,11 +32,11 @@ public abstract class GASTExpression implements GASTExpressionVisitable
   {
     private final @Nonnull List<GASTExpression> arguments;
     private final @Nonnull GTermNameGlobal      name;
-    private final @Nonnull TValueType           type;
+    private final @Nonnull TType                type;
 
     public GASTEApplication(
       final @Nonnull GTermNameGlobal name,
-      final @Nonnull TValueType type,
+      final @Nonnull TType type,
       final @Nonnull List<GASTExpression> arguments)
     {
       this.name = name;
@@ -95,7 +95,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       return this.name;
     }
 
-    public @Nonnull TValueType getType()
+    public @Nonnull TType getType()
     {
       return this.type;
     }
@@ -751,12 +751,12 @@ public abstract class GASTExpression implements GASTExpressionVisitable
   {
     private final @Nonnull GASTExpression body;
     private final @Nonnull GFieldName     field;
-    private final @Nonnull TValueType     type;
+    private final @Nonnull TType          type;
 
     public GASTEProjection(
       final @Nonnull GASTExpression body,
       final @Nonnull GFieldName field,
-      final @Nonnull TValueType type)
+      final @Nonnull TType type)
     {
       this.body = body;
       this.field = field;
@@ -810,7 +810,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       return this.field;
     }
 
-    public @Nonnull TValueType getType()
+    public @Nonnull TType getType()
     {
       return this.type;
     }
@@ -843,12 +843,12 @@ public abstract class GASTExpression implements GASTExpressionVisitable
   {
     private final @Nonnull GASTExpression   body;
     private final @Nonnull List<GFieldName> fields;
-    private final @Nonnull TValueType       type;
+    private final @Nonnull TType            type;
 
     public GASTESwizzle(
       final @Nonnull GASTExpression body,
       final @Nonnull List<GFieldName> fields,
-      final @Nonnull TValueType type)
+      final @Nonnull TType type)
     {
       this.body = body;
       this.fields = fields;
@@ -902,7 +902,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       return this.fields;
     }
 
-    public @Nonnull TValueType getType()
+    public @Nonnull TType getType()
     {
       return this.type;
     }

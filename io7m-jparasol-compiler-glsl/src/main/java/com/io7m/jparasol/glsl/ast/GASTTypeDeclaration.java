@@ -22,8 +22,11 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.functional.Pair;
 
-public abstract class GASTTypeDeclaration
+public abstract class GASTTypeDeclaration implements
+  GASTTypeDeclarationVisitable
 {
+  public abstract @Nonnull GTypeName getName();
+
   public static final class GASTTypeRecord extends GASTTypeDeclaration
   {
     private final @Nonnull GTypeName                         name;
@@ -37,7 +40,7 @@ public abstract class GASTTypeDeclaration
       this.fields = fields;
     }
 
-    public @Nonnull GTypeName getName()
+    @Override public @Nonnull GTypeName getName()
     {
       return this.name;
     }
@@ -76,6 +79,16 @@ public abstract class GASTTypeDeclaration
         return false;
       }
       return true;
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends GASTTypeDeclarationVisitor<A, E>>
+      A
+      typeDeclarationVisitableAccept(
+        final @Nonnull V v)
+        throws E
+    {
+      return v.typeVisitRecord(this);
     }
   }
 }

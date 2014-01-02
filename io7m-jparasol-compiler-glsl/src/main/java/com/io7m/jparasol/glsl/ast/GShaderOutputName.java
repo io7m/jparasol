@@ -18,7 +18,9 @@ package com.io7m.jparasol.glsl.ast;
 
 import javax.annotation.Nonnull;
 
-public final class GShaderOutputName
+import com.io7m.jparasol.NameShow;
+
+public final class GShaderOutputName implements NameShow
 {
   private final @Nonnull String name;
 
@@ -59,5 +61,10 @@ public final class GShaderOutputName
     builder.append(this.name);
     builder.append("]");
     return builder.toString();
+  }
+
+  @Override public String show()
+  {
+    return this.name;
   }
 }

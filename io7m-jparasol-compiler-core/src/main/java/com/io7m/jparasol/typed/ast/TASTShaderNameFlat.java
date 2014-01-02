@@ -21,8 +21,9 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.NameFlat;
 
-public final class TASTShaderNameFlat
+public final class TASTShaderNameFlat implements NameFlat
 {
   public static @Nonnull TASTShaderNameFlat fromShaderName(
     final @Nonnull TASTShaderName name)
@@ -32,7 +33,6 @@ public final class TASTShaderNameFlat
   }
 
   private final @Nonnull String         name;
-
   private final @Nonnull ModulePathFlat path;
 
   public TASTShaderNameFlat(
@@ -66,14 +66,9 @@ public final class TASTShaderNameFlat
     return true;
   }
 
-  public @Nonnull String getName()
+  @Override public @Nonnull String getName()
   {
     return this.name;
-  }
-
-  public @Nonnull ModulePathFlat getPath()
-  {
-    return this.path;
   }
 
   @Override public int hashCode()
@@ -85,7 +80,7 @@ public final class TASTShaderNameFlat
     return result;
   }
 
-  public @Nonnull String show()
+  @Override public @Nonnull String show()
   {
     final StringBuilder builder = new StringBuilder();
     builder.append(this.path.getActual());
@@ -103,5 +98,10 @@ public final class TASTShaderNameFlat
     builder.append(this.name);
     builder.append("]");
     return builder.toString();
+  }
+
+  @Override public ModulePathFlat getModulePath()
+  {
+    return this.path;
   }
 }

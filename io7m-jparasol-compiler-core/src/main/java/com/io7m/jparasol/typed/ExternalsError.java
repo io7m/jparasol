@@ -77,9 +77,7 @@ public final class ExternalsError extends CompilerError
     }
 
     m.append("      -> Term ");
-    m.append(final_term.getPath().getActual());
-    m.append(".");
-    m.append(final_term.getName());
+    m.append(final_term.show());
 
     return new ExternalsError(
       Code.EXTERNALS_DISALLOWED_IN_FRAGMENT_SHADER,
@@ -125,9 +123,7 @@ public final class ExternalsError extends CompilerError
     }
 
     m.append("      -> Term ");
-    m.append(final_term.getPath().getActual());
-    m.append(".");
-    m.append(final_term.getName());
+    m.append(final_term.show());
 
     return new ExternalsError(
       Code.EXTERNALS_DISALLOWED_IN_VERTEX_SHADER,
