@@ -170,14 +170,22 @@ public abstract class GASTShader
   public static final class GASTShaderFragmentInput
   {
     private final @Nonnull GShaderInputName name;
-    private final @Nonnull GTypeName        type;
+    private final @Nonnull GTypeName        type_name;
+    private final @Nonnull TType            type;
 
     public GASTShaderFragmentInput(
       final @Nonnull GShaderInputName name,
-      final @Nonnull GTypeName type)
+      final @Nonnull GTypeName type_name,
+      final @Nonnull TType type)
     {
       this.name = name;
+      this.type_name = type_name;
       this.type = type;
+    }
+
+    public @Nonnull TType getType()
+    {
+      return this.type;
     }
 
     @Override public boolean equals(
@@ -199,6 +207,9 @@ public abstract class GASTShader
       if (!this.type.equals(other.type)) {
         return false;
       }
+      if (!this.type_name.equals(other.type_name)) {
+        return false;
+      }
       return true;
     }
 
@@ -207,9 +218,9 @@ public abstract class GASTShader
       return this.name;
     }
 
-    public @Nonnull GTypeName getType()
+    public @Nonnull GTypeName getTypeName()
     {
-      return this.type;
+      return this.type_name;
     }
 
     @Override public int hashCode()
@@ -218,6 +229,7 @@ public abstract class GASTShader
       int result = 1;
       result = (prime * result) + this.name.hashCode();
       result = (prime * result) + this.type.hashCode();
+      result = (prime * result) + this.type_name.hashCode();
       return result;
     }
 
@@ -227,7 +239,7 @@ public abstract class GASTShader
       builder.append("[GASTShaderFragmentInput ");
       builder.append(this.name);
       builder.append(" ");
-      builder.append(this.type);
+      builder.append(this.type_name);
       builder.append("]");
       return builder.toString();
     }
@@ -596,13 +608,16 @@ public abstract class GASTShader
   public static final class GASTShaderVertexOutput
   {
     private final @Nonnull GShaderOutputName name;
-    private final @Nonnull GTypeName         type;
+    private final @Nonnull GTypeName         type_name;
+    private final @Nonnull TType             type;
 
     public GASTShaderVertexOutput(
       final @Nonnull GShaderOutputName name,
-      final @Nonnull GTypeName type)
+      final @Nonnull GTypeName type_name,
+      final @Nonnull TType type)
     {
       this.name = name;
+      this.type_name = type_name;
       this.type = type;
     }
 
@@ -625,7 +640,15 @@ public abstract class GASTShader
       if (!this.type.equals(other.type)) {
         return false;
       }
+      if (!this.type_name.equals(other.type_name)) {
+        return false;
+      }
       return true;
+    }
+
+    public @Nonnull TType getType()
+    {
+      return this.type;
     }
 
     public @Nonnull GShaderOutputName getName()
@@ -633,9 +656,9 @@ public abstract class GASTShader
       return this.name;
     }
 
-    public @Nonnull GTypeName getType()
+    public @Nonnull GTypeName getTypeName()
     {
-      return this.type;
+      return this.type_name;
     }
 
     @Override public int hashCode()
@@ -644,6 +667,7 @@ public abstract class GASTShader
       int result = 1;
       result = (prime * result) + this.name.hashCode();
       result = (prime * result) + this.type.hashCode();
+      result = (prime * result) + this.type_name.hashCode();
       return result;
     }
 
@@ -653,7 +677,7 @@ public abstract class GASTShader
       builder.append("[GASTShaderVertexOutput ");
       builder.append(this.name);
       builder.append(" ");
-      builder.append(this.type);
+      builder.append(this.type_name);
       builder.append("]");
       return builder.toString();
     }

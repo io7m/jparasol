@@ -83,6 +83,9 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 import com.io7m.jparasol.glsl.ast.GTermNameVisitor;
 import com.io7m.jparasol.glsl.ast.GTypeName;
+import com.io7m.jparasol.typed.TType;
+import com.io7m.jparasol.typed.TType.TInteger;
+import com.io7m.jparasol.typed.TType.TVectorIType;
 
 public final class GWriter
 {
@@ -531,7 +534,7 @@ public final class GWriter
     final @Nonnull GASTShaderFragmentInput i)
     throws ConstraintError
   {
-    final GTypeName type = i.getType();
+    final GTypeName type_name = i.getTypeName();
     final GShaderInputName name = i.getName();
 
     version.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
@@ -542,10 +545,21 @@ public final class GWriter
         if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
           writer.println(String.format(
             "attribute %s %s;",
-            type.show(),
+            type_name.show(),
             name.show()));
         } else {
-          writer.println(String.format("in %s %s;", type.show(), name.show()));
+          final TType type = i.getType();
+          if ((type instanceof TInteger) || (type instanceof TVectorIType)) {
+            writer.println(String.format(
+              "flat in %s %s;",
+              type_name.show(),
+              name.show()));
+          } else {
+            writer.println(String.format(
+              "in %s %s;",
+              type_name.show(),
+              name.show()));
+          }
         }
         return Unit.unit();
       }
@@ -557,10 +571,13 @@ public final class GWriter
         if (v.compareTo(GVersionFull.GLSL_130) < 0) {
           writer.println(String.format(
             "attribute %s %s;",
-            type.show(),
+            type_name.show(),
             name.show()));
         } else {
-          writer.println(String.format("in %s %s;", type.show(), name.show()));
+          writer.println(String.format(
+            "in %s %s;",
+            type_name.show(),
+            name.show()));
         }
         return Unit.unit();
       }
@@ -980,7 +997,7 @@ public final class GWriter
     final @Nonnull GASTShaderVertexOutput o)
     throws ConstraintError
   {
-    final GTypeName type = o.getType();
+    final GTypeName type_name = o.getTypeName();
     final GShaderOutputName name = o.getName();
 
     version.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
@@ -991,10 +1008,21 @@ public final class GWriter
         if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
           writer.println(String.format(
             "varying %s %s;",
-            type.show(),
+            type_name.show(),
             name.show()));
         } else {
-          writer.println(String.format("out %s %s;", type.show(), name.show()));
+          final TType type = o.getType();
+          if ((type instanceof TInteger) || (type instanceof TVectorIType)) {
+            writer.println(String.format(
+              "flat out %s %s;",
+              type_name.show(),
+              name.show()));
+          } else {
+            writer.println(String.format(
+              "out %s %s;",
+              type_name.show(),
+              name.show()));
+          }
         }
         return Unit.unit();
       }
@@ -1003,13 +1031,31 @@ public final class GWriter
         final @Nonnull GVersionFull v)
         throws ConstraintError
       {
+        final TType type = o.getType();
         if (v.compareTo(GVersionFull.GLSL_130) < 0) {
-          writer.println(String.format(
-            "varying %s %s;",
-            type.show(),
-            name.show()));
+          if ((type instanceof TInteger) || (type instanceof TVectorIType)) {
+            writer.println(String.format(
+              "flat %s %s;",
+              type_name.show(),
+              name.show()));
+          } else {
+            writer.println(String.format(
+              "varying %s %s;",
+              type_name.show(),
+              name.show()));
+          }
         } else {
-          writer.println(String.format("out %s %s;", type.show(), name.show()));
+          if ((type instanceof TInteger) || (type instanceof TVectorIType)) {
+            writer.println(String.format(
+              "flat out %s %s;",
+              type_name.show(),
+              name.show()));
+          } else {
+            writer.println(String.format(
+              "out %s %s;",
+              type_name.show(),
+              name.show()));
+          }
         }
         return Unit.unit();
       }

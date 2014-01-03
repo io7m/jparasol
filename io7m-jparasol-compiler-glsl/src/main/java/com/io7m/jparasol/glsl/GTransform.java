@@ -1334,8 +1334,9 @@ public final class GTransform
     for (final TASTDShaderFragmentInput i : inputs) {
       final GShaderInputName name =
         new GShaderInputName(i.getName().getCurrent());
-      final GTypeName type = context.getTypeName(i.getType());
-      results.add(new GASTShaderFragmentInput(name, type));
+      final TValueType type = i.getType();
+      final GTypeName type_name = context.getTypeName(type);
+      results.add(new GASTShaderFragmentInput(name, type_name, type));
     }
 
     return results;
@@ -1660,8 +1661,9 @@ public final class GTransform
     for (final TASTDShaderVertexOutput o : outputs) {
       final GShaderOutputName name =
         new GShaderOutputName(o.getName().getActual());
-      final GTypeName type = context.getTypeName(o.getType());
-      results.add(new GASTShaderVertexOutput(name, type));
+      final TValueType type = o.getType();
+      final GTypeName type_name = context.getTypeName(type);
+      results.add(new GASTShaderVertexOutput(name, type_name, type));
     }
 
     return results;
