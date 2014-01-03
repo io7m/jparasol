@@ -48,6 +48,9 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTExpression;
 import com.io7m.jparasol.typed.ast.TASTShaderVisitor;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentInput;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutput;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderVertexInput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderVertexOutput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName;
@@ -77,6 +80,7 @@ public final class TypeCheckerError extends CompilerError
     TYPE_ERROR_FUNCTION_BODY_RETURN_INCOMPATIBLE,
     TYPE_ERROR_RECORD_FIELD_NOT_MANIFEST,
     TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE,
+    TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE,
     TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN,
     TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE,
     TYPE_ERROR_SHADER_WRONG_SHADER_TYPE,
@@ -123,6 +127,28 @@ public final class TypeCheckerError extends CompilerError
       discard.getPosition(),
       Code.TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN,
       m.toString());
+  }
+
+  public static @Nonnull TypeCheckerError shaderFragmentInputBadType(
+    final @Nonnull UASTRDShaderFragmentInput i)
+    throws ConstraintError
+  {
+    return new TypeCheckerError(
+      i.getName().getFile(),
+      i.getName().getPosition(),
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE,
+      "An input of a fragment shader cannot be of a record type");
+  }
+
+  public static @Nonnull TypeCheckerError shaderFragmentOutputBadType(
+    final @Nonnull UASTRDShaderFragmentOutput o)
+    throws ConstraintError
+  {
+    return new TypeCheckerError(
+      o.getName().getFile(),
+      o.getName().getPosition(),
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE,
+      "An output of a fragment shader cannot be of a record type");
   }
 
   public static @Nonnull TypeCheckerError shaderNotFragment(
@@ -256,6 +282,17 @@ public final class TypeCheckerError extends CompilerError
       m.toString());
   }
 
+  public static @Nonnull TypeCheckerError shaderVertexInputBadType(
+    final @Nonnull UASTRDShaderVertexInput i)
+    throws ConstraintError
+  {
+    return new TypeCheckerError(
+      i.getName().getFile(),
+      i.getName().getPosition(),
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE,
+      "An input of a vertex shader cannot be of a record type");
+  }
+
   public static @Nonnull TypeCheckerError shaderVertexMainOutputBadType(
     final @Nonnull UASTRDShaderVertexOutput o,
     final @Nonnull TType t)
@@ -272,6 +309,17 @@ public final class TypeCheckerError extends CompilerError
       o.getName().getPosition(),
       Code.TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE,
       m.toString());
+  }
+
+  public static @Nonnull TypeCheckerError shaderVertexOutputBadType(
+    final @Nonnull UASTRDShaderVertexOutput o)
+    throws ConstraintError
+  {
+    return new TypeCheckerError(
+      o.getName().getFile(),
+      o.getName().getPosition(),
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE,
+      "An output of a vertex shader cannot be of a record type");
   }
 
   public static @Nonnull TypeCheckerError termExpressionApplicationBadTypes(

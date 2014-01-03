@@ -1219,6 +1219,46 @@ public final class TypeCheckerTest
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testVertexShaderBadAttributeType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/vertex-shader-bad-attribute-type-0.p" },
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testVertexShaderBadAttributeType_1()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/vertex-shader-bad-attribute-type-1.p" },
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderBadAttributeType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/fragment-shader-bad-attribute-type-0.p" },
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderBadAttributeType_1()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/fragment-shader-bad-attribute-type-1.p" },
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
+  }
+
   @SuppressWarnings("static-method") @Test public
     void
     testVertexShaderAssignmentOK_0()

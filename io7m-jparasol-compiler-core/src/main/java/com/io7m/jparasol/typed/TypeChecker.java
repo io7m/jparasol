@@ -706,6 +706,10 @@ public final class TypeChecker
           this.checked_types,
           i.getType());
 
+      if (t instanceof TRecord) {
+        throw TypeCheckerError.shaderFragmentInputBadType(i);
+      }
+
       this.locals.addTerm(in.getCurrent(), (TValueType) t);
       return new TASTDShaderFragmentInput(name, (TValueType) t);
     }
@@ -738,6 +742,10 @@ public final class TypeChecker
           this.checked_modules,
           this.checked_types,
           o.getType());
+
+      if (t instanceof TRecord) {
+        throw TypeCheckerError.shaderFragmentOutputBadType(o);
+      }
 
       this.outputs.put(o.getName().getActual(), (TValueType) t);
       return new TASTDShaderFragmentOutput(
@@ -1641,6 +1649,10 @@ public final class TypeChecker
           this.checked_types,
           i.getType());
 
+      if (t instanceof TRecord) {
+        throw TypeCheckerError.shaderVertexInputBadType(i);
+      }
+
       this.locals.addTerm(in.getCurrent(), (TValueType) t);
       return new TASTDShaderVertexInput(name, (TValueType) t);
     }
@@ -1678,6 +1690,10 @@ public final class TypeChecker
         if (t.equals(TVector4F.get()) == false) {
           throw TypeCheckerError.shaderVertexMainOutputBadType(o, t);
         }
+      }
+
+      if (t instanceof TRecord) {
+        throw TypeCheckerError.shaderVertexOutputBadType(o);
       }
 
       this.outputs.put(o.getName().getActual(), (TValueType) t);
