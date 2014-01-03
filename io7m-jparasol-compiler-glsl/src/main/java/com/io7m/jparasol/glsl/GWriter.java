@@ -925,6 +925,7 @@ public final class GWriter
     final @Nonnull GASTShaderMainVertex main)
     throws ConstraintError
   {
+    writer.println();
     writer.println("void");
     writer.println("main (void)");
     writer.println("{");

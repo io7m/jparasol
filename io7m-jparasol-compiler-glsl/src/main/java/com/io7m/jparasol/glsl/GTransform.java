@@ -1637,14 +1637,13 @@ public final class GTransform
       final TASTDShaderVertexOutput output =
         GTransform.findVertexOutput(vertex, written_name.getActual());
 
-      final GShaderOutputName resulting_name;
       if (output.isMain()) {
-        resulting_name = new GShaderOutputName("gl_Position");
-      } else {
-        resulting_name = new GShaderOutputName(written_name.getActual());
+        writes.add(new GASTVertexOutputAssignment(new GShaderOutputName(
+          "gl_Position"), value));
       }
 
-      writes.add(new GASTVertexOutputAssignment(resulting_name, value));
+      writes.add(new GASTVertexOutputAssignment(new GShaderOutputName(
+        written_name.getActual()), value));
     }
 
     return new GASTShaderMainVertex(statements, writes);
@@ -1659,12 +1658,10 @@ public final class GTransform
       new ArrayList<GASTShaderVertexOutput>();
 
     for (final TASTDShaderVertexOutput o : outputs) {
-      if (o.isMain() == false) {
-        final GShaderOutputName name =
-          new GShaderOutputName(o.getName().getActual());
-        final GTypeName type = context.getTypeName(o.getType());
-        results.add(new GASTShaderVertexOutput(name, type));
-      }
+      final GShaderOutputName name =
+        new GShaderOutputName(o.getName().getActual());
+      final GTypeName type = context.getTypeName(o.getType());
+      results.add(new GASTShaderVertexOutput(name, type));
     }
 
     return results;
