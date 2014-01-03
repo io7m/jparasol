@@ -45,7 +45,8 @@ public final class UIError extends CompilerError
   static enum Code
   {
     UI_ERROR_SHADER_NONEXISTENT,
-    UI_ERROR_SHADER_NOT_PROGRAM
+    UI_ERROR_SHADER_NOT_PROGRAM,
+    UI_ERROR_GLSL_VERSION_UNKNOWN
   }
 
   private final @Nonnull Code code;
@@ -156,6 +157,36 @@ public final class UIError extends CompilerError
 
     return new UIError(
       Code.UI_ERROR_SHADER_NOT_PROGRAM,
+      m.toString(),
+      new File("<none>"),
+      new Position(0, 0));
+  }
+
+  public static @Nonnull UIError versionUnknownES(
+    final int v)
+    throws ConstraintError
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("Unknown GLSL ES version ");
+    m.append(v);
+
+    return new UIError(
+      Code.UI_ERROR_GLSL_VERSION_UNKNOWN,
+      m.toString(),
+      new File("<none>"),
+      new Position(0, 0));
+  }
+
+  public static @Nonnull UIError versionUnknown(
+    final int v)
+    throws ConstraintError
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("Unknown GLSL version ");
+    m.append(v);
+
+    return new UIError(
+      Code.UI_ERROR_GLSL_VERSION_UNKNOWN,
       m.toString(),
       new File("<none>"),
       new Position(0, 0));
