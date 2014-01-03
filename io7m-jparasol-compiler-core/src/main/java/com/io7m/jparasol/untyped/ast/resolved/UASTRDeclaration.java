@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -80,19 +80,62 @@ public abstract class UASTRDeclaration
 
   public static final class UASTRDExternal
   {
-    private final boolean                       fragment_shader_allowed;
-    private final @Nonnull TokenIdentifierLower name;
-    private final boolean                       vertex_shader_allowed;
+    private final boolean                          fragment_shader_allowed;
+    private final @Nonnull TokenIdentifierLower    name;
+    private final boolean                          vertex_shader_allowed;
+    private final @Nonnull Option<UASTRExpression> emulation;
 
     public UASTRDExternal(
       final @Nonnull TokenIdentifierLower name,
       final boolean vertex_shader_allowed,
-      final boolean fragment_shader_allowed)
+      final boolean fragment_shader_allowed,
+      final @Nonnull Option<UASTRExpression> emulation)
       throws ConstraintError
     {
       this.name = Constraints.constrainNotNull(name, "Name");
       this.vertex_shader_allowed = vertex_shader_allowed;
       this.fragment_shader_allowed = fragment_shader_allowed;
+      this.emulation = Constraints.constrainNotNull(emulation, "Emulation");
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.emulation.hashCode();
+      result =
+        (prime * result) + (this.fragment_shader_allowed ? 1231 : 1237);
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + (this.vertex_shader_allowed ? 1231 : 1237);
+      return result;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final UASTRDExternal other = (UASTRDExternal) obj;
+      if (!this.emulation.equals(other.emulation)) {
+        return false;
+      }
+      if (this.fragment_shader_allowed != other.fragment_shader_allowed) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (this.vertex_shader_allowed != other.vertex_shader_allowed) {
+        return false;
+      }
+      return true;
     }
 
     public @Nonnull TokenIdentifierLower getName()
@@ -108,6 +151,11 @@ public abstract class UASTRDeclaration
     public boolean isVertexShaderAllowed()
     {
       return this.vertex_shader_allowed;
+    }
+
+    public @Nonnull Option<UASTRExpression> getEmulation()
+    {
+      return this.emulation;
     }
 
     @Override public String toString()

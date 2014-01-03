@@ -23,7 +23,6 @@ import org.junit.Test;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jlog.Log;
-import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.TestPipeline;
 import com.io7m.jparasol.TestUtilities;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
@@ -59,22 +58,11 @@ public final class GTransformTest
     }
   }
 
-  private static @Nonnull TASTShaderNameFlat shaderName(
-    final @Nonnull String module,
-    final @Nonnull String name)
-  {
-    try {
-      return new TASTShaderNameFlat(new ModulePathFlat(module), name);
-    } catch (final ConstraintError e) {
-      throw new UnreachableCodeException(e);
-    }
-  }
-
   @SuppressWarnings("static-method") @Test public void testFragmentSimple_0()
     throws ConstraintError,
       GFFIError
   {
-    final TASTShaderNameFlat shader = GTransformTest.shaderName("x.y.M", "f");
+    final TASTShaderNameFlat shader = TestPipeline.shaderName("x.y.M", "f");
     final Prepared p =
       new Prepared(
         shader,
@@ -88,15 +76,14 @@ public final class GTransformTest
         GVersionFull.GLSL_UPPER,
         p.log);
 
-    GWriter
-      .writeFragmentShader(System.out, s, GVersion.GVersionFull.GLSL_110);
+    GWriter.writeFragmentShader(System.out, s);
   }
 
   @SuppressWarnings("static-method") @Test public void testVertexSimple_0()
     throws ConstraintError,
       GFFIError
   {
-    final TASTShaderNameFlat shader = GTransformTest.shaderName("x.y.M", "v");
+    final TASTShaderNameFlat shader = TestPipeline.shaderName("x.y.M", "v");
     final Prepared p =
       new Prepared(
         shader,
@@ -110,6 +97,6 @@ public final class GTransformTest
         GVersionFull.GLSL_UPPER,
         p.log);
 
-    GWriter.writeVertexShader(System.out, s, GVersion.GVersionFull.GLSL_110);
+    GWriter.writeVertexShader(System.out, s);
   }
 }

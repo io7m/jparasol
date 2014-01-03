@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -27,8 +27,10 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Option.None;
+import com.io7m.jaux.functional.Option.Some;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.PackagePath;
+import com.io7m.jparasol.PackagePath.Builder;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token;
@@ -154,8 +156,36 @@ public final class Parser
     this.parserConsumeExact(Type.TOKEN_LITERAL_BOOLEAN);
     this.parserConsumeExact(Type.TOKEN_SEMICOLON);
 
-    this.parserConsumeExact(Type.TOKEN_END);
-    return new UASTIDExternal(name, vallow.getValue(), fallow.getValue());
+    this.parserExpectOneOf(new Type[] { Type.TOKEN_END, Type.TOKEN_WITH });
+
+    switch (this.token.getType()) {
+      case TOKEN_END:
+      {
+        this.parserConsumeExact(Type.TOKEN_END);
+        final Option<UASTIExpression> none = Option.none();
+        return new UASTIDExternal(
+          name,
+          vallow.getValue(),
+          fallow.getValue(),
+          none);
+      }
+      case TOKEN_WITH:
+      {
+        this.parserConsumeExact(Type.TOKEN_WITH);
+        final UASTIExpression e = this.expression();
+        this.parserConsumeExact(Type.TOKEN_END);
+        final Some<UASTIExpression> some = Option.some(e);
+        return new UASTIDExternal(
+          name,
+          vallow.getValue(),
+          fallow.getValue(),
+          some);
+      }
+
+      // $CASES-OMITTED$
+      default:
+        throw new UnreachableCodeException();
+    }
   }
 
   public @Nonnull UASTIDShaderFragment declarationFragmentShader()
@@ -669,15 +699,14 @@ public final class Parser
       IOException,
       LexerError
   {
-    final ArrayList<TokenIdentifierLower> components =
-      new ArrayList<TokenIdentifierLower>();
+    final Builder builder = PackagePath.newBuilder();
 
     boolean done = false;
     while (done == false) {
       switch (this.token.getType()) {
         case TOKEN_IDENTIFIER_LOWER:
         {
-          components.add((TokenIdentifierLower) this.token);
+          builder.addComponent((TokenIdentifierLower) this.token);
           this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
           switch (this.token.getType()) {
             case TOKEN_DOT:
@@ -697,7 +726,7 @@ public final class Parser
       }
     }
 
-    return new PackagePath(components);
+    return builder.build();
   }
 
   public @Nonnull UASTIDShaderProgram declarationProgramShader()

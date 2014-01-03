@@ -94,6 +94,7 @@ public final class TypeCheckerTest
     } catch (final TypeCheckerError e) {
       caught = true;
       Assert.assertEquals(code, e.getCode());
+      System.err.println(e);
       throw e;
     }
 
@@ -933,6 +934,35 @@ public final class TypeCheckerTest
     Assert.assertEquals(TInteger.get(), f.getType().getReturnType());
 
     System.out.println(f.getType().getName());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testTermFunctionExternalTypeOK_1()
+      throws TypeCheckerError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .typedInternal(new String[] { "typed/term-function-external-type-ok-1.p" });
+
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
+    final TASTDFunctionExternal f =
+      (TASTDFunctionExternal) m.getTerms().get("f");
+
+    Assert.assertEquals(TInteger.get(), f.getArguments().get(0).getType());
+    Assert.assertEquals(TInteger.get(), f.getType().getReturnType());
+
+    System.out.println(f.getType().getName());
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
+    testTermFunctionExternalTypeNotOK_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCodeInternal(
+      new String[] { "typed/term-function-external-type-not-ok-0.p" },
+      Code.TYPE_ERROR_FUNCTION_BODY_RETURN_INCOMPATIBLE);
   }
 
   @SuppressWarnings("static-method") @Test public

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -28,6 +28,8 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
+import com.io7m.jaux.functional.Option;
+import com.io7m.jaux.functional.Option.Some;
 import com.io7m.jaux.functional.PartialFunction;
 import com.io7m.jaux.functional.Unit;
 import com.io7m.jlog.Level;
@@ -122,6 +124,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTypeRecord;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValue;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREApplication;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREBoolean;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREConditional;
@@ -1406,13 +1409,49 @@ public final class TypeChecker
           f.getReturnType());
 
       final TFunction tf = new TFunction(f_arguments, (TValueType) treturn);
-
       final UASTRDExternal orig_ext = f.getExternal();
+
+      final Option<UASTRExpression> orig_emulation = orig_ext.getEmulation();
+      final Option<TASTExpression> emulation =
+        orig_emulation
+          .mapPartial(new PartialFunction<UASTRExpression, TASTExpression, TypeCheckerError>() {
+            @Override public TASTExpression call(
+              final @Nonnull UASTRExpression e)
+              throws TypeCheckerError
+            {
+              try {
+                return e.expressionVisitableAccept(new TypeCheckerExpression(
+                  TypeCheckerTermDeclaration.this.module,
+                  TypeCheckerTermDeclaration.this.checked_modules,
+                  TypeCheckerTermDeclaration.this.checked_types,
+                  TypeCheckerTermDeclaration.this.checked_terms,
+                  locals,
+                  TypeCheckerTermDeclaration.this.log));
+              } catch (final ConstraintError x) {
+                throw new UnreachableCodeException(x);
+              }
+            }
+          });
+
       final TASTDExternal ext =
         new TASTDExternal(
           orig_ext.getName(),
           orig_ext.isVertexShaderAllowed(),
-          orig_ext.isFragmentShaderAllowed());
+          orig_ext.isFragmentShaderAllowed(),
+          emulation);
+
+      if (emulation.isSome()) {
+        final Some<TASTExpression> some = (Some<TASTExpression>) emulation;
+        final TType emu_type = some.value.getType();
+        if (emu_type.equals(tf.getReturnType())) {
+          return new TASTDFunctionExternal(f.getName(), arguments, tf, ext);
+        }
+        throw TypeCheckerError.termFunctionBodyReturnMismatch(
+          f.getName(),
+          treturn,
+          emu_type);
+      }
+
       return new TASTDFunctionExternal(f.getName(), arguments, tf, ext);
     }
 

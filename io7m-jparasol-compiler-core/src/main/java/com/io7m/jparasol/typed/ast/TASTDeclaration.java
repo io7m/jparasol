@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -25,6 +25,8 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Option;
+import com.io7m.jaux.functional.PartialFunction;
+import com.io7m.jaux.functional.Unit;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
@@ -83,19 +85,22 @@ public abstract class TASTDeclaration
 
   public static final class TASTDExternal
   {
-    private final boolean                       fragment_shader_allowed;
-    private final @Nonnull TokenIdentifierLower name;
-    private final boolean                       vertex_shader_allowed;
+    private final boolean                         fragment_shader_allowed;
+    private final boolean                         vertex_shader_allowed;
+    private final @Nonnull TokenIdentifierLower   name;
+    private final @Nonnull Option<TASTExpression> emulation;
 
     public TASTDExternal(
       final @Nonnull TokenIdentifierLower name,
       final boolean vertex_shader_allowed,
-      final boolean fragment_shader_allowed)
+      final boolean fragment_shader_allowed,
+      final @Nonnull Option<TASTExpression> emulation)
       throws ConstraintError
     {
       this.name = Constraints.constrainNotNull(name, "Name");
       this.vertex_shader_allowed = vertex_shader_allowed;
       this.fragment_shader_allowed = fragment_shader_allowed;
+      this.emulation = Constraints.constrainNotNull(emulation, "Emulation");
     }
 
     @Override public boolean equals(
@@ -111,6 +116,9 @@ public abstract class TASTDeclaration
         return false;
       }
       final TASTDExternal other = (TASTDExternal) obj;
+      if (!this.emulation.equals(other.emulation)) {
+        return false;
+      }
       if (this.fragment_shader_allowed != other.fragment_shader_allowed) {
         return false;
       }
@@ -123,6 +131,11 @@ public abstract class TASTDeclaration
       return true;
     }
 
+    public @Nonnull Option<TASTExpression> getEmulation()
+    {
+      return this.emulation;
+    }
+
     public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
@@ -132,6 +145,7 @@ public abstract class TASTDeclaration
     {
       final int prime = 31;
       int result = 1;
+      result = (prime * result) + this.emulation.hashCode();
       result =
         (prime * result) + (this.fragment_shader_allowed ? 1231 : 1237);
       result = (prime * result) + this.name.hashCode();
@@ -376,6 +390,17 @@ public abstract class TASTDeclaration
       this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
       this.type = Constraints.constrainNotNull(type, "Type");
       this.external = Constraints.constrainNotNull(external, "External");
+
+      this.external.getEmulation().mapPartial(
+        new PartialFunction<TASTExpression, Unit, ConstraintError>() {
+          @Override public Unit call(
+            final @Nonnull TASTExpression x)
+            throws ConstraintError
+          {
+            assert x.getType().equals(type.getReturnType());
+            return Unit.unit();
+          }
+        });
     }
 
     @Override public boolean equals(

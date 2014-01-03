@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -75,19 +75,27 @@ public abstract class UASTIDeclaration
 
   public static final class UASTIDExternal
   {
-    private final boolean                       fragment_shader_allowed;
-    private final @Nonnull TokenIdentifierLower name;
-    private final boolean                       vertex_shader_allowed;
+    private final boolean                          fragment_shader_allowed;
+    private final @Nonnull TokenIdentifierLower    name;
+    private final boolean                          vertex_shader_allowed;
+    private final @Nonnull Option<UASTIExpression> emulation;
 
     public UASTIDExternal(
       final @Nonnull TokenIdentifierLower name,
       final boolean vertex_shader_allowed,
-      final boolean fragment_shader_allowed)
+      final boolean fragment_shader_allowed,
+      final @Nonnull Option<UASTIExpression> emulation)
       throws ConstraintError
     {
       this.name = Constraints.constrainNotNull(name, "Name");
       this.vertex_shader_allowed = vertex_shader_allowed;
       this.fragment_shader_allowed = fragment_shader_allowed;
+      this.emulation = Constraints.constrainNotNull(emulation, "Emulation");
+    }
+
+    public @Nonnull Option<UASTIExpression> getEmulation()
+    {
+      return this.emulation;
     }
 
     public @Nonnull TokenIdentifierLower getName()

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -22,9 +22,9 @@ import com.io7m.jparasol.glsl.ast.GASTExpression;
 
 public abstract class GFFIExpression implements GFFIExpressionVisitable
 {
-  public static final class GFFIDefined extends GFFIExpression
+  public static final class GFFIExpressionDefined extends GFFIExpression
   {
-    public GFFIDefined()
+    public GFFIExpressionDefined()
     {
       // Nothing
     }
@@ -40,11 +40,11 @@ public abstract class GFFIExpression implements GFFIExpressionVisitable
     }
   }
 
-  public static final class GFFIBuiltIn extends GFFIExpression
+  public static final class GFFIExpressionBuiltIn extends GFFIExpression
   {
     private final @Nonnull GASTExpression expression;
 
-    public GFFIBuiltIn(
+    public GFFIExpressionBuiltIn(
       final @Nonnull GASTExpression expression)
     {
       this.expression = expression;

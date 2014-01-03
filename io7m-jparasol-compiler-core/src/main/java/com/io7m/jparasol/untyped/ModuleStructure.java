@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Option.Some;
 import com.io7m.jaux.functional.PartialFunction;
@@ -739,6 +740,22 @@ public final class ModuleStructure
     {
       final UASTIDExternal ext = f.getExternal();
 
+      final Option<UASTIExpression> original_emulation = ext.getEmulation();
+      final Option<UASTCExpression> emulation =
+        original_emulation
+          .mapPartial(new PartialFunction<UASTIExpression, UASTCExpression, ModuleStructureError>() {
+            @Override public UASTCExpression call(
+              final UASTIExpression x)
+              throws ModuleStructureError
+            {
+              try {
+                return x.expressionVisitableAccept(new ExpressionChecker());
+              } catch (final ConstraintError e) {
+                throw new UnreachableCodeException(e);
+              }
+            }
+          });
+
       return new UASTCDFunctionExternal(
         f.getName(),
         arguments,
@@ -746,7 +763,8 @@ public final class ModuleStructure
         new UASTCDExternal(
           ext.getName(),
           ext.isVertexShaderAllowed(),
-          ext.isFragmentShaderAllowed()));
+          ext.isFragmentShaderAllowed(),
+          emulation));
     }
 
     @Override public void functionVisitExternalPre(

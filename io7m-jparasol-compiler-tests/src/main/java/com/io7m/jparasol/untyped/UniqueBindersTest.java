@@ -21,11 +21,14 @@ import org.junit.Test;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
+import com.io7m.jaux.functional.Option.Some;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.TestUtilities;
 import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionDefined;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDModule;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragment;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentLocalDiscard;
@@ -36,6 +39,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShade
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertexOutputAssignment;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValue;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUELet;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
@@ -265,6 +269,56 @@ public final class UniqueBindersTest
     Assert.assertEquals("f", f.getName().getActual());
     final UASTUEVariable var = (UASTUEVariable) f.getBody();
     Assert.assertEquals("f", ((UniqueNameNonLocal) var.getName())
+      .getName()
+      .getActual());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testFunctionExternal0()
+      throws UniqueBindersError,
+        ConstraintError
+  {
+    final UASTUCompilation r =
+      UniqueBindersTest
+        .uniqueInternal(new String[] { "unique_binders/function-external-0.p" });
+
+    final UASTUDModule first = UniqueBindersTest.firstModule(r);
+    System.out.println(first);
+
+    final UASTUDFunctionExternal f =
+      (UASTUDFunctionExternal) first.getTerms().get("f");
+    Assert.assertEquals("f", f.getName().getActual());
+    final UASTUDExternal ext = f.getExternal();
+    final Some<UASTUExpression> emu =
+      (Some<UASTUExpression>) ext.getEmulation();
+
+    final UASTUEVariable var = (UASTUEVariable) emu.value;
+    Assert.assertEquals("x", ((UniqueNameLocal) var.getName()).getCurrent());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testFunctionExternal1()
+      throws UniqueBindersError,
+        ConstraintError
+  {
+    final UASTUCompilation r =
+      UniqueBindersTest
+        .uniqueInternal(new String[] { "unique_binders/function-external-1.p" });
+
+    final UASTUDModule first = UniqueBindersTest.firstModule(r);
+    System.out.println(first);
+
+    final UASTUDFunctionExternal f =
+      (UASTUDFunctionExternal) first.getTerms().get("f");
+    Assert.assertEquals("f", f.getName().getActual());
+    final UASTUDExternal ext = f.getExternal();
+    final Some<UASTUExpression> emu =
+      (Some<UASTUExpression>) ext.getEmulation();
+
+    final UASTUEVariable var = (UASTUEVariable) emu.value;
+    Assert.assertEquals("y", ((UniqueNameNonLocal) var.getName())
       .getName()
       .getActual());
   }

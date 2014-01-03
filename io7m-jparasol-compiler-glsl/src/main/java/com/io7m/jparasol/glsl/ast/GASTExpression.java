@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -128,7 +128,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
   {
     public static final class GASTEBinaryOpDivide extends GASTEBinaryOp
     {
-      protected GASTEBinaryOpDivide(
+      public GASTEBinaryOpDivide(
         final @Nonnull GASTExpression left,
         final @Nonnull GASTExpression right)
       {
@@ -162,7 +162,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
 
     public static final class GASTEBinaryOpEqual extends GASTEBinaryOp
     {
-      protected GASTEBinaryOpEqual(
+      public GASTEBinaryOpEqual(
         final @Nonnull GASTExpression left,
         final @Nonnull GASTExpression right)
       {
@@ -196,7 +196,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
 
     public static final class GASTEBinaryOpGreaterThan extends GASTEBinaryOp
     {
-      protected GASTEBinaryOpGreaterThan(
+      public GASTEBinaryOpGreaterThan(
         final @Nonnull GASTExpression left,
         final @Nonnull GASTExpression right)
       {
@@ -231,7 +231,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     public static final class GASTEBinaryOpGreaterThanOrEqual extends
       GASTEBinaryOp
     {
-      protected GASTEBinaryOpGreaterThanOrEqual(
+      public GASTEBinaryOpGreaterThanOrEqual(
         final @Nonnull GASTExpression left,
         final @Nonnull GASTExpression right)
       {
@@ -265,7 +265,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
 
     public static final class GASTEBinaryOpLesserThan extends GASTEBinaryOp
     {
-      protected GASTEBinaryOpLesserThan(
+      public GASTEBinaryOpLesserThan(
         final @Nonnull GASTExpression left,
         final @Nonnull GASTExpression right)
       {
@@ -300,7 +300,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     public static final class GASTEBinaryOpLesserThanOrEqual extends
       GASTEBinaryOp
     {
-      protected GASTEBinaryOpLesserThanOrEqual(
+      public GASTEBinaryOpLesserThanOrEqual(
         final @Nonnull GASTExpression left,
         final @Nonnull GASTExpression right)
       {
@@ -334,7 +334,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
 
     public static final class GASTEBinaryOpMultiply extends GASTEBinaryOp
     {
-      protected GASTEBinaryOpMultiply(
+      public GASTEBinaryOpMultiply(
         final @Nonnull GASTExpression left,
         final @Nonnull GASTExpression right)
       {
@@ -368,7 +368,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
 
     public static final class GASTEBinaryOpPlus extends GASTEBinaryOp
     {
-      protected GASTEBinaryOpPlus(
+      public GASTEBinaryOpPlus(
         final @Nonnull GASTExpression left,
         final @Nonnull GASTExpression right)
       {
@@ -402,7 +402,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
 
     public static final class GASTEBinaryOpSubtract extends GASTEBinaryOp
     {
-      protected GASTEBinaryOpSubtract(
+      public GASTEBinaryOpSubtract(
         final @Nonnull GASTExpression left,
         final @Nonnull GASTExpression right)
       {
@@ -435,7 +435,6 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     }
 
     private final @Nonnull GASTExpression left;
-
     private final @Nonnull GASTExpression right;
 
     protected GASTEBinaryOp(
@@ -935,7 +934,7 @@ public abstract class GASTExpression implements GASTExpressionVisitable
   {
     public static final class GASTEUnaryOpNegate extends GASTEUnaryOp
     {
-      protected GASTEUnaryOpNegate(
+      public GASTEUnaryOpNegate(
         final @Nonnull GASTExpression body)
       {
         super(body);

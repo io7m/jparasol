@@ -27,13 +27,12 @@ module M is
     };
 
   shader vertex v is
-    parameter s2 : sampler_2d;
-    parameter sc : sampler_cube;
-    out dummy    : vector_4f;
+    parameter s2     : sampler_2d;
+    parameter sc     : sampler_cube;
+    out vertex dummy : vector_4f;
   with
     value result = make (s2, sc, 1.0).v4f;
   as
-    out gl_Position = result;
     out dummy       = result;
   end;
 

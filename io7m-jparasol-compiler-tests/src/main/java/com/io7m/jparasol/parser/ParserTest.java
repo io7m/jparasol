@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,7 +33,6 @@ import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.PackagePathFlat;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.lexer.Token.Type;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDExternal;
@@ -63,6 +60,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
@@ -350,6 +348,53 @@ public class ParserTest
     Assert.assertEquals("xyz", ext.getName().getActual());
   }
 
+  @SuppressWarnings({ "static-method" }) @Test public
+    void
+    testDFunctionExternal_2()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final StringBuilder text = new StringBuilder();
+    text.append("function f (x : integer, y : Example.t) : integer =\n");
+    text.append("  external xyz is\n");
+    text.append("    vertex true;\n");
+    text.append("    fragment true;\n");
+    text.append("  with\n");
+    text.append("    x\n");
+    text.append("  end");
+
+    final Parser p = ParserTest.makeStringInternalParser(text.toString());
+
+    final UASTIDFunctionExternal r =
+      (UASTIDFunctionExternal) p.declarationFunction();
+    Assert.assertEquals("f", r.getName().getActual());
+    Assert.assertEquals(2, r.getArguments().size());
+
+    final UASTIDFunctionArgument arg0 = r.getArguments().get(0);
+    final UASTIDFunctionArgument arg1 = r.getArguments().get(1);
+
+    Assert.assertEquals("x", arg0.getName().getActual());
+    Assert.assertEquals("integer", arg0.getType().getName().getActual());
+    Assert.assertEquals("y", arg1.getName().getActual());
+    Assert.assertEquals("Example", ((Option.Some<TokenIdentifierUpper>) arg1
+      .getType()
+      .getModule()).value.getActual());
+    Assert.assertEquals("t", arg1.getType().getName().getActual());
+
+    final UASTIDExternal ext = r.getExternal();
+    Assert.assertEquals("xyz", ext.getName().getActual());
+
+    Assert.assertTrue(ext.getEmulation().isSome());
+    final Some<UASTIExpression> exp =
+      (Some<UASTIExpression>) ext.getEmulation();
+    Assert.assertEquals("x", ((UASTIEVariable) exp.value)
+      .getName()
+      .getName()
+      .getActual());
+  }
+
   @SuppressWarnings({ "static-method" }) @Test(expected = ParserError.class) public
     void
     testDFunctionNotExternal_0()
@@ -462,9 +507,7 @@ public class ParserTest
       ConstraintError,
       ParserError
   {
-    final List<TokenIdentifierLower> components =
-      new ArrayList<TokenIdentifierLower>();
-    final PackagePath path = new PackagePath(components);
+    final PackagePath path = PackagePath.newBuilder().build();
 
     final Parser p = ParserTest.makeResourceParser("testDModule0.p");
     final UASTIDModule m = p.declarationModule(path);

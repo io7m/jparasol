@@ -5,7 +5,7 @@ module M is
   import com.io7m.parasol.Float as F;
 
   type t is record
-    v4f                : vector_4f
+    v4f                : vector_4f,
     f_absolute         : float,
     f_add              : float,
     f_arc_cosine       : float,
@@ -72,12 +72,11 @@ module M is
     };
 
   shader vertex v is
-    out dummy : vector_4f;
+    out vertex dummy : vector_4f;
   with
     value result = make (1.0).v4f;
   as
-    out gl_Position = result;
-    out dummy       = result;
+    out dummy = result;
   end;
 
   shader fragment f is

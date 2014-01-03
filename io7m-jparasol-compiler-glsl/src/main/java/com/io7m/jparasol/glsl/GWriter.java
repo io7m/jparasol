@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -715,7 +715,6 @@ public final class GWriter
 
   private static void writeFragmentParameter(
     final @Nonnull PrintWriter writer,
-    final @Nonnull GVersion version,
     final @Nonnull GASTShaderFragmentParameter p)
   {
     final GTypeName type = p.getType();
@@ -725,18 +724,16 @@ public final class GWriter
 
   private static void writeFragmentParameters(
     final @Nonnull PrintWriter writer,
-    final @Nonnull List<GASTShaderFragmentParameter> parameters,
-    final @Nonnull GVersion version)
+    final @Nonnull List<GASTShaderFragmentParameter> parameters)
   {
     for (final GASTShaderFragmentParameter p : parameters) {
-      GWriter.writeFragmentParameter(writer, version, p);
+      GWriter.writeFragmentParameter(writer, p);
     }
   }
 
   public static void writeFragmentShader(
     final @Nonnull OutputStream out,
-    final @Nonnull GASTShaderFragment f,
-    final @Nonnull GVersion version)
+    final @Nonnull GASTShaderFragment f)
     throws ConstraintError
   {
     final PrintWriter writer = new PrintWriter(out);
@@ -744,10 +741,11 @@ public final class GWriter
     final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
       f.getTerms();
 
+    final GVersion version = f.getGLSLVersion();
     GWriter.writeTypes(writer, types);
     GWriter.writeTerms(writer, terms);
     GWriter.writeFragmentInputs(writer, f.getInputs(), version);
-    GWriter.writeFragmentParameters(writer, f.getParameters(), version);
+    GWriter.writeFragmentParameters(writer, f.getParameters());
     GWriter.writeFragmentOutputs(writer, f.getOutputs(), version);
     writer.println();
 
@@ -924,15 +922,14 @@ public final class GWriter
 
   private static void writeVertexMain(
     final @Nonnull PrintWriter writer,
-    final @Nonnull GASTShaderMainVertex main,
-    final @Nonnull GVersion version)
+    final @Nonnull GASTShaderMainVertex main)
     throws ConstraintError
   {
     writer.println("void");
     writer.println("main (void)");
     writer.println("{");
     for (final GASTStatement s : main.getStatements()) {
-      s.statementVisitableAccept(new StatementWriter(writer, 0));
+      s.statementVisitableAccept(new StatementWriter(writer, 1));
     }
     for (final GASTVertexOutputAssignment w : main.getWrites()) {
       GWriter.writeVertexOutputAssignment(writer, w);
@@ -1022,7 +1019,6 @@ public final class GWriter
 
   private static void writeVertexParameter(
     final @Nonnull PrintWriter writer,
-    final @Nonnull GVersion version,
     final @Nonnull GASTShaderVertexParameter p)
   {
     final GTypeName type = p.getType();
@@ -1032,18 +1028,16 @@ public final class GWriter
 
   private static void writeVertexParameters(
     final @Nonnull PrintWriter writer,
-    final @Nonnull List<GASTShaderVertexParameter> parameters,
-    final @Nonnull GVersion version)
+    final @Nonnull List<GASTShaderVertexParameter> parameters)
   {
     for (final GASTShaderVertexParameter p : parameters) {
-      GWriter.writeVertexParameter(writer, version, p);
+      GWriter.writeVertexParameter(writer, p);
     }
   }
 
   public static void writeVertexShader(
     final @Nonnull OutputStream out,
-    final @Nonnull GASTShaderVertex v,
-    final @Nonnull GVersion version)
+    final @Nonnull GASTShaderVertex v)
     throws ConstraintError
   {
     final PrintWriter writer = new PrintWriter(out);
@@ -1051,12 +1045,13 @@ public final class GWriter
     final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
       v.getTerms();
 
+    final GVersion version = v.getGLSLVersion();
     GWriter.writeTypes(writer, types);
     GWriter.writeTerms(writer, terms);
     GWriter.writeVertexInputs(writer, v.getInputs(), version);
-    GWriter.writeVertexParameters(writer, v.getParameters(), version);
+    GWriter.writeVertexParameters(writer, v.getParameters());
     GWriter.writeVertexOutputs(writer, v.getOutputs(), version);
-    GWriter.writeVertexMain(writer, v.getMain(), version);
+    GWriter.writeVertexMain(writer, v.getMain());
     writer.flush();
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,6 +16,8 @@
 
 package com.io7m.jparasol;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,13 +25,64 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.lexer.Position;
+import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
 public final class PackagePath
 {
+  public interface Builder
+  {
+    public void addComponent(
+      final @Nonnull TokenIdentifierLower c)
+      throws ConstraintError;
+
+    public void addFakeComponent(
+      final @Nonnull String c)
+      throws ConstraintError;
+
+    public @Nonnull PackagePath build()
+      throws ConstraintError;
+  }
+
+  public static @Nonnull Builder newBuilder()
+  {
+    return new Builder() {
+      private final @Nonnull List<TokenIdentifierLower> components =
+                                                                     new ArrayList<Token.TokenIdentifierLower>();
+
+      @Override public PackagePath build()
+        throws ConstraintError
+      {
+        return new PackagePath(this.components);
+      }
+
+      @Override public void addFakeComponent(
+        final @Nonnull String c)
+        throws ConstraintError
+      {
+        Constraints.constrainNotNull(c, "Component");
+
+        final File file = new File("<generated>");
+        final Position position = Position.ZERO;
+        final TokenIdentifierLower token =
+          new TokenIdentifierLower(file, position, c);
+        this.addComponent(token);
+      }
+
+      @Override public void addComponent(
+        final TokenIdentifierLower c)
+        throws ConstraintError
+      {
+        Constraints.constrainNotNull(c, "Component");
+        this.components.add(c);
+      }
+    };
+  }
+
   private final @Nonnull List<TokenIdentifierLower> components;
 
-  public PackagePath(
+  private PackagePath(
     final @Nonnull List<TokenIdentifierLower> components)
     throws ConstraintError
   {

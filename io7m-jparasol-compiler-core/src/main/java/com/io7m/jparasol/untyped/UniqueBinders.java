@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -27,6 +27,7 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Option.None;
 import com.io7m.jaux.functional.PartialFunction;
@@ -64,6 +65,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTypeRecord;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValue;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueLocal;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEApplication;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEBoolean;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEConditional;
@@ -651,6 +653,26 @@ public final class UniqueBinders
     {
       final UASTCDExternal ext = f.getExternal();
       final TokenIdentifierLower name = f.getName();
+
+      final Option<UASTCExpression> original_emulation = ext.getEmulation();
+      final Option<UASTUExpression> emulation =
+        original_emulation
+          .mapPartial(new PartialFunction<UASTCExpression, UASTUExpression, UniqueBindersError>() {
+            @SuppressWarnings("synthetic-access") @Override public
+              UASTUExpression
+              call(
+                final @Nonnull UASTCExpression x)
+                throws UniqueBindersError
+            {
+              try {
+                return x.expressionVisitableAccept(new ExpressionTransformer(
+                  FunctionTransformer.this.context));
+              } catch (final ConstraintError e) {
+                throw new UnreachableCodeException(e);
+              }
+            }
+          });
+
       return new UASTUDFunctionExternal(
         name,
         arguments,
@@ -658,7 +680,8 @@ public final class UniqueBinders
         new UASTUDExternal(
           ext.getName(),
           ext.isVertexShaderAllowed(),
-          ext.isFragmentShaderAllowed()));
+          ext.isFragmentShaderAllowed(),
+          emulation));
     }
 
     @Override public void functionVisitExternalPre(

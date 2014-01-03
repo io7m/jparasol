@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -31,6 +31,7 @@ import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.typed.TTypeNameFlat;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShader;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTerm;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDType;
 
@@ -137,6 +138,19 @@ public final class TASTCompilation
     final TASTDModule m = this.modules.get(name.getModulePath());
     if (m != null) {
       return m.getTypes().get(name.getName());
+    }
+    return null;
+  }
+
+  public @CheckForNull TASTDShader lookupShader(
+    final @Nonnull TASTShaderNameFlat name)
+  {
+    final TASTDModule m = this.modules.get(name.getModulePath());
+    if (m != null) {
+      final TASTDShader s = m.getShaders().get(name.getName());
+      if (s != null) {
+        return s;
+      }
     }
     return null;
   }

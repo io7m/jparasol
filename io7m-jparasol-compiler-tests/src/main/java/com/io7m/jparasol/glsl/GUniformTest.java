@@ -93,6 +93,7 @@ public final class GUniformTest
       new TTypeNameGlobal(
         TestPipeline.getModuleMakePath("x.y", "M"),
         GUniformTest.token("t"));
+
     final List<TRecordField> fields = new ArrayList<TType.TRecordField>();
     fields.add(new TRecordField("x", TInteger.get()));
     final TRecord tr = new TRecord(name, fields);

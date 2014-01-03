@@ -84,12 +84,12 @@ module M is
     v2i_multiply        : vector_2i,
     v2i_interpolate     : vector_2i,
     v2i_magnitude       : float,
-    v2i_normalize       : vector_2i
+    v2i_normalize       : vector_2i,
     v2i_add_scalar      : vector_2i,
     v2i_multiply_scalar : vector_2i,
     v2i_negate          : vector_2i,
     v2i_reflect         : vector_2i,
-    v2i_refract         : vector_2i,
+    v2i_refract         : vector_2i
   end;
 
   function make (x : float, n : integer) : t =
@@ -177,12 +177,11 @@ module M is
     };
 
   shader vertex v is
-    out dummy : vector_4f;
+    out vertex dummy : vector_4f;
   with
     value result = make (1.0, 1).v4f;
   as
-    out gl_Position = result;
-    out dummy       = result;
+    out dummy = result;
   end;
 
   shader fragment f is

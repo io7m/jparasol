@@ -16,10 +16,8 @@
 
 package com.io7m.jparasol.untyped;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -27,14 +25,8 @@ import org.junit.Test;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
-import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.lexer.Lexer;
-import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.lexer.Token;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.parser.Parser;
 import com.io7m.jparasol.parser.ParserTest;
 import com.io7m.jparasol.untyped.ast.initial.UASTICompilation;
@@ -43,28 +35,6 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
 
 public class UASTICompilationTest
 {
-  private static ModulePathFlat modulePath(
-    final String[] package_path,
-    final String name)
-  {
-    try {
-      final File f = new File("<none>");
-      final Position pos = new Position(0, 0);
-
-      final List<TokenIdentifierLower> pc =
-        new ArrayList<Token.TokenIdentifierLower>();
-      for (final String p : package_path) {
-        pc.add(new TokenIdentifierLower(f, pos, p));
-      }
-
-      final PackagePath pp = new PackagePath(pc);
-      final ModulePath mp =
-        new ModulePath(pp, new TokenIdentifierUpper(f, pos, name));
-      return ModulePathFlat.fromModulePath(mp);
-    } catch (final Throwable x) {
-      throw new UnreachableCodeException(x);
-    }
-  }
 
   @SuppressWarnings("resource") static UASTIUnit parseResource(
     final String name)
@@ -102,18 +72,14 @@ public class UASTICompilationTest
     final UASTICompilation c = UASTICompilation.fromUnits(units);
     final Map<ModulePathFlat, UASTIDModule> m = c.getModules();
 
-    Assert.assertTrue(m.containsKey(UASTICompilationTest.modulePath(
-      new String[] { "com", "io7m", "example" },
-      "M")));
-    Assert.assertTrue(m.containsKey(UASTICompilationTest.modulePath(
-      new String[] { "com", "io7m", "example" },
-      "N")));
-    Assert.assertTrue(m.containsKey(UASTICompilationTest.modulePath(
-      new String[] { "com", "io7m", "example" },
-      "P")));
-    Assert.assertTrue(m.containsKey(UASTICompilationTest.modulePath(
-      new String[] { "com", "io7m", "example" },
-      "R")));
+    Assert
+      .assertTrue(m.containsKey(new ModulePathFlat("com.io7m.example.M")));
+    Assert
+      .assertTrue(m.containsKey(new ModulePathFlat("com.io7m.example.N")));
+    Assert
+      .assertTrue(m.containsKey(new ModulePathFlat("com.io7m.example.P")));
+    Assert
+      .assertTrue(m.containsKey(new ModulePathFlat("com.io7m.example.R")));
   }
 
   @SuppressWarnings("static-method") @Test(expected = UnitCombinerError.class) public

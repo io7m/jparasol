@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -21,10 +21,10 @@ import javax.annotation.Nonnull;
 public interface GFFIExpressionVisitor<A, E extends Throwable>
 {
   public A ffiExpressionVisitBuiltIn(
-    final @Nonnull GFFIExpression.GFFIBuiltIn e)
+    final @Nonnull GFFIExpression.GFFIExpressionBuiltIn e)
     throws E;
 
   public A ffiExpressionVisitDefined(
-    final @Nonnull GFFIExpression.GFFIDefined e)
+    final @Nonnull GFFIExpression.GFFIExpressionDefined e)
     throws E;
 }

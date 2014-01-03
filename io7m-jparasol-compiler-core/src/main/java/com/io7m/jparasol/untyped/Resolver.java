@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -123,6 +123,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeR
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValue;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEApplication;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEBoolean;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEConditional;
@@ -1750,6 +1751,7 @@ public final class Resolver
 
       final List<UASTRDFunctionArgument> arguments =
         new ArrayList<UASTRDFunctionArgument>();
+
       for (final UASTUDFunctionArgument arg : f.getArguments()) {
         final UniqueNameLocal an = arg.getName();
         final UASTUTypePath at = arg.getType();
@@ -1767,6 +1769,26 @@ public final class Resolver
       this.term_graph.addTerm(this.module.getPath(), f.getName());
 
       final UASTUDExternal ext = f.getExternal();
+      final Option<UASTUExpression> original_emulation = ext.getEmulation();
+      final Option<UASTRExpression> emulation =
+        original_emulation
+          .mapPartial(new PartialFunction<UASTUExpression, UASTRExpression, ResolverError>() {
+            @Override public UASTRExpression call(
+              final @Nonnull UASTUExpression e)
+              throws ResolverError
+            {
+              try {
+                return e.expressionVisitableAccept(new ExpressionResolver(
+                  f,
+                  TermResolver.this.module,
+                  TermResolver.this.modules,
+                  TermResolver.this.term_graph));
+              } catch (final ConstraintError x) {
+                throw new UnreachableCodeException(x);
+              }
+            }
+          });
+
       return new UASTRDFunctionExternal(
         f.getName(),
         arguments,
@@ -1774,7 +1796,8 @@ public final class Resolver
         new UASTRDExternal(
           ext.getName(),
           ext.isVertexShaderAllowed(),
-          ext.isFragmentShaderAllowed()));
+          ext.isFragmentShaderAllowed(),
+          emulation));
     }
 
     @Override public @Nonnull UASTRDValue termVisitValue(

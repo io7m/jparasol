@@ -17,7 +17,6 @@
 package com.io7m.jparasol.untyped;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -31,9 +30,9 @@ import com.io7m.jaux.functional.Option.Some;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
+import com.io7m.jparasol.PackagePath.Builder;
 import com.io7m.jparasol.TestUtilities;
 import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRCompilation;
@@ -154,18 +153,18 @@ public final class ResolverTest
     throws ConstraintError
   {
     final String[] segments = pp.split("\\.");
-    final ArrayList<TokenIdentifierLower> tokens =
-      new ArrayList<TokenIdentifierLower>();
+    final Builder b = PackagePath.newBuilder();
+
+    for (final String s : segments) {
+      b.addFakeComponent(s);
+    }
 
     final File file = new File("<stdin>");
     final Position pos = new Position(0, 0);
-    for (final String segment : segments) {
-      tokens.add(new TokenIdentifierLower(file, pos, segment));
-    }
 
     final TokenIdentifierUpper tname =
       new TokenIdentifierUpper(file, pos, name);
-    return new ModulePath(new PackagePath(tokens), tname);
+    return new ModulePath(b.build(), tname);
   }
 
   static UASTRCompilation resolved(

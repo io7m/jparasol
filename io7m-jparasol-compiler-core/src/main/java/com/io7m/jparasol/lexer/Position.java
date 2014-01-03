@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -20,8 +20,14 @@ import javax.annotation.Nonnull;
 
 public final class Position
 {
-  private final int column;
-  private final int line;
+  public static final @Nonnull Position ZERO;
+
+  static {
+    ZERO = new Position(0, 0);
+  }
+
+  private final int                     column;
+  private final int                     line;
 
   public Position(
     final int line,

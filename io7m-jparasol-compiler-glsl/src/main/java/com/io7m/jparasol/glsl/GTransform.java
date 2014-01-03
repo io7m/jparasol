@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -35,8 +35,8 @@ import com.io7m.jaux.functional.Unit;
 import com.io7m.jlog.Level;
 import com.io7m.jlog.Log;
 import com.io7m.jparasol.ModulePathFlat;
-import com.io7m.jparasol.glsl.GFFIExpression.GFFIBuiltIn;
-import com.io7m.jparasol.glsl.GFFIExpression.GFFIDefined;
+import com.io7m.jparasol.glsl.GFFIExpression.GFFIExpressionBuiltIn;
+import com.io7m.jparasol.glsl.GFFIExpression.GFFIExpressionDefined;
 import com.io7m.jparasol.glsl.ast.GASTExpression;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplication;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBoolean;
@@ -829,7 +829,7 @@ public final class GTransform
                       @Override public
                         GASTExpression
                         ffiExpressionVisitBuiltIn(
-                          final @Nonnull GFFIBuiltIn ge)
+                          final @Nonnull GFFIExpressionBuiltIn ge)
                           throws ConstraintError
                       {
                         return ge.getExpression();
@@ -838,7 +838,7 @@ public final class GTransform
                       @Override public
                         GASTExpression
                         ffiExpressionVisitDefined(
-                          final @Nonnull GFFIDefined ge)
+                          final @Nonnull GFFIExpressionDefined ge)
                           throws ConstraintError
                       {
                         final TValueType returns =
@@ -1242,7 +1242,13 @@ public final class GTransform
       throws ConstraintError,
         GFFIError
     {
-      return this.context.getFFI().getDefinition(f);
+
+      final TASTDFunctionDefined td =
+        this.context.getFFI().getDefinition(f, this.version);
+      if (td != null) {
+        return this.termVisitFunctionDefined(td);
+      }
+      return null;
     }
 
     @Override public GASTTermValue termVisitValue(
@@ -1797,8 +1803,9 @@ public final class GTransform
     final Log logx = new Log(log, "fragment-transformer");
     if (logx.enabled(Level.LOG_DEBUG)) {
       logx.debug(String.format(
-        "Transforming fragment shader %s",
-        shader_name.show()));
+        "Transforming fragment shader %s for %s",
+        shader_name.show(),
+        version.getLongName()));
     }
 
     final Context context =
@@ -1825,7 +1832,8 @@ public final class GTransform
       outputs,
       parameters,
       terms,
-      types);
+      types,
+      version);
   }
 
   public static @Nonnull GASTShaderVertex transformVertex(
@@ -1855,8 +1863,9 @@ public final class GTransform
     final Log logx = new Log(log, "vertex-transformer");
     if (logx.enabled(Level.LOG_DEBUG)) {
       logx.debug(String.format(
-        "Transforming vertex shader %s",
-        shader_name.show()));
+        "Transforming vertex shader %s for %s",
+        shader_name.show(),
+        version.getLongName()));
     }
 
     final Context context =
@@ -1882,6 +1891,7 @@ public final class GTransform
       outputs,
       parameters,
       terms,
-      types);
+      types,
+      version);
   }
 }

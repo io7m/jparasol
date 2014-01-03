@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -21,6 +21,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.functional.Pair;
+import com.io7m.jparasol.glsl.GVersion;
 import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainFragment;
 import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainVertex;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
@@ -30,6 +31,7 @@ public abstract class GASTShader
 {
   public static final class GASTShaderFragment extends GASTShader
   {
+    private final @Nonnull GVersion                                         glsl_version;
     private final @Nonnull List<GASTShaderFragmentInput>                    inputs;
     private final @Nonnull GASTShaderMainFragment                           main;
     private final @Nonnull List<GASTShaderFragmentOutput>                   outputs;
@@ -43,7 +45,8 @@ public abstract class GASTShader
       final @Nonnull List<GASTShaderFragmentOutput> outputs,
       final @Nonnull List<GASTShaderFragmentParameter> parameter,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
-      final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> types)
+      final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> types,
+      final @Nonnull GVersion glsl_version)
     {
       this.inputs = inputs;
       this.main = main;
@@ -51,6 +54,7 @@ public abstract class GASTShader
       this.parameter = parameter;
       this.terms = terms;
       this.types = types;
+      this.glsl_version = glsl_version;
     }
 
     @Override public boolean equals(
@@ -66,6 +70,9 @@ public abstract class GASTShader
         return false;
       }
       final GASTShaderFragment other = (GASTShaderFragment) obj;
+      if (!this.glsl_version.equals(other.glsl_version)) {
+        return false;
+      }
       if (!this.inputs.equals(other.inputs)) {
         return false;
       }
@@ -85,6 +92,11 @@ public abstract class GASTShader
         return false;
       }
       return true;
+    }
+
+    public @Nonnull GVersion getGLSLVersion()
+    {
+      return this.glsl_version;
     }
 
     public @Nonnull List<GASTShaderFragmentInput> getInputs()
@@ -123,6 +135,7 @@ public abstract class GASTShader
     {
       final int prime = 31;
       int result = 1;
+      result = (prime * result) + this.glsl_version.hashCode();
       result = (prime * result) + this.inputs.hashCode();
       result = (prime * result) + this.main.hashCode();
       result = (prime * result) + this.outputs.hashCode();
@@ -147,6 +160,8 @@ public abstract class GASTShader
       builder.append(this.terms);
       builder.append(" ");
       builder.append(this.types);
+      builder.append(" ");
+      builder.append(this.glsl_version);
       builder.append("]");
       return builder.toString();
     }
@@ -376,6 +391,7 @@ public abstract class GASTShader
 
   public static final class GASTShaderVertex extends GASTShader
   {
+    private final @Nonnull GVersion                                         glsl_version;
     private final @Nonnull List<GASTShaderVertexInput>                      inputs;
     private final @Nonnull GASTShaderMainVertex                             main;
     private final @Nonnull List<GASTShaderVertexOutput>                     outputs;
@@ -389,7 +405,8 @@ public abstract class GASTShader
       final @Nonnull List<GASTShaderVertexOutput> outputs,
       final @Nonnull List<GASTShaderVertexParameter> parameter,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
-      final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> types)
+      final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> types,
+      final @Nonnull GVersion glsl_version)
     {
       this.inputs = inputs;
       this.main = main;
@@ -397,6 +414,7 @@ public abstract class GASTShader
       this.parameter = parameter;
       this.terms = terms;
       this.types = types;
+      this.glsl_version = glsl_version;
     }
 
     @Override public boolean equals(
@@ -412,6 +430,9 @@ public abstract class GASTShader
         return false;
       }
       final GASTShaderVertex other = (GASTShaderVertex) obj;
+      if (!this.glsl_version.equals(other.glsl_version)) {
+        return false;
+      }
       if (!this.inputs.equals(other.inputs)) {
         return false;
       }
@@ -431,6 +452,11 @@ public abstract class GASTShader
         return false;
       }
       return true;
+    }
+
+    public @Nonnull GVersion getGLSLVersion()
+    {
+      return this.glsl_version;
     }
 
     public @Nonnull List<GASTShaderVertexInput> getInputs()
@@ -469,6 +495,7 @@ public abstract class GASTShader
     {
       final int prime = 31;
       int result = 1;
+      result = (prime * result) + this.glsl_version.hashCode();
       result = (prime * result) + this.inputs.hashCode();
       result = (prime * result) + this.main.hashCode();
       result = (prime * result) + this.outputs.hashCode();
@@ -493,6 +520,8 @@ public abstract class GASTShader
       builder.append(this.terms);
       builder.append(" ");
       builder.append(this.types);
+      builder.append(" ");
+      builder.append(this.glsl_version);
       builder.append("]");
       return builder.toString();
     }
