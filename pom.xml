@@ -16,6 +16,8 @@
   <modules>
     <module>io7m-jparasol-compiler-core</module>
     <module>io7m-jparasol-compiler-glsl</module>
+    <module>io7m-jparasol-compiler-tests</module>
+    <module>io7m-jparasol-compiler-frontend</module>
   </modules>
 
   <licenses>
