@@ -30,9 +30,110 @@ import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 
 public final class GVersionCheckerTest
 {
+  @SuppressWarnings("static-method") @Test(
+    expected = GVersionCheckerError.class) public
+    void
+    testFragmentOutputsBadType_ES100_0()
+      throws ConstraintError,
+        GVersionCheckerError
+  {
+    final TASTCompilation c =
+      TestPipeline
+        .completeTyped(new String[] { "glsl/version_checker/fragment-attributes-bad-type-es100-0.p" });
+    final TASTDModule m = TestPipeline.getModule(c, "x.y", "M");
+
+    final TASTDShaderFragment fs =
+      (TASTDShaderFragment) m.getShaders().get("f");
+
+    final GVersionChecker vc =
+      GVersionChecker.newVersionChecker(TestUtilities.getLog());
+    final SortedSet<GVersionFull> required_full =
+      new TreeSet<GVersion.GVersionFull>();
+    final SortedSet<GVersionES> required_es =
+      new TreeSet<GVersion.GVersionES>();
+    required_es.add(GVersionES.GLSL_ES_100);
+
+    vc.checkFragmentShader(fs, required_full, required_es);
+  }
+
+  @SuppressWarnings("static-method") @Test(
+    expected = GVersionCheckerError.class) public
+    void
+    testFragmentOutputsBadType_ES100_1()
+      throws ConstraintError,
+        GVersionCheckerError
+  {
+    final TASTCompilation c =
+      TestPipeline
+        .completeTyped(new String[] { "glsl/version_checker/fragment-attributes-bad-type-es100-1.p" });
+    final TASTDModule m = TestPipeline.getModule(c, "x.y", "M");
+
+    final TASTDShaderFragment fs =
+      (TASTDShaderFragment) m.getShaders().get("f");
+
+    final GVersionChecker vc =
+      GVersionChecker.newVersionChecker(TestUtilities.getLog());
+    final SortedSet<GVersionFull> required_full =
+      new TreeSet<GVersion.GVersionFull>();
+    final SortedSet<GVersionES> required_es =
+      new TreeSet<GVersion.GVersionES>();
+    required_es.add(GVersionES.GLSL_ES_100);
+
+    vc.checkFragmentShader(fs, required_full, required_es);
+  }
+
+  @SuppressWarnings("static-method") @Test(
+    expected = GVersionCheckerError.class) public
+    void
+    testVertexAttributesBadType_ES100_0()
+      throws ConstraintError,
+        GVersionCheckerError
+  {
+    final TASTCompilation c =
+      TestPipeline
+        .completeTyped(new String[] { "glsl/version_checker/vertex-attributes-bad-type-es100-0.p" });
+    final TASTDModule m = TestPipeline.getModule(c, "x.y", "M");
+    final TASTDShaderVertex fs = (TASTDShaderVertex) m.getShaders().get("v");
+
+    final GVersionChecker vc =
+      GVersionChecker.newVersionChecker(TestUtilities.getLog());
+    final SortedSet<GVersionFull> required_full =
+      new TreeSet<GVersion.GVersionFull>();
+    final SortedSet<GVersionES> required_es =
+      new TreeSet<GVersion.GVersionES>();
+    required_es.add(GVersionES.GLSL_ES_100);
+
+    vc.checkVertexShader(fs, required_full, required_es);
+  }
+
+  @SuppressWarnings("static-method") @Test(
+    expected = GVersionCheckerError.class) public
+    void
+    testVertexAttributesBadType_ES100_1()
+      throws ConstraintError,
+        GVersionCheckerError
+  {
+    final TASTCompilation c =
+      TestPipeline
+        .completeTyped(new String[] { "glsl/version_checker/vertex-attributes-bad-type-es100-1.p" });
+    final TASTDModule m = TestPipeline.getModule(c, "x.y", "M");
+    final TASTDShaderVertex fs = (TASTDShaderVertex) m.getShaders().get("v");
+
+    final GVersionChecker vc =
+      GVersionChecker.newVersionChecker(TestUtilities.getLog());
+    final SortedSet<GVersionFull> required_full =
+      new TreeSet<GVersion.GVersionFull>();
+    final SortedSet<GVersionES> required_es =
+      new TreeSet<GVersion.GVersionES>();
+    required_es.add(GVersionES.GLSL_ES_100);
+
+    vc.checkVertexShader(fs, required_full, required_es);
+  }
+
   @SuppressWarnings("static-method") @Test(
     expected = GVersionCheckerError.class) public
     void
