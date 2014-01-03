@@ -27,6 +27,7 @@ import java.util.SortedSet;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jaux.functional.Unit;
 import com.io7m.jlog.Level;
 import com.io7m.jlog.Log;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
@@ -70,6 +71,8 @@ public final class GVersionChecker
    * vec2, vec3, vec4, mat2, mat3, and mat4. Attribute variables cannot be
    * declared as arrays or structures."
    * 
+   * GLSL <= 120 specification states the same.
+   * 
    * ES3 specification states:
    * 
    * "Vertex shader inputs can only be float, floating-point vectors,
@@ -83,29 +86,36 @@ public final class GVersionChecker
    * qualifier flat."
    */
 
-  private static final class CheckES2AttributeTypes implements Check
+  private static final class CheckAttributeTypes implements Check
   {
-    private static final @Nonnull Set<TValueType> ES2_TYPES;
+    private static final @Nonnull Set<TValueType> RESTRICTED_TYPES;
+    private static final @Nonnull Set<GVersion>   RESTRICTED_VERSIONS;
 
     static {
-      ES2_TYPES = new HashSet<TValueType>();
-      CheckES2AttributeTypes.ES2_TYPES.add(TFloat.get());
-      CheckES2AttributeTypes.ES2_TYPES.add(TVector2F.get());
-      CheckES2AttributeTypes.ES2_TYPES.add(TVector3F.get());
-      CheckES2AttributeTypes.ES2_TYPES.add(TVector4F.get());
-      CheckES2AttributeTypes.ES2_TYPES.add(TMatrix3x3F.get());
-      CheckES2AttributeTypes.ES2_TYPES.add(TMatrix4x4F.get());
+      RESTRICTED_TYPES = new HashSet<TValueType>();
+      CheckAttributeTypes.RESTRICTED_TYPES.add(TFloat.get());
+      CheckAttributeTypes.RESTRICTED_TYPES.add(TVector2F.get());
+      CheckAttributeTypes.RESTRICTED_TYPES.add(TVector3F.get());
+      CheckAttributeTypes.RESTRICTED_TYPES.add(TVector4F.get());
+      CheckAttributeTypes.RESTRICTED_TYPES.add(TMatrix3x3F.get());
+      CheckAttributeTypes.RESTRICTED_TYPES.add(TMatrix4x4F.get());
+
+      RESTRICTED_VERSIONS = new HashSet<GVersion>();
+      CheckAttributeTypes.RESTRICTED_VERSIONS.add(GVersionES.GLSL_ES_100);
+      CheckAttributeTypes.RESTRICTED_VERSIONS.add(GVersionFull.GLSL_110);
+      CheckAttributeTypes.RESTRICTED_VERSIONS.add(GVersionFull.GLSL_120);
     }
 
-    public CheckES2AttributeTypes()
+    public CheckAttributeTypes()
     {
       // Nothing
     }
 
-    private static @Nonnull GVersionCheckExclusionReason makeExclusion(
+    static @Nonnull GVersionCheckExclusionReason makeExclusion(
       final @Nonnull String attribute,
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TValueType type)
+      final @Nonnull TValueType type,
+      final @Nonnull GVersion version)
       throws ConstraintError
     {
       final StringBuilder m = new StringBuilder();
@@ -115,9 +125,11 @@ public final class GVersionChecker
       m.append(name.getActual());
       m.append(" is of type ");
       m.append(type.getShowName());
-      m.append(" but ES2 only permits the following types: ");
+      m.append(" but ");
+      m.append(version.getLongName());
+      m.append(" only permits the following types: ");
 
-      for (final TValueType t : CheckES2AttributeTypes.ES2_TYPES) {
+      for (final TValueType t : CheckAttributeTypes.RESTRICTED_TYPES) {
         m.append(t.getShowName());
         m.append(" ");
       }
@@ -135,27 +147,79 @@ public final class GVersionChecker
     {
       for (final TASTDShaderFragmentInput i : fs.getInputs()) {
         final TValueType type = i.getType();
-        if (CheckES2AttributeTypes.ES2_TYPES.contains(type) == false) {
-          final TokenIdentifierLower name = fs.getName();
-          final GVersionCheckExclusionReason reason =
-            CheckES2AttributeTypes.makeExclusion(
-              "fragment shader input",
-              name,
-              type);
-          supported.excludeES(GVersionES.GLSL_ES_100, reason);
+        if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
+          for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
+            v.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
+              @Override public Unit versionVisitES(
+                final @Nonnull GVersionES version)
+                throws ConstraintError
+              {
+                final TokenIdentifierLower name = fs.getName();
+                final GVersionCheckExclusionReason reason =
+                  CheckAttributeTypes.makeExclusion(
+                    "fragment shader input",
+                    name,
+                    type,
+                    v);
+                supported.excludeES(version, reason);
+                return Unit.unit();
+              }
+
+              @Override public Unit versionVisitFull(
+                final @Nonnull GVersionFull version)
+                throws ConstraintError
+              {
+                final TokenIdentifierLower name = fs.getName();
+                final GVersionCheckExclusionReason reason =
+                  CheckAttributeTypes.makeExclusion(
+                    "fragment shader input",
+                    name,
+                    type,
+                    v);
+                supported.excludeFull(version, reason);
+                return Unit.unit();
+              }
+            });
+          }
         }
       }
 
       for (final TASTDShaderFragmentOutput o : fs.getOutputs()) {
         final TValueType type = o.getType();
-        if (CheckES2AttributeTypes.ES2_TYPES.contains(type) == false) {
-          final TokenIdentifierLower name = fs.getName();
-          final GVersionCheckExclusionReason reason =
-            CheckES2AttributeTypes.makeExclusion(
-              "fragment shader output",
-              name,
-              type);
-          supported.excludeES(GVersionES.GLSL_ES_100, reason);
+        if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
+          for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
+            v.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
+              @Override public Unit versionVisitES(
+                final @Nonnull GVersionES version)
+                throws ConstraintError
+              {
+                final TokenIdentifierLower name = fs.getName();
+                final GVersionCheckExclusionReason reason =
+                  CheckAttributeTypes.makeExclusion(
+                    "fragment shader output",
+                    name,
+                    type,
+                    v);
+                supported.excludeES(version, reason);
+                return Unit.unit();
+              }
+
+              @Override public Unit versionVisitFull(
+                final @Nonnull GVersionFull version)
+                throws ConstraintError
+              {
+                final TokenIdentifierLower name = fs.getName();
+                final GVersionCheckExclusionReason reason =
+                  CheckAttributeTypes.makeExclusion(
+                    "fragment shader output",
+                    name,
+                    type,
+                    v);
+                supported.excludeFull(version, reason);
+                return Unit.unit();
+              }
+            });
+          }
         }
       }
     }
@@ -167,34 +231,86 @@ public final class GVersionChecker
     {
       for (final TASTDShaderVertexInput i : vs.getInputs()) {
         final TValueType type = i.getType();
-        if (CheckES2AttributeTypes.ES2_TYPES.contains(type) == false) {
-          final TokenIdentifierLower name = vs.getName();
-          final GVersionCheckExclusionReason reason =
-            CheckES2AttributeTypes.makeExclusion(
-              "vertex shader input",
-              name,
-              type);
-          supported.excludeES(GVersionES.GLSL_ES_100, reason);
+        if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
+          for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
+            v.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
+              @Override public Unit versionVisitES(
+                final @Nonnull GVersionES version)
+                throws ConstraintError
+              {
+                final TokenIdentifierLower name = vs.getName();
+                final GVersionCheckExclusionReason reason =
+                  CheckAttributeTypes.makeExclusion(
+                    "vertex shader input",
+                    name,
+                    type,
+                    v);
+                supported.excludeES(version, reason);
+                return Unit.unit();
+              }
+
+              @Override public Unit versionVisitFull(
+                final @Nonnull GVersionFull version)
+                throws ConstraintError
+              {
+                final TokenIdentifierLower name = vs.getName();
+                final GVersionCheckExclusionReason reason =
+                  CheckAttributeTypes.makeExclusion(
+                    "vertex shader input",
+                    name,
+                    type,
+                    v);
+                supported.excludeFull(version, reason);
+                return Unit.unit();
+              }
+            });
+          }
         }
       }
 
       for (final TASTDShaderVertexOutput o : vs.getOutputs()) {
         final TValueType type = o.getType();
-        if (CheckES2AttributeTypes.ES2_TYPES.contains(type) == false) {
-          final TokenIdentifierLower name = vs.getName();
-          final GVersionCheckExclusionReason reason =
-            CheckES2AttributeTypes.makeExclusion(
-              "vertex shader output",
-              name,
-              type);
-          supported.excludeES(GVersionES.GLSL_ES_100, reason);
+        if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
+          for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
+            v.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
+              @Override public Unit versionVisitES(
+                final @Nonnull GVersionES version)
+                throws ConstraintError
+              {
+                final TokenIdentifierLower name = vs.getName();
+                final GVersionCheckExclusionReason reason =
+                  CheckAttributeTypes.makeExclusion(
+                    "vertex shader output",
+                    name,
+                    type,
+                    v);
+                supported.excludeES(version, reason);
+                return Unit.unit();
+              }
+
+              @Override public Unit versionVisitFull(
+                final @Nonnull GVersionFull version)
+                throws ConstraintError
+              {
+                final TokenIdentifierLower name = vs.getName();
+                final GVersionCheckExclusionReason reason =
+                  CheckAttributeTypes.makeExclusion(
+                    "vertex shader output",
+                    name,
+                    type,
+                    v);
+                supported.excludeFull(version, reason);
+                return Unit.unit();
+              }
+            });
+          }
         }
       }
     }
 
     @Override public String getName()
     {
-      return "es2-attribute-types";
+      return "attribute-types";
     }
   }
 
@@ -284,7 +400,7 @@ public final class GVersionChecker
   {
     final ArrayList<Check> checks = new ArrayList<Check>();
     checks.add(new CheckFragmentOutputCount());
-    checks.add(new CheckES2AttributeTypes());
+    checks.add(new CheckAttributeTypes());
     return Collections.unmodifiableList(checks);
   }
 

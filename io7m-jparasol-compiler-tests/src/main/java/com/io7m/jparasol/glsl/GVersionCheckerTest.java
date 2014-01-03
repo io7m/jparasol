@@ -51,6 +51,7 @@ public final class GVersionCheckerTest
 
     final GVersionChecker vc =
       GVersionChecker.newVersionChecker(TestUtilities.getLog());
+
     final SortedSet<GVersionFull> required_full =
       new TreeSet<GVersion.GVersionFull>();
     final SortedSet<GVersionES> required_es =
