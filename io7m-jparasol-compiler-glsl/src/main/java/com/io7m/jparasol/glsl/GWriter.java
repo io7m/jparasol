@@ -736,12 +736,15 @@ public final class GWriter
     final @Nonnull GASTShaderFragment f)
     throws ConstraintError
   {
+
     final PrintWriter writer = new PrintWriter(out);
     final List<Pair<GTypeName, GASTTypeDeclaration>> types = f.getTypes();
     final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
       f.getTerms();
 
     final GVersion version = f.getGLSLVersion();
+    GWriter.writeVersionDirective(writer, version);
+    GWriter.writePrecision(writer, version);
     GWriter.writeTypes(writer, types);
     GWriter.writeTerms(writer, terms);
     GWriter.writeFragmentInputs(writer, f.getInputs(), version);
@@ -755,6 +758,39 @@ public final class GWriter
       f.getOutputs().size(),
       version);
     writer.flush();
+  }
+
+  @SuppressWarnings("boxing") private static void writeVersionDirective(
+    final PrintWriter writer,
+    final GVersion version)
+  {
+    writer.println(String.format("#version %d", version.getNumber()));
+    writer.println();
+  }
+
+  private static void writePrecision(
+    final PrintWriter writer,
+    final GVersion version)
+    throws ConstraintError
+  {
+    version.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
+      @Override public Unit versionVisitES(
+        final GVersionES v)
+        throws ConstraintError
+      {
+        writer.println("precision highp float;");
+        writer.println("precision highp int;");
+        writer.println();
+        return Unit.unit();
+      }
+
+      @Override public Unit versionVisitFull(
+        final GVersionFull v)
+        throws ConstraintError
+      {
+        return Unit.unit();
+      }
+    });
   }
 
   static void writeFunction(
@@ -1047,6 +1083,8 @@ public final class GWriter
       v.getTerms();
 
     final GVersion version = v.getGLSLVersion();
+    GWriter.writeVersionDirective(writer, version);
+    GWriter.writePrecision(writer, version);
     GWriter.writeTypes(writer, types);
     GWriter.writeTerms(writer, terms);
     GWriter.writeVertexInputs(writer, v.getInputs(), version);
