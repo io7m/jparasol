@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright © 2013 <code@io7m.com> http://io7m.com
+  
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+  
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://schemas.io7m.com/parasol/glsl-meta" xmlns:g="http://schemas.io7m.com/parasol/glsl-meta">
+  <xs:element name="program-name" type="xs:token"/>
+  <xs:element name="version">
+    <xs:complexType>
+      <xs:attribute name="number" use="required" form="qualified" type="xs:positiveInteger"/>
+      <xs:attribute name="api" use="required" form="qualified">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="glsl"/>
+            <xs:enumeration value="glsl-es"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="supports">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="g:version"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parameter">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" form="qualified" type="xs:token"/>
+      <xs:attribute name="type" use="required" form="qualified" type="xs:token"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="input">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" form="qualified" type="xs:token"/>
+      <xs:attribute name="type" use="required" form="qualified" type="xs:token"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="io7m.parasol.glsl-meta.output">
+    <xs:sequence>
+      <xs:element name="output">
+        <xs:complexType>
+          <xs:attribute name="name" use="required" form="qualified" type="xs:token"/>
+          <xs:attribute name="type" use="required" form="qualified" type="xs:token"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="io7m.parasol.glsl-meta.fragment-output">
+    <xs:sequence>
+      <xs:element name="output">
+        <xs:complexType>
+          <xs:attribute name="name" use="required" form="qualified" type="xs:token"/>
+          <xs:attribute name="type" use="required" form="qualified" type="xs:token"/>
+          <xs:attribute name="index" use="required" form="qualified" type="xs:integer"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:element name="declared-vertex-parameters">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="g:parameter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="declared-vertex-inputs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="g:input"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="declared-vertex-outputs">
+    <xs:complexType>
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="g:io7m.parasol.glsl-meta.output"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="declared-fragment-parameters">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="g:parameter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="declared-fragment-inputs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="g:input"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="declared-fragment-outputs">
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="g:io7m.parasol.glsl-meta.fragment-output"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="compact-mappings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="g:mapping"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="mapping">
+    <xs:complexType>
+      <xs:attribute name="number" use="required" form="qualified" type="xs:positiveInteger"/>
+      <xs:attribute name="api" use="required" form="qualified">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="glsl"/>
+            <xs:enumeration value="glsl-es"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="fragment-hash" use="required" form="qualified" type="xs:token"/>
+      <xs:attribute name="vertex-hash" use="required" form="qualified" type="xs:token"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="meta">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="g:program-name"/>
+        <xs:element ref="g:supports"/>
+        <xs:element ref="g:declared-vertex-parameters"/>
+        <xs:element ref="g:declared-fragment-parameters"/>
+        <xs:element ref="g:declared-vertex-inputs"/>
+        <xs:element ref="g:declared-fragment-inputs"/>
+        <xs:element ref="g:declared-vertex-outputs"/>
+        <xs:element ref="g:declared-fragment-outputs"/>
+        <xs:element minOccurs="0" ref="g:compact-mappings"/>
+      </xs:sequence>
+      <xs:attribute name="version" use="required" form="qualified" type="xs:positiveInteger"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

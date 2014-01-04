@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright © 2013 <code@io7m.com> http://io7m.com
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<r:grammar
+  xmlns:g="http://schemas.io7m.com/parasol/glsl-meta"
+  xmlns:r="http://relaxng.org/ns/structure/1.0"
+  datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <r:start combine="choice">
+    <r:choice>
+      <r:ref name="io7m.parasol.glsl-meta.meta"/>
+    </r:choice>
+  </r:start>
+
+  <r:define name="io7m.parasol.glsl-meta.program-name">
+    <r:element name="g:program-name">
+      <r:data type="token"/>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.version">
+    <r:element name="g:version">
+      <r:attribute name="g:number">
+        <r:data type="positiveInteger"/>
+      </r:attribute>
+      <r:attribute name="g:api">
+        <r:choice>
+          <r:value>glsl</r:value>
+          <r:value>glsl-es</r:value>
+        </r:choice>
+      </r:attribute>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.supports">
+    <r:element name="g:supports">
+      <r:oneOrMore>
+        <r:ref name="io7m.parasol.glsl-meta.version"/>
+      </r:oneOrMore>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.parameter">
+    <r:element name="g:parameter">
+      <r:attribute name="g:name">
+        <r:data type="token"/>
+      </r:attribute>
+      <r:attribute name="g:type">
+        <r:data type="token"/>
+      </r:attribute>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.input">
+    <r:element name="g:input">
+      <r:attribute name="g:name">
+        <r:data type="token"/>
+      </r:attribute>
+      <r:attribute name="g:type">
+        <r:data type="token"/>
+      </r:attribute>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.output">
+    <r:element name="g:output">
+      <r:attribute name="g:name">
+        <r:data type="token"/>
+      </r:attribute>
+      <r:attribute name="g:type">
+        <r:data type="token"/>
+      </r:attribute>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.fragment-output">
+    <r:element name="g:output">
+      <r:attribute name="g:name">
+        <r:data type="token"/>
+      </r:attribute>
+      <r:attribute name="g:type">
+        <r:data type="token"/>
+      </r:attribute>
+      <r:attribute name="g:index">
+        <r:data type="integer"/>
+      </r:attribute>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.declared-vertex-parameters">
+    <r:element name="g:declared-vertex-parameters">
+      <r:zeroOrMore>
+        <r:ref name="io7m.parasol.glsl-meta.parameter"/>
+      </r:zeroOrMore>
+    </r:element>
+  </r:define>
+  
+  <r:define name="io7m.parasol.glsl-meta.declared-vertex-inputs">
+    <r:element name="g:declared-vertex-inputs">
+      <r:zeroOrMore>
+        <r:ref name="io7m.parasol.glsl-meta.input"/>
+      </r:zeroOrMore>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.declared-vertex-outputs">
+    <r:element name="g:declared-vertex-outputs">
+      <r:zeroOrMore>
+        <r:ref name="io7m.parasol.glsl-meta.output"/>
+      </r:zeroOrMore>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.declared-fragment-parameters">
+    <r:element name="g:declared-fragment-parameters">
+      <r:zeroOrMore>
+        <r:ref name="io7m.parasol.glsl-meta.parameter"/>
+      </r:zeroOrMore>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.declared-fragment-inputs">
+    <r:element name="g:declared-fragment-inputs">
+      <r:zeroOrMore>
+        <r:ref name="io7m.parasol.glsl-meta.input"/>
+      </r:zeroOrMore>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.declared-fragment-outputs">
+    <r:element name="g:declared-fragment-outputs">
+      <r:oneOrMore>
+        <r:ref name="io7m.parasol.glsl-meta.fragment-output"/>
+      </r:oneOrMore>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.compact-mappings">
+    <r:element name="g:compact-mappings">
+      <r:oneOrMore>
+        <r:ref name="io7m.parasol.glsl-meta.mapping"/>
+      </r:oneOrMore>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.mapping">
+    <r:element name="g:mapping">
+      <r:attribute name="g:number">
+        <r:data type="positiveInteger"/>
+      </r:attribute>
+      <r:attribute name="g:api">
+        <r:choice>
+          <r:value>glsl</r:value>
+          <r:value>glsl-es</r:value>
+        </r:choice>
+      </r:attribute>
+      <r:attribute name="g:fragment-hash">
+        <r:data type="token"/>
+      </r:attribute>
+      <r:attribute name="g:vertex-hash">
+        <r:data type="token"/>
+      </r:attribute>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.meta">
+    <r:element name="g:meta">
+      <r:attribute name="g:version">
+        <r:data type="positiveInteger"/>
+      </r:attribute>
+      <r:ref name="io7m.parasol.glsl-meta.program-name"/>
+      <r:ref name="io7m.parasol.glsl-meta.supports"/>
+      <r:ref name="io7m.parasol.glsl-meta.declared-vertex-parameters"/>
+      <r:ref name="io7m.parasol.glsl-meta.declared-fragment-parameters"/>
+      <r:ref name="io7m.parasol.glsl-meta.declared-vertex-inputs"/>
+      <r:ref name="io7m.parasol.glsl-meta.declared-fragment-inputs"/>
+      <r:ref name="io7m.parasol.glsl-meta.declared-vertex-outputs"/>
+      <r:ref name="io7m.parasol.glsl-meta.declared-fragment-outputs"/>
+      <r:optional>
+        <r:ref name="io7m.parasol.glsl-meta.compact-mappings"/>
+      </r:optional>
+    </r:element>
+  </r:define>
+
+</r:grammar>
