@@ -149,7 +149,7 @@ public final class GMeta
 
     final Element evo = new Element("g:declared-vertex-outputs", uri);
     for (final GASTShaderVertexOutput i : program.first.getOutputs()) {
-      final Element e = new Element("g:input", uri);
+      final Element e = new Element("g:output", uri);
       e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
       e.addAttribute(new Attribute("g:type", uri, i.getTypeName().show()));
       evo.appendChild(e);
@@ -157,7 +157,7 @@ public final class GMeta
 
     final Element efo = new Element("g:declared-fragment-outputs", uri);
     for (final GASTShaderFragmentOutput i : program.second.getOutputs()) {
-      final Element e = new Element("g:input", uri);
+      final Element e = new Element("g:output", uri);
       e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
       e.addAttribute(new Attribute("g:type", uri, i.getType().show()));
       efo.appendChild(e);
