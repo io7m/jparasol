@@ -132,6 +132,7 @@ public final class CorePipeline
     final ArrayList<UASTIUnit> units = new ArrayList<UASTIUnit>();
     for (final Input i : this.inputs) {
       final Lexer lexer = new Lexer(i.getStream());
+      lexer.setFile(i.getFile());
 
       Parser parser;
       if (i.isInternal()) {
