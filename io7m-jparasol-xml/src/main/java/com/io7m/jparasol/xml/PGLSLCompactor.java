@@ -157,7 +157,7 @@ public final class PGLSLCompactor
       if (v_lines.size() < 1) {
         throw new IOException(v_file + " is empty!");
       }
-      PGLSLCompactor.stripVersion(v_file, v_lines, log);
+      PGLSLCompactor.stripVersion(v_file, v_lines);
       final Source v_source = Source.newSource(v_lines, log);
 
       log.debug("reading " + f_file);
@@ -165,7 +165,7 @@ public final class PGLSLCompactor
       if (f_lines.size() < 1) {
         throw new IOException(f_file + " is empty!");
       }
-      PGLSLCompactor.stripVersion(f_file, f_lines, log);
+      PGLSLCompactor.stripVersion(f_file, f_lines);
       final Source f_source = Source.newSource(f_lines, log);
 
       vertex_sources_by_version.put(version, v_source);
@@ -193,8 +193,9 @@ public final class PGLSLCompactor
     final File input = new File(args[0]);
     final File output = new File(args[1]);
     final Properties props = new Properties();
-    final Log log = new Log(props, "com.io7m.parasol.xml.xml.xml", "compactor");
-    final PGLSLCompactor c = PGLSLCompactor.newCompactor(input, output, log);
+    final Log log =
+      new Log(props, "com.io7m.parasol.xml.xml.xml", "compactor");
+    PGLSLCompactor.newCompactor(input, output, log);
   }
 
   public static @Nonnull PGLSLCompactor newCompactor(
@@ -236,8 +237,7 @@ public final class PGLSLCompactor
 
   private static void stripVersion(
     final @Nonnull File file,
-    final @Nonnull List<String> lines,
-    final @Nonnull Log log)
+    final @Nonnull List<String> lines)
     throws IOException
   {
     if (lines.get(0).startsWith("#version ") == false) {
