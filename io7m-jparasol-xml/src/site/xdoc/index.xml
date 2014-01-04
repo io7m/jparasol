@@ -5,13 +5,15 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>io7m-parasol-xml</title>
+    <title>io7m-jparasol-xml</title>
   </properties>
 
   <body>
-    <subsection name="parasol-xml">
-      The <var>parasol-xml</var> package contains simple functions for reading
-      the XML metadata produced by the compiler.
+    <subsection name="jparasol-xml">
+      The <var>jparasol-xml</var> package contains simple functions for reading
+      the XML metadata produced by the compiler. It also contains a program for
+      converting produced GLSL programs to "compacted" form, negating the need
+      to store one version of the GLSL source for each possible GLSL version.
     </subsection>
   </body>
 

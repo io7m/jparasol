@@ -3,12 +3,16 @@
   xmlns="http://maven.apache.org/XDOC/2.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
   <properties>
-    <title>Releases</title>
+    <title>io7m-jparasol-compiler-glsl</title>
   </properties>
+
   <body>
-    <section name="Releases">
-      See <a href="http://mvn.io7m.com/jparasol/releases.html">jparasol</a> for releases and documentation.
-    </section>
+    <subsection name="jparasol-compiler-glsl">
+      The <var>jparasol-compiler-glsl</var> package contains code to produce
+      GLSL programs from the typed ASTs produced by the compiler core.
+    </subsection>
   </body>
+
 </document>

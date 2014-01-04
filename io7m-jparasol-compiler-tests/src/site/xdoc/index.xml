@@ -3,12 +3,16 @@
   xmlns="http://maven.apache.org/XDOC/2.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
   <properties>
-    <title>Releases</title>
+    <title>io7m-jparasol-compiler-tests</title>
   </properties>
+
   <body>
-    <section name="Releases">
-      See <a href="http://mvn.io7m.com/jparasol/releases.html">jparasol</a> for releases and documentation.
-    </section>
+    <subsection name="jparasol-compiler-tests">
+      The <var>jparasol-compiler-tests</var> package contains the test suite
+      for the compiler.
+    </subsection>
   </body>
+
 </document>
