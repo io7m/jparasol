@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.io7m.jparasol</groupId>
   <artifactId>io7m-jparasol</artifactId>
-  <version>0.1.4</version>
+  <version>0.1.5</version>
   <packaging>pom</packaging>
   <name>io7m-jparasol</name>
   <description>Minimalist, pure functional shading language</description>
