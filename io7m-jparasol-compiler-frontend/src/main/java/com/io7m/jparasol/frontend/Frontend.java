@@ -90,7 +90,7 @@ public class Frontend
     OPTIONS = Frontend.makeOptions();
   }
 
-  private static Log getLog(
+  public static @Nonnull Log getLog(
     final boolean debug)
   {
     final Properties p = new Properties();
