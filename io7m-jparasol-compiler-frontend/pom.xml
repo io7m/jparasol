@@ -7,7 +7,7 @@
   <groupId>com.io7m.jparasol.compiler.frontend</groupId>
   <artifactId>io7m-jparasol-compiler-frontend</artifactId>
   <name>io7m-jparasol-compiler-frontend</name>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
   <description>Minimalist pure functional shading language (Frontend)</description>
   <url>http://mvn.io7m.com/jparasol-compiler-frontend/</url>
 
