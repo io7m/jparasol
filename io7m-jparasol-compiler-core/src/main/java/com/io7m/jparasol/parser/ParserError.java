@@ -40,4 +40,9 @@ public final class ParserError extends CompilerError
   {
     super(message, file, position);
   }
+
+  @Override public String getCategory()
+  {
+    return "parser-error";
+  }
 }

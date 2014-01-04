@@ -79,25 +79,10 @@ import com.io7m.jparasol.glsl.ast.GTypeName;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.typed.Occurences;
 import com.io7m.jparasol.typed.TType;
-import com.io7m.jparasol.typed.TType.TBoolean;
-import com.io7m.jparasol.typed.TType.TFloat;
-import com.io7m.jparasol.typed.TType.TFunction;
-import com.io7m.jparasol.typed.TType.TInteger;
-import com.io7m.jparasol.typed.TType.TMatrix3x3F;
-import com.io7m.jparasol.typed.TType.TMatrix4x4F;
 import com.io7m.jparasol.typed.TType.TRecord;
 import com.io7m.jparasol.typed.TType.TRecordField;
-import com.io7m.jparasol.typed.TType.TSampler2D;
-import com.io7m.jparasol.typed.TType.TSamplerCube;
 import com.io7m.jparasol.typed.TType.TValueType;
-import com.io7m.jparasol.typed.TType.TVector2F;
-import com.io7m.jparasol.typed.TType.TVector2I;
-import com.io7m.jparasol.typed.TType.TVector3F;
-import com.io7m.jparasol.typed.TType.TVector3I;
-import com.io7m.jparasol.typed.TType.TVector4F;
-import com.io7m.jparasol.typed.TType.TVector4I;
 import com.io7m.jparasol.typed.TTypeNameFlat;
-import com.io7m.jparasol.typed.TTypeVisitor;
 import com.io7m.jparasol.typed.Topology;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTDeclaration;
@@ -255,118 +240,15 @@ public final class GTransform
       final @Nonnull TType type)
       throws ConstraintError
     {
-      return type
-        .ttypeVisitableAccept(new TTypeVisitor<GTypeName, ConstraintError>() {
-          @Override public GTypeName typeVisitBoolean(
-            final @Nonnull TBoolean t)
-            throws ConstraintError
-          {
-            return new GTypeName("bool");
-          }
+      if (type instanceof TRecord) {
+        final TRecord tr = (TRecord) type;
+        final GTypeName name =
+          Context.this.types_names.getName(TTypeNameFlat
+            .fromTypeNameGlobal(tr.getName()));
+        return new GTypeName(Context.PREFIX_TYPE + name.show());
+      }
 
-          @Override public GTypeName typeVisitFloat(
-            final @Nonnull TFloat t)
-            throws ConstraintError
-          {
-            return new GTypeName("float");
-          }
-
-          @Override public GTypeName typeVisitFunction(
-            final @Nonnull TFunction t)
-            throws ConstraintError
-          {
-            throw new UnreachableCodeException();
-          }
-
-          @Override public GTypeName typeVisitInteger(
-            final @Nonnull TInteger t)
-            throws ConstraintError
-          {
-            return new GTypeName("int");
-          }
-
-          @Override public GTypeName typeVisitMatrix3x3F(
-            final @Nonnull TMatrix3x3F t)
-            throws ConstraintError
-          {
-            return new GTypeName("mat3");
-          }
-
-          @Override public GTypeName typeVisitMatrix4x4F(
-            final @Nonnull TMatrix4x4F t)
-            throws ConstraintError
-          {
-            return new GTypeName("mat4");
-          }
-
-          @SuppressWarnings("synthetic-access") @Override public
-            GTypeName
-            typeVisitRecord(
-              final @Nonnull TRecord t)
-              throws ConstraintError
-          {
-            final GTypeName name =
-              Context.this.types_names.getName(TTypeNameFlat
-                .fromTypeNameGlobal(t.getName()));
-            return new GTypeName(Context.PREFIX_TYPE + name.show());
-          }
-
-          @Override public GTypeName typeVisitSampler2D(
-            final @Nonnull TSampler2D t)
-            throws ConstraintError
-          {
-            return new GTypeName("sampler2D");
-          }
-
-          @Override public GTypeName typeVisitSamplerCube(
-            final @Nonnull TSamplerCube t)
-            throws ConstraintError
-          {
-            return new GTypeName("samplerCube");
-          }
-
-          @Override public GTypeName typeVisitVector2F(
-            final @Nonnull TVector2F t)
-            throws ConstraintError
-          {
-            return new GTypeName("vec2");
-          }
-
-          @Override public GTypeName typeVisitVector2I(
-            final @Nonnull TVector2I t)
-            throws ConstraintError
-          {
-            return new GTypeName("ivec2");
-          }
-
-          @Override public GTypeName typeVisitVector3F(
-            final @Nonnull TVector3F t)
-            throws ConstraintError
-          {
-            return new GTypeName("vec3");
-          }
-
-          @Override public GTypeName typeVisitVector3I(
-            final @Nonnull TVector3I t)
-            throws ConstraintError
-          {
-            return new GTypeName("ivec3");
-          }
-
-          @Override public GTypeName typeVisitVector4F(
-            final @Nonnull TVector4F t)
-            throws ConstraintError
-          {
-            return new GTypeName("vec4");
-          }
-
-          @Override public GTypeName typeVisitVector4I(
-            final @Nonnull TVector4I t)
-            throws ConstraintError
-          {
-            return new GTypeName("ivec4");
-          }
-        });
+      return GLSLTypeNames.getTypeName(type);
     }
 
     public @Nonnull GTermName lookupTermName(

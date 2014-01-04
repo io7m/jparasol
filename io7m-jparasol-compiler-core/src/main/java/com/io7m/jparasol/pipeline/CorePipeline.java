@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
+import com.io7m.jlog.Level;
 import com.io7m.jlog.Log;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
@@ -91,6 +92,13 @@ public final class CorePipeline
   public void pipeAddInput(
     final @Nonnull Input input)
   {
+    if (this.log.enabled(Level.LOG_DEBUG)) {
+      final String internal = input.isInternal() ? "internal " : "";
+      this.log.debug(String.format(
+        "Added %sinput %s",
+        internal,
+        input.getFile()));
+    }
     this.inputs.add(input);
   }
 

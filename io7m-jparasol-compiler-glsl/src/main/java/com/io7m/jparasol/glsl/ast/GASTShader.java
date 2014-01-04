@@ -170,8 +170,8 @@ public abstract class GASTShader
   public static final class GASTShaderFragmentInput
   {
     private final @Nonnull GShaderInputName name;
-    private final @Nonnull GTypeName        type_name;
     private final @Nonnull TType            type;
+    private final @Nonnull GTypeName        type_name;
 
     public GASTShaderFragmentInput(
       final @Nonnull GShaderInputName name,
@@ -181,11 +181,6 @@ public abstract class GASTShader
       this.name = name;
       this.type_name = type_name;
       this.type = type;
-    }
-
-    public @Nonnull TType getType()
-    {
-      return this.type;
     }
 
     @Override public boolean equals(
@@ -216,6 +211,11 @@ public abstract class GASTShader
     public @Nonnull GShaderInputName getName()
     {
       return this.name;
+    }
+
+    public @Nonnull TType getType()
+    {
+      return this.type;
     }
 
     public @Nonnull GTypeName getTypeName()
@@ -365,6 +365,11 @@ public abstract class GASTShader
         return false;
       }
       return true;
+    }
+
+    public @Nonnull List<Pair<String, TType>> getExpanded()
+    {
+      return this.expanded;
     }
 
     public @Nonnull GShaderParameterName getName()
@@ -608,8 +613,8 @@ public abstract class GASTShader
   public static final class GASTShaderVertexOutput
   {
     private final @Nonnull GShaderOutputName name;
-    private final @Nonnull GTypeName         type_name;
     private final @Nonnull TType             type;
+    private final @Nonnull GTypeName         type_name;
 
     public GASTShaderVertexOutput(
       final @Nonnull GShaderOutputName name,
@@ -646,14 +651,14 @@ public abstract class GASTShader
       return true;
     }
 
-    public @Nonnull TType getType()
-    {
-      return this.type;
-    }
-
     public @Nonnull GShaderOutputName getName()
     {
       return this.name;
+    }
+
+    public @Nonnull TType getType()
+    {
+      return this.type;
     }
 
     public @Nonnull GTypeName getTypeName()
@@ -722,6 +727,11 @@ public abstract class GASTShader
         return false;
       }
       return true;
+    }
+
+    public @Nonnull List<Pair<String, TType>> getExpanded()
+    {
+      return this.expanded;
     }
 
     public @Nonnull GShaderParameterName getName()

@@ -58,4 +58,9 @@ public final class LexerError extends CompilerError
   {
     super(message, file, position);
   }
+
+  @Override public String getCategory()
+  {
+    return "lexer-error";
+  }
 }

@@ -82,4 +82,6 @@ public abstract class CompilerError extends Exception
   {
     return this.position;
   }
+
+  public abstract @Nonnull String getCategory();
 }

@@ -346,7 +346,7 @@ public final class GVersionNumberSetParser
   private final @Nonnull StringBuilder          message;
   private @Nonnull GVersionNumberSetToken       token;
 
-  GVersionNumberSetParser(
+  public GVersionNumberSetParser(
     final @Nonnull GVersionNumberSetLexer lexer)
     throws ConstraintError,
       IOException,

@@ -53,4 +53,9 @@ public final class GFFIError extends CompilerError
   {
     super(message, file, position);
   }
+
+  @Override public String getCategory()
+  {
+    return "ffi";
+  }
 }

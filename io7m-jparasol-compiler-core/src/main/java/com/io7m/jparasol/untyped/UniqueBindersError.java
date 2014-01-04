@@ -44,4 +44,9 @@ public final class UniqueBindersError extends CompilerError
   {
     super(x, x.getMessage(), x.getFile(), x.getPosition());
   }
+
+  @Override public String getCategory()
+  {
+    return "unique-binders";
+  }
 }

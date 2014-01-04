@@ -360,4 +360,9 @@ public final class ResolverError extends CompilerError
   {
     return this.code;
   }
+
+  @Override public String getCategory()
+  {
+    return "name-resolution";
+  }
 }

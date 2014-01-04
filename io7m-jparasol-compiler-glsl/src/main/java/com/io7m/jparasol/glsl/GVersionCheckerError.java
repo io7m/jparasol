@@ -93,4 +93,9 @@ public final class GVersionCheckerError extends CompilerError
   {
     super(message, file, position);
   }
+
+  @Override public String getCategory()
+  {
+    return "version-checker";
+  }
 }

@@ -72,6 +72,11 @@ public final class NameRestrictions
     {
       return this.token;
     }
+
+    @Override public String getCategory()
+    {
+      return "name-restrictions";
+    }
   }
 
   public static final @Nonnull Set<String> KEYWORDS;

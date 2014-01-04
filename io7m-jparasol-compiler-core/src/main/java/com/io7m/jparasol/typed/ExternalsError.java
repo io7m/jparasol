@@ -149,4 +149,9 @@ public final class ExternalsError extends CompilerError
   {
     return this.code;
   }
+
+  @Override public String getCategory()
+  {
+    return "externals-access";
+  }
 }

@@ -574,4 +574,9 @@ public final class ModuleStructureError extends CompilerError
   {
     return this.code;
   }
+
+  @Override public String getCategory()
+  {
+    return "module-structure";
+  }
 }

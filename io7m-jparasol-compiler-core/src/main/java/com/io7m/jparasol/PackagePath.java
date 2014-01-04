@@ -62,6 +62,12 @@ public final class PackagePath
         throws ConstraintError
       {
         Constraints.constrainNotNull(c, "Component");
+        Constraints.constrainArbitrary(
+          c.isEmpty() == false,
+          "Package path component is non-empty");
+        Constraints.constrainArbitrary(
+          Character.isLowerCase(c.charAt(0)),
+          "Package path component is lowercase");
 
         final File file = new File("<generated>");
         final Position position = Position.ZERO;
