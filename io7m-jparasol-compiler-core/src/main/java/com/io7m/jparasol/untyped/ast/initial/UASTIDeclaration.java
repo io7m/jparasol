@@ -1155,13 +1155,19 @@ public abstract class UASTIDeclaration
    * Value declarations.
    */
 
-  public static final class UASTIDValue extends UASTIDTerm
+  public static abstract class UASTIDValue extends UASTIDTerm implements
+    UASTIValueVisitable
+  {
+    // Nothing
+  }
+
+  public static final class UASTIDValueDefined extends UASTIDValue
   {
     private final @Nonnull Option<UASTITypePath> ascription;
     private final @Nonnull UASTIExpression       expression;
     private final @Nonnull TokenIdentifierLower  name;
 
-    public UASTIDValue(
+    public UASTIDValueDefined(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull Option<UASTITypePath> ascription,
       final @Nonnull UASTIExpression expression)
@@ -1198,6 +1204,77 @@ public abstract class UASTIDeclaration
           ConstraintError
     {
       return v.moduleVisitValue(this);
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTIValueVisitor<A, E>>
+      A
+      valueVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      return v.valueVisitDefined(this);
+    }
+  }
+
+  /**
+   * External value declarations.
+   */
+
+  public static final class UASTIDValueExternal extends UASTIDValue
+  {
+    private final @Nonnull Option<UASTITypePath> ascription;
+    private final @Nonnull UASTIDExternal        external;
+    private final @Nonnull TokenIdentifierLower  name;
+
+    public UASTIDValueExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull Option<UASTITypePath> ascription,
+      final @Nonnull UASTIDExternal external)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.ascription =
+        Constraints.constrainNotNull(ascription, "Ascription");
+      this.external = Constraints.constrainNotNull(external, "External");
+    }
+
+    public @Nonnull Option<UASTITypePath> getAscription()
+    {
+      return this.ascription;
+    }
+
+    public @Nonnull UASTIDExternal getExternal()
+    {
+      return this.external;
+    }
+
+    @Override public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitor<A, E>>
+      A
+      moduleLevelVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.moduleVisitValueExternal(this);
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTIValueVisitor<A, E>>
+      A
+      valueVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      return v.valueVisitExternal(this);
     }
   }
 

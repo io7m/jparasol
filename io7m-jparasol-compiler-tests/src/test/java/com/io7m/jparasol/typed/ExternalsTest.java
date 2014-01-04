@@ -47,6 +47,15 @@ public final class ExternalsTest
       .externalCheckedInternal(new String[] { "typed/externals/fragment-shader-allowed-0.p" });
   }
 
+  @SuppressWarnings("static-method") @Test public
+    void
+    testFragmentShaderAllowed_1()
+      throws ExternalsError
+  {
+    TestPipeline
+      .externalCheckedInternal(new String[] { "typed/externals/fragment-shader-allowed-1.p" });
+  }
+
   @SuppressWarnings("static-method") @Test(expected = ExternalsError.class) public
     void
     testFragmentShaderDisallowed_0()
@@ -67,6 +76,26 @@ public final class ExternalsTest
       Code.EXTERNALS_DISALLOWED_IN_FRAGMENT_SHADER);
   }
 
+  @SuppressWarnings("static-method") @Test(expected = ExternalsError.class) public
+    void
+    testFragmentShaderDisallowed_2()
+      throws ExternalsError
+  {
+    ExternalsTest.failWithCodeInternal(
+      new String[] { "typed/externals/fragment-shader-disallowed-2.p" },
+      Code.EXTERNALS_DISALLOWED_IN_FRAGMENT_SHADER);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = ExternalsError.class) public
+    void
+    testFragmentShaderDisallowed_3()
+      throws ExternalsError
+  {
+    ExternalsTest.failWithCodeInternal(
+      new String[] { "typed/externals/fragment-shader-disallowed-3.p" },
+      Code.EXTERNALS_DISALLOWED_IN_FRAGMENT_SHADER);
+  }
+
   @SuppressWarnings("static-method") @Test public
     void
     testVertexShaderAllowed_0()
@@ -74,6 +103,15 @@ public final class ExternalsTest
   {
     TestPipeline
       .externalCheckedInternal(new String[] { "typed/externals/vertex-shader-allowed-0.p" });
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testVertexShaderAllowed_1()
+      throws ExternalsError
+  {
+    TestPipeline
+      .externalCheckedInternal(new String[] { "typed/externals/vertex-shader-allowed-1.p" });
   }
 
   @SuppressWarnings("static-method") @Test(expected = ExternalsError.class) public
@@ -93,6 +131,26 @@ public final class ExternalsTest
   {
     ExternalsTest.failWithCodeInternal(
       new String[] { "typed/externals/vertex-shader-disallowed-1.p" },
+      Code.EXTERNALS_DISALLOWED_IN_VERTEX_SHADER);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = ExternalsError.class) public
+    void
+    testVertexShaderDisallowed_2()
+      throws ExternalsError
+  {
+    ExternalsTest.failWithCodeInternal(
+      new String[] { "typed/externals/vertex-shader-disallowed-2.p" },
+      Code.EXTERNALS_DISALLOWED_IN_VERTEX_SHADER);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = ExternalsError.class) public
+    void
+    testVertexShaderDisallowed_3()
+      throws ExternalsError
+  {
+    ExternalsTest.failWithCodeInternal(
+      new String[] { "typed/externals/vertex-shader-disallowed-3.p" },
       Code.EXTERNALS_DISALLOWED_IN_VERTEX_SHADER);
   }
 }

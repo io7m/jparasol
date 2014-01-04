@@ -680,6 +680,30 @@ public final class ModuleStructureTest
       Code.MODULE_STRUCTURE_SHADER_OUTPUT_MULTIPLE_MAIN);
   }
 
+  @SuppressWarnings("static-method") @Test(
+    expected = ModuleStructureError.class) public
+    void
+    testModuleValueExternalMissingAscription_0()
+      throws ConstraintError,
+        ModuleStructureError
+  {
+    ModuleStructureTest.checkMustFailWithCodeInternal(
+      new String[] { "module-value-external-missing-ascription-0.p" },
+      Code.MODULE_STRUCTURE_VALUE_EXTERNAL_LACKS_ASCRIPTION);
+  }
+
+  @SuppressWarnings("static-method") @Test(
+    expected = ModuleStructureError.class) public
+    void
+    testModuleValueExternalHasExpression_0()
+      throws ConstraintError,
+        ModuleStructureError
+  {
+    ModuleStructureTest.checkMustFailWithCodeInternal(
+      new String[] { "module-value-external-has-expression-0.p" },
+      Code.MODULE_STRUCTURE_VALUE_EXTERNAL_HAS_EXPRESSION);
+  }
+
   @SuppressWarnings({ "boxing", "static-method" }) @Test public
     void
     testRestrictedNames()

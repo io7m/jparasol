@@ -41,7 +41,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderProgram;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTerm;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
 import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlat;
 import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlat.Shader;
 import com.io7m.jparasol.typed.ast.TASTReference;
@@ -218,8 +219,15 @@ public final class Externals
       throws ConstraintError,
         ExternalsError
     {
-      final TASTDExternal ext = f.getExternal();
+      this.checkExternal(f.getExternal());
+      return Unit.unit();
+    }
 
+    private void checkExternal(
+      final TASTDExternal ext)
+      throws ExternalsError,
+        ConstraintError
+    {
       switch (this.required) {
         case REQUIRE_FRAGMENT_SHADER:
         {
@@ -254,15 +262,22 @@ public final class Externals
           break;
         }
       }
-
-      return Unit.unit();
     }
 
-    @Override public Unit termVisitValue(
-      final @Nonnull TASTDValue v)
+    @Override public Unit termVisitValueDefined(
+      final @Nonnull TASTDValueDefined v)
       throws ConstraintError,
         ExternalsError
     {
+      return Unit.unit();
+    }
+
+    @Override public Unit termVisitValueExternal(
+      final @Nonnull TASTDValueExternal v)
+      throws ExternalsError,
+        ConstraintError
+    {
+      this.checkExternal(v.getExternal());
       return Unit.unit();
     }
   }

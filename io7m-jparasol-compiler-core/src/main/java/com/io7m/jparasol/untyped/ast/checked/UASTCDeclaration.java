@@ -1328,13 +1328,19 @@ public abstract class UASTCDeclaration
    * Value declarations.
    */
 
-  public static final class UASTCDValue extends UASTCDTerm
+  public static abstract class UASTCDValue extends UASTCDTerm implements
+    UASTCValueVisitable
+  {
+    // Nothing
+  }
+
+  public static final class UASTCDValueDefined extends UASTCDValue
   {
     private final @Nonnull Option<UASTCTypePath> ascription;
     private final @Nonnull UASTCExpression       expression;
     private final @Nonnull TokenIdentifierLower  name;
 
-    public UASTCDValue(
+    public UASTCDValueDefined(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull Option<UASTCTypePath> ascription,
       final @Nonnull UASTCExpression expression)
@@ -1371,6 +1377,78 @@ public abstract class UASTCDeclaration
           ConstraintError
     {
       return v.termVisitValue(this);
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTCValueVisitor<A, E>>
+      A
+      valueVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      return v.valueVisitDefined(this);
+    }
+  }
+
+  /**
+   * External value declarations.
+   */
+
+  public static final class UASTCDValueExternal extends UASTCDValue
+  {
+    private final @Nonnull UASTCTypePath        ascription;
+    private final @Nonnull UASTCDExternal       external;
+    private final @Nonnull TokenIdentifierLower name;
+
+    public UASTCDValueExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTCTypePath ascription,
+      final @Nonnull UASTCDExternal external)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.ascription =
+        Constraints.constrainNotNull(ascription, "Ascription");
+      this.external = Constraints.constrainNotNull(external, "External");
+      assert this.external.getEmulation().isNone();
+    }
+
+    public @Nonnull UASTCTypePath getAscription()
+    {
+      return this.ascription;
+    }
+
+    public @Nonnull UASTCDExternal getExternal()
+    {
+      return this.external;
+    }
+
+    @Override public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTCTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitValueExternal(this);
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTCValueVisitor<A, E>>
+      A
+      valueVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      return v.valueVisitExternal(this);
     }
   }
 

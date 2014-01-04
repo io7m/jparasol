@@ -14,35 +14,19 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.typed.ast;
+package com.io7m.jparasol.untyped.ast.checked;
 
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionDefined;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
 
-public interface TASTTermVisitor<T, E extends Throwable>
+public interface UASTCValueVisitable
 {
-  public T termVisitFunctionDefined(
-    final @Nonnull TASTDFunctionDefined f)
-    throws E,
-      ConstraintError;
-
-  public T termVisitFunctionExternal(
-    final @Nonnull TASTDFunctionExternal f)
-    throws E,
-      ConstraintError;
-
-  public T termVisitValueDefined(
-    final @Nonnull TASTDValueDefined v)
-    throws E,
-      ConstraintError;
-
-  public T termVisitValueExternal(
-    final @Nonnull TASTDValueExternal v)
-    throws E,
-      ConstraintError;
+  public
+    <A, E extends Throwable, V extends UASTCValueVisitor<A, E>>
+    A
+    valueVisitableAccept(
+      final @Nonnull V v)
+      throws E,
+        ConstraintError;
 }

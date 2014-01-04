@@ -85,10 +85,10 @@ public abstract class TASTDeclaration
 
   public static final class TASTDExternal
   {
-    private final boolean                         fragment_shader_allowed;
-    private final boolean                         vertex_shader_allowed;
-    private final @Nonnull TokenIdentifierLower   name;
     private final @Nonnull Option<TASTExpression> emulation;
+    private final boolean                         fragment_shader_allowed;
+    private final @Nonnull TokenIdentifierLower   name;
+    private final boolean                         vertex_shader_allowed;
 
     public TASTDExternal(
       final @Nonnull TokenIdentifierLower name,
@@ -2230,12 +2230,17 @@ public abstract class TASTDeclaration
    * Value declarations.
    */
 
-  public static final class TASTDValue extends TASTDTerm
+  public static abstract class TASTDValue extends TASTDTerm
+  {
+    // Nothing
+  }
+
+  public static final class TASTDValueDefined extends TASTDValue
   {
     private final @Nonnull TASTExpression       expression;
     private final @Nonnull TokenIdentifierLower name;
 
-    public TASTDValue(
+    public TASTDValueDefined(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull TASTExpression expression)
       throws ConstraintError
@@ -2257,7 +2262,7 @@ public abstract class TASTDeclaration
       if (this.getClass() != obj.getClass()) {
         return false;
       }
-      final TASTDValue other = (TASTDValue) obj;
+      final TASTDValueDefined other = (TASTDValueDefined) obj;
       if (!this.expression.equals(other.expression)) {
         return false;
       }
@@ -2299,7 +2304,7 @@ public abstract class TASTDeclaration
         throws E,
           ConstraintError
     {
-      return v.termVisitValue(this);
+      return v.termVisitValueDefined(this);
     }
 
     @Override public String toString()
@@ -2309,6 +2314,97 @@ public abstract class TASTDeclaration
       builder.append(this.name.getActual());
       builder.append(" ");
       builder.append(this.expression);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
+  /**
+   * External value declarations.
+   */
+
+  public static final class TASTDValueExternal extends TASTDValue
+  {
+    private final @Nonnull TASTDExternal        external;
+    private final @Nonnull TokenIdentifierLower name;
+    private final @Nonnull TValueType           type;
+
+    public TASTDValueExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull TValueType type,
+      final @Nonnull TASTDExternal external)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.type = Constraints.constrainNotNull(type, "Type");
+      this.external = Constraints.constrainNotNull(external, "External");
+      assert this.external.getEmulation().isNone();
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDValueExternal other = (TASTDValueExternal) obj;
+      if (!this.external.equals(other.external)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      return true;
+    }
+
+    public @Nonnull TASTDExternal getExternal()
+    {
+      return this.external;
+    }
+
+    @Override public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    @Override public TType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.external.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends TASTTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitValueExternal(this);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[TASTDValueExternal ");
+      builder.append(this.external);
+      builder.append(" ");
+      builder.append(this.name);
       builder.append("]");
       return builder.toString();
     }

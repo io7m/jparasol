@@ -58,7 +58,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexParameter;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
@@ -747,7 +747,7 @@ public class ParserTest
       ParserError
   {
     final Parser p = ParserTest.makeStringInternalParser("value k = 23");
-    final UASTIDValue r = p.declarationValue();
+    final UASTIDValueDefined r = (UASTIDValueDefined) p.declarationValue();
     Assert.assertEquals("k", r.getName().getActual());
     Assert.assertTrue(r.getAscription().isNone());
     Assert.assertEquals(23, ((UASTIEInteger) r.getExpression())
@@ -763,7 +763,7 @@ public class ParserTest
   {
     final Parser p =
       ParserTest.makeStringInternalParser("value k : integer = 23");
-    final UASTIDValue r = p.declarationValue();
+    final UASTIDValueDefined r = (UASTIDValueDefined) p.declarationValue();
     Assert.assertEquals("k", r.getName().getActual());
     Assert.assertTrue(r.getAscription().isSome());
 
@@ -784,7 +784,7 @@ public class ParserTest
   {
     final Parser p =
       ParserTest.makeStringInternalParser("value k : P.integer = 23");
-    final UASTIDValue r = p.declarationValue();
+    final UASTIDValueDefined r = (UASTIDValueDefined) p.declarationValue();
     Assert.assertEquals("k", r.getName().getActual());
     Assert.assertTrue(r.getAscription().isSome());
 

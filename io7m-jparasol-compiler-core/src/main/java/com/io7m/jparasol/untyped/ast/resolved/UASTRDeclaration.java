@@ -1580,13 +1580,93 @@ public abstract class UASTRDeclaration
    * Value declarations.
    */
 
-  public static final class UASTRDValue extends UASTRDTerm
+  public static abstract class UASTRDValue extends UASTRDTerm implements
+    UASTRValueVisitable
+  {
+    @Override public abstract @Nonnull TokenIdentifierLower getName();
+  }
+
+  public static final class UASTRDValueExternal extends UASTRDValue
+  {
+    private final @Nonnull UASTRTypeName        ascription;
+    private final @Nonnull UASTRDExternal       external;
+    private final @Nonnull TokenIdentifierLower name;
+
+    public UASTRDValueExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTRTypeName ascription,
+      final @Nonnull UASTRDExternal external)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.ascription =
+        Constraints.constrainNotNull(ascription, "Ascription");
+      this.external = Constraints.constrainNotNull(external, "External");
+      assert this.external.getEmulation().isNone();
+    }
+
+    public @Nonnull UASTRTypeName getAscription()
+    {
+      return this.ascription;
+    }
+
+    public @Nonnull UASTRDExternal getExternal()
+    {
+      return this.external;
+    }
+
+    @Override public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTRTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitValueExternal(this);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTRDValueExternal ");
+      builder.append(this.name.getActual());
+      builder.append(" ");
+      builder.append(this.ascription);
+      builder.append(" ");
+      builder.append(this.external);
+      builder.append("]");
+      return builder.toString();
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTRValueVisitor<A, E>>
+      A
+      valueVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      return v.valueVisitExternal(this);
+    }
+  }
+
+  /**
+   * Value declarations.
+   */
+
+  public static final class UASTRDValueDefined extends UASTRDValue
   {
     private final @Nonnull Option<UASTRTypeName> ascription;
     private final @Nonnull UASTRExpression       expression;
     private final @Nonnull TokenIdentifierLower  name;
 
-    public UASTRDValue(
+    public UASTRDValueDefined(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull Option<UASTRTypeName> ascription,
       final @Nonnull UASTRExpression expression)
@@ -1622,13 +1702,13 @@ public abstract class UASTRDeclaration
         throws E,
           ConstraintError
     {
-      return v.termVisitValue(this);
+      return v.termVisitValueDefined(this);
     }
 
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTRDValue ");
+      builder.append("[UASTRDValueDefined ");
       builder.append(this.name.getActual());
       builder.append(" ");
       builder.append(this.ascription
@@ -1643,6 +1723,17 @@ public abstract class UASTRDeclaration
       builder.append(this.expression);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTRValueVisitor<A, E>>
+      A
+      valueVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      return v.valueVisitDefined(this);
     }
   }
 

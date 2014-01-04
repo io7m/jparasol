@@ -58,7 +58,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTerm;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDType;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecord;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecordField;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
 import com.io7m.jparasol.typed.ast.TASTExpression;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
@@ -1405,8 +1406,8 @@ final class TGraphs
       return f;
     }
 
-    @Override public TASTDTerm termVisitValue(
-      final @Nonnull TASTDValue v)
+    @Override public TASTDTerm termVisitValueDefined(
+      final @Nonnull TASTDValueDefined v)
       throws ConstraintError,
         ConstraintError
     {
@@ -1423,6 +1424,18 @@ final class TGraphs
           this.log,
           this.module_path,
           this.graph));
+      return v;
+    }
+
+    @Override public TASTDTerm termVisitValueExternal(
+      final @Nonnull TASTDValueExternal v)
+      throws ConstraintError,
+        ConstraintError
+    {
+      final TASTTermNameGlobal source =
+        new TASTTermNameGlobal(this.module_path, v.getName());
+      this.graph.addTerm(source);
+      this.addTermTypeReference(source, v.getType());
       return v;
     }
   }

@@ -48,7 +48,7 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentInput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexOutput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecord;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTENew;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
@@ -502,7 +502,7 @@ public final class TypeCheckerTest
       TestPipeline.typed(new String[] { "typed/term-expression-app-ok-0.p" });
 
     final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
-    final TASTDValue z = (TASTDValue) m.getTerms().get("z");
+    final TASTDValueDefined z = (TASTDValueDefined) m.getTerms().get("z");
 
     final TASTEApplication app = (TASTEApplication) z.getExpression();
     Assert.assertEquals("$x.y.M.f", app.getName().show());
@@ -529,7 +529,7 @@ public final class TypeCheckerTest
         .typed(new String[] { "typed/term-expression-conditional-ok-0.p" });
     final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
-    final TASTDValue v = (TASTDValue) m.getTerms().get("z");
+    final TASTDValueDefined v = (TASTDValueDefined) m.getTerms().get("z");
     Assert.assertEquals("z", v.getName().getActual());
     Assert.assertEquals(TInteger.get(), v.getExpression().getType());
   }
@@ -553,7 +553,7 @@ public final class TypeCheckerTest
       TestPipeline.typed(new String[] { "typed/term-expression-let-ok-0.p" });
     final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
-    final TASTDValue v = (TASTDValue) m.getTerms().get("z");
+    final TASTDValueDefined v = (TASTDValueDefined) m.getTerms().get("z");
     Assert.assertEquals("z", v.getName().getActual());
     Assert.assertEquals(TVector3F.get(), v.getExpression().getType());
   }
@@ -598,42 +598,48 @@ public final class TypeCheckerTest
     final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
     for (int index = 0; index < TInteger.get().getConstructors().size(); ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("z" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("z" + index);
       Assert.assertEquals("z" + index, v.getName().getActual());
       final TASTENew e = (TASTENew) v.getExpression();
       Assert.assertEquals(TInteger.get(), e.getType());
     }
 
     for (int index = 0; index < TFloat.get().getConstructors().size(); ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("r" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("r" + index);
       Assert.assertEquals("r" + index, v.getName().getActual());
       final TASTENew e = (TASTENew) v.getExpression();
       Assert.assertEquals(TFloat.get(), e.getType());
     }
 
     for (int index = 0; index < TBoolean.get().getConstructors().size(); ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("b" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("b" + index);
       Assert.assertEquals("b" + index, v.getName().getActual());
       final TASTENew e = (TASTENew) v.getExpression();
       Assert.assertEquals(TBoolean.get(), e.getType());
     }
 
     for (int index = 0; index < TVector2F.get().getConstructors().size(); ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("v2f" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("v2f" + index);
       Assert.assertEquals("v2f" + index, v.getName().getActual());
       final TASTENew e = (TASTENew) v.getExpression();
       Assert.assertEquals(TVector2F.get(), e.getType());
     }
 
     for (int index = 0; index < TVector3F.get().getConstructors().size(); ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("v3f" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("v3f" + index);
       Assert.assertEquals("v3f" + index, v.getName().getActual());
       final TASTENew e = (TASTENew) v.getExpression();
       Assert.assertEquals(TVector3F.get(), e.getType());
     }
 
     for (int index = 0; index < TVector4F.get().getConstructors().size(); ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("v4f" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("v4f" + index);
       Assert.assertEquals("v4f" + index, v.getName().getActual());
       final TASTENew e = (TASTENew) v.getExpression();
       Assert.assertEquals(TVector4F.get(), e.getType());
@@ -679,7 +685,7 @@ public final class TypeCheckerTest
       TestPipeline
         .typed(new String[] { "typed/term-expression-record-ok-0.p" });
     final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
-    final TASTDValue x = (TASTDValue) m.getTerms().get("x");
+    final TASTDValueDefined x = (TASTDValueDefined) m.getTerms().get("x");
     final TASTERecord e = (TASTERecord) x.getExpression();
 
     final TASTRecordFieldAssignment ea0 = e.getAssignments().get(0);
@@ -726,7 +732,7 @@ public final class TypeCheckerTest
         .typed(new String[] { "typed/term-expression-record-projection-ok-0.p" });
     final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
-    final TASTDValue v = (TASTDValue) m.getTerms().get("x");
+    final TASTDValueDefined v = (TASTDValueDefined) m.getTerms().get("x");
     Assert.assertEquals("x", v.getName().getActual());
     Assert.assertEquals(TFloat.get(), v.getExpression().getType());
   }
@@ -772,7 +778,8 @@ public final class TypeCheckerTest
     final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
     for (int index = 1; index <= 4; ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("v2f" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("v2f" + index);
       final TASTESwizzle e = (TASTESwizzle) v.getExpression();
       switch (index) {
         case 1:
@@ -791,7 +798,8 @@ public final class TypeCheckerTest
     }
 
     for (int index = 1; index <= 4; ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("v3f" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("v3f" + index);
       final TASTESwizzle e = (TASTESwizzle) v.getExpression();
       switch (index) {
         case 1:
@@ -810,7 +818,8 @@ public final class TypeCheckerTest
     }
 
     for (int index = 1; index <= 4; ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("v4f" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("v4f" + index);
       final TASTESwizzle e = (TASTESwizzle) v.getExpression();
       switch (index) {
         case 1:
@@ -840,7 +849,8 @@ public final class TypeCheckerTest
     final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
 
     for (int index = 1; index <= 4; ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("v2i" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("v2i" + index);
       final TASTESwizzle e = (TASTESwizzle) v.getExpression();
       switch (index) {
         case 1:
@@ -859,7 +869,8 @@ public final class TypeCheckerTest
     }
 
     for (int index = 1; index <= 4; ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("v3i" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("v3i" + index);
       final TASTESwizzle e = (TASTESwizzle) v.getExpression();
       switch (index) {
         case 1:
@@ -878,7 +889,8 @@ public final class TypeCheckerTest
     }
 
     for (int index = 1; index <= 4; ++index) {
-      final TASTDValue v = (TASTDValue) m.getTerms().get("v4i" + index);
+      final TASTDValueDefined v =
+        (TASTDValueDefined) m.getTerms().get("v4i" + index);
       final TASTESwizzle e = (TASTESwizzle) v.getExpression();
       switch (index) {
         case 1:
@@ -1050,7 +1062,7 @@ public final class TypeCheckerTest
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/term-value-type-ok-0.p" });
     final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
-    final TASTDValue x = (TASTDValue) m.getTerms().get("z");
+    final TASTDValueDefined x = (TASTDValueDefined) m.getTerms().get("z");
     Assert.assertEquals(TInteger.get(), x.getType());
   }
 
@@ -1062,7 +1074,7 @@ public final class TypeCheckerTest
     final TASTCompilation r =
       TestPipeline.typed(new String[] { "typed/term-value-type-ok-1.p" });
     final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
-    final TASTDValue x = (TASTDValue) m.getTerms().get("z");
+    final TASTDValueDefined x = (TASTDValueDefined) m.getTerms().get("z");
     Assert.assertEquals(TInteger.get(), x.getType());
   }
 

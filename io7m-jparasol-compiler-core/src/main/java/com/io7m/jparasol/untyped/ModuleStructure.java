@@ -66,6 +66,8 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDType;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTypeRecord;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValue;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueDefined;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueExternal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueLocal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDeclarationModuleLevel;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression;
@@ -110,6 +112,8 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueDefined;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
@@ -134,6 +138,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIModuleVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTIShaderPath;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
+import com.io7m.jparasol.untyped.ast.initial.UASTIValueVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderLocalVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderVisitor;
 
@@ -675,6 +680,60 @@ public final class ModuleStructure
     }
   }
 
+  private static class ValueChecker implements
+    UASTIValueVisitor<UASTCDValue, ModuleStructureError>
+  {
+    public ValueChecker()
+    {
+      // Nothing
+    }
+
+    @Override public UASTCDValueDefined valueVisitDefined(
+      final @Nonnull UASTIDValueDefined v)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      final UASTCExpression e =
+        v.getExpression().expressionVisitableAccept(new ExpressionChecker());
+      final UASTCDValueDefined rv =
+        new UASTCDValueDefined(v.getName(), ModuleStructure.mapTypePath(v
+          .getAscription()), e);
+      return rv;
+    }
+
+    @Override public UASTCDValue valueVisitExternal(
+      final @Nonnull UASTIDValueExternal v)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      final UASTIDExternal original_external = v.getExternal();
+
+      if (original_external.getEmulation().isSome()) {
+        throw ModuleStructureError.moduleValueExternalHasExpression(v);
+      }
+
+      final Option<UASTITypePath> ascription = v.getAscription();
+      if (ascription.isNone()) {
+        throw ModuleStructureError.moduleValueExternalLacksAscription(v);
+      }
+
+      final Option<UASTCExpression> none = Option.none();
+      final UASTCDExternal external =
+        new UASTCDExternal(
+          original_external.getName(),
+          original_external.isVertexShaderAllowed(),
+          original_external.isFragmentShaderAllowed(),
+          none);
+
+      final Some<UASTITypePath> some =
+        (Option.Some<UASTITypePath>) ascription;
+      final UASTCTypePath type = ModuleStructure.typePath(some.value);
+      final UASTCDValueExternal ve =
+        new UASTCDValueExternal(v.getName(), type, external);
+      return ve;
+    }
+  }
+
   private static class FunctionChecker implements
     UASTIFunctionVisitor<UASTCDFunction, UASTCDFunctionArgument, ModuleStructureError>
   {
@@ -1134,13 +1193,9 @@ public final class ModuleStructure
       throws ModuleStructureError,
         ConstraintError
     {
-      final UASTCExpression e =
-        v.getExpression().expressionVisitableAccept(new ExpressionChecker());
-      final UASTCDValue rv =
-        new UASTCDValue(v.getName(), ModuleStructure.mapTypePath(v
-          .getAscription()), e);
-      this.addTerm(rv);
-      return rv;
+      final UASTCDValue r = v.valueVisitableAccept(new ValueChecker());
+      this.addTerm(r);
+      return r;
     }
 
     @Override public UASTCDShaderVertex moduleVisitVertexShader(
@@ -1152,6 +1207,16 @@ public final class ModuleStructure
       final UASTCDShaderVertex r = v.vertexShaderVisitableAccept(c);
       c.check();
       this.addShader(r);
+      return r;
+    }
+
+    @Override public UASTCDValue moduleVisitValueExternal(
+      final @Nonnull UASTIDValueExternal v)
+      throws ModuleStructureError,
+        ConstraintError
+    {
+      final UASTCDValue r = v.valueVisitableAccept(new ValueChecker());
+      this.addTerm(r);
       return r;
     }
   }

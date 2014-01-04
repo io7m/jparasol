@@ -37,7 +37,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShade
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertex;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertexLocalValue;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertexOutputAssignment;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValue;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueDefined;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUELet;
@@ -335,7 +335,8 @@ public final class UniqueBindersTest
     final UASTUDModule module = r.getModules().get(path);
     System.out.println(module);
 
-    final UASTUDValue value = (UASTUDValue) module.getDeclarations().get(0);
+    final UASTUDValueDefined value =
+      (UASTUDValueDefined) module.getDeclarations().get(0);
     Assert.assertEquals("vec", value.getName().getActual());
 
     /**
@@ -370,7 +371,8 @@ public final class UniqueBindersTest
     final UASTUDModule first = UniqueBindersTest.firstModule(r);
     System.out.println(first);
 
-    final UASTUDValue y = (UASTUDValue) first.getTerms().get("y");
+    final UASTUDValueDefined y =
+      (UASTUDValueDefined) first.getTerms().get("y");
     final UASTUELet y_let = (UASTUELet) y.getExpression();
     final UASTUDValueLocal y_let_0 = y_let.getBindings().get(0);
 
@@ -397,7 +399,8 @@ public final class UniqueBindersTest
     final UASTUDModule first = UniqueBindersTest.firstModule(r);
     System.out.println(first);
 
-    final UASTUDValue y = (UASTUDValue) first.getTerms().get("y");
+    final UASTUDValueDefined y =
+      (UASTUDValueDefined) first.getTerms().get("y");
     final UASTUELet y_let = (UASTUELet) y.getExpression();
 
     {
@@ -432,7 +435,8 @@ public final class UniqueBindersTest
     final UASTUDModule first = UniqueBindersTest.firstModule(r);
     System.out.println(first);
 
-    final UASTUDValue y = (UASTUDValue) first.getTerms().get("y");
+    final UASTUDValueDefined y =
+      (UASTUDValueDefined) first.getTerms().get("y");
     final UASTUELet y_let = (UASTUELet) y.getExpression();
 
     {
@@ -461,7 +465,8 @@ public final class UniqueBindersTest
     final UASTUDModule first = UniqueBindersTest.firstModule(r);
     System.out.println(first);
 
-    final UASTUDValue v = (UASTUDValue) first.getTerms().get("x");
+    final UASTUDValueDefined v =
+      (UASTUDValueDefined) first.getTerms().get("x");
     Assert.assertEquals("x", v.getName().getActual());
     final UASTUEVariable var = (UASTUEVariable) v.getExpression();
     Assert.assertEquals("x", ((UniqueNameNonLocal) var.getName())

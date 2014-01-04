@@ -26,7 +26,7 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.TestPipeline;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionDefined;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
 
 public final class OccurencesTest
 {
@@ -79,8 +79,8 @@ public final class OccurencesTest
   {
     final TASTCompilation r =
       TestPipeline.completeTyped(new String[] { "typed/occurences/new-0.p" });
-    final TASTDValue f =
-      (TASTDValue) r.lookupTerm(TestPipeline.termName("x.y.M", "x"));
+    final TASTDValueDefined f =
+      (TASTDValueDefined) r.lookupTerm(TestPipeline.termName("x.y.M", "x"));
 
     final Set<String> check = new HashSet<String>();
     check.add("x");
@@ -143,8 +143,8 @@ public final class OccurencesTest
     final TASTCompilation r =
       TestPipeline
         .completeTyped(new String[] { "typed/occurences/record-1.p" });
-    final TASTDValue f =
-      (TASTDValue) r.lookupTerm(TestPipeline.termName("x.y.M", "f"));
+    final TASTDValueDefined f =
+      (TASTDValueDefined) r.lookupTerm(TestPipeline.termName("x.y.M", "f"));
 
     final Set<String> check = new HashSet<String>();
     check.add("x");
@@ -163,8 +163,8 @@ public final class OccurencesTest
     final TASTCompilation r =
       TestPipeline
         .completeTyped(new String[] { "typed/occurences/record-2.p" });
-    final TASTDValue f =
-      (TASTDValue) r.lookupTerm(TestPipeline.termName("x.y.M", "f"));
+    final TASTDValueDefined f =
+      (TASTDValueDefined) r.lookupTerm(TestPipeline.termName("x.y.M", "f"));
 
     final Set<String> check = new HashSet<String>();
     check.add("x");
@@ -184,8 +184,8 @@ public final class OccurencesTest
     final TASTCompilation r =
       TestPipeline
         .completeTyped(new String[] { "typed/occurences/record-3.p" });
-    final TASTDValue f =
-      (TASTDValue) r.lookupTerm(TestPipeline.termName("x.y.M", "f"));
+    final TASTDValueDefined f =
+      (TASTDValueDefined) r.lookupTerm(TestPipeline.termName("x.y.M", "f"));
 
     final Set<String> check = new HashSet<String>();
     check.add("x");

@@ -77,7 +77,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTerm;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDType;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecord;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecordField;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
 import com.io7m.jparasol.typed.ast.TASTExpression;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
@@ -122,7 +123,8 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTerm;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTypeRecord;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTypeRecordField;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValue;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueDefined;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueExternal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREApplication;
@@ -1463,8 +1465,8 @@ public final class TypeChecker
       return new TASTDFunctionExternal(f.getName(), arguments, tf, ext);
     }
 
-    @Override public @Nonnull TASTDValue termVisitValue(
-      final @Nonnull UASTRDValue v)
+    @Override public @Nonnull TASTDValueDefined termVisitValueDefined(
+      final @Nonnull UASTRDValueDefined v)
       throws TypeCheckerError,
         ConstraintError
     {
@@ -1507,10 +1509,36 @@ public final class TypeChecker
         });
 
       if (e.getType() instanceof TValueType) {
-        return new TASTDValue(v.getName(), e);
+        return new TASTDValueDefined(v.getName(), e);
       }
 
       throw TypeCheckerError.termValueNotValueType(v.getName(), e.getType());
+    }
+
+    @SuppressWarnings("synthetic-access") @Override public
+      TASTDTerm
+      termVisitValueExternal(
+        final @Nonnull UASTRDValueExternal v)
+        throws TypeCheckerError,
+          ConstraintError
+    {
+      final UASTRDExternal original_external = v.getExternal();
+      final Option<TASTExpression> none = Option.none();
+      final TASTDExternal external =
+        new TASTDExternal(
+          original_external.getName(),
+          original_external.isVertexShaderAllowed(),
+          original_external.isFragmentShaderAllowed(),
+          none);
+
+      final TValueType type =
+        (TValueType) TypeChecker.lookupType(
+          this.module,
+          this.checked_modules,
+          this.checked_types,
+          v.getAscription());
+
+      return new TASTDValueExternal(v.getName(), type, external);
     }
   }
 

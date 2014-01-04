@@ -109,7 +109,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTerm;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDType;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecord;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecordField;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
 import com.io7m.jparasol.typed.ast.TASTExpression;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
@@ -735,10 +736,23 @@ public final class GTransform
                  * checker.
                  */
 
-                @Override public GASTExpression termVisitValue(
-                  final @Nonnull TASTDValue v)
+                @Override public GASTExpression termVisitValueDefined(
+                  final @Nonnull TASTDValueDefined v)
                   throws ConstraintError,
                     GFFIError
+                {
+                  throw new UnreachableCodeException();
+                }
+
+                /**
+                 * The application of a value is forbidden by the type
+                 * checker.
+                 */
+
+                @Override public GASTExpression termVisitValueExternal(
+                  final @Nonnull TASTDValueExternal v)
+                  throws GFFIError,
+                    ConstraintError
                 {
                   throw new UnreachableCodeException();
                 }
@@ -1124,17 +1138,17 @@ public final class GTransform
       throws ConstraintError,
         GFFIError
     {
-
       final TASTDFunctionDefined td =
-        this.context.getFFI().getDefinition(f, this.version);
+        this.context.getFFI().getFunctionDefinition(f, this.version);
+
       if (td != null) {
         return this.termVisitFunctionDefined(td);
       }
       return null;
     }
 
-    @Override public GASTTermValue termVisitValue(
-      final @Nonnull TASTDValue v)
+    @Override public GASTTermValue termVisitValueDefined(
+      final @Nonnull TASTDValueDefined v)
       throws ConstraintError,
         GFFIError
     {
@@ -1150,6 +1164,20 @@ public final class GTransform
         this.context.getGlobalTermName(this.name);
       final GTypeName type_name = this.context.getTypeName(v.getType());
       return new GASTTermValue(term_name, type_name, r);
+    }
+
+    @Override public GASTTermDeclaration termVisitValueExternal(
+      final @Nonnull TASTDValueExternal v)
+      throws GFFIError,
+        ConstraintError
+    {
+      final TASTDValueDefined td =
+        this.context.getFFI().getValueDefinition(v, this.version);
+
+      if (td != null) {
+        return this.termVisitValueDefined(td);
+      }
+      return null;
     }
   }
 

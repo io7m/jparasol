@@ -1572,13 +1572,19 @@ public abstract class UASTUDeclaration
    * Value declarations.
    */
 
-  public static final class UASTUDValue extends UASTUDTerm
+  public static abstract class UASTUDValue extends UASTUDTerm implements
+    UASTUValueVisitable
+  {
+
+  }
+
+  public static final class UASTUDValueDefined extends UASTUDValue
   {
     private final @Nonnull Option<UASTUTypePath> ascription;
     private final @Nonnull UASTUExpression       expression;
     private final @Nonnull TokenIdentifierLower  name;
 
-    public UASTUDValue(
+    public UASTUDValueDefined(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull Option<UASTUTypePath> ascription,
       final @Nonnull UASTUExpression expression)
@@ -1614,7 +1620,7 @@ public abstract class UASTUDeclaration
         throws E,
           ConstraintError
     {
-      return v.termVisitValue(this);
+      return v.termVisitValueDefined(this);
     }
 
     @Override public String toString()
@@ -1639,6 +1645,88 @@ public abstract class UASTUDeclaration
       return builder.toString();
     }
 
+    @Override public
+      <A, E extends Throwable, V extends UASTUValueVisitor<A, E>>
+      A
+      valueVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      return v.valueVisitDefined(this);
+    }
+  }
+
+  /**
+   * External value declarations.
+   */
+
+  public static final class UASTUDValueExternal extends UASTUDValue
+  {
+    private final @Nonnull UASTUTypePath        ascription;
+    private final @Nonnull UASTUDExternal       external;
+    private final @Nonnull TokenIdentifierLower name;
+
+    public UASTUDValueExternal(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTUTypePath ascription,
+      final @Nonnull UASTUDExternal external)
+      throws ConstraintError
+    {
+      this.name = Constraints.constrainNotNull(name, "Name");
+      this.ascription =
+        Constraints.constrainNotNull(ascription, "Ascription");
+      this.external = Constraints.constrainNotNull(external, "External");
+      assert this.external.getEmulation().isNone();
+    }
+
+    public @Nonnull UASTUTypePath getAscription()
+    {
+      return this.ascription;
+    }
+
+    public @Nonnull UASTUDExternal getExternal()
+    {
+      return this.external;
+    }
+
+    @Override public @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTUTermVisitor<T, E>>
+      T
+      termVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.termVisitValueExternal(this);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDValueExternal ");
+      builder.append(this.name.getActual());
+      builder.append(" ");
+      builder.append(this.external);
+      builder.append("]");
+      return builder.toString();
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTUValueVisitor<A, E>>
+      A
+      valueVisitableAccept(
+        final V v)
+        throws E,
+          ConstraintError
+    {
+      return v.valueVisitExternal(this);
+    }
   }
 
   /**

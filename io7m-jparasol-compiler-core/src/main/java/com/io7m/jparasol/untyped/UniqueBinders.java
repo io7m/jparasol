@@ -64,6 +64,8 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTerm;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTypeRecord;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValue;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueDefined;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueExternal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueLocal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEApplication;
@@ -90,6 +92,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCTermVisitor;
 import com.io7m.jparasol.untyped.ast.checked.UASTCTypePath;
 import com.io7m.jparasol.untyped.ast.checked.UASTCTypeVisitor;
 import com.io7m.jparasol.untyped.ast.checked.UASTCValuePath;
+import com.io7m.jparasol.untyped.ast.checked.UASTCValueVisitor;
 import com.io7m.jparasol.untyped.ast.checked.UASTCVertexShaderLocalVisitor;
 import com.io7m.jparasol.untyped.ast.checked.UASTCVertexShaderVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
@@ -122,6 +125,8 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecord;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValue;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueDefined;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDeclarationModuleLevel;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression;
@@ -597,6 +602,52 @@ public final class UniqueBinders
     }
   }
 
+  private static final class ValueTransformer implements
+    UASTCValueVisitor<UASTUDValue, UniqueBindersError>
+  {
+    private final @Nonnull Context context;
+
+    public ValueTransformer(
+      final @Nonnull Context c)
+    {
+      this.context = c;
+    }
+
+    @Override public UASTUDValueDefined valueVisitDefined(
+      final @Nonnull UASTCDValueDefined v)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final Option<UASTUTypePath> ascription =
+        UniqueBinders.mapAscription(v.getAscription());
+
+      final UASTUExpression expression =
+        v.getExpression().expressionVisitableAccept(
+          new ExpressionTransformer(this.context));
+
+      return new UASTUDValueDefined(v.getName(), ascription, expression);
+    }
+
+    @Override public UASTUDValueExternal valueVisitExternal(
+      final @Nonnull UASTCDValueExternal v)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final UASTUTypePath ascription =
+        UniqueBinders.mapTypePath(v.getAscription());
+
+      final UASTCDExternal original_external = v.getExternal();
+      final Option<UASTUExpression> none = Option.none();
+      final UASTUDExternal external =
+        new UASTUDExternal(
+          original_external.getName(),
+          original_external.isVertexShaderAllowed(),
+          original_external.isFragmentShaderAllowed(),
+          none);
+      return new UASTUDValueExternal(v.getName(), ascription, external);
+    }
+  }
+
   private static final class FunctionTransformer implements
     UASTCFunctionVisitor<UASTUDFunction, UASTUDFunctionArgument, UniqueBindersError>
   {
@@ -891,16 +942,8 @@ public final class UniqueBinders
       throws UniqueBindersError,
         ConstraintError
     {
-      final Option<UASTUTypePath> ascription =
-        UniqueBinders.mapAscription(v.getAscription());
-
       final Context ctx = Context.initialContext(this.context, v, this.log);
-
-      final UASTUExpression expression =
-        v.getExpression().expressionVisitableAccept(
-          new ExpressionTransformer(ctx));
-
-      return new UASTUDValue(v.getName(), ascription, expression);
+      return v.valueVisitableAccept(new ValueTransformer(ctx));
     }
 
     @Override public UASTUDTypeRecord typeVisitTypeRecord(
@@ -917,6 +960,15 @@ public final class UniqueBinders
       }
 
       return new UASTUDTypeRecord(r.getName(), fields);
+    }
+
+    @Override public UASTUDTerm termVisitValueExternal(
+      final @Nonnull UASTCDValueExternal v)
+      throws UniqueBindersError,
+        ConstraintError
+    {
+      final Context ctx = Context.initialContext(this.context, v, this.log);
+      return v.valueVisitableAccept(new ValueTransformer(ctx));
     }
   }
 

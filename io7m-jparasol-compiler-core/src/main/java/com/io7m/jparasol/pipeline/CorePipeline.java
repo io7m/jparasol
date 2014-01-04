@@ -60,6 +60,7 @@ public final class CorePipeline
   static {
     STANDARD_LIBRARY = new HashSet<String>();
     CorePipeline.STANDARD_LIBRARY.add("Float.p");
+    CorePipeline.STANDARD_LIBRARY.add("Fragment.p");
     CorePipeline.STANDARD_LIBRARY.add("Integer.p");
     CorePipeline.STANDARD_LIBRARY.add("Matrix3x3f.p");
     CorePipeline.STANDARD_LIBRARY.add("Matrix4x4f.p");

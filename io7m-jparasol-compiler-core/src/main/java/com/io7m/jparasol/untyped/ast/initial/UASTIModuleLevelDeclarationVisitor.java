@@ -26,6 +26,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgra
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueExternal;
 
 public interface UASTIModuleLevelDeclarationVisitor<D, E extends Throwable>
 {
@@ -56,6 +57,11 @@ public interface UASTIModuleLevelDeclarationVisitor<D, E extends Throwable>
 
   public D moduleVisitValue(
     final @Nonnull UASTIDValue v)
+    throws E,
+      ConstraintError;
+
+  public D moduleVisitValueExternal(
+    final @Nonnull UASTIDValueExternal v)
     throws E,
       ConstraintError;
 

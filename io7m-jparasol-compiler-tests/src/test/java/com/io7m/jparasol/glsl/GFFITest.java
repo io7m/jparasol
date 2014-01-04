@@ -41,12 +41,13 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.glsl.pipeline.GPipeline;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
 
 public final class GFFITest
 {
   @SuppressWarnings("static-method") @Test(expected = GFFIError.class) public
     void
-    testUnknownExpressionExternal()
+    testUnknownExpressionExternal_0()
       throws ConstraintError,
         GFFIError
   {
@@ -61,6 +62,51 @@ public final class GFFITest
 
     final GFFI ffi = GFFI.newFFI(TestUtilities.getLog());
     ffi.getExpression(f, arguments, GVersion.GVersionFull.GLSL_110);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = GFFIError.class) public
+    void
+    testUnknownValueExternal_0()
+      throws ConstraintError,
+        GFFIError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .completeTypedInternal(new String[] { "glsl/ffi/unknown-1.p" });
+    final TASTDValueExternal v =
+      (TASTDValueExternal) r.lookupTerm(TestPipeline.termName("x.y.M", "x"));
+
+    final GFFI ffi = GFFI.newFFI(TestUtilities.getLog());
+    ffi.getValueDefinition(v, GVersion.GVersionFull.GLSL_110);
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testFragmentCoordinate_0()
+      throws UIError,
+        GFFIError,
+        GVersionCheckerError,
+        ConstraintError
+  {
+    final GPipeline gpipe =
+      TestPipeline
+        .makeGPipeline(new String[] { "glsl/ffi/fragment-coordinate-0.p" });
+
+    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> p =
+      gpipe.makeProgram(
+        TestPipeline.shaderName("x.y.M", "p"),
+        new TreeSet<GVersionES>(),
+        new TreeSet<GVersionFull>());
+
+    for (final GVersionES vn : GVersionES.ALL) {
+      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
+      GFFITest.dumpFragment(program);
+    }
+
+    for (final GVersionFull vn : GVersionFull.ALL) {
+      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
+      GFFITest.dumpFragment(program);
+    }
   }
 
   @SuppressWarnings("static-method") @Test public void testFloatSign_0()
@@ -267,6 +313,19 @@ public final class GFFITest
     System.err
       .println("----------------------------------------------------------------------");
     GWriter.writeVertexShader(System.err, program.first);
+    System.err
+      .println("----------------------------------------------------------------------");
+  }
+
+  private static void dumpFragment(
+    final Pair<GASTShaderVertex, GASTShaderFragment> program)
+    throws ConstraintError
+  {
+    System.err.println("Version: "
+      + program.first.getGLSLVersion().getLongName());
+    System.err
+      .println("----------------------------------------------------------------------");
+    GWriter.writeFragmentShader(System.err, program.second);
     System.err
       .println("----------------------------------------------------------------------");
   }

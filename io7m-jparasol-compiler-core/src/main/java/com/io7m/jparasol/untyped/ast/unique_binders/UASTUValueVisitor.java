@@ -14,35 +14,23 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.typed.ast;
+package com.io7m.jparasol.untyped.ast.unique_binders;
 
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionDefined;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
-import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueDefined;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueExternal;
 
-public interface TASTTermVisitor<T, E extends Throwable>
+public interface UASTUValueVisitor<A, E extends Throwable>
 {
-  public T termVisitFunctionDefined(
-    final @Nonnull TASTDFunctionDefined f)
+  public A valueVisitDefined(
+    final @Nonnull UASTUDValueDefined f)
     throws E,
       ConstraintError;
 
-  public T termVisitFunctionExternal(
-    final @Nonnull TASTDFunctionExternal f)
-    throws E,
-      ConstraintError;
-
-  public T termVisitValueDefined(
-    final @Nonnull TASTDValueDefined v)
-    throws E,
-      ConstraintError;
-
-  public T termVisitValueExternal(
-    final @Nonnull TASTDValueExternal v)
+  public A valueVisitExternal(
+    final @Nonnull UASTUDValueExternal f)
     throws E,
       ConstraintError;
 }

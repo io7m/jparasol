@@ -44,7 +44,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragm
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderProgram;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderVertex;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTypeRecord;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValue;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueDefined;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREApplication;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREInteger;
@@ -266,7 +266,7 @@ public final class ResolverTest
 
     final UASTRDModule m = ResolverTest.firstModule(r);
 
-    final UASTRDValue t = (UASTRDValue) m.getTerms().get("x");
+    final UASTRDValueDefined t = (UASTRDValueDefined) m.getTerms().get("x");
     Assert.assertEquals("x", t.getName().getActual());
     final UASTREApplication app = (UASTREApplication) t.getExpression();
     final UASTRTermNameGlobal name = (UASTRTermNameGlobal) app.getName();
@@ -296,7 +296,7 @@ public final class ResolverTest
 
     final UASTRDModule m = ResolverTest.firstModule(r);
 
-    final UASTRDValue t = (UASTRDValue) m.getTerms().get("x");
+    final UASTRDValueDefined t = (UASTRDValueDefined) m.getTerms().get("x");
     Assert.assertEquals("x", t.getName().getActual());
     final UASTRELet elet = (UASTRELet) t.getExpression();
 
@@ -318,7 +318,7 @@ public final class ResolverTest
 
     final UASTRDModule m = ResolverTest.firstModule(r);
 
-    final UASTRDValue t = (UASTRDValue) m.getTerms().get("x");
+    final UASTRDValueDefined t = (UASTRDValueDefined) m.getTerms().get("x");
     Assert.assertEquals("x", t.getName().getActual());
     final UASTRENew enew = (UASTRENew) t.getExpression();
     final UASTRTypeNameBuiltIn name = (UASTRTypeNameBuiltIn) enew.getName();
@@ -381,7 +381,7 @@ public final class ResolverTest
 
     final UASTRDModule m = ResolverTest.firstModule(r);
 
-    final UASTRDValue x = (UASTRDValue) m.getTerms().get("x");
+    final UASTRDValueDefined x = (UASTRDValueDefined) m.getTerms().get("x");
     final UASTRERecord body = (UASTRERecord) x.getExpression();
     final UASTRTypeNameGlobal type = (UASTRTypeNameGlobal) body.getTypePath();
 
@@ -886,7 +886,7 @@ public final class ResolverTest
       ResolverTest.resolved(new String[] { "resolver/value-rename-ok-0.p" });
 
     final UASTRDModule m = ResolverTest.getModule(r, "x.y", "M");
-    final UASTRDValue v = (UASTRDValue) m.getTerms().get("x");
+    final UASTRDValueDefined v = (UASTRDValueDefined) m.getTerms().get("x");
     final UASTREVariable vvar = (UASTREVariable) v.getExpression();
     final UASTRTermNameGlobal vvn = (UASTRTermNameGlobal) vvar.getName();
 
@@ -991,7 +991,7 @@ public final class ResolverTest
 
     final UASTRDModule m = ResolverTest.firstModule(r);
 
-    final UASTRDValue v = (UASTRDValue) m.getTerms().get("x");
+    final UASTRDValueDefined v = (UASTRDValueDefined) m.getTerms().get("x");
     final UASTRTypeName t = ((Some<UASTRTypeName>) v.getAscription()).value;
     final UASTRTypeNameBuiltIn tb = (UASTRTypeNameBuiltIn) t;
 

@@ -41,6 +41,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragme
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderParameters;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
 
@@ -69,6 +70,8 @@ public final class ModuleStructureError extends CompilerError
     MODULE_STRUCTURE_SHADER_PARAMETER_CONFLICT,
     MODULE_STRUCTURE_TERM_CONFLICT,
     MODULE_STRUCTURE_TYPE_CONFLICT,
+    MODULE_STRUCTURE_VALUE_EXTERNAL_HAS_EXPRESSION,
+    MODULE_STRUCTURE_VALUE_EXTERNAL_LACKS_ASCRIPTION,
   }
 
   private static final long serialVersionUID = 8998482912668461862L;
@@ -549,6 +552,42 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
+  public static @Nonnull
+    ModuleStructureError
+    moduleValueExternalHasExpression(
+      final @Nonnull UASTIDValueExternal v)
+      throws ConstraintError
+  {
+    final TokenIdentifierLower orig_name = v.getName();
+    final StringBuilder m = new StringBuilder();
+    m.append("The declaration of external value ");
+    m.append(orig_name.getActual());
+    m.append(" provides an emulation expression - this is not permitted");
+    return new ModuleStructureError(
+      Code.MODULE_STRUCTURE_VALUE_EXTERNAL_HAS_EXPRESSION,
+      m.toString(),
+      orig_name.getFile(),
+      orig_name.getPosition());
+  }
+
+  public static @Nonnull
+    ModuleStructureError
+    moduleValueExternalLacksAscription(
+      final @Nonnull UASTIDValueExternal v)
+      throws ConstraintError
+  {
+    final TokenIdentifierLower orig_name = v.getName();
+    final StringBuilder m = new StringBuilder();
+    m.append("The declaration of external value ");
+    m.append(orig_name.getActual());
+    m.append(" lacks a required type ascription");
+    return new ModuleStructureError(
+      Code.MODULE_STRUCTURE_VALUE_EXTERNAL_LACKS_ASCRIPTION,
+      m.toString(),
+      orig_name.getFile(),
+      orig_name.getPosition());
+  }
+
   private final @Nonnull Code code;
 
   public ModuleStructureError(
@@ -570,13 +609,13 @@ public final class ModuleStructureError extends CompilerError
     this.code = Code.MODULE_STRUCTURE_RESTRICTED_NAME;
   }
 
-  public final @Nonnull Code getCode()
-  {
-    return this.code;
-  }
-
   @Override public String getCategory()
   {
     return "module-structure";
+  }
+
+  public final @Nonnull Code getCode()
+  {
+    return this.code;
   }
 }

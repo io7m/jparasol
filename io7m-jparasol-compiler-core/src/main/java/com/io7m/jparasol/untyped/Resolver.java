@@ -71,7 +71,8 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTerm;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTypeRecord;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTypeRecordField;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValue;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueDefined;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueExternal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDeclarationModuleLevel;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression;
@@ -121,7 +122,8 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShade
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTerm;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecord;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeRecordField;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValue;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueDefined;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEApplication;
@@ -1071,8 +1073,8 @@ public final class Resolver
         f));
     }
 
-    @Override public @Nonnull UASTRDTerm termVisitValue(
-      final @Nonnull UASTUDValue v)
+    @Override public @Nonnull UASTRDTerm termVisitValueDefined(
+      final @Nonnull UASTUDValueDefined v)
       throws ResolverError,
         ConstraintError
     {
@@ -1095,6 +1097,19 @@ public final class Resolver
         this.modules,
         this.type_graph,
         r));
+    }
+
+    @Override public UASTRDTerm termVisitValueExternal(
+      final @Nonnull UASTUDValueExternal v)
+      throws ResolverError,
+        ConstraintError
+    {
+      return v.termVisitableAccept(new TermResolver(
+        this.log,
+        this.module,
+        this.modules,
+        this.term_graph,
+        v));
     }
   }
 
@@ -1800,8 +1815,36 @@ public final class Resolver
           emulation));
     }
 
-    @Override public @Nonnull UASTRDValue termVisitValue(
-      final @Nonnull UASTUDValue v)
+    @SuppressWarnings("synthetic-access") @Override public
+      UASTRDTerm
+      termVisitValueExternal(
+        final @Nonnull UASTUDValueExternal v)
+        throws ResolverError,
+          ConstraintError
+    {
+      final UASTUDExternal original_external = v.getExternal();
+
+      final UASTUTypePath type_name = v.getAscription();
+      final UASTRTypeName ascription =
+        Resolver.lookupType(
+          TermResolver.this.modules,
+          TermResolver.this.module,
+          type_name.getModule(),
+          type_name.getName());
+
+      this.term_graph.addTerm(this.module.getPath(), v.getName());
+      final Option<UASTRExpression> none = Option.none();
+      final UASTRDExternal external =
+        new UASTRDExternal(
+          original_external.getName(),
+          original_external.isVertexShaderAllowed(),
+          original_external.isFragmentShaderAllowed(),
+          none);
+      return new UASTRDValueExternal(v.getName(), ascription, external);
+    }
+
+    @Override public UASTRDValueDefined termVisitValueDefined(
+      final @Nonnull UASTUDValueDefined v)
       throws ResolverError,
         ConstraintError
     {
@@ -1835,7 +1878,7 @@ public final class Resolver
             this.term_graph));
 
       this.term_graph.addTerm(this.module.getPath(), v.getName());
-      return new UASTRDValue(v.getName(), ascription, ex);
+      return new UASTRDValueDefined(v.getName(), ascription, ex);
     }
   }
 

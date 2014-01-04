@@ -22,6 +22,7 @@ import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionExternal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValue;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueExternal;
 
 public interface UASTCTermVisitor<T, E extends Throwable>
 {
@@ -37,6 +38,11 @@ public interface UASTCTermVisitor<T, E extends Throwable>
 
   public T termVisitValue(
     final @Nonnull UASTCDValue v)
+    throws E,
+      ConstraintError;
+
+  public T termVisitValueExternal(
+    final @Nonnull UASTCDValueExternal v)
     throws E,
       ConstraintError;
 }

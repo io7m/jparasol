@@ -73,6 +73,12 @@ module M is
       fragment true;
     end;
 
+  value ve : integer =
+    external abc is
+      vertex true;
+      fragment true;
+    end;
+
   shader vertex v is
     out vertex out0 : vector_4f;
   as

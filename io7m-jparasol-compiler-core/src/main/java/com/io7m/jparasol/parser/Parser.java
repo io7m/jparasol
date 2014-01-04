@@ -74,6 +74,8 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDType;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueDefined;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDeclarationModuleLevel;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
@@ -927,24 +929,38 @@ public final class Parser
     this
       .parserExpectOneOf(new Type[] { Type.TOKEN_COLON, Type.TOKEN_EQUALS });
 
-    switch (this.token.getType()) {
-      case TOKEN_COLON:
-      {
-        this.parserConsumeExact(Type.TOKEN_COLON);
-        final UASTITypePath path = this.declarationTypePath();
-        this.parserConsumeExact(Type.TOKEN_EQUALS);
-        return new UASTIDValue(name, Option.some(path), this.expression());
-      }
-      case TOKEN_EQUALS:
-      {
-        this.parserConsumeExact(Type.TOKEN_EQUALS);
-        final Option<UASTITypePath> none = Option.none();
-        return new UASTIDValue(name, none, this.expression());
-      }
-      // $CASES-OMITTED$
-      default:
-        throw new UnreachableCodeException();
+    final Option<UASTITypePath> ascription;
+    if (this.token.getType() == Type.TOKEN_COLON) {
+      this.parserConsumeExact(Type.TOKEN_COLON);
+      final UASTITypePath path = this.declarationTypePath();
+      ascription = Option.some(path);
+    } else {
+      ascription = Option.none();
     }
+
+    this.parserExpectExact(Type.TOKEN_EQUALS);
+    this.parserConsumeExact(Type.TOKEN_EQUALS);
+
+    if (this.token.getType() == Type.TOKEN_EXTERNAL) {
+
+      /**
+       * If parsing an "internal" unit, then allow "external" values.
+       */
+
+      if (this.internal) {
+        final UASTIDExternal ext = this.declarationExternal();
+        return new UASTIDValueExternal(name, ascription, ext);
+      }
+
+      /**
+       * Otherwise, attempt to parse "external" as an expression, which will
+       * result in an error.
+       */
+
+      return new UASTIDValueDefined(name, ascription, this.expression());
+    }
+
+    return new UASTIDValueDefined(name, ascription, this.expression());
   }
 
   public @Nonnull UASTIDValueLocal declarationValueLocal()

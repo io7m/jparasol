@@ -21,7 +21,8 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDFunctionDefined;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDFunctionExternal;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValue;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueDefined;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueExternal;
 
 public interface UASTRTermVisitor<T, E extends Throwable>
 {
@@ -35,8 +36,13 @@ public interface UASTRTermVisitor<T, E extends Throwable>
     throws E,
       ConstraintError;
 
-  public T termVisitValue(
-    final @Nonnull UASTRDValue v)
+  public T termVisitValueDefined(
+    final @Nonnull UASTRDValueDefined v)
+    throws E,
+      ConstraintError;
+
+  public T termVisitValueExternal(
+    final @Nonnull UASTRDValueExternal v)
     throws E,
       ConstraintError;
 }
