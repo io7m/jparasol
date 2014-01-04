@@ -7,7 +7,7 @@
   <groupId>com.io7m.jparasol.compiler.tests</groupId>
   <artifactId>io7m-jparasol-compiler-tests</artifactId>
   <name>io7m-jparasol-compiler-tests</name>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <description>Minimalist pure functional shading language (Unit tests)</description>
   <url>http://mvn.io7m.com/jparasol-compiler-tests/</url>
 
