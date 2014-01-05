@@ -31,6 +31,24 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 
 public final class ReferencedTest
 {
+  @SuppressWarnings("static-method") @Test public void testBug926def871d_0()
+    throws ConstraintError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .completeTyped(new String[] { "typed/referenced/bug-926def871d.p" });
+
+    final TASTShaderNameFlat shader_name =
+      new TASTShaderNameFlat(new ModulePathFlat("x.M"), "f");
+    final Referenced ref =
+      Referenced.fromShader(r, shader_name, TestUtilities.getLog());
+
+    final Set<TTypeNameFlat> types = ref.getTypes();
+    Assert.assertTrue(types.contains(TestPipeline.typeName("x.M", "v")));
+    Assert.assertTrue(types.contains(TestPipeline.typeName("x.M", "u")));
+    Assert.assertTrue(types.contains(TestPipeline.typeName("x.M", "t")));
+  }
+
   @SuppressWarnings("static-method") @Test public
     void
     testVertexShaderTerm_0()

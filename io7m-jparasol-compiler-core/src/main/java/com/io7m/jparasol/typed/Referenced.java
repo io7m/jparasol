@@ -52,7 +52,7 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 
 public final class Referenced
 {
-  private static void collectTerms(
+  private static void collectTermsFromShader(
     final @Nonnull TASTCompilation compilation,
     final @Nonnull TASTShaderNameFlat shader_name,
     final @Nonnull Log log_actual,
@@ -90,7 +90,30 @@ public final class Referenced
     }
   }
 
-  private static void collectTypes(
+  private static void collectTypesForType(
+    final @Nonnull TASTCompilation compilation,
+    final @Nonnull Set<TTypeNameFlat> types,
+    final @Nonnull TTypeNameFlat type_name,
+    final @Nonnull Log log)
+  {
+    final DirectedAcyclicGraph<TTypeNameFlat, TASTReference> type_graph =
+      compilation.getTypeGraph();
+
+    final BreadthFirstIterator<TTypeNameFlat, TASTReference> bfi =
+      new BreadthFirstIterator<TTypeNameFlat, TASTReference>(
+        type_graph,
+        type_name);
+
+    while (bfi.hasNext()) {
+      final TTypeNameFlat current = bfi.next();
+      if (log.enabled(Level.LOG_DEBUG)) {
+        log.debug(String.format("Adding type %s", current.show()));
+      }
+      types.add(current);
+    }
+  }
+
+  private static void collectTypesFromShader(
     final @Nonnull TASTCompilation compilation,
     final @Nonnull Set<TTypeNameFlat> types,
     final @Nonnull TASTShaderNameFlat shader_name,
@@ -195,15 +218,44 @@ public final class Referenced
 
     final Log log_actual = new Log(log, "referenced");
 
+    /**
+     * Collect all terms referenced by the shader.
+     */
+
     final Set<TASTTermNameFlat> terms = new HashSet<TASTTermNameFlat>();
-    Referenced.collectTerms(compilation, shader_name, log_actual, terms);
+    Referenced.collectTermsFromShader(
+      compilation,
+      shader_name,
+      log_actual,
+      terms);
+
+    /**
+     * Collect all types referenced by those terms.
+     */
 
     final Set<TTypeNameFlat> types = new HashSet<TTypeNameFlat>();
     for (final TASTTermNameFlat t : terms) {
       Referenced.collectTypesForTerm(compilation, types, t, log_actual);
     }
 
-    Referenced.collectTypes(compilation, types, shader_name, log_actual);
+    /**
+     * Collect all types referenced by the shader.
+     */
+
+    Referenced.collectTypesFromShader(
+      compilation,
+      types,
+      shader_name,
+      log_actual);
+
+    /**
+     * Collect all types referenced by those types.
+     */
+
+    for (final TTypeNameFlat t : types) {
+      Referenced.collectTypesForType(compilation, types, t, log_actual);
+    }
+
     return new Referenced(shader_name, terms, types);
   }
 
