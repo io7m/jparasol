@@ -18,6 +18,8 @@ package com.io7m.jparasol.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -50,6 +52,7 @@ import org.xml.sax.XMLReader;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jlog.Log;
 
 /**
@@ -94,12 +97,18 @@ import com.io7m.jlog.Log;
     }
   }
 
-  static final @Nonnull String XML_URI;
-  static final int             XML_VERSION;
+  public static final @Nonnull String XML_URI_STRING;
+  public static final @Nonnull URI    XML_URI;
+  public static final int             XML_VERSION;
 
   static {
-    XML_URI = "http://schemas.io7m.com/parasol/glsl-meta";
-    XML_VERSION = 3;
+    try {
+      XML_URI_STRING = "http://schemas.io7m.com/parasol/glsl-meta";
+      XML_URI = new URI(PGLSLMetaXML.XML_URI_STRING);
+      XML_VERSION = 3;
+    } catch (final URISyntaxException e) {
+      throw new UnreachableCodeException(e);
+    }
   }
 
   /**
@@ -125,6 +134,28 @@ import com.io7m.jlog.Log;
       message.append("Expected an element 'meta', but got '");
       message.append(root.getLocalName());
       message.append("'");
+      throw new ValidityException(message.toString());
+    }
+
+    final Attribute version =
+      root.getAttribute("version", PGLSLMetaXML.XML_URI_STRING);
+    assert version != null;
+
+    try {
+      final int version_number = Integer.parseInt(version.getValue());
+      if (version_number != PGLSLMetaXML.XML_VERSION) {
+        final StringBuilder message = new StringBuilder();
+        message.append("Unsupported version ");
+        message.append(version_number);
+        message.append(", supported versions are: ");
+        message.append(PGLSLMetaXML.XML_VERSION);
+        throw new ValidityException(message.toString());
+      }
+    } catch (final NumberFormatException x) {
+      final StringBuilder message = new StringBuilder();
+      message
+        .append("Could not parse 'version' attribute as numeric value: ");
+      message.append(x.getMessage());
       throw new ValidityException(message.toString());
     }
 
@@ -239,23 +270,25 @@ import com.io7m.jlog.Log;
       new TreeMap<Version, CompactedShaders>();
 
     final Elements ecm =
-      root.getChildElements("compact-mappings", PGLSLMetaXML.XML_URI);
+      root.getChildElements("compact-mappings", PGLSLMetaXML.XML_URI_STRING);
     if (ecm.size() == 0) {
       return null;
     }
 
     final Elements ecms =
-      ecm.get(0).getChildElements("mapping", PGLSLMetaXML.XML_URI);
+      ecm.get(0).getChildElements("mapping", PGLSLMetaXML.XML_URI_STRING);
 
     for (int index = 0; index < ecms.size(); ++index) {
       final Element em = ecms.get(index);
 
-      final Attribute av = em.getAttribute("number", PGLSLMetaXML.XML_URI);
+      final Attribute av =
+        em.getAttribute("number", PGLSLMetaXML.XML_URI_STRING);
       final Attribute afh =
-        em.getAttribute("fragment-hash", PGLSLMetaXML.XML_URI);
+        em.getAttribute("fragment-hash", PGLSLMetaXML.XML_URI_STRING);
       final Attribute avh =
-        em.getAttribute("vertex-hash", PGLSLMetaXML.XML_URI);
-      final Attribute aa = em.getAttribute("api", PGLSLMetaXML.XML_URI);
+        em.getAttribute("vertex-hash", PGLSLMetaXML.XML_URI_STRING);
+      final Attribute aa =
+        em.getAttribute("api", PGLSLMetaXML.XML_URI_STRING);
 
       try {
         final CompactedShaders cs =
@@ -280,15 +313,20 @@ import com.io7m.jlog.Log;
     final SortedSet<FragmentInput> rinputs = new TreeSet<FragmentInput>();
 
     final Elements eins =
-      root.getChildElements("declared-fragment-inputs", PGLSLMetaXML.XML_URI);
+      root.getChildElements(
+        "declared-fragment-inputs",
+        PGLSLMetaXML.XML_URI_STRING);
 
     final Element ei = eins.get(0);
-    final Elements eic = ei.getChildElements("input", PGLSLMetaXML.XML_URI);
+    final Elements eic =
+      ei.getChildElements("input", PGLSLMetaXML.XML_URI_STRING);
 
     for (int index = 0; index < eic.size(); ++index) {
       final Element e = eic.get(index);
-      final Attribute an = e.getAttribute("name", PGLSLMetaXML.XML_URI);
-      final Attribute at = e.getAttribute("type", PGLSLMetaXML.XML_URI);
+      final Attribute an =
+        e.getAttribute("name", PGLSLMetaXML.XML_URI_STRING);
+      final Attribute at =
+        e.getAttribute("type", PGLSLMetaXML.XML_URI_STRING);
 
       final FragmentInput o = new FragmentInput(an.getValue(), at.getValue());
       rinputs.add(o);
@@ -308,17 +346,21 @@ import com.io7m.jlog.Log;
       new TreeMap<Integer, FragmentOutput>();
 
     final Elements es =
-      root
-        .getChildElements("declared-fragment-outputs", PGLSLMetaXML.XML_URI);
+      root.getChildElements(
+        "declared-fragment-outputs",
+        PGLSLMetaXML.XML_URI_STRING);
     final Element eo = es.get(0);
     final Elements eoc =
-      eo.getChildElements("fragment-output", PGLSLMetaXML.XML_URI);
+      eo.getChildElements("fragment-output", PGLSLMetaXML.XML_URI_STRING);
 
     for (int index = 0; index < eoc.size(); ++index) {
       final Element e = eoc.get(index);
-      final Attribute an = e.getAttribute("name", PGLSLMetaXML.XML_URI);
-      final Attribute at = e.getAttribute("type", PGLSLMetaXML.XML_URI);
-      final Attribute ai = e.getAttribute("index", PGLSLMetaXML.XML_URI);
+      final Attribute an =
+        e.getAttribute("name", PGLSLMetaXML.XML_URI_STRING);
+      final Attribute at =
+        e.getAttribute("type", PGLSLMetaXML.XML_URI_STRING);
+      final Attribute ai =
+        e.getAttribute("index", PGLSLMetaXML.XML_URI_STRING);
 
       try {
         @SuppressWarnings({ "boxing" }) final FragmentOutput o =
@@ -349,16 +391,18 @@ import com.io7m.jlog.Log;
     final Elements eins =
       root.getChildElements(
         "declared-fragment-parameters",
-        PGLSLMetaXML.XML_URI);
+        PGLSLMetaXML.XML_URI_STRING);
 
     final Element ei = eins.get(0);
     final Elements eic =
-      ei.getChildElements("parameter", PGLSLMetaXML.XML_URI);
+      ei.getChildElements("parameter", PGLSLMetaXML.XML_URI_STRING);
 
     for (int index = 0; index < eic.size(); ++index) {
       final Element e = eic.get(index);
-      final Attribute an = e.getAttribute("name", PGLSLMetaXML.XML_URI);
-      final Attribute at = e.getAttribute("type", PGLSLMetaXML.XML_URI);
+      final Attribute an =
+        e.getAttribute("name", PGLSLMetaXML.XML_URI_STRING);
+      final Attribute at =
+        e.getAttribute("type", PGLSLMetaXML.XML_URI_STRING);
 
       final FragmentParameter o =
         new FragmentParameter(an.getValue(), at.getValue());
@@ -372,7 +416,7 @@ import com.io7m.jlog.Log;
     final @Nonnull Element root)
   {
     final Elements ename =
-      root.getChildElements("program-name", PGLSLMetaXML.XML_URI);
+      root.getChildElements("program-name", PGLSLMetaXML.XML_URI_STRING);
     return ename.get(0).getValue();
   }
 
@@ -383,15 +427,17 @@ import com.io7m.jlog.Log;
     final TreeSet<Integer> versions = new TreeSet<Integer>();
 
     final Elements supports =
-      root.getChildElements("supports", PGLSLMetaXML.XML_URI);
+      root.getChildElements("supports", PGLSLMetaXML.XML_URI_STRING);
 
     final Element es = supports.get(0);
-    final Elements esc = es.getChildElements("version", PGLSLMetaXML.XML_URI);
+    final Elements esc =
+      es.getChildElements("version", PGLSLMetaXML.XML_URI_STRING);
 
     for (int index = 0; index < esc.size(); ++index) {
       final Element e = esc.get(index);
-      final Attribute av = e.getAttribute("number", PGLSLMetaXML.XML_URI);
-      final Attribute aa = e.getAttribute("api", PGLSLMetaXML.XML_URI);
+      final Attribute av =
+        e.getAttribute("number", PGLSLMetaXML.XML_URI_STRING);
+      final Attribute aa = e.getAttribute("api", PGLSLMetaXML.XML_URI_STRING);
 
       try {
         final int avi = Integer.parseInt(av.getValue());
@@ -417,15 +463,17 @@ import com.io7m.jlog.Log;
     final TreeSet<Integer> versions = new TreeSet<Integer>();
 
     final Elements supports =
-      root.getChildElements("supports", PGLSLMetaXML.XML_URI);
+      root.getChildElements("supports", PGLSLMetaXML.XML_URI_STRING);
 
     final Element es = supports.get(0);
-    final Elements esc = es.getChildElements("version", PGLSLMetaXML.XML_URI);
+    final Elements esc =
+      es.getChildElements("version", PGLSLMetaXML.XML_URI_STRING);
 
     for (int index = 0; index < esc.size(); ++index) {
       final Element e = esc.get(index);
-      final Attribute av = e.getAttribute("number", PGLSLMetaXML.XML_URI);
-      final Attribute aa = e.getAttribute("api", PGLSLMetaXML.XML_URI);
+      final Attribute av =
+        e.getAttribute("number", PGLSLMetaXML.XML_URI_STRING);
+      final Attribute aa = e.getAttribute("api", PGLSLMetaXML.XML_URI_STRING);
 
       try {
         final int avi = Integer.parseInt(av.getValue());
@@ -451,14 +499,19 @@ import com.io7m.jlog.Log;
     final SortedSet<VertexInput> rinputs = new TreeSet<VertexInput>();
 
     final Elements eins =
-      root.getChildElements("declared-vertex-inputs", PGLSLMetaXML.XML_URI);
+      root.getChildElements(
+        "declared-vertex-inputs",
+        PGLSLMetaXML.XML_URI_STRING);
     final Element ei = eins.get(0);
-    final Elements eic = ei.getChildElements("input", PGLSLMetaXML.XML_URI);
+    final Elements eic =
+      ei.getChildElements("input", PGLSLMetaXML.XML_URI_STRING);
 
     for (int index = 0; index < eic.size(); ++index) {
       final Element e = eic.get(index);
-      final Attribute an = e.getAttribute("name", PGLSLMetaXML.XML_URI);
-      final Attribute at = e.getAttribute("type", PGLSLMetaXML.XML_URI);
+      final Attribute an =
+        e.getAttribute("name", PGLSLMetaXML.XML_URI_STRING);
+      final Attribute at =
+        e.getAttribute("type", PGLSLMetaXML.XML_URI_STRING);
       final VertexInput o = new VertexInput(an.getValue(), at.getValue());
       rinputs.add(o);
     }
@@ -473,15 +526,20 @@ import com.io7m.jlog.Log;
     final SortedSet<VertexOutput> routputs = new TreeSet<VertexOutput>();
 
     final Elements es =
-      root.getChildElements("declared-vertex-outputs", PGLSLMetaXML.XML_URI);
+      root.getChildElements(
+        "declared-vertex-outputs",
+        PGLSLMetaXML.XML_URI_STRING);
 
     final Element eo = es.get(0);
-    final Elements eoc = eo.getChildElements("output", PGLSLMetaXML.XML_URI);
+    final Elements eoc =
+      eo.getChildElements("output", PGLSLMetaXML.XML_URI_STRING);
 
     for (int index = 0; index < eoc.size(); ++index) {
       final Element e = eoc.get(index);
-      final Attribute an = e.getAttribute("name", PGLSLMetaXML.XML_URI);
-      final Attribute at = e.getAttribute("type", PGLSLMetaXML.XML_URI);
+      final Attribute an =
+        e.getAttribute("name", PGLSLMetaXML.XML_URI_STRING);
+      final Attribute at =
+        e.getAttribute("type", PGLSLMetaXML.XML_URI_STRING);
       final VertexOutput o = new VertexOutput(an.getValue(), at.getValue());
       routputs.add(o);
     }
@@ -498,16 +556,18 @@ import com.io7m.jlog.Log;
     final Elements eins =
       root.getChildElements(
         "declared-vertex-parameters",
-        PGLSLMetaXML.XML_URI);
+        PGLSLMetaXML.XML_URI_STRING);
 
     final Element ei = eins.get(0);
     final Elements eic =
-      ei.getChildElements("parameter", PGLSLMetaXML.XML_URI);
+      ei.getChildElements("parameter", PGLSLMetaXML.XML_URI_STRING);
 
     for (int index = 0; index < eic.size(); ++index) {
       final Element e = eic.get(index);
-      final Attribute an = e.getAttribute("name", PGLSLMetaXML.XML_URI);
-      final Attribute at = e.getAttribute("type", PGLSLMetaXML.XML_URI);
+      final Attribute an =
+        e.getAttribute("name", PGLSLMetaXML.XML_URI_STRING);
+      final Attribute at =
+        e.getAttribute("type", PGLSLMetaXML.XML_URI_STRING);
       final VertexParameter o =
         new VertexParameter(an.getValue(), at.getValue());
       rinputs.add(o);
@@ -520,7 +580,7 @@ import com.io7m.jlog.Log;
     final @Nonnull Version v,
     final @Nonnull CompactedShaders cs)
   {
-    final String uri = PGLSLMetaXML.XML_URI;
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:mapping", uri);
     e.addAttribute(new Attribute("g:number", uri, Integer.toString(v
       .getVersion())));
@@ -534,7 +594,7 @@ import com.io7m.jlog.Log;
   private static @Nonnull Element toXMLVersionES(
     final @Nonnull Integer v)
   {
-    final String uri = PGLSLMetaXML.XML_URI;
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:version", uri);
     e.addAttribute(new Attribute("g:number", uri, v.toString()));
     e.addAttribute(new Attribute("g:api", uri, "glsl-es"));
@@ -544,7 +604,7 @@ import com.io7m.jlog.Log;
   private static @Nonnull Element toXMLVersionFull(
     final @Nonnull Integer v)
   {
-    final String uri = PGLSLMetaXML.XML_URI;
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:version", uri);
     e.addAttribute(new Attribute("g:number", uri, v.toString()));
     e.addAttribute(new Attribute("g:api", uri, "glsl"));
@@ -724,10 +784,10 @@ import com.io7m.jlog.Log;
 
   public @Nonnull Element toXML()
   {
-    final Element root = new Element("g:meta", PGLSLMetaXML.XML_URI);
+    final Element root = new Element("g:meta", PGLSLMetaXML.XML_URI_STRING);
     root.addAttribute(new Attribute(
       "g:version",
-      PGLSLMetaXML.XML_URI,
+      PGLSLMetaXML.XML_URI_STRING,
       Integer.toString(PGLSLMetaXML.XML_VERSION)));
     root.appendChild(this.toXMLProgramName());
     root.appendChild(this.toXMLSupports());
@@ -746,7 +806,7 @@ import com.io7m.jlog.Log;
 
   private @Nonnull Element toXMLCompactMappings()
   {
-    final String uri = PGLSLMetaXML.XML_URI;
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:compact-mappings", uri);
 
     for (final Entry<Version, CompactedShaders> k : this.compact_mappings
@@ -772,7 +832,7 @@ import com.io7m.jlog.Log;
 
   private @Nonnull Element toXMLDeclaredFragmentInputs()
   {
-    final String uri = PGLSLMetaXML.XML_URI;
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:declared-fragment-inputs", uri);
     for (final FragmentInput f : this.getDeclaredFragmentInputs()) {
       e.appendChild(f.toXML());
@@ -782,7 +842,7 @@ import com.io7m.jlog.Log;
 
   private @Nonnull Element toXMLDeclaredFragmentOutputs()
   {
-    final String uri = PGLSLMetaXML.XML_URI;
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:declared-fragment-outputs", uri);
     for (final FragmentOutput f : this.getDeclaredFragmentOutputs().values()) {
       e.appendChild(f.toXML());
@@ -792,7 +852,7 @@ import com.io7m.jlog.Log;
 
   private @Nonnull Element toXMLDeclaredFragmentParameters()
   {
-    final String uri = PGLSLMetaXML.XML_URI;
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:declared-fragment-parameters", uri);
     for (final FragmentParameter f : this.getDeclaredFragmentParameters()) {
       e.appendChild(f.toXML());
@@ -802,7 +862,7 @@ import com.io7m.jlog.Log;
 
   private @Nonnull Element toXMLDeclaredVertexInputs()
   {
-    final String uri = PGLSLMetaXML.XML_URI;
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:declared-vertex-inputs", uri);
     for (final VertexInput v : this.getDeclaredVertexInputs()) {
       e.appendChild(v.toXML());
@@ -812,7 +872,7 @@ import com.io7m.jlog.Log;
 
   private @Nonnull Element toXMLDeclaredVertexOutputs()
   {
-    final String uri = PGLSLMetaXML.XML_URI;
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:declared-vertex-outputs", uri);
     for (final VertexOutput v : this.getDeclaredVertexOutputs()) {
       e.appendChild(v.toXML());
@@ -822,7 +882,7 @@ import com.io7m.jlog.Log;
 
   private @Nonnull Element toXMLDeclaredVertexParameters()
   {
-    final String uri = PGLSLMetaXML.XML_URI;
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:declared-vertex-parameters", uri);
     for (final VertexParameter v : this.getDeclaredVertexParameters()) {
       e.appendChild(v.toXML());
@@ -832,14 +892,15 @@ import com.io7m.jlog.Log;
 
   private @Nonnull Element toXMLProgramName()
   {
-    final Element e = new Element("g:program-name", PGLSLMetaXML.XML_URI);
+    final Element e =
+      new Element("g:program-name", PGLSLMetaXML.XML_URI_STRING);
     e.appendChild(this.name);
     return e;
   }
 
   private @Nonnull Element toXMLSupports()
   {
-    final Element e = new Element("g:supports", PGLSLMetaXML.XML_URI);
+    final Element e = new Element("g:supports", PGLSLMetaXML.XML_URI_STRING);
     for (final Integer s : this.getSupportsES()) {
       e.appendChild(PGLSLMetaXML.toXMLVersionES(s));
     }

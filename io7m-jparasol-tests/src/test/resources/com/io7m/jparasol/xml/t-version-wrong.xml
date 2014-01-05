@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:meta g:version="1" xmlns:g="http://schemas.io7m.com/parasol/glsl-meta">
+  <g:program-name>com.io7m.example.p</g:program-name>
+  <g:supports>
+    <g:version g:number="110" g:api="glsl"/>
+  </g:supports>
+  <g:declared-vertex-parameters/>
+  <g:declared-fragment-parameters/>
+  <g:declared-vertex-inputs/>
+  <g:declared-fragment-inputs/>
+  <g:declared-vertex-outputs/>
+  <g:declared-fragment-outputs>
+    <g:fragment-output g:index="0" g:name="out_0" g:type="vec4"/>
+  </g:declared-fragment-outputs>
+</g:meta>

@@ -16,8 +16,6 @@
 
 package com.io7m.jparasol.glsl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -28,7 +26,6 @@ import nu.xom.Element;
 
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jaux.functional.Pair;
 import com.io7m.jaux.functional.Unit;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
@@ -43,19 +40,10 @@ import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertexOutput;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertexParameter;
 import com.io7m.jparasol.typed.TType;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
+import com.io7m.jparasol.xml.PGLSLMetaXML;
 
 public final class GMeta
 {
-  private static final @Nonnull URI URI;
-
-  static {
-    try {
-      URI = new URI("http://schemas.io7m.com/parasol/glsl-meta");
-    } catch (final URISyntaxException e) {
-      throw new UnreachableCodeException(e);
-    }
-  }
-
   public static @Nonnull
     Document
     make(
@@ -70,11 +58,15 @@ public final class GMeta
       asts.entrySet().iterator().next().getValue();
     assert program != null;
 
-    final String uri = GMeta.URI.toString();
+    final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element r = new Element("g:meta", uri);
 
     {
-      final Attribute a = new Attribute("g:version", uri, "2");
+      final Attribute a =
+        new Attribute(
+          "g:version",
+          uri,
+          Integer.toString(PGLSLMetaXML.XML_VERSION));
       r.addAttribute(a);
     }
 

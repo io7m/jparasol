@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import javax.xml.parsers.ParserConfigurationException;
 
 import nu.xom.ParsingException;
+import nu.xom.ValidityException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -106,6 +107,20 @@ public class PGLSLMetaXMLTest
   {
     PGLSLMetaXML.fromStream(
       PGLSLMetaXMLTest.get("t-program-name-wrong.xml"),
+      PGLSLMetaXMLTest.getLog());
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = ValidityException.class) public
+    void
+    testProgramVersionWrong()
+      throws ConstraintError,
+        ParsingException,
+        IOException,
+        SAXException,
+        ParserConfigurationException
+  {
+    PGLSLMetaXML.fromStream(
+      PGLSLMetaXMLTest.get("t-version-wrong.xml"),
       PGLSLMetaXMLTest.getLog());
   }
 
