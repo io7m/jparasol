@@ -7,7 +7,7 @@
   <groupId>com.io7m.jparasol.compiler.core</groupId>
   <artifactId>io7m-jparasol-compiler-core</artifactId>
   <name>io7m-jparasol-compiler-core</name>
-  <version>0.3.7</version>
+  <version>0.3.8</version>
   <description>Minimalist pure functional shading language (core)</description>
   <url>http://mvn.io7m.com/jparasol-compiler-core/</url>
 
