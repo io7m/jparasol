@@ -16,6 +16,8 @@
 
 package com.io7m.jparasol.untyped;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,6 +42,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShade
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueDefined;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEInteger;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUELet;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
@@ -386,6 +389,45 @@ public final class UniqueBindersTest
       final UniqueNameLocal name = (UniqueNameLocal) y_let_body.getName();
       Assert.assertEquals("y1", name.getCurrent());
     }
+  }
+
+  /**
+   * Successive let bindings shadow previous bindings in the same scope.
+   */
+
+  @SuppressWarnings("static-method") @Test public void testLetShadow0()
+    throws UniqueBindersError,
+      ConstraintError
+  {
+    final UASTUCompilation r =
+      UniqueBindersTest
+        .uniqueInternal(new String[] { "unique_binders/let-shadow-0.p" });
+
+    final UASTUDModule first = UniqueBindersTest.firstModule(r);
+    System.out.println(first);
+
+    final UASTUDValueDefined z =
+      (UASTUDValueDefined) first.getTerms().get("z");
+    final UASTUELet z_let = (UASTUELet) z.getExpression();
+
+    final List<UASTUDValueLocal> bindings = z_let.getBindings();
+    final UASTUDValueLocal x = bindings.get(0);
+    Assert.assertEquals("x", x.getName().getCurrent());
+    Assert.assertEquals(0, ((UASTUEInteger) x.getExpression())
+      .getValue()
+      .intValue());
+
+    final UASTUDValueLocal x1 = bindings.get(1);
+    Assert.assertEquals("x1", x1.getName().getCurrent());
+    Assert.assertEquals("&x", ((UASTUEVariable) x1.getExpression())
+      .getName()
+      .show());
+
+    final UASTUDValueLocal x2 = bindings.get(2);
+    Assert.assertEquals("x2", x2.getName().getCurrent());
+    Assert.assertEquals("&x1", ((UASTUEVariable) x2.getExpression())
+      .getName()
+      .show());
   }
 
   @SuppressWarnings("static-method") @Test public void testPreSimple1()

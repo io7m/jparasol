@@ -263,18 +263,6 @@ public final class ModuleStructureTest
   @SuppressWarnings("static-method") @Test(
     expected = ModuleStructureError.class) public
     void
-    testModuleDuplicateValueLetLet()
-      throws ConstraintError,
-        ModuleStructureError
-  {
-    ModuleStructureTest.checkMustFailWithCode(
-      new String[] { "module-duplicate-value-let-let.p" },
-      Code.MODULE_STRUCTURE_TERM_CONFLICT);
-  }
-
-  @SuppressWarnings("static-method") @Test(
-    expected = ModuleStructureError.class) public
-    void
     testModuleFunctionArgumentsDuplicate()
       throws ConstraintError,
         ModuleStructureError

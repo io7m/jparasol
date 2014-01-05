@@ -838,11 +838,9 @@ public final class ModuleStructure
   private static class LocalChecker implements
     UASTILocalLevelVisitor<UASTCDValueLocal, ModuleStructureError>
   {
-    private final @Nonnull HashMap<String, UASTIDValueLocal> values;
-
     public LocalChecker()
     {
-      this.values = new HashMap<String, UASTIDValueLocal>();
+
     }
 
     @Override public UASTCDValueLocal localVisitValueLocal(
@@ -851,21 +849,14 @@ public final class ModuleStructure
         ConstraintError
     {
       try {
-        final String name = v.getName().getActual();
-        NameRestrictions.checkRestrictedExceptional(v.getName());
-
-        if (this.values.containsKey(name)) {
-          throw ModuleStructureError.moduleShaderLocalConflict(
-            v,
-            this.values.get(name));
-        }
-        this.values.put(name, v);
+        final TokenIdentifierLower name = v.getName();
+        NameRestrictions.checkRestrictedExceptional(name);
 
         final ExpressionChecker ec = new ExpressionChecker();
         final UASTCExpression ex =
           v.getExpression().expressionVisitableAccept(ec);
         return new UASTCDValueLocal(
-          v.getName(),
+          name,
           ModuleStructure.mapTypePath(v.getAscription()),
           ex);
       } catch (final NameRestrictionsException x) {
