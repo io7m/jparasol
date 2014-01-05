@@ -19,6 +19,7 @@ package com.io7m.jparasol;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,62 +70,6 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 
 public final class TestPipeline
 {
-  public static GASTShader transformedVertex(
-    final @Nonnull String[] names,
-    final @Nonnull TASTShaderNameFlat shader,
-    final @Nonnull GVersion version)
-    throws ConstraintError,
-      GFFIError
-  {
-    final Log log = TestUtilities.getLog();
-    final TASTCompilation t = TestPipeline.completeTyped(names);
-    final Referenced referenced = Referenced.fromShader(t, shader, log);
-    final Topology topo = Topology.fromShader(t, referenced, shader, log);
-    return GTransform.transformVertex(t, topo, shader, version, log);
-  }
-
-  public static GASTShader transformedFragment(
-    final @Nonnull String[] names,
-    final @Nonnull TASTShaderNameFlat shader,
-    final @Nonnull GVersion version)
-    throws ConstraintError,
-      GFFIError
-  {
-    final Log log = TestUtilities.getLog();
-    final TASTCompilation t = TestPipeline.completeTyped(names);
-    final Referenced referenced = Referenced.fromShader(t, shader, log);
-    final Topology topo = Topology.fromShader(t, referenced, shader, log);
-    return GTransform.transformFragment(t, topo, shader, version, log);
-  }
-
-  public static GASTShader transformedVertexInternal(
-    final @Nonnull String[] names,
-    final @Nonnull TASTShaderNameFlat shader,
-    final @Nonnull GVersion version)
-    throws ConstraintError,
-      GFFIError
-  {
-    final Log log = TestUtilities.getLog();
-    final TASTCompilation t = TestPipeline.completeTypedInternal(names);
-    final Referenced referenced = Referenced.fromShader(t, shader, log);
-    final Topology topo = Topology.fromShader(t, referenced, shader, log);
-    return GTransform.transformVertex(t, topo, shader, version, log);
-  }
-
-  public static GASTShader transformedFragmentInternal(
-    final @Nonnull String[] names,
-    final @Nonnull TASTShaderNameFlat shader,
-    final @Nonnull GVersion version)
-    throws ConstraintError,
-      GFFIError
-  {
-    final Log log = TestUtilities.getLog();
-    final TASTCompilation t = TestPipeline.completeTypedInternal(names);
-    final Referenced referenced = Referenced.fromShader(t, shader, log);
-    final Topology topo = Topology.fromShader(t, referenced, shader, log);
-    return GTransform.transformFragment(t, topo, shader, version, log);
-  }
-
   public static UASTCCompilation checked(
     final String[] names)
     throws ConstraintError,
@@ -281,6 +226,45 @@ public final class TestPipeline
     }
   }
 
+  private static InputStream getFileStream(
+    final String name)
+  {
+    final InputStream is =
+      ParserTest.class.getResourceAsStream("/com/io7m/jparasol/" + name);
+    return is;
+  }
+
+  public static String getFileText(
+    final @Nonnull String name)
+    throws IOException
+  {
+    final InputStream stream = TestPipeline.getFileStream(name);
+    final StringBuilder data = new StringBuilder();
+    final InputStreamReader reader = new InputStreamReader(stream);
+
+    for (;;) {
+      final int r = reader.read();
+      if (r == -1) {
+        break;
+      }
+      data.append((char) r);
+    }
+
+    reader.close();
+    return data.toString();
+  }
+
+  public static @Nonnull Input getInput(
+    final boolean internal,
+    final String name)
+    throws ConstraintError
+  {
+    return new FileInput(
+      internal,
+      new File(name),
+      TestPipeline.getFileStream(name));
+  }
+
   public static TASTDModule getModule(
     final @Nonnull TASTCompilation comp,
     final @Nonnull String pp,
@@ -313,6 +297,51 @@ public final class TestPipeline
     return new ModulePath(builder.build(), tname);
   }
 
+  public static @Nonnull GPipeline makeGPipeline(
+    final @Nonnull String[] names)
+  {
+    try {
+      final Log log = TestUtilities.getLog();
+      final CorePipeline pipe = CorePipeline.newPipeline(log);
+      pipe.pipeAddStandardLibrary();
+
+      for (final String name : names) {
+        pipe.pipeAddInput(TestPipeline.getInput(false, name));
+      }
+
+      final TASTCompilation typed = pipe.pipeCompile();
+      pipe.pipeClose();
+      return GPipeline.newPipeline(typed, log);
+    } catch (final ConstraintError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final LexerError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final ParserError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final UnitCombinerError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final ModuleStructureError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final UniqueBindersError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final TypeCheckerError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final ResolverError e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    } catch (final IOException e) {
+      e.printStackTrace();
+      throw new UnreachableCodeException(e);
+    }
+  }
+
   @SuppressWarnings("resource") public static UASTIUnit parseUnit(
     final String name,
     final boolean internal)
@@ -329,14 +358,6 @@ public final class TestPipeline
     }
     final Parser p = Parser.newParser(lexer);
     return p.unit();
-  }
-
-  private static InputStream getFileStream(
-    final String name)
-  {
-    final InputStream is =
-      ParserTest.class.getResourceAsStream("/com/io7m/jparasol/" + name);
-    return is;
   }
 
   public static List<UASTIUnit> parseUnits(
@@ -403,12 +424,79 @@ public final class TestPipeline
     }
   }
 
+  static @Nonnull public TASTShaderNameFlat shaderName(
+    final @Nonnull String module,
+    final @Nonnull String name)
+  {
+    try {
+      return new TASTShaderNameFlat(new ModulePathFlat(module), name);
+    } catch (final ConstraintError e) {
+      throw new UnreachableCodeException(e);
+    }
+  }
+
   public static TASTTermNameFlat termName(
     final @Nonnull String module,
     final @Nonnull String name)
     throws ConstraintError
   {
     return new TASTTermNameFlat(new ModulePathFlat(module), name);
+  }
+
+  public static GASTShader transformedFragment(
+    final @Nonnull String[] names,
+    final @Nonnull TASTShaderNameFlat shader,
+    final @Nonnull GVersion version)
+    throws ConstraintError,
+      GFFIError
+  {
+    final Log log = TestUtilities.getLog();
+    final TASTCompilation t = TestPipeline.completeTyped(names);
+    final Referenced referenced = Referenced.fromShader(t, shader, log);
+    final Topology topo = Topology.fromShader(t, referenced, shader, log);
+    return GTransform.transformFragment(t, topo, shader, version, log);
+  }
+
+  public static GASTShader transformedFragmentInternal(
+    final @Nonnull String[] names,
+    final @Nonnull TASTShaderNameFlat shader,
+    final @Nonnull GVersion version)
+    throws ConstraintError,
+      GFFIError
+  {
+    final Log log = TestUtilities.getLog();
+    final TASTCompilation t = TestPipeline.completeTypedInternal(names);
+    final Referenced referenced = Referenced.fromShader(t, shader, log);
+    final Topology topo = Topology.fromShader(t, referenced, shader, log);
+    return GTransform.transformFragment(t, topo, shader, version, log);
+  }
+
+  public static GASTShader transformedVertex(
+    final @Nonnull String[] names,
+    final @Nonnull TASTShaderNameFlat shader,
+    final @Nonnull GVersion version)
+    throws ConstraintError,
+      GFFIError
+  {
+    final Log log = TestUtilities.getLog();
+    final TASTCompilation t = TestPipeline.completeTyped(names);
+    final Referenced referenced = Referenced.fromShader(t, shader, log);
+    final Topology topo = Topology.fromShader(t, referenced, shader, log);
+    return GTransform.transformVertex(t, topo, shader, version, log);
+  }
+
+  public static GASTShader transformedVertexInternal(
+    final @Nonnull String[] names,
+    final @Nonnull TASTShaderNameFlat shader,
+    final @Nonnull GVersion version)
+    throws ConstraintError,
+      GFFIError
+  {
+    final Log log = TestUtilities.getLog();
+    final TASTCompilation t = TestPipeline.completeTypedInternal(names);
+    final Referenced referenced = Referenced.fromShader(t, shader, log);
+    final Topology topo = Topology.fromShader(t, referenced, shader, log);
+    return GTransform.transformVertex(t, topo, shader, version, log);
   }
 
   public static TASTCompilation typed(
@@ -486,73 +574,6 @@ public final class TestPipeline
       e.printStackTrace();
       throw new UnreachableCodeException(e);
     } catch (final ConstraintError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    }
-  }
-
-  static @Nonnull public TASTShaderNameFlat shaderName(
-    final @Nonnull String module,
-    final @Nonnull String name)
-  {
-    try {
-      return new TASTShaderNameFlat(new ModulePathFlat(module), name);
-    } catch (final ConstraintError e) {
-      throw new UnreachableCodeException(e);
-    }
-  }
-
-  public static @Nonnull Input getInput(
-    final boolean internal,
-    final String name)
-    throws ConstraintError
-  {
-    return new FileInput(
-      internal,
-      new File(name),
-      TestPipeline.getFileStream(name));
-  }
-
-  public static @Nonnull GPipeline makeGPipeline(
-    final @Nonnull String[] names)
-  {
-    try {
-      final Log log = TestUtilities.getLog();
-      final CorePipeline pipe = CorePipeline.newPipeline(log);
-      pipe.pipeAddStandardLibrary();
-
-      for (final String name : names) {
-        pipe.pipeAddInput(TestPipeline.getInput(false, name));
-      }
-
-      final TASTCompilation typed = pipe.pipeCompile();
-      pipe.pipeClose();
-      return GPipeline.newPipeline(typed, log);
-    } catch (final ConstraintError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final LexerError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final ParserError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final UnitCombinerError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final ModuleStructureError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final UniqueBindersError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final TypeCheckerError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final ResolverError e) {
-      e.printStackTrace();
-      throw new UnreachableCodeException(e);
-    } catch (final IOException e) {
       e.printStackTrace();
       throw new UnreachableCodeException(e);
     }

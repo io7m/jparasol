@@ -1106,7 +1106,7 @@ public final class GWriter
   {
     final GTypeName type = p.getType();
     final GShaderParameterName name = p.getName();
-    writer.println(String.format("uniform %s %s;", type, name));
+    writer.println(String.format("uniform %s %s;", type.show(), name.show()));
   }
 
   private static void writeVertexParameters(
