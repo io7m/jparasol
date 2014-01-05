@@ -544,7 +544,7 @@ public final class GWriter
       {
         if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
           writer.println(String.format(
-            "attribute %s %s;",
+            "varying %s %s;",
             type_name.show(),
             name.show()));
         } else {
@@ -570,7 +570,7 @@ public final class GWriter
       {
         if (v.compareTo(GVersionFull.GLSL_130) < 0) {
           writer.println(String.format(
-            "attribute %s %s;",
+            "varying %s %s;",
             type_name.show(),
             name.show()));
         } else {

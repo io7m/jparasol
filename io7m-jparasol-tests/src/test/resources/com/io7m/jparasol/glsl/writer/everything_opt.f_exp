@@ -1,6 +1,6 @@
 #version 110
 
-attribute vec4 something;
+varying vec4 something;
 uniform sampler2D u_texture;
 uniform sampler2D u_texture_opt;
 
