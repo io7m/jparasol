@@ -7,7 +7,7 @@
   <groupId>com.io7m.jparasol.compiler.glsl</groupId>
   <artifactId>io7m-jparasol-compiler-glsl</artifactId>
   <name>io7m-jparasol-compiler-glsl</name>
-  <version>0.3.3</version>
+  <version>0.3.4</version>
   <description>Minimalist pure functional shading language (GLSL)</description>
   <url>http://mvn.io7m.com/jparasol-compiler-glsl/</url>
 
