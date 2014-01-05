@@ -252,10 +252,11 @@ public final class Referenced
      * Collect all types referenced by those types.
      */
 
+    final HashSet<TTypeNameFlat> extra_types = new HashSet<TTypeNameFlat>();
     for (final TTypeNameFlat t : types) {
-      Referenced.collectTypesForType(compilation, types, t, log_actual);
+      Referenced.collectTypesForType(compilation, extra_types, t, log_actual);
     }
-
+    types.addAll(extra_types);
     return new Referenced(shader_name, terms, types);
   }
 
