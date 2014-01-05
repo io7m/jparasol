@@ -119,7 +119,7 @@ public final class GMeta
       }
     }
 
-    final Element efp = new Element("g:declared-vertex-parameters", uri);
+    final Element efp = new Element("g:declared-fragment-parameters", uri);
     for (final GASTShaderFragmentParameter p : program.second.getParameters()) {
       for (final Pair<String, TType> x : p.getExpanded()) {
         final Element e = new Element("g:parameter", uri);
@@ -157,8 +157,10 @@ public final class GMeta
 
     final Element efo = new Element("g:declared-fragment-outputs", uri);
     for (final GASTShaderFragmentOutput i : program.second.getOutputs()) {
-      final Element e = new Element("g:output", uri);
+      final Element e = new Element("g:fragment-output", uri);
       e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
+      e.addAttribute(new Attribute("g:index", uri, Integer.toString(i
+        .getIndex())));
       e.addAttribute(new Attribute("g:type", uri, i.getType().show()));
       efo.appendChild(e);
     }

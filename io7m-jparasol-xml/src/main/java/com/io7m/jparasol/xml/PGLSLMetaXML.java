@@ -58,12 +58,48 @@ import com.io7m.jlog.Log;
 
 @Immutable public final class PGLSLMetaXML
 {
+  private static class TrivialErrorHandler implements ErrorHandler
+  {
+    private @CheckForNull SAXParseException exception;
+
+    public TrivialErrorHandler()
+    {
+
+    }
+
+    @Override public void error(
+      final SAXParseException e)
+      throws SAXException
+    {
+      this.exception = e;
+    }
+
+    @Override public void fatalError(
+      final SAXParseException e)
+      throws SAXException
+    {
+      this.exception = e;
+    }
+
+    public @CheckForNull SAXParseException getException()
+    {
+      return this.exception;
+    }
+
+    @Override public void warning(
+      final SAXParseException e)
+      throws SAXException
+    {
+      this.exception = e;
+    }
+  }
+
   static final @Nonnull String XML_URI;
   static final int             XML_VERSION;
 
   static {
     XML_URI = "http://schemas.io7m.com/parasol/glsl-meta";
-    XML_VERSION = 2;
+    XML_VERSION = 3;
   }
 
   /**
@@ -128,42 +164,6 @@ import com.io7m.jlog.Log;
       compact_mappings);
   }
 
-  private static class TrivialErrorHandler implements ErrorHandler
-  {
-    public TrivialErrorHandler()
-    {
-
-    }
-
-    private @CheckForNull SAXParseException exception;
-
-    public @CheckForNull SAXParseException getException()
-    {
-      return this.exception;
-    }
-
-    @Override public void warning(
-      final SAXParseException e)
-      throws SAXException
-    {
-      this.exception = e;
-    }
-
-    @Override public void error(
-      final SAXParseException e)
-      throws SAXException
-    {
-      this.exception = e;
-    }
-
-    @Override public void fatalError(
-      final SAXParseException e)
-      throws SAXException
-    {
-      this.exception = e;
-    }
-  }
-
   public static @Nonnull PGLSLMetaXML fromStream(
     final @Nonnull InputStream stream,
     final @Nonnull Log log)
@@ -172,6 +172,21 @@ import com.io7m.jlog.Log;
       IOException,
       SAXException,
       ParserConfigurationException
+  {
+    return PGLSLMetaXML.fromDocument(PGLSLMetaXML.fromStreamValidate(
+      stream,
+      log));
+  }
+
+  static @Nonnull Document fromStreamValidate(
+    final @Nonnull InputStream stream,
+    final @Nonnull Log log)
+    throws SAXException,
+      ConstraintError,
+      ParserConfigurationException,
+      ValidityException,
+      ParsingException,
+      IOException
   {
     Constraints.constrainNotNull(stream, "Stream");
     Constraints.constrainNotNull(log, "Log");
@@ -186,8 +201,8 @@ import com.io7m.jlog.Log;
     log_xml.debug("opening schema");
     final InputStream xsd_stream =
       PGLSLMetaXML.class.getResourceAsStream("/com/io7m/jparasol/meta.xsd");
-    try {
 
+    try {
       log_xml.debug("creating schema handler");
       final SchemaFactory schemaFactory =
         SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
@@ -207,7 +222,7 @@ import com.io7m.jlog.Log;
         throw handler.getException();
       }
 
-      return PGLSLMetaXML.fromDocument(doc);
+      return doc;
     } finally {
       xsd_stream.close();
     }
@@ -296,7 +311,8 @@ import com.io7m.jlog.Log;
       root
         .getChildElements("declared-fragment-outputs", PGLSLMetaXML.XML_URI);
     final Element eo = es.get(0);
-    final Elements eoc = eo.getChildElements("output", PGLSLMetaXML.XML_URI);
+    final Elements eoc =
+      eo.getChildElements("fragment-output", PGLSLMetaXML.XML_URI);
 
     for (int index = 0; index < eoc.size(); ++index) {
       final Element e = eoc.get(index);
@@ -313,7 +329,7 @@ import com.io7m.jlog.Log;
         routputs.put(o.getIndex(), o);
       } catch (final NumberFormatException x) {
         throw new ValidityException(
-          "Could not parse 'index' number on 'output' element: "
+          "Could not parse 'index' number on 'fragment-output' element: "
             + x.getMessage());
       }
     }

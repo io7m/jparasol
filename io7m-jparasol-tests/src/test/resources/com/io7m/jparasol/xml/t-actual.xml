@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<g:meta g:version="1" xmlns:g="http://schemas.io7m.com/parasol/glsl-meta">
+<g:meta g:version="3" xmlns:g="http://schemas.io7m.com/parasol/glsl-meta">
   <g:program-name>com.io7m.renderer.ForwardLitDirectionalSpecularNormalMapped.fwd_LD_S_N</g:program-name>
 
   <g:supports>
@@ -45,9 +45,9 @@
   </g:declared-vertex-outputs>
 
   <g:declared-fragment-outputs>
-    <g:output g:name="out_0" g:type="vec4" g:index="0"/>
-    <g:output g:name="out_1" g:type="vec4" g:index="1"/>
-    <g:output g:name="out_2" g:type="vec4" g:index="2"/>
+    <g:fragment-output g:name="out_0" g:type="vec4" g:index="0"/>
+    <g:fragment-output g:name="out_1" g:type="vec4" g:index="1"/>
+    <g:fragment-output g:name="out_2" g:type="vec4" g:index="2"/>
   </g:declared-fragment-outputs>
 
 </g:meta>

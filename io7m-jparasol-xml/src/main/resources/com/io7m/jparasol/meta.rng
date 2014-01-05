@@ -89,7 +89,7 @@
   </r:define>
 
   <r:define name="io7m.parasol.glsl-meta.fragment-output">
-    <r:element name="g:output">
+    <r:element name="g:fragment-output">
       <r:attribute name="g:name">
         <r:data type="token"/>
       </r:attribute>

@@ -48,27 +48,19 @@
       <xs:attribute name="type" use="required" form="qualified" type="xs:token"/>
     </xs:complexType>
   </xs:element>
-  <xs:group name="io7m.parasol.glsl-meta.output">
-    <xs:sequence>
-      <xs:element name="output">
-        <xs:complexType>
-          <xs:attribute name="name" use="required" form="qualified" type="xs:token"/>
-          <xs:attribute name="type" use="required" form="qualified" type="xs:token"/>
-        </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-  </xs:group>
-  <xs:group name="io7m.parasol.glsl-meta.fragment-output">
-    <xs:sequence>
-      <xs:element name="output">
-        <xs:complexType>
-          <xs:attribute name="name" use="required" form="qualified" type="xs:token"/>
-          <xs:attribute name="type" use="required" form="qualified" type="xs:token"/>
-          <xs:attribute name="index" use="required" form="qualified" type="xs:integer"/>
-        </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-  </xs:group>
+  <xs:element name="output">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" form="qualified" type="xs:token"/>
+      <xs:attribute name="type" use="required" form="qualified" type="xs:token"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fragment-output">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" form="qualified" type="xs:token"/>
+      <xs:attribute name="type" use="required" form="qualified" type="xs:token"/>
+      <xs:attribute name="index" use="required" form="qualified" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="declared-vertex-parameters">
     <xs:complexType>
       <xs:sequence>
@@ -85,7 +77,9 @@
   </xs:element>
   <xs:element name="declared-vertex-outputs">
     <xs:complexType>
-      <xs:group minOccurs="0" maxOccurs="unbounded" ref="g:io7m.parasol.glsl-meta.output"/>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="g:output"/>
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="declared-fragment-parameters">
@@ -104,7 +98,9 @@
   </xs:element>
   <xs:element name="declared-fragment-outputs">
     <xs:complexType>
-      <xs:group maxOccurs="unbounded" ref="g:io7m.parasol.glsl-meta.fragment-output"/>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="g:fragment-output"/>
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="compact-mappings">
