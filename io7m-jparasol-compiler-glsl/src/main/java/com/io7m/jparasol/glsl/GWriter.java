@@ -379,8 +379,8 @@ public final class GWriter
         s.getExpression().expressionVisitableAccept(new ExpressionWriter());
       this.writer.println(String.format(
         "  %s %s = %s;",
-        s.getName().show(),
         s.getType().show(),
+        s.getName().show(),
         etext));
       return Unit.unit();
     }
