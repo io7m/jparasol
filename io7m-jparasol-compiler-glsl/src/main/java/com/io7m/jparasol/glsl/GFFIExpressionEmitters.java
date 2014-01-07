@@ -236,7 +236,7 @@ public final class GFFIExpressionEmitters
     final @Nonnull List<GASTExpression> arguments,
     final @Nonnull GVersion version)
   {
-    return GFFIExpressionEmitters.genericRefract(
+    return GFFIExpressionEmitters.genericInterpolate(
       f,
       arguments,
       version,
@@ -963,7 +963,7 @@ public final class GFFIExpressionEmitters
     final @Nonnull List<GASTExpression> arguments,
     final @Nonnull GVersion version)
   {
-    return GFFIExpressionEmitters.genericRefract(
+    return GFFIExpressionEmitters.genericInterpolate(
       f,
       arguments,
       version,
@@ -1109,7 +1109,7 @@ public final class GFFIExpressionEmitters
     final @Nonnull List<GASTExpression> arguments,
     final @Nonnull GVersion version)
   {
-    return GFFIExpressionEmitters.genericRefract(
+    return GFFIExpressionEmitters.genericInterpolate(
       f,
       arguments,
       version,
@@ -1275,7 +1275,7 @@ public final class GFFIExpressionEmitters
     final @Nonnull List<GASTExpression> arguments,
     final @Nonnull GVersion version)
   {
-    return GFFIExpressionEmitters.genericRefract(
+    return GFFIExpressionEmitters.genericInterpolate(
       f,
       arguments,
       version,
@@ -1421,7 +1421,7 @@ public final class GFFIExpressionEmitters
     final @Nonnull List<GASTExpression> arguments,
     final @Nonnull GVersion version)
   {
-    return GFFIExpressionEmitters.genericRefract(
+    return GFFIExpressionEmitters.genericInterpolate(
       f,
       arguments,
       version,
@@ -1567,7 +1567,7 @@ public final class GFFIExpressionEmitters
     final @Nonnull List<GASTExpression> arguments,
     final @Nonnull GVersion version)
   {
-    return GFFIExpressionEmitters.genericRefract(
+    return GFFIExpressionEmitters.genericInterpolate(
       f,
       arguments,
       version,
@@ -1713,7 +1713,7 @@ public final class GFFIExpressionEmitters
     final @Nonnull List<GASTExpression> arguments,
     final @Nonnull GVersion version)
   {
-    return GFFIExpressionEmitters.genericRefract(
+    return GFFIExpressionEmitters.genericInterpolate(
       f,
       arguments,
       version,
@@ -1902,12 +1902,15 @@ public final class GFFIExpressionEmitters
       final @Nonnull GVersion version,
       final @Nonnull TValueType type)
   {
+    final TFunction ft = f.getType();
+    final List<TFunctionArgument> fta = ft.getArguments();
+
     assert arguments.size() == 3;
-    assert f.getType().getArguments().size() == 3;
-    assert f.getType().getArguments().get(0).getType().equals(type);
-    assert f.getType().getArguments().get(1).getType().equals(type);
-    assert f.getType().getArguments().get(2).equals(TFloat.get());
-    assert f.getType().getReturnType().equals(type);
+    assert fta.size() == 3;
+    assert fta.get(0).getType().equals(type);
+    assert fta.get(1).getType().equals(type);
+    assert fta.get(2).getType().equals(TFloat.get());
+    assert ft.getReturnType().equals(type);
 
     final GTermNameGlobal tname = new GTermNameGlobal("mix");
     return new GFFIExpression.GFFIExpressionBuiltIn(

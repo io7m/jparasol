@@ -77,4 +77,44 @@ public final class GWriterTest
     Assert.assertEquals(v_expected, vertex_text);
     Assert.assertEquals(f_expected, fragment_text);
   }
+
+  @SuppressWarnings("static-method") @Test public void testInterpolate_0()
+    throws UIError,
+      GFFIError,
+      GVersionCheckerError,
+      ConstraintError,
+      IOException
+  {
+    final GPipeline gpipe =
+      TestPipeline
+        .makeGPipeline(new String[] { "glsl/writer/interpolate.p" });
+
+    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> asts =
+      gpipe.makeProgram(
+        TestPipeline.shaderName("x.y.M", "p"),
+        GVersionES.ALL,
+        GVersionFull.ALL);
+
+    final Pair<GASTShaderVertex, GASTShaderFragment> program =
+      asts.get(GVersion.GVersionFull.GLSL_110);
+
+    final ByteArrayOutputStream vertex_out = new ByteArrayOutputStream();
+    final ByteArrayOutputStream fragment_out = new ByteArrayOutputStream();
+
+    GWriter.writeVertexShader(System.out, program.first);
+    GWriter.writeVertexShader(vertex_out, program.first);
+    GWriter.writeFragmentShader(System.out, program.second);
+    GWriter.writeFragmentShader(fragment_out, program.second);
+
+    final String vertex_text = new String(vertex_out.toByteArray());
+    final String fragment_text = new String(fragment_out.toByteArray());
+
+    final String v_expected =
+      TestPipeline.getFileText("glsl/writer/interpolate.v_exp");
+    final String f_expected =
+      TestPipeline.getFileText("glsl/writer/interpolate.f_exp");
+
+    Assert.assertEquals(v_expected, vertex_text);
+    Assert.assertEquals(f_expected, fragment_text);
+  }
 }
