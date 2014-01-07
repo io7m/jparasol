@@ -157,7 +157,7 @@ public final class ModuleStructureError extends CompilerError
     final TokenIdentifierUpper token = i.getPath().getName();
     final StringBuilder m = new StringBuilder();
     m.append("Renaming the imported module ");
-    m.append(ModulePathFlat.fromModulePath(i.getPath()));
+    m.append(ModulePathFlat.fromModulePath(i.getPath()).show());
     m.append(" to the same name is redundant");
     return new ModuleStructureError(
       Code.MODULE_STRUCTURE_IMPORT_REDUNDANT,
@@ -200,7 +200,7 @@ public final class ModuleStructureError extends CompilerError
     final TokenIdentifierUpper token = i.getPath().getName();
     final StringBuilder m = new StringBuilder();
     m.append("Module ");
-    m.append(ModulePathFlat.fromModulePath(i.getPath()));
+    m.append(ModulePathFlat.fromModulePath(i.getPath()).show());
     m.append(" imports itself");
     return new ModuleStructureError(
       Code.MODULE_STRUCTURE_IMPORTS_SELF,
