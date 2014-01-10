@@ -1045,6 +1045,28 @@ public final class ResolverTest
 
   @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
     void
+    testFragmentShaderNonexistentOutput0()
+      throws ResolverError,
+        ConstraintError
+  {
+    ResolverTest.checkMustFailWithCode(
+      new String[] { "resolver/fragment-shader-nonexistent-output-0.p" },
+      ResolverError.Code.RESOLVER_SHADER_OUTPUT_NONEXISTENT);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
+    void
+    testVertexShaderNonexistentOutput0()
+      throws ResolverError,
+        ConstraintError
+  {
+    ResolverTest.checkMustFailWithCode(
+      new String[] { "resolver/vertex-shader-nonexistent-output-0.p" },
+      ResolverError.Code.RESOLVER_SHADER_OUTPUT_NONEXISTENT);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = ResolverError.class) public
+    void
     testVertexShaderTypeNonexistentInput0()
       throws ResolverError,
         ConstraintError

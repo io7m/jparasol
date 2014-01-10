@@ -1749,6 +1749,7 @@ public final class TypeChecker
       final TokenIdentifierLower a_name = a.getName();
       assert this.outputs.containsKey(a_name.getActual());
       final TValueType out_type = this.outputs.get(a_name.getActual());
+      assert out_type != null;
 
       if (out_type.equals(type) == false) {
         throw TypeCheckerError

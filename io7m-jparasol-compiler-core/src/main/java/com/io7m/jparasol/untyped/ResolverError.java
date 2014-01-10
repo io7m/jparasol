@@ -30,6 +30,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDImport;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDModule;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShader;
 
 public final class ResolverError extends CompilerError
 {
@@ -39,6 +40,7 @@ public final class ResolverError extends CompilerError
     RESOLVER_IMPORT_UNKNOWN,
     RESOLVER_MODULE_REFERENCE_UNKNOWN,
     RESOLVER_SHADER_NONEXISTENT,
+    RESOLVER_SHADER_OUTPUT_NONEXISTENT,
     RESOLVER_SHADER_RECURSIVE_LOCAL,
     RESOLVER_SHADER_RECURSIVE_MUTUAL,
     RESOLVER_TERM_NONEXISTENT,
@@ -134,6 +136,24 @@ public final class ResolverError extends CompilerError
 
     return new ResolverError(
       Code.RESOLVER_SHADER_NONEXISTENT,
+      name.getFile(),
+      name.getPosition(),
+      m.toString());
+  }
+
+  public static @Nonnull ResolverError shaderOutputNonexistent(
+    final @Nonnull UASTUDShader shader,
+    final @Nonnull TokenIdentifierLower name)
+    throws ConstraintError
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("The shader ");
+    m.append(shader.getName().getActual());
+    m.append(" does not contain an output named ");
+    m.append(name.getActual());
+
+    return new ResolverError(
+      Code.RESOLVER_SHADER_OUTPUT_NONEXISTENT,
       name.getFile(),
       name.getPosition(),
       m.toString());
@@ -356,13 +376,13 @@ public final class ResolverError extends CompilerError
     this.code = code;
   }
 
-  public @Nonnull Code getCode()
-  {
-    return this.code;
-  }
-
   @Override public String getCategory()
   {
     return "name-resolution";
+  }
+
+  public @Nonnull Code getCode()
+  {
+    return this.code;
   }
 }

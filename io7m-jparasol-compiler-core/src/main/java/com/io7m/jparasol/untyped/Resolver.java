@@ -474,6 +474,7 @@ public final class Resolver
     private final @Nonnull UASTUDModule                      module;
     private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
     private final @Nonnull UASTUDShaderFragment              shader;
+    private final @Nonnull Map<String, TokenIdentifierLower> outputs_declared;
 
     public FragmentShaderResolver(
       final @Nonnull Log log,
@@ -485,6 +486,7 @@ public final class Resolver
       this.modules = modules;
       this.shader = f;
       this.log = log;
+      this.outputs_declared = new HashMap<String, TokenIdentifierLower>();
     }
 
     @Override public
@@ -558,6 +560,9 @@ public final class Resolver
           otype.getModule(),
           otype.getName());
 
+      this.outputs_declared
+        .put(oname.getCurrent(), o.getName().getOriginal());
+
       return new UASTRDShaderFragmentOutput(
         oname.getOriginal(),
         type,
@@ -575,6 +580,10 @@ public final class Resolver
         Resolver.lookupTerm(this.module, this.modules, a
           .getVariable()
           .getName());
+
+      if (this.outputs_declared.containsKey(a.getName().getActual()) == false) {
+        throw ResolverError.shaderOutputNonexistent(this.shader, a.getName());
+      }
 
       final UASTREVariable variable = new UASTREVariable(name);
       return new UASTRDShaderFragmentOutputAssignment(a.getName(), variable);
@@ -2163,6 +2172,7 @@ public final class Resolver
     private final @Nonnull Log                               log;
     private final @Nonnull UASTUDModule                      module;
     private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
+    private final @Nonnull Map<String, TokenIdentifierLower> outputs_declared;
     private final @Nonnull UASTUDShaderVertex                shader;
 
     public VertexShaderResolver(
@@ -2175,6 +2185,7 @@ public final class Resolver
       this.modules = modules;
       this.shader = v;
       this.log = log;
+      this.outputs_declared = new HashMap<String, TokenIdentifierLower>();
     }
 
     @Override public
@@ -2248,6 +2259,9 @@ public final class Resolver
           otype.getModule(),
           otype.getName());
 
+      this.outputs_declared
+        .put(oname.getCurrent(), o.getName().getOriginal());
+
       return new UASTRDShaderVertexOutput(
         oname.getOriginal(),
         type,
@@ -2267,6 +2281,11 @@ public final class Resolver
           .getName());
 
       final UASTREVariable variable = new UASTREVariable(name);
+
+      if (this.outputs_declared.containsKey(a.getName().getActual()) == false) {
+        throw ResolverError.shaderOutputNonexistent(this.shader, a.getName());
+      }
+
       return new UASTRDShaderVertexOutputAssignment(a.getName(), variable);
     }
 

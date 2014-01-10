@@ -124,6 +124,7 @@ public final class ModuleStructureTest
       final List<UASTIUnit> units = ModuleStructureTest.parseUnits(names);
       return UASTICompilation.fromUnits(units);
     } catch (final Throwable x) {
+      x.printStackTrace();
       throw new UnreachableCodeException(x);
     }
   }
