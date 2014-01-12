@@ -73,6 +73,7 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecordProjection;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTESwizzle;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
+import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
 import com.io7m.jparasol.typed.ast.TASTExpressionVisitor;
 import com.io7m.jparasol.typed.ast.TASTFragmentShaderLocalVisitor;
 import com.io7m.jparasol.typed.ast.TASTFragmentShaderVisitor;
@@ -1702,6 +1703,18 @@ final class TGraphs
         ConstraintError
     {
       this.addTermTypeReference(e.getType());
+
+      for (final TASTRecordFieldAssignment a : e.getAssignments()) {
+        a.getExpression().expressionVisitableAccept(
+          new GraphBuilderTermExpression(
+            GraphBuilderTermExpression.this.source,
+            GraphBuilderTermExpression.this.checked_modules,
+            GraphBuilderTermExpression.this.checked_terms,
+            GraphBuilderTermExpression.this.checked_types,
+            GraphBuilderTermExpression.this.log,
+            GraphBuilderTermExpression.this.module_path,
+            GraphBuilderTermExpression.this.graph));
+      }
       return e;
     }
 

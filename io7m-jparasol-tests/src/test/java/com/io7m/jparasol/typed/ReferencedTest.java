@@ -175,4 +175,22 @@ public final class ReferencedTest
     Assert.assertEquals(1, types.size());
     Assert.assertTrue(types.contains(TestPipeline.typeName("x.y.M", "t")));
   }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testRecordExpressionReferenced_0()
+      throws ConstraintError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .completeTyped(new String[] { "typed/referenced/expression-record-0.p" });
+
+    final TASTShaderNameFlat shader_name =
+      new TASTShaderNameFlat(new ModulePathFlat("x.y.M"), "v");
+    final Referenced ref =
+      Referenced.fromShader(r, shader_name, TestUtilities.getLog());
+
+    final Set<TASTTermNameFlat> terms = ref.getTerms();
+    Assert.assertEquals(2, terms.size());
+  }
 }
