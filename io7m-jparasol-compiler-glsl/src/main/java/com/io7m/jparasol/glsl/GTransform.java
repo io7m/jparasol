@@ -1265,6 +1265,18 @@ public final class GTransform
     final List<Pair<String, TValueType>> bindings =
       new ArrayList<Pair<String, TValueType>>();
 
+    for (final TASTDShaderFragmentInput i : fragment.getInputs()) {
+      final String name = i.getName().getCurrent();
+      final TValueType type = i.getType();
+      bindings.add(new Pair<String, TValueType>(name, type));
+    }
+
+    for (final TASTDShaderFragmentParameter p : fragment.getParameters()) {
+      final String name = p.getName().getCurrent();
+      final TValueType type = p.getType();
+      bindings.add(new Pair<String, TValueType>(name, type));
+    }
+
     /**
      * Translate locals and conditional discards to statements.
      * 
@@ -1514,6 +1526,18 @@ public final class GTransform
       new ArrayList<Pair<String, TValueType>>();
     final List<TASTDValueLocal> locals =
       new ArrayList<TASTDeclaration.TASTDValueLocal>();
+
+    for (final TASTDShaderVertexInput i : vertex.getInputs()) {
+      final String name = i.getName().getCurrent();
+      final TValueType type = i.getType();
+      bindings.add(new Pair<String, TValueType>(name, type));
+    }
+
+    for (final TASTDShaderVertexParameter p : vertex.getParameters()) {
+      final String name = p.getName().getCurrent();
+      final TValueType type = p.getType();
+      bindings.add(new Pair<String, TValueType>(name, type));
+    }
 
     for (final TASTDShaderVertexLocalValue v : vertex.getValues()) {
       locals.add(v.getValue());

@@ -16,18 +16,27 @@
 
 package com.io7m.jparasol.glsl;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
+import com.io7m.jaux.functional.Pair;
 import com.io7m.jlog.Log;
 import com.io7m.jparasol.TestPipeline;
 import com.io7m.jparasol.TestUtilities;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertex;
+import com.io7m.jparasol.glsl.ast.GASTTermDeclaration;
+import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermFunction;
+import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
+import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
+import com.io7m.jparasol.glsl.ast.GTypeName;
 import com.io7m.jparasol.typed.Referenced;
 import com.io7m.jparasol.typed.Topology;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
@@ -79,6 +88,43 @@ public final class GTransformTest
     GWriter.writeFragmentShader(System.out, s);
   }
 
+  @SuppressWarnings("static-method") @Test public
+    void
+    testFragmentTemporaries_0()
+      throws ConstraintError,
+        GFFIError
+  {
+    final TASTShaderNameFlat shader = TestPipeline.shaderName("x.y.M", "f");
+    final Prepared p =
+      new Prepared(
+        shader,
+        new String[] { "glsl/transform/fragment-temporaries-0.p" });
+
+    final GASTShaderFragment s =
+      GTransform.transformFragment(
+        p.typed,
+        p.topology,
+        shader,
+        GVersionFull.GLSL_UPPER,
+        p.log);
+
+    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
+      s.getTerms();
+    Assert.assertEquals(1, terms.size());
+
+    {
+      final Pair<GTermNameGlobal, GASTTermDeclaration> t = terms.get(0);
+      final GASTTermDeclaration.GASTTermFunction f =
+        (GASTTermFunction) t.second;
+      Assert.assertEquals("_tmp_2", t.first.show());
+      Assert.assertEquals(1, f.getParameters().size());
+      final Pair<GTermNameLocal, GTypeName> p0 = f.getParameters().get(0);
+      Assert.assertEquals("float", p0.second.show());
+    }
+
+    GWriter.writeFragmentShader(System.out, s);
+  }
+
   @SuppressWarnings("static-method") @Test public void testVertexSimple_0()
     throws ConstraintError,
       GFFIError
@@ -96,6 +142,43 @@ public final class GTransformTest
         shader,
         GVersionFull.GLSL_UPPER,
         p.log);
+
+    GWriter.writeVertexShader(System.out, s);
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testVertexTemporaries_0()
+      throws ConstraintError,
+        GFFIError
+  {
+    final TASTShaderNameFlat shader = TestPipeline.shaderName("x.y.M", "v");
+    final Prepared p =
+      new Prepared(
+        shader,
+        new String[] { "glsl/transform/vertex-temporaries-0.p" });
+
+    final GASTShaderVertex s =
+      GTransform.transformVertex(
+        p.typed,
+        p.topology,
+        shader,
+        GVersionFull.GLSL_UPPER,
+        p.log);
+
+    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
+      s.getTerms();
+    Assert.assertEquals(1, terms.size());
+
+    {
+      final Pair<GTermNameGlobal, GASTTermDeclaration> t = terms.get(0);
+      final GASTTermDeclaration.GASTTermFunction f =
+        (GASTTermFunction) t.second;
+      Assert.assertEquals("_tmp_2", t.first.show());
+      Assert.assertEquals(1, f.getParameters().size());
+      final Pair<GTermNameLocal, GTypeName> p0 = f.getParameters().get(0);
+      Assert.assertEquals("float", p0.second.show());
+    }
 
     GWriter.writeVertexShader(System.out, s);
   }
