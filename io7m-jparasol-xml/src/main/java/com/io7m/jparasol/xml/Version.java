@@ -51,7 +51,9 @@ import com.io7m.jaux.Constraints.ConstraintError;
   @Override public int compareTo(
     final @Nonnull Version o)
   {
-    return Integer.compare(this.version, o.version);
+    final Integer x = Integer.valueOf(this.version);
+    final Integer y = Integer.valueOf(o.version);
+    return x.compareTo(y);
   }
 
   @Override public boolean equals(
