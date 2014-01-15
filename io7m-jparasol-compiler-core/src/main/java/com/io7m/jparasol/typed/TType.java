@@ -81,8 +81,14 @@ public abstract class TType implements TTypeVisitable
     @Override public @Nonnull List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
+
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TBoolean.get() }));
+      constructors.add(TConstructor.newConstructor(new TValueType[] { TFloat
+        .get() }));
+      constructors.add(TConstructor
+        .newConstructor(new TValueType[] { TInteger.get() }));
+
       return constructors;
     }
 
@@ -251,10 +257,14 @@ public abstract class TType implements TTypeVisitable
     @Override public @Nonnull List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
+
       constructors.add(TConstructor.newConstructor(new TValueType[] { TFloat
         .get() }));
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TInteger.get() }));
+      constructors.add(TConstructor
+        .newConstructor(new TValueType[] { TBoolean.get() }));
+
       return constructors;
     }
 
@@ -460,10 +470,14 @@ public abstract class TType implements TTypeVisitable
     @Override public @Nonnull List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
+
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TInteger.get() }));
       constructors.add(TConstructor.newConstructor(new TValueType[] { TFloat
         .get() }));
+      constructors.add(TConstructor
+        .newConstructor(new TValueType[] { TBoolean.get() }));
+
       return constructors;
     }
 

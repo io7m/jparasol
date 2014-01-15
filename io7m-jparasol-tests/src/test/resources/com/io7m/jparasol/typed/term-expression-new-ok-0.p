@@ -4,11 +4,15 @@ module M is
 
   value z0   = new integer (23);
   value z1   = new integer (23.0);
+  value z2   = new integer (true);
 
   value r0   = new float (23);
   value r1   = new float (23.0);
+  value r2   = new float (true);
 
   value b0   = new boolean (true);
+  value b1   = new boolean (1.0);
+  value b2   = new boolean (1);
 
   value v2f0 = new vector_2f (0.0, 1.0);
   value v2f1 = new vector_2f (v2f0);

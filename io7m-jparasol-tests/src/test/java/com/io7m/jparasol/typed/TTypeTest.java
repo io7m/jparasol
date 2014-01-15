@@ -60,10 +60,16 @@ public final class TTypeTest
 
   @Test public void testBooleanConstructors()
   {
-    Assert.assertEquals(1, TBoolean.get().getConstructors().size());
+    Assert.assertEquals(3, TBoolean.get().getConstructors().size());
     Assert.assertTrue(this.hasConstructor(
       TBoolean.get(),
       new TValueType[] { TBoolean.get() }));
+    Assert.assertTrue(this.hasConstructor(
+      TBoolean.get(),
+      new TValueType[] { TFloat.get() }));
+    Assert.assertTrue(this.hasConstructor(
+      TBoolean.get(),
+      new TValueType[] { TInteger.get() }));
 
     for (final TConstructor c : TBoolean.get().getConstructors()) {
       Assert.assertEquals(1, c.getComponentCount());
@@ -84,13 +90,16 @@ public final class TTypeTest
 
   @Test public void testFloatConstructors()
   {
-    Assert.assertEquals(2, TFloat.get().getConstructors().size());
+    Assert.assertEquals(3, TFloat.get().getConstructors().size());
     Assert.assertTrue(this.hasConstructor(
       TFloat.get(),
       new TValueType[] { TFloat.get() }));
     Assert.assertTrue(this.hasConstructor(
       TFloat.get(),
       new TValueType[] { TInteger.get() }));
+    Assert.assertTrue(this.hasConstructor(
+      TFloat.get(),
+      new TValueType[] { TBoolean.get() }));
 
     for (final TConstructor c : TFloat.get().getConstructors()) {
       Assert.assertEquals(1, c.getComponentCount());
@@ -111,13 +120,16 @@ public final class TTypeTest
 
   @Test public void testIntegerConstructors()
   {
-    Assert.assertEquals(2, TInteger.get().getConstructors().size());
+    Assert.assertEquals(3, TInteger.get().getConstructors().size());
     Assert.assertTrue(this.hasConstructor(
       TInteger.get(),
       new TValueType[] { TInteger.get() }));
     Assert.assertTrue(this.hasConstructor(
       TInteger.get(),
       new TValueType[] { TFloat.get() }));
+    Assert.assertTrue(this.hasConstructor(
+      TInteger.get(),
+      new TValueType[] { TBoolean.get() }));
 
     for (final TConstructor c : TInteger.get().getConstructors()) {
       Assert.assertEquals(1, c.getComponentCount());
