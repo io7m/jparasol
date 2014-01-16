@@ -5,6 +5,6 @@ varying vec4 f_position_clip;
 void
 main (void)
 {
-  vec4 rgba = mix (vec4 (0.0, 0.0, 0.0, 0.0), vec4 (1.0, 1.0, 1.0, 1.0), 0.5);
-  gl_FragColor = rgba;
+  vec4 pl_rgba = mix (vec4 (0.0, 0.0, 0.0, 0.0), vec4 (1.0, 1.0, 1.0, 1.0), 0.5);
+  gl_FragColor = pl_rgba;
 }

@@ -18,6 +18,7 @@ package com.io7m.jparasol.glsl.ast;
 
 import javax.annotation.Nonnull;
 
+import com.io7m.jparasol.glsl.ast.GTermName.GTermNameExternal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 
@@ -29,5 +30,9 @@ public interface GTermNameVisitor<A, E extends Throwable>
 
   public A termNameVisitLocal(
     final @Nonnull GTermNameLocal n)
+    throws E;
+
+  public A termNameVisitExternal(
+    final @Nonnull GTermNameExternal n)
     throws E;
 }

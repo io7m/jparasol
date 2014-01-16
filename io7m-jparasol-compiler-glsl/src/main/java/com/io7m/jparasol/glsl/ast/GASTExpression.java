@@ -23,11 +23,108 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import com.io7m.jparasol.glsl.ast.GTermName.GTermNameExternal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.typed.TType;
 
 public abstract class GASTExpression implements GASTExpressionVisitable
 {
+  public static final class GASTEApplicationExternal extends GASTExpression
+  {
+    private final @Nonnull List<GASTExpression> arguments;
+    private final @Nonnull GTermNameExternal    name;
+    private final @Nonnull TType                type;
+
+    public GASTEApplicationExternal(
+      final @Nonnull GTermNameExternal name,
+      final @Nonnull TType type,
+      final @Nonnull List<GASTExpression> arguments)
+    {
+      this.name = name;
+      this.type = type;
+      this.arguments = arguments;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final GASTEApplicationExternal other = (GASTEApplicationExternal) obj;
+      if (!this.arguments.equals(other.arguments)) {
+        return false;
+      }
+      if (!this.name.equals(other.name)) {
+        return false;
+      }
+      if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+      A
+      expressionVisitableAccept(
+        final @Nonnull V v)
+        throws E
+    {
+      v.expressionApplicationExternalVisitPre(this);
+      final List<A> args = new ArrayList<A>();
+      for (final GASTExpression a : this.arguments) {
+        final A x = a.expressionVisitableAccept(v);
+        args.add(x);
+      }
+      return v.expressionApplicationExternalVisit(args, this);
+    }
+
+    public @Nonnull List<GASTExpression> getArguments()
+    {
+      return this.arguments;
+    }
+
+    public @Nonnull GTermNameExternal getName()
+    {
+      return this.name;
+    }
+
+    public @Nonnull TType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.arguments.hashCode();
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[GASTEApplicationExternal ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.type);
+      builder.append(" ");
+      builder.append(this.arguments);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
   public static final class GASTEApplication extends GASTExpression
   {
     private final @Nonnull List<GASTExpression> arguments;

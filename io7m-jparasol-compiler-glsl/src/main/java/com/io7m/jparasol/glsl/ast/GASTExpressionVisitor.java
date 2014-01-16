@@ -21,6 +21,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplication;
+import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplicationExternal;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpDivide;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpEqual;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpGreaterThan;
@@ -48,6 +49,15 @@ public interface GASTExpressionVisitor<A, E extends Throwable>
 
   public void expressionApplicationVisitPre(
     final @Nonnull GASTEApplication e)
+    throws E;
+
+  public A expressionApplicationExternalVisit(
+    final @Nonnull List<A> arguments,
+    final @Nonnull GASTEApplicationExternal e)
+    throws E;
+
+  public void expressionApplicationExternalVisitPre(
+    final @Nonnull GASTEApplicationExternal e)
     throws E;
 
   public A expressionBinaryOpDivideVisit(

@@ -34,19 +34,19 @@ varying vec4 something;
 void
 main (void)
 {
-  vec4 vf0 = vec4 (a_vf2.x, a_vf3.x, a_vf4.z, u_float);
-  vec4 vf1 = vec4 (u_vf2.x, u_vf3.x, u_vf4.x, float (u_int));
-  vec4 vf2 = vec4 (a_f, a_f, a_f, a_f);
-  vec4 vf3 = vec4 ((u_m3 * a_vf3), 1.0);
-  vec4 vf4 = (vf0 + vf1);
-  vec4 vf5 = (vf2 + vf3);
-  vec4 vf6 = (vf4 + vf5);
-  ivec4 vi0 = ivec4 (u_vi2, u_vi3.x, u_vi3.y);
-  ivec4 vi1 = ivec4 (u_vi4.xyz, u_int);
-  ivec4 vi2 = (vi0 + vi1);
-  vec4 k = vec4 ((float (vi2.x) + vf6.x), (float (vi2.y) + vf6.y), (float (vi2.z) + vf6.z), (float (vi2.w) + vf6.w));
-  vec4 clip_position = (u_m4 * k);
-  gl_Position = clip_position;
-  f_position_clip = clip_position;
-  something = k;
+  vec4 pl_vf0 = vec4 (a_vf2.x, a_vf3.x, a_vf4.z, u_float);
+  vec4 pl_vf1 = vec4 (u_vf2.x, u_vf3.x, u_vf4.x, float (u_int));
+  vec4 pl_vf2 = vec4 (a_f, a_f, a_f, a_f);
+  vec4 pl_vf3 = vec4 ((u_m3 * a_vf3), 1.0);
+  vec4 pl_vf4 = (pl_vf0 + pl_vf1);
+  vec4 pl_vf5 = (pl_vf2 + pl_vf3);
+  vec4 pl_vf6 = (pl_vf4 + pl_vf5);
+  ivec4 pl_vi0 = ivec4 (u_vi2, u_vi3.x, u_vi3.y);
+  ivec4 pl_vi1 = ivec4 (u_vi4.xyz, u_int);
+  ivec4 pl_vi2 = (pl_vi0 + pl_vi1);
+  vec4 pl_k = vec4 ((float (pl_vi2.x) + pl_vf6.x), (float (pl_vi2.y) + pl_vf6.y), (float (pl_vi2.z) + pl_vf6.z), (float (pl_vi2.w) + pl_vf6.w));
+  vec4 pl_clip_position = (u_m4 * pl_k);
+  gl_Position = pl_clip_position;
+  f_position_clip = pl_clip_position;
+  something = pl_k;
 }

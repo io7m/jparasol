@@ -315,6 +315,11 @@ public abstract class GASTStatement implements GASTStatementVisitable
       return result;
     }
 
+    public @Nonnull List<GASTStatement> getStatements()
+    {
+      return this.statements;
+    }
+
     @Override public
       <A, E extends Throwable, V extends GASTStatementVisitor<A, E>>
       A

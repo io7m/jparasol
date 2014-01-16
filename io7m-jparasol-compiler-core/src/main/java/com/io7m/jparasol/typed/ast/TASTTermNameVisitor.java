@@ -19,11 +19,17 @@ package com.io7m.jparasol.typed.ast;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameExternal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 
 public interface TASTTermNameVisitor<A, E extends Throwable>
 {
+  public A termNameVisitExternal(
+    final @Nonnull TASTTermNameExternal t)
+    throws ConstraintError,
+      E;
+
   public A termNameVisitGlobal(
     final @Nonnull TASTTermNameGlobal t)
     throws ConstraintError,

@@ -86,6 +86,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderName;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jparasol.typed.ast.TASTShaderVisitor;
 import com.io7m.jparasol.typed.ast.TASTTermName;
+import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameExternal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
@@ -1018,6 +1019,14 @@ final class TGraphs
           {
             return Unit.unit();
           }
+
+          @Override public Unit termNameVisitExternal(
+            final @Nonnull TASTTermNameExternal t)
+            throws ConstraintError,
+              ConstraintError
+          {
+            return Unit.unit();
+          }
         });
     }
 
@@ -1494,6 +1503,14 @@ final class TGraphs
 
           @Override public Unit termNameVisitLocal(
             final TASTTermNameLocal t)
+            throws ConstraintError,
+              ConstraintError
+          {
+            return Unit.unit();
+          }
+
+          @Override public Unit termNameVisitExternal(
+            final TASTTermNameExternal t)
             throws ConstraintError,
               ConstraintError
           {

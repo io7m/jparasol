@@ -42,6 +42,7 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
 import com.io7m.jparasol.typed.ast.TASTExpressionVisitor;
 import com.io7m.jparasol.typed.ast.TASTLocalLevelVisitor;
+import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameExternal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 import com.io7m.jparasol.typed.ast.TASTTermNameVisitor;
@@ -281,6 +282,14 @@ public final class Occurences
             if (Checker.this.check_names.contains(t.getCurrent())) {
               Checker.this.found_names.add(t.getCurrent());
             }
+            return Unit.unit();
+          }
+
+          @Override public Unit termNameVisitExternal(
+            final @Nonnull TASTTermNameExternal t)
+            throws ConstraintError,
+              ConstraintError
+          {
             return Unit.unit();
           }
         });

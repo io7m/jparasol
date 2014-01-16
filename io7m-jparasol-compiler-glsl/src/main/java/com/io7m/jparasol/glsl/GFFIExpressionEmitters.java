@@ -30,7 +30,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpGrea
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpGreaterThanOrEqual;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpLesserThan;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpLesserThanOrEqual;
-import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
+import com.io7m.jparasol.glsl.ast.GTermName.GTermNameExternal;
 import com.io7m.jparasol.typed.TType.TBoolean;
 import com.io7m.jparasol.typed.TType.TFloat;
 import com.io7m.jparasol.typed.TType.TFunction;
@@ -360,9 +360,12 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(1).getType().equals(TFloat.get());
     assert f.getType().getReturnType().equals(TFloat.get());
 
-    final GTermNameGlobal tname = new GTermNameGlobal("max");
+    final GTermNameExternal tname = new GTermNameExternal("max");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, TFloat.get(), arguments));
+      new GASTExpression.GASTEApplicationExternal(
+        tname,
+        TFloat.get(),
+        arguments));
   }
 
   @SuppressWarnings("unused") static @Nonnull
@@ -378,9 +381,12 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(1).getType().equals(TFloat.get());
     assert f.getType().getReturnType().equals(TFloat.get());
 
-    final GTermNameGlobal tname = new GTermNameGlobal("min");
+    final GTermNameExternal tname = new GTermNameExternal("min");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, TFloat.get(), arguments));
+      new GASTExpression.GASTEApplicationExternal(
+        tname,
+        TFloat.get(),
+        arguments));
   }
 
   @SuppressWarnings("unused") static @Nonnull
@@ -396,9 +402,12 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(1).getType().equals(TFloat.get());
     assert f.getType().getReturnType().equals(TFloat.get());
 
-    final GTermNameGlobal tname = new GTermNameGlobal("mod");
+    final GTermNameExternal tname = new GTermNameExternal("mod");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, TFloat.get(), arguments));
+      new GASTExpression.GASTEApplicationExternal(
+        tname,
+        TFloat.get(),
+        arguments));
   }
 
   static @Nonnull GFFIExpression com_io7m_parasol_float_multiply(
@@ -426,9 +435,12 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(1).getType().equals(TFloat.get());
     assert f.getType().getReturnType().equals(TFloat.get());
 
-    final GTermNameGlobal tname = new GTermNameGlobal("pow");
+    final GTermNameExternal tname = new GTermNameExternal("pow");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, TFloat.get(), arguments));
+      new GASTExpression.GASTEApplicationExternal(
+        tname,
+        TFloat.get(),
+        arguments));
   }
 
   /**
@@ -748,13 +760,17 @@ public final class GFFIExpressionEmitters
           throws ConstraintError
         {
           if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
-            final GTermNameGlobal name = new GTermNameGlobal("textureCube");
+            final GTermNameExternal name =
+              new GTermNameExternal("textureCube");
             return new GFFIExpression.GFFIExpressionBuiltIn(
-              new GASTExpression.GASTEApplication(name, type, arguments));
+              new GASTExpression.GASTEApplicationExternal(
+                name,
+                type,
+                arguments));
           }
-          final GTermNameGlobal name = new GTermNameGlobal("texture");
+          final GTermNameExternal name = new GTermNameExternal("texture");
           return new GFFIExpression.GFFIExpressionBuiltIn(
-            new GASTExpression.GASTEApplication(name, type, arguments));
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
         }
 
         @Override public GFFIExpression versionVisitFull(
@@ -762,13 +778,17 @@ public final class GFFIExpressionEmitters
           throws ConstraintError
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
-            final GTermNameGlobal name = new GTermNameGlobal("textureCube");
+            final GTermNameExternal name =
+              new GTermNameExternal("textureCube");
             return new GFFIExpression.GFFIExpressionBuiltIn(
-              new GASTExpression.GASTEApplication(name, type, arguments));
+              new GASTExpression.GASTEApplicationExternal(
+                name,
+                type,
+                arguments));
           }
-          final GTermNameGlobal name = new GTermNameGlobal("texture");
+          final GTermNameExternal name = new GTermNameExternal("texture");
           return new GFFIExpression.GFFIExpressionBuiltIn(
-            new GASTExpression.GASTEApplication(name, type, arguments));
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
         }
       });
   }
@@ -796,13 +816,16 @@ public final class GFFIExpressionEmitters
           throws ConstraintError
         {
           if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
-            final GTermNameGlobal name = new GTermNameGlobal("texture2D");
+            final GTermNameExternal name = new GTermNameExternal("texture2D");
             return new GFFIExpression.GFFIExpressionBuiltIn(
-              new GASTExpression.GASTEApplication(name, type, arguments));
+              new GASTExpression.GASTEApplicationExternal(
+                name,
+                type,
+                arguments));
           }
-          final GTermNameGlobal name = new GTermNameGlobal("texture");
+          final GTermNameExternal name = new GTermNameExternal("texture");
           return new GFFIExpression.GFFIExpressionBuiltIn(
-            new GASTExpression.GASTEApplication(name, type, arguments));
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
         }
 
         @Override public GFFIExpression versionVisitFull(
@@ -810,13 +833,16 @@ public final class GFFIExpressionEmitters
           throws ConstraintError
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
-            final GTermNameGlobal name = new GTermNameGlobal("texture2D");
+            final GTermNameExternal name = new GTermNameExternal("texture2D");
             return new GFFIExpression.GFFIExpressionBuiltIn(
-              new GASTExpression.GASTEApplication(name, type, arguments));
+              new GASTExpression.GASTEApplicationExternal(
+                name,
+                type,
+                arguments));
           }
-          final GTermNameGlobal name = new GTermNameGlobal("texture");
+          final GTermNameExternal name = new GTermNameExternal("texture");
           return new GFFIExpression.GFFIExpressionBuiltIn(
-            new GASTExpression.GASTEApplication(name, type, arguments));
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
         }
       });
   }
@@ -846,13 +872,17 @@ public final class GFFIExpressionEmitters
           throws ConstraintError
         {
           if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
-            final GTermNameGlobal name = new GTermNameGlobal("texture2DProj");
+            final GTermNameExternal name =
+              new GTermNameExternal("texture2DProj");
             return new GFFIExpression.GFFIExpressionBuiltIn(
-              new GASTExpression.GASTEApplication(name, type, arguments));
+              new GASTExpression.GASTEApplicationExternal(
+                name,
+                type,
+                arguments));
           }
-          final GTermNameGlobal name = new GTermNameGlobal("textureProj");
+          final GTermNameExternal name = new GTermNameExternal("textureProj");
           return new GFFIExpression.GFFIExpressionBuiltIn(
-            new GASTExpression.GASTEApplication(name, type, arguments));
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
         }
 
         @Override public GFFIExpression versionVisitFull(
@@ -860,13 +890,17 @@ public final class GFFIExpressionEmitters
           throws ConstraintError
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
-            final GTermNameGlobal name = new GTermNameGlobal("texture2DProj");
+            final GTermNameExternal name =
+              new GTermNameExternal("texture2DProj");
             return new GFFIExpression.GFFIExpressionBuiltIn(
-              new GASTExpression.GASTEApplication(name, type, arguments));
+              new GASTExpression.GASTEApplicationExternal(
+                name,
+                type,
+                arguments));
           }
-          final GTermNameGlobal name = new GTermNameGlobal("textureProj");
+          final GTermNameExternal name = new GTermNameExternal("textureProj");
           return new GFFIExpression.GFFIExpressionBuiltIn(
-            new GASTExpression.GASTEApplication(name, type, arguments));
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
         }
       });
   }
@@ -896,13 +930,17 @@ public final class GFFIExpressionEmitters
           throws ConstraintError
         {
           if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
-            final GTermNameGlobal name = new GTermNameGlobal("texture2DProj");
+            final GTermNameExternal name =
+              new GTermNameExternal("texture2DProj");
             return new GFFIExpression.GFFIExpressionBuiltIn(
-              new GASTExpression.GASTEApplication(name, type, arguments));
+              new GASTExpression.GASTEApplicationExternal(
+                name,
+                type,
+                arguments));
           }
-          final GTermNameGlobal name = new GTermNameGlobal("textureProj");
+          final GTermNameExternal name = new GTermNameExternal("textureProj");
           return new GFFIExpression.GFFIExpressionBuiltIn(
-            new GASTExpression.GASTEApplication(name, type, arguments));
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
         }
 
         @Override public GFFIExpression versionVisitFull(
@@ -910,13 +948,17 @@ public final class GFFIExpressionEmitters
           throws ConstraintError
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
-            final GTermNameGlobal name = new GTermNameGlobal("texture2DProj");
+            final GTermNameExternal name =
+              new GTermNameExternal("texture2DProj");
             return new GFFIExpression.GFFIExpressionBuiltIn(
-              new GASTExpression.GASTEApplication(name, type, arguments));
+              new GASTExpression.GASTEApplicationExternal(
+                name,
+                type,
+                arguments));
           }
-          final GTermNameGlobal name = new GTermNameGlobal("textureProj");
+          final GTermNameExternal name = new GTermNameExternal("textureProj");
           return new GFFIExpression.GFFIExpressionBuiltIn(
-            new GASTExpression.GASTEApplication(name, type, arguments));
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
         }
       });
   }
@@ -1253,9 +1295,12 @@ public final class GFFIExpressionEmitters
     assert ft.getArguments().get(1).getType().equals(TVector3F.get());
     assert ft.getReturnType().equals(TVector3F.get());
 
-    final GTermNameGlobal tname = new GTermNameGlobal("cross");
+    final GTermNameExternal tname = new GTermNameExternal("cross");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, TFloat.get(), arguments));
+      new GASTExpression.GASTEApplicationExternal(
+        tname,
+        TFloat.get(),
+        arguments));
   }
 
   static @Nonnull GFFIExpression com_io7m_parasol_vector3f_dot(
@@ -1832,9 +1877,9 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(2).getType().equals(type);
     assert f.getType().getReturnType().equals(type);
 
-    final GTermNameGlobal tname = new GTermNameGlobal("clamp");
+    final GTermNameExternal tname = new GTermNameExternal("clamp");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, type, arguments));
+      new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
   @SuppressWarnings("unused") private static @Nonnull
@@ -1850,9 +1895,9 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(0).getType().equals(type);
     assert f.getType().getReturnType().equals(type);
 
-    final GTermNameGlobal tname = new GTermNameGlobal("normalize");
+    final GTermNameExternal tname = new GTermNameExternal("normalize");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, type, arguments));
+      new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
   @SuppressWarnings("unused") private static @Nonnull
@@ -1869,9 +1914,9 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(1).getType().equals(type);
     assert f.getType().getReturnType().equals(type);
 
-    final GTermNameGlobal tname = new GTermNameGlobal("reflect");
+    final GTermNameExternal tname = new GTermNameExternal("reflect");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, type, arguments));
+      new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
   @SuppressWarnings("unused") private static @Nonnull
@@ -1889,9 +1934,9 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(2).getType().equals(TFloat.get());
     assert f.getType().getReturnType().equals(type);
 
-    final GTermNameGlobal tname = new GTermNameGlobal("refract");
+    final GTermNameExternal tname = new GTermNameExternal("refract");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, type, arguments));
+      new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
   @SuppressWarnings("unused") private static @Nonnull
@@ -1912,9 +1957,9 @@ public final class GFFIExpressionEmitters
     assert fta.get(2).getType().equals(TFloat.get());
     assert ft.getReturnType().equals(type);
 
-    final GTermNameGlobal tname = new GTermNameGlobal("mix");
+    final GTermNameExternal tname = new GTermNameExternal("mix");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, type, arguments));
+      new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
   @SuppressWarnings("unused") private static @Nonnull
@@ -1931,9 +1976,12 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(1).getType().equals(type);
     assert f.getType().getReturnType().equals(TFloat.get());
 
-    final GTermNameGlobal tname = new GTermNameGlobal("dot");
+    final GTermNameExternal tname = new GTermNameExternal("dot");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, TFloat.get(), arguments));
+      new GASTExpression.GASTEApplicationExternal(
+        tname,
+        TFloat.get(),
+        arguments));
   }
 
   @SuppressWarnings("unused") private static @Nonnull
@@ -1951,9 +1999,9 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(0).getType().equals(from);
     assert f.getType().getReturnType().equals(to);
 
-    final GTermNameGlobal tname = new GTermNameGlobal(name);
+    final GTermNameExternal tname = new GTermNameExternal(name);
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, to, arguments));
+      new GASTExpression.GASTEApplicationExternal(tname, to, arguments));
   }
 
   @SuppressWarnings("unused") private static @Nonnull
@@ -2090,9 +2138,9 @@ public final class GFFIExpressionEmitters
     assert f.getType().getArguments().get(0).getType().equals(type);
     assert f.getType().getReturnType().equals(TFloat.get());
 
-    final GTermNameGlobal tname = new GTermNameGlobal("length");
+    final GTermNameExternal tname = new GTermNameExternal("length");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplication(tname, type, arguments));
+      new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
   @SuppressWarnings("unused") private static @Nonnull

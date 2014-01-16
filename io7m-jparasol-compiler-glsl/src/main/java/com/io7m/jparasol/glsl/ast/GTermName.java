@@ -22,6 +22,65 @@ import com.io7m.jparasol.NameShow;
 
 public abstract class GTermName implements GTermNameVisitable, NameShow
 {
+  public static final class GTermNameExternal extends GTermName
+  {
+    private final @Nonnull String name;
+
+    public GTermNameExternal(
+      final @Nonnull String name)
+    {
+      this.name = name;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final GTermNameExternal other = (GTermNameExternal) obj;
+      return this.name.equals(other.name);
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      return result;
+    }
+
+    @Override public @Nonnull String show()
+    {
+      return this.name;
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends GTermNameVisitor<A, E>>
+      A
+      termNameVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.termNameVisitExternal(this);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[GTermNameExternal ");
+      builder.append(this.name);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
   public static final class GTermNameGlobal extends GTermName
   {
     private final @Nonnull String name;

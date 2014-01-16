@@ -18,7 +18,6 @@ package com.io7m.jparasol.glsl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -130,6 +129,7 @@ import com.io7m.jparasol.typed.ast.TASTFragmentShaderLocalVisitor;
 import com.io7m.jparasol.typed.ast.TASTLocalLevelVisitor;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jparasol.typed.ast.TASTTermName;
+import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameExternal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
@@ -139,14 +139,139 @@ import com.io7m.jparasol.typed.ast.TASTTypeVisitor;
 
 public final class GTransform
 {
+  private static final class Binding
+  {
+    private final boolean             external;
+    private final @Nonnull String     original;
+    private final @Nonnull String     current;
+    private final @Nonnull TValueType type;
+
+    private Binding(
+      final @Nonnull String original,
+      final @Nonnull TValueType type,
+      final @Nonnull String current,
+      final boolean external)
+    {
+      this.original = original;
+      this.current = current;
+      this.type = type;
+      this.external = external;
+
+      assert (external == true ? original.equals(current) : true);
+    }
+
+    public static @Nonnull Binding newExternalBinding(
+      final @Nonnull String name,
+      final @Nonnull TValueType type)
+    {
+      return new Binding(name, type, name, true);
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final Binding other = (Binding) obj;
+      if (this.current == null) {
+        if (other.current != null) {
+          return false;
+        }
+      } else if (!this.current.equals(other.current)) {
+        return false;
+      }
+      if (this.external != other.external) {
+        return false;
+      }
+      if (this.original == null) {
+        if (other.original != null) {
+          return false;
+        }
+      } else if (!this.original.equals(other.original)) {
+        return false;
+      }
+      if (this.type == null) {
+        if (other.type != null) {
+          return false;
+        }
+      } else if (!this.type.equals(other.type)) {
+        return false;
+      }
+      return true;
+    }
+
+    public @Nonnull String getOriginal()
+    {
+      return this.original;
+    }
+
+    public @Nonnull String getCurrent()
+    {
+      return this.current;
+    }
+
+    public @Nonnull TValueType getType()
+    {
+      return this.type;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.current.hashCode();
+      result = (prime * result) + (this.external ? 1231 : 1237);
+      result = (prime * result) + this.original.hashCode();
+      result = (prime * result) + this.type.hashCode();
+      return result;
+    }
+
+    public boolean isExternal()
+    {
+      return this.external;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[Binding external=");
+      builder.append(this.external);
+      builder.append(", original=");
+      builder.append(this.original);
+      builder.append(", current=");
+      builder.append(this.current);
+      builder.append(", type=");
+      builder.append(this.type);
+      builder.append("]");
+      return builder.toString();
+    }
+
+    public static Binding newBinding(
+      final @Nonnull String original,
+      final @Nonnull TValueType type,
+      final @Nonnull String current)
+    {
+      return new Binding(original, type, current, false);
+    }
+  }
+
   private static final class Context
   {
+    private static final @Nonnull String                                   PREFIX_LOCAL;
     private static final @Nonnull String                                   PREFIX_TERM;
     private static final @Nonnull String                                   PREFIX_TYPE;
 
     static {
       PREFIX_TYPE = "pt_";
       PREFIX_TERM = "p_";
+      PREFIX_LOCAL = "pl_";
     }
 
     private final @Nonnull TASTCompilation                                 compilation;
@@ -203,7 +328,28 @@ public final class GTransform
       return this.ffi;
     }
 
-    public @Nonnull GTermNameGlobal getFreshTemporaryName()
+    public @Nonnull Binding getFreshBindingFromLocal(
+      final @Nonnull TASTTermNameLocal name,
+      final @Nonnull TValueType type,
+      final boolean external)
+    {
+      final String original = name.getCurrent();
+      if (external) {
+        this.log.debug(String.format(
+          "Fresh local (external) binding %s",
+          original));
+        return Binding.newExternalBinding(original, type);
+      }
+
+      final String current = Context.PREFIX_LOCAL + original;
+      this.log.debug(String.format(
+        "Fresh local binding %s -> %s",
+        original,
+        current));
+      return Binding.newBinding(original, type, current);
+    }
+
+    private @Nonnull String getFreshTemporaryName()
     {
       final StringBuilder s = new StringBuilder();
       s.append("_tmp_");
@@ -212,7 +358,7 @@ public final class GTransform
       if (this.log.enabled(Level.LOG_DEBUG)) {
         this.log.debug(String.format("Fresh temporary %s", name));
       }
-      return new GTermNameGlobal(name);
+      return name;
     }
 
     public @Nonnull GTermNameGlobal getGlobalTermName(
@@ -220,6 +366,16 @@ public final class GTransform
     {
       final String actual = this.terms_names.getName(term).show();
       return new GTermNameGlobal(Context.PREFIX_TERM + actual);
+    }
+
+    public @Nonnull GTermNameLocal getLocalFromBinding(
+      final @Nonnull Binding b)
+    {
+      this.log.debug(String.format(
+        "Local term name %s from %sbinding",
+        b.getCurrent(),
+        b.isExternal() ? "(external) " : ""));
+      return new GTermNameLocal(b.getCurrent());
     }
 
     public @Nonnull Log getLog()
@@ -253,6 +409,7 @@ public final class GTransform
     }
 
     public @Nonnull GTermName lookupTermName(
+      final @Nonnull Map<String, Binding> bindings,
       final @Nonnull TASTTermName name)
       throws ConstraintError
     {
@@ -273,23 +430,45 @@ public final class GTransform
             throws ConstraintError,
               ConstraintError
           {
-            return new GTermNameLocal(t.getCurrent());
+            assert bindings.containsKey(t.getCurrent());
+            final Binding binding = bindings.get(t.getCurrent());
+            return new GTermNameLocal(binding.getCurrent());
+          }
+
+          @Override public GTermName termNameVisitExternal(
+            final TASTTermNameExternal t)
+            throws ConstraintError,
+              ConstraintError
+          {
+            throw new UnreachableCodeException();
           }
         });
+    }
+
+    public @Nonnull Binding getFreshBindingTemporary(
+      final @Nonnull TValueType type)
+    {
+      final String temp = this.getFreshTemporaryName();
+      return Binding.newBinding(temp, type, temp);
+    }
+
+    public @Nonnull GTermNameGlobal getFreshTemporaryGlobal()
+    {
+      return new GTermNameGlobal(this.getFreshTemporaryName());
     }
   }
 
   private static final class ExpressionStatementTransformer implements
     TASTExpressionVisitor<GASTScope, TASTDValueLocal, GFFIError>
   {
-    private final @Nonnull List<Pair<String, TValueType>>                   bindings;
+    private final @Nonnull Map<String, Binding>                             bindings;
     private final @Nonnull Context                                          context;
     private final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
     private final @Nonnull GVersion                                         version;
 
     public ExpressionStatementTransformer(
       final @Nonnull Context context,
-      final @Nonnull List<Pair<String, TValueType>> bindings,
+      final @Nonnull Map<String, Binding> bindings,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
       final @Nonnull GVersion version)
     {
@@ -440,8 +619,8 @@ public final class GTransform
       final ArrayList<GASTStatement> statements =
         new ArrayList<GASTStatement>();
 
-      final ArrayList<Pair<String, TValueType>> bindings_new =
-        new ArrayList<Pair<String, TValueType>>(this.bindings);
+      final Map<String, Binding> bindings_new =
+        new HashMap<String, Binding>(this.bindings);
 
       final List<TASTDValueLocal> locals = e.getBindings();
 
@@ -521,8 +700,10 @@ public final class GTransform
        */
 
       for (final TASTRecordFieldAssignment a : e.getAssignments()) {
-        final GTermNameLocal t =
-          new GTermNameLocal(this.context.getFreshTemporaryName().show());
+        final TValueType type = (TValueType) a.getExpression().getType();
+        final Binding binding = this.context.getFreshBindingTemporary(type);
+        final GTermNameLocal t = new GTermNameLocal(binding.getCurrent());
+
         final GASTExpression ae =
           a.getExpression().expressionVisitableAccept(
             new ExpressionTransformer(
@@ -630,7 +811,7 @@ public final class GTransform
   private static final class ExpressionTransformer implements
     TASTExpressionVisitor<GASTExpression, TASTDValueLocal, GFFIError>
   {
-    private final @Nonnull List<Pair<String, TValueType>>                   bindings;
+    private final @Nonnull Map<String, Binding>                             bindings;
     private final @Nonnull Context                                          context;
     private final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
     private final @Nonnull GVersion                                         version;
@@ -638,7 +819,7 @@ public final class GTransform
     public ExpressionTransformer(
       final @Nonnull Context context,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-      final @Nonnull List<Pair<String, TValueType>> bindings,
+      final @Nonnull Map<String, Binding> bindings,
       final @Nonnull GVersion version)
     {
       this.context = context;
@@ -768,6 +949,14 @@ public final class GTransform
              * There's no way to define a local function, so there's no way a
              * function application can occur on a local name.
              */
+            throw new UnreachableCodeException();
+          }
+
+          @Override public GASTExpression termNameVisitExternal(
+            final @Nonnull TASTTermNameExternal t)
+            throws ConstraintError,
+              GFFIError
+          {
             throw new UnreachableCodeException();
           }
         });
@@ -986,7 +1175,20 @@ public final class GTransform
               throws ConstraintError,
                 ConstraintError
             {
-              return new GTermNameLocal(t.getCurrent());
+              final String name = t.getCurrent();
+              assert ExpressionTransformer.this.bindings.containsKey(name);
+              final Binding binding =
+                ExpressionTransformer.this.bindings.get(name);
+              return ExpressionTransformer.this.context
+                .getLocalFromBinding(binding);
+            }
+
+            @Override public GTermName termNameVisitExternal(
+              final TASTTermNameExternal t)
+              throws ConstraintError,
+                ConstraintError
+            {
+              return new GTermNameGlobal(t.getCurrent());
             }
           });
       return new GASTEVariable(type, term);
@@ -1013,25 +1215,27 @@ public final class GTransform
        * given expression, in order to pass them to the wrapper function.
        */
 
-      final HashSet<String> names = new HashSet<String>();
-      for (final Pair<String, TValueType> b : this.bindings) {
-        names.add(b.first);
-      }
-      final Set<String> occurs = Occurences.occursIn(e, names);
+      final Set<String> occurs =
+        Occurences.occursIn(e, this.bindings.keySet());
 
       /**
        * Construct the new function and add it to the environment.
        */
 
-      final GTermNameGlobal f_name = this.context.getFreshTemporaryName();
+      final GTermNameGlobal f_name = this.context.getFreshTemporaryGlobal();
       final GTypeName f_returns = this.context.getTypeName(e.getType());
 
       final List<Pair<GTermNameLocal, GTypeName>> f_parameters =
         new ArrayList<Pair<GTermNameLocal, GTypeName>>();
-      for (final Pair<String, TValueType> b : this.bindings) {
-        if (occurs.contains(b.first)) {
-          final GTermNameLocal p_name = new GTermNameLocal(b.first);
-          final GTypeName p_type = this.context.getTypeName(b.second);
+
+      for (final String b_name : this.bindings.keySet()) {
+        final Binding binding = this.bindings.get(b_name);
+
+        if (occurs.contains(b_name)) {
+          final GTermNameLocal p_name =
+            this.context.getLocalFromBinding(binding);
+          final GTypeName p_type =
+            this.context.getTypeName(binding.getType());
           final Pair<GTermNameLocal, GTypeName> p =
             new Pair<GTermNameLocal, GTypeName>(p_name, p_type);
           f_parameters.add(p);
@@ -1091,13 +1295,16 @@ public final class GTransform
       throws ConstraintError,
         GFFIError
     {
-      final ArrayList<Pair<String, TValueType>> bindings =
-        new ArrayList<Pair<String, TValueType>>();
+      final Map<String, Binding> bindings = new HashMap<String, Binding>();
 
       for (final TASTDFunctionArgument b : f.getArguments()) {
-        final Pair<String, TValueType> p =
-          new Pair<String, TValueType>(b.getName().getCurrent(), b.getType());
-        bindings.add(p);
+        final Binding binding =
+          this.context.getFreshBindingFromLocal(
+            b.getName(),
+            b.getType(),
+            false);
+        assert bindings.containsKey(binding.getOriginal()) == false;
+        bindings.put(binding.getOriginal(), binding);
       }
 
       final GASTScope statement =
@@ -1115,8 +1322,11 @@ public final class GTransform
         new ArrayList<Pair<GTermNameLocal, GTypeName>>();
 
       for (final TASTDFunctionArgument b : f.getArguments()) {
+        final String b_name = b.getName().getCurrent();
+        assert bindings.containsKey(b_name);
+        final Binding binding = bindings.get(b_name);
         final GTermNameLocal term_name =
-          new GTermNameLocal(b.getName().getCurrent());
+          this.context.getLocalFromBinding(binding);
         final GTypeName type_name = this.context.getTypeName(b.getType());
         final Pair<GTermNameLocal, GTypeName> p =
           new Pair<GTermNameLocal, GTypeName>(term_name, type_name);
@@ -1157,7 +1367,7 @@ public final class GTransform
           new ExpressionTransformer(
             this.context,
             this.declarations,
-            new ArrayList<Pair<String, TValueType>>(),
+            new HashMap<String, Binding>(),
             this.version));
 
       final GTermNameGlobal term_name =
@@ -1262,25 +1472,24 @@ public final class GTransform
   {
     final List<GASTFragmentShaderStatement> statements =
       new ArrayList<GASTFragmentShaderStatement>();
-    final List<Pair<String, TValueType>> bindings =
-      new ArrayList<Pair<String, TValueType>>();
+    final Map<String, Binding> bindings = new HashMap<String, Binding>();
 
     for (final TASTDShaderFragmentInput i : fragment.getInputs()) {
-      final String name = i.getName().getCurrent();
-      final TValueType type = i.getType();
-      bindings.add(new Pair<String, TValueType>(name, type));
+      final Binding binding =
+        context.getFreshBindingFromLocal(i.getName(), i.getType(), true);
+      assert bindings.containsKey(binding.getOriginal()) == false;
+      bindings.put(binding.getOriginal(), binding);
     }
 
     for (final TASTDShaderFragmentParameter p : fragment.getParameters()) {
-      final String name = p.getName().getCurrent();
-      final TValueType type = p.getType();
-      bindings.add(new Pair<String, TValueType>(name, type));
+      final Binding binding =
+        context.getFreshBindingFromLocal(p.getName(), p.getType(), true);
+      assert bindings.containsKey(binding.getOriginal()) == false;
+      bindings.put(binding.getOriginal(), binding);
     }
 
     /**
      * Translate locals and conditional discards to statements.
-     * 
-     * @throws GFFIError
      */
 
     for (final TASTDShaderFragmentLocal l : fragment.getLocals()) {
@@ -1331,8 +1540,10 @@ public final class GTransform
 
       final GShaderOutputName name =
         new GShaderOutputName(f_name.getActual());
+
       final GTermName value =
-        context.lookupTermName(f.getVariable().getName());
+        context.lookupTermName(bindings, f.getVariable().getName());
+
       writes.add(new GASTFragmentOutputAssignment(
         name,
         output.getIndex(),
@@ -1522,21 +1733,22 @@ public final class GTransform
       GFFIError
   {
     final List<GASTStatement> statements = new ArrayList<GASTStatement>();
-    final List<Pair<String, TValueType>> bindings =
-      new ArrayList<Pair<String, TValueType>>();
+    final Map<String, Binding> bindings = new HashMap<String, Binding>();
     final List<TASTDValueLocal> locals =
       new ArrayList<TASTDeclaration.TASTDValueLocal>();
 
     for (final TASTDShaderVertexInput i : vertex.getInputs()) {
-      final String name = i.getName().getCurrent();
-      final TValueType type = i.getType();
-      bindings.add(new Pair<String, TValueType>(name, type));
+      final Binding binding =
+        context.getFreshBindingFromLocal(i.getName(), i.getType(), true);
+      assert bindings.containsKey(binding.getOriginal()) == false;
+      bindings.put(binding.getOriginal(), binding);
     }
 
     for (final TASTDShaderVertexParameter p : vertex.getParameters()) {
-      final String name = p.getName().getCurrent();
-      final TValueType type = p.getType();
-      bindings.add(new Pair<String, TValueType>(name, type));
+      final Binding binding =
+        context.getFreshBindingFromLocal(p.getName(), p.getType(), true);
+      assert bindings.containsKey(binding.getOriginal()) == false;
+      bindings.put(binding.getOriginal(), binding);
     }
 
     for (final TASTDShaderVertexLocalValue v : vertex.getValues()) {
@@ -1561,7 +1773,7 @@ public final class GTransform
        */
 
       final GTermName value =
-        context.lookupTermName(w.getVariable().getName());
+        context.lookupTermName(bindings, w.getVariable().getName());
 
       /**
        * If the shader output in question is a "main" output, then it assigns
@@ -1631,7 +1843,7 @@ public final class GTransform
       final @Nonnull Context context,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
       final @Nonnull List<GASTFragmentShaderStatement> statements,
-      final @Nonnull List<Pair<String, TValueType>> bindings,
+      final @Nonnull Map<String, Binding> bindings,
       final @Nonnull TASTDValueLocal b,
       final @Nonnull GVersion version)
       throws ConstraintError,
@@ -1640,15 +1852,19 @@ public final class GTransform
     final GASTExpression ex =
       b.getExpression().expressionVisitableAccept(
         new ExpressionTransformer(context, declarations, bindings, version));
-    final GTermNameLocal name = new GTermNameLocal(b.getName().show());
-    final TValueType type = (TValueType) b.getExpression().getType();
+
+    final TValueType b_type = (TValueType) b.getExpression().getType();
+    final Binding binding =
+      context.getFreshBindingFromLocal(b.getName(), b_type, false);
+    assert bindings.containsKey(binding.getOriginal()) == false;
+    bindings.put(binding.getOriginal(), binding);
+
+    final GTermNameLocal name = context.getLocalFromBinding(binding);
+    final TValueType type = b_type;
     final GASTFragmentLocalVariable l =
       new GASTFragmentLocalVariable(name, context.getTypeName(type), ex);
 
     statements.add(l);
-    final Pair<String, TValueType> p =
-      new Pair<String, TValueType>(name.show(), type);
-    bindings.add(p);
   }
 
   private static
@@ -1657,7 +1873,7 @@ public final class GTransform
       final @Nonnull Context context,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
       final @Nonnull List<GASTStatement> statements,
-      final @Nonnull List<Pair<String, TValueType>> bindings,
+      final @Nonnull Map<String, Binding> bindings,
       final @Nonnull TASTDValueLocal b,
       final @Nonnull GVersion version)
       throws ConstraintError,
@@ -1666,15 +1882,21 @@ public final class GTransform
     final GASTExpression ex =
       b.getExpression().expressionVisitableAccept(
         new ExpressionTransformer(context, declarations, bindings, version));
-    final GTermNameLocal name = new GTermNameLocal(b.getName().show());
-    final TValueType type = (TValueType) b.getExpression().getType();
+
+    final TValueType b_type = (TValueType) b.getExpression().getType();
+    final Binding binding =
+      context.getFreshBindingFromLocal(b.getName(), b_type, false);
+    assert bindings.containsKey(binding.getOriginal()) == false;
+    bindings.put(binding.getOriginal(), binding);
+
+    final TValueType type = b_type;
     final GASTLocalVariable l =
-      new GASTStatement.GASTLocalVariable(name, context.getTypeName(type), ex);
+      new GASTStatement.GASTLocalVariable(
+        context.getLocalFromBinding(binding),
+        context.getTypeName(type),
+        ex);
 
     statements.add(l);
-    final Pair<String, TValueType> p =
-      new Pair<String, TValueType>(name.show(), type);
-    bindings.add(p);
   }
 
   /**
@@ -1682,8 +1904,6 @@ public final class GTransform
    * variable to <code>bindings</code>. Any temporary functions generated will
    * be added to <code>declarations</code> and local variable statements will
    * be added to <code>statements</code>.
-   * 
-   * @throws GFFIError
    */
 
   private static
@@ -1692,7 +1912,7 @@ public final class GTransform
       final @Nonnull Context context,
       final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
       final @Nonnull List<GASTStatement> statements,
-      final @Nonnull List<Pair<String, TValueType>> bindings,
+      final @Nonnull Map<String, Binding> bindings,
       final @Nonnull List<TASTDValueLocal> locals,
       final @Nonnull GVersion version)
       throws ConstraintError,

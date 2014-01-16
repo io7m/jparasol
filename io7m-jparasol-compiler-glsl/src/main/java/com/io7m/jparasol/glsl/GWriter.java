@@ -28,6 +28,7 @@ import com.io7m.jaux.functional.Unit;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplication;
+import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplicationExternal;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpDivide;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpEqual;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpGreaterThan;
@@ -79,6 +80,7 @@ import com.io7m.jparasol.glsl.ast.GFieldName;
 import com.io7m.jparasol.glsl.ast.GShaderInputName;
 import com.io7m.jparasol.glsl.ast.GShaderOutputName;
 import com.io7m.jparasol.glsl.ast.GShaderParameterName;
+import com.io7m.jparasol.glsl.ast.GTermName.GTermNameExternal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 import com.io7m.jparasol.glsl.ast.GTermNameVisitor;
@@ -92,6 +94,22 @@ public final class GWriter
   static final class ExpressionWriter implements
     GASTExpressionVisitor<String, ConstraintError>
   {
+    @Override public String expressionApplicationExternalVisit(
+      final List<String> arguments,
+      final GASTEApplicationExternal e)
+      throws ConstraintError
+    {
+      final String arg_text = GWriter.formatCommaSeparatedList(arguments);
+      return String.format("%s (%s)", e.getName().show(), arg_text);
+    }
+
+    @Override public void expressionApplicationExternalVisitPre(
+      final GASTEApplicationExternal e)
+      throws ConstraintError
+    {
+      // Nothing
+    }
+
     @Override public String expressionApplicationVisit(
       final @Nonnull List<String> arguments,
       final @Nonnull GASTEApplication e)
@@ -660,15 +678,22 @@ public final class GWriter
     final String value =
       w.getValue().termNameVisitableAccept(
         new GTermNameVisitor<String, ConstraintError>() {
+          @Override public String termNameVisitExternal(
+            final @Nonnull GTermNameExternal n)
+            throws ConstraintError
+          {
+            return n.show();
+          }
+
           @Override public String termNameVisitGlobal(
-            final GTermNameGlobal n)
+            final @Nonnull GTermNameGlobal n)
             throws ConstraintError
           {
             return n.show();
           }
 
           @Override public String termNameVisitLocal(
-            final GTermNameLocal n)
+            final @Nonnull GTermNameLocal n)
             throws ConstraintError
           {
             return n.show();
@@ -777,39 +802,6 @@ public final class GWriter
     writer.flush();
   }
 
-  @SuppressWarnings("boxing") private static void writeVersionDirective(
-    final PrintWriter writer,
-    final GVersion version)
-  {
-    writer.println(String.format("#version %d", version.getNumber()));
-    writer.println();
-  }
-
-  private static void writePrecision(
-    final PrintWriter writer,
-    final GVersion version)
-    throws ConstraintError
-  {
-    version.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
-      @Override public Unit versionVisitES(
-        final GVersionES v)
-        throws ConstraintError
-      {
-        writer.println("precision highp float;");
-        writer.println("precision highp int;");
-        writer.println();
-        return Unit.unit();
-      }
-
-      @Override public Unit versionVisitFull(
-        final GVersionFull v)
-        throws ConstraintError
-      {
-        return Unit.unit();
-      }
-    });
-  }
-
   static void writeFunction(
     final @Nonnull PrintWriter w,
     final @Nonnull GASTTermFunction term)
@@ -839,6 +831,31 @@ public final class GWriter
 
     term.getStatement().statementVisitableAccept(new StatementWriter(w, 0));
     w.println();
+  }
+
+  private static void writePrecision(
+    final PrintWriter writer,
+    final GVersion version)
+    throws ConstraintError
+  {
+    version.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
+      @Override public Unit versionVisitES(
+        final GVersionES v)
+        throws ConstraintError
+      {
+        writer.println("precision highp float;");
+        writer.println("precision highp int;");
+        writer.println();
+        return Unit.unit();
+      }
+
+      @Override public Unit versionVisitFull(
+        final GVersionFull v)
+        throws ConstraintError
+      {
+        return Unit.unit();
+      }
+    });
   }
 
   private static void writeTerms(
@@ -917,6 +934,14 @@ public final class GWriter
     writer.println(String.format("%s", type_name));
     writer.println(String.format("%s =", term_name));
     writer.println(String.format("  %s;", etext));
+    writer.println();
+  }
+
+  @SuppressWarnings("boxing") private static void writeVersionDirective(
+    final PrintWriter writer,
+    final GVersion version)
+  {
+    writer.println(String.format("#version %d", version.getNumber()));
     writer.println();
   }
 
@@ -1070,6 +1095,13 @@ public final class GWriter
     final String value =
       w.getValue().termNameVisitableAccept(
         new GTermNameVisitor<String, ConstraintError>() {
+          @Override public String termNameVisitExternal(
+            final @Nonnull GTermNameExternal n)
+            throws ConstraintError
+          {
+            return n.show();
+          }
+
           @Override public String termNameVisitGlobal(
             final GTermNameGlobal n)
             throws ConstraintError

@@ -30,6 +30,92 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 public abstract class TASTTermName implements TASTTermNameVisitable
 {
   /**
+   * A name that refers to an external. Will only appear in typed ASTs if
+   * inserted there via an FFI mechanism.
+   */
+
+  public static final class TASTTermNameExternal extends TASTTermName
+  {
+    private final @Nonnull String               current;
+    private final @Nonnull TokenIdentifierLower token;
+
+    public TASTTermNameExternal(
+      final @Nonnull TokenIdentifierLower token,
+      final @Nonnull String current)
+      throws ConstraintError
+    {
+      super(
+        Constraints.constrainNotNull(token, "Token").getFile(),
+        Constraints.constrainNotNull(token, "Token").getPosition());
+      this.token = token;
+      this.current = Constraints.constrainNotNull(current, "Current");
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj)) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTTermNameExternal other = (TASTTermNameExternal) obj;
+      if (!this.current.equals(other.current)) {
+        return false;
+      }
+      if (!this.token.equals(other.token)) {
+        return false;
+      }
+      return true;
+    }
+
+    public @Nonnull String getCurrent()
+    {
+      return this.current;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.current.hashCode();
+      result = (prime * result) + this.token.hashCode();
+      return result;
+    }
+
+    @Override public String show()
+    {
+      return this.getCurrent();
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends TASTTermNameVisitor<A, E>>
+      A
+      termNameVisitableAccept(
+        final @Nonnull V v)
+        throws ConstraintError,
+          E
+    {
+      return v.termNameVisitExternal(this);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[TASTNameExternal ");
+      builder.append(this.current);
+      builder.append(" ");
+      builder.append(this.token);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
+  /**
    * A fully qualified name.
    */
 

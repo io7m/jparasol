@@ -119,7 +119,7 @@ public final class GFFI
             final TokenIdentifierLower original =
               new TokenIdentifierLower(file, Position.ZERO, "gl_FragCoord");
             final TASTTermName name =
-              new TASTTermName.TASTTermNameLocal(original, "gl_FragCoord");
+              new TASTTermName.TASTTermNameExternal(original, "gl_FragCoord");
             return new TASTExpression.TASTEVariable(x.getType(), name);
           } catch (final ConstraintError e) {
             throw new UnreachableCodeException(e);
