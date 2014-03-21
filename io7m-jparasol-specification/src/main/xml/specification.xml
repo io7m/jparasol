@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  Copyright © 2013 <code@io7m.com> http://io7m.com
+  Copyright © 2014 <code@io7m.com> http://io7m.com
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -1504,13 +1504,6 @@ end;]]></s:verbatim>
         </s:paragraph>
       </s:subsection>
 
-      <s:subsection xml:id="com.io7m.parasol.1.0.0.declarations.shaders.semantics">
-        <s:subsection-title>Operational Semantics</s:subsection-title>
-        <s:paragraph>
-          ...
-        </s:paragraph>
-      </s:subsection>
-
       <s:subsection xml:id="com.io7m.parasol.1.0.0.declarations.shaders.syntax">
         <s:subsection-title>Syntax</s:subsection-title>
         <s:paragraph>
@@ -1528,10 +1521,14 @@ shader_vertex_input_declaration =
 shader_vertex_output_declaration =
   "out" , name_lower , ":" , type_path ;
 
+shader_vertex_output_declaration =
+  "out" , "vertex" , name_lower , ":" , type_path ;
+
 shader_vertex_parameter =
     shader_parameter_declaration
   | shader_vertex_input_declaration
-  | shader_vertex_output_declaration ;
+  | shader_vertex_output_declaration
+  | shader_vertex_output_main_declaration ;
 
 shader_vertex_parameters =
   { shader_vertex_parameter , ";" } ;
