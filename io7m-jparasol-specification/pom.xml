@@ -1,26 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project
   xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.io7m.jparasol</groupId>
-  <artifactId>io7m-jparasol</artifactId>
+  <groupId>com.io7m.jparasol.specification</groupId>
+  <artifactId>io7m-jparasol-specification</artifactId>
+  <name>io7m-jparasol-specification</name>
   <version>0.3.15</version>
-  <packaging>pom</packaging>
-  <name>io7m-jparasol</name>
-  <description>Minimalist, pure functional shading language</description>
-  <url>http://mvn.io7m.com/jparasol/</url>
-
-  <modules>
-    <module>io7m-jparasol-compiler-core</module>
-    <module>io7m-jparasol-compiler-frontend</module>
-    <module>io7m-jparasol-compiler-glsl</module>
-    <module>io7m-jparasol-specification</module>
-    <module>io7m-jparasol-tests</module>
-    <module>io7m-jparasol-xml</module>
-  </modules>
+  <description>Minimalist pure functional shading language (specification)</description>
+  <url>http://mvn.io7m.com/jparasol-specification/</url>
 
   <licenses>
     <license>
@@ -53,18 +42,28 @@
     <site>
       <id>io7m</id>
       <name>io7m.com</name>
-      <url>http://mvn.io7m.com/jparasol/</url>
+      <url>http://mvn.io7m.com/jparasol-specification/</url>
     </site>
   </distributionManagement>
 
-  <prerequisites>
-    <maven>2.2.1</maven>
-  </prerequisites>
+  <mailingLists>
+    <mailingList>
+      <name>io7m-parasol</name>
+      <subscribe>io7m-parasol-join@lists.io7m.com</subscribe>
+      <unsubscribe>io7m-parasol-leave@lists.io7m.com</unsubscribe>
+      <post>io7m-parasol@lists.io7m.com</post>
+      <archive>http://lists.io7m.com/io7m-parasol/archive</archive>
+    </mailingList>
+  </mailingLists>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
+
+  <prerequisites>
+    <maven>2.2.1</maven>
+  </prerequisites>
 
   <reporting>
     <plugins>
@@ -89,11 +88,6 @@
       <!-- Plugin versions -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.15</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <version>2.5</version>
       </plugin>
@@ -111,6 +105,30 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.6</version>
+      </plugin>
+
+      <!-- Transform XML documentation with Saxon -->
+      <plugin>
+        <groupId>com.io7m.saxon-plugin</groupId>
+        <artifactId>io7m-saxon-plugin</artifactId>
+        <version>1.1.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+            <phase>process-sources</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <transformation>
+            <stylesheetFile>io7m-jparasol-specification/src/main/xsl/structural-1_0_0-standalone-x20.xsl</stylesheetFile>
+            <documentFile>io7m-jparasol-specification/src/main/xml/specification.xml</documentFile>
+            <outputDirectory>${project.build.directory}/xhtml</outputDirectory>
+            <outputDirectoryParameterName>io7m.structural-1_0_0.output_directory</outputDirectoryParameterName>
+            <outputFile>out.txt</outputFile>
+          </transformation>
+        </configuration>
       </plugin>
 
       <!-- Validate XML documentation -->
@@ -134,36 +152,15 @@
         </configuration>
       </plugin>
 
-      <!-- Transform XML documentation with Saxon -->
-      <plugin>
-        <groupId>com.io7m.saxon-plugin</groupId>
-        <artifactId>io7m-saxon-plugin</artifactId>
-        <version>1.1.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>transform</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <transformation>
-            <stylesheetFile>src/main/xsl/structural-1_0_0-standalone-x20.xsl</stylesheetFile>
-            <documentFile>src/main/xml/documentation.xml</documentFile>
-            <outputDirectory>${project.build.directory}/xhtml</outputDirectory>
-            <outputDirectoryParameterName>io7m.structural-1_0_0.output_directory</outputDirectoryParameterName>
-            <outputFile>out.txt</outputFile>
-          </transformation>
-        </configuration>
-      </plugin>
-
       <!-- Produce documentation archive -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.4</version>
         <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <finalName>io7m-jparasol-${project.version}-specification</finalName>
           <descriptors>
-            <descriptor>src/main/assembly/documentation.xml</descriptor>
+            <descriptor>src/main/assembly/spec.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
@@ -197,19 +194,6 @@
           <configuration>
             <lifecycleMappingMetadata>
               <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.sonatype.maven.plugin</groupId>
-                    <artifactId>emma-maven-plugin</artifactId>
-                    <versionRange>[1.2,)</versionRange>
-                    <goals>
-                      <goal>instrument</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
                 <pluginExecution>
                   <pluginExecutionFilter>
                     <groupId>org.codehaus.mojo</groupId>
