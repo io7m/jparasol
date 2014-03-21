@@ -3536,6 +3536,14 @@ expression =
         <s:paragraph>Return the cosine <s:term type="expression">cos(x)</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>divide</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>divide Definition</s:formal-item-title>
+          <s:verbatim>function divide (x : float, y : float) : float</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the division <s:term type="expression">x / y</s:term>. The result is only defined if <s:term type="expression">y &gt; 0</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>equals</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>equals Definition</s:formal-item-title>
@@ -3557,7 +3565,15 @@ expression =
           <s:formal-item-title>greater Definition</s:formal-item-title>
           <s:verbatim>function greater (x : float, y : float) : boolean</s:verbatim>
         </s:formal-item>
-        <s:paragraph>Return <s:term type="constant">true</s:term> iff <s:term type="expression">x > y</s:term>.</s:paragraph>
+        <s:paragraph>Return <s:term type="constant">true</s:term> iff <s:term type="expression">x &gt; y</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>greater_or_equal</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>greater_or_equal Definition</s:formal-item-title>
+          <s:verbatim>function greater_or_equal (x : float, y : float) : boolean</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return <s:term type="constant">true</s:term> iff <s:term type="expression">x &gt;= y</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>interpolate</s:subsection-title>
@@ -3593,6 +3609,14 @@ expression =
           <s:verbatim>function lesser (x : float, y : float) : boolean</s:verbatim>
         </s:formal-item>
         <s:paragraph>Return <s:term type="constant">true</s:term> iff <s:term type="expression">x &lt; y</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>lesser_or_equal</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>lesser_or_equal Definition</s:formal-item-title>
+          <s:verbatim>function lesser_or_equal (x : float, y : float) : boolean</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return <s:term type="constant">true</s:term> iff <s:term type="expression">x &lt;= y</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>maximum</s:subsection-title>
@@ -3696,6 +3720,7 @@ expression =
         </s:paragraph>
       </s:subsection>
     </s:section>
+
     <s:section xml:id="com.io7m.parasol.1.0.0.stdlib.com.io7m.parasol.Integer">
       <s:section-title>Module com.io7m.parasol.Integer</s:section-title>
       <s:section-contents/>
@@ -3708,12 +3733,12 @@ expression =
         <s:paragraph>Return <s:term type="expression">x + y</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
-        <s:subsection-title>subtract</s:subsection-title>
+        <s:subsection-title>divide</s:subsection-title>
         <s:formal-item kind="specifications">
-          <s:formal-item-title>subtract Definition</s:formal-item-title>
-          <s:verbatim>function subtract (x : integer, y : integer) : integer</s:verbatim>
+          <s:formal-item-title>divide Definition</s:formal-item-title>
+          <s:verbatim>function divide (x : integer, y : integer) : integer</s:verbatim>
         </s:formal-item>
-        <s:paragraph>Return <s:term type="expression">x - y</s:term>.</s:paragraph>
+        <s:paragraph>Return the division <s:term type="expression">x / y</s:term>. The result is only defined if <s:term type="expression">y &gt; 0</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>multiply</s:subsection-title>
@@ -3723,7 +3748,16 @@ expression =
         </s:formal-item>
         <s:paragraph>Return <s:term type="expression">x ✕ y</s:term>.</s:paragraph>
       </s:subsection>
+      <s:subsection>
+        <s:subsection-title>subtract</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>subtract Definition</s:formal-item-title>
+          <s:verbatim>function subtract (x : integer, y : integer) : integer</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return <s:term type="expression">x - y</s:term>.</s:paragraph>
+      </s:subsection>
     </s:section>
+
     <s:section xml:id="com.io7m.parasol.1.0.0.stdlib.com.io7m.parasol.Matrix3x3f">
       <s:section-title>Module com.io7m.parasol.Matrix3x3f</s:section-title>
       <s:section-contents/>
@@ -3744,6 +3778,7 @@ expression =
         <s:paragraph>Return <s:term type="expression">m ✕ v</s:term>.</s:paragraph>
       </s:subsection>
     </s:section>
+
     <s:section xml:id="com.io7m.parasol.1.0.0.stdlib.com.io7m.parasol.Matrix4x4f">
       <s:section-title>Module com.io7m.parasol.Matrix4x4f</s:section-title>
       <s:subsection>
@@ -3763,6 +3798,7 @@ expression =
         <s:paragraph>Return <s:term type="expression">m ✕ v</s:term>.</s:paragraph>
       </s:subsection>
     </s:section>
+
     <s:section xml:id="com.io7m.parasol.1.0.0.stdlib.com.io7m.parasol.Sampler2D">
       <s:section-title>Module com.io7m.parasol.Sampler2D</s:section-title>
       <s:section-contents/>
@@ -3791,12 +3827,28 @@ expression =
         <s:paragraph>Return the component-wise addition  <s:term type="expression">v0 + v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>add_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>add_scalar Definition</s:formal-item-title>
+          <s:verbatim>function add_scalar (v : vector_2f, x : float) : vector_2f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the addition  <s:term type="expression">(v[x] + s, v[y] + s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>dot Definition</s:formal-item-title>
           <s:verbatim>function dot (v0 : vector_2f, v1 : vector_2f) : float</s:verbatim>
         </s:formal-item>
         <s:paragraph>Return the dot product <s:term type="expression">v0 ⋅ v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>interpolate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>interpolate Definition</s:formal-item-title>
+          <s:verbatim>function interpolate (v0 : vector_2f, v1 : vector_2f, t : float) : vector_2f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the linear interpolation <s:term type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -3815,6 +3867,22 @@ expression =
         <s:paragraph>Return the component-wise multiplication <s:term type="expression">v0 ✕ v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>multiply_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>multiply_scalar Definition</s:formal-item-title>
+          <s:verbatim>function multiply_scalar (v0 : vector_2i, x : float) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the multiplication <s:term type="expression">(v[x] ✕ s, v[y] ✕ s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>negate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>negate Definition</s:formal-item-title>
+          <s:verbatim>function negate (v : vector_2f) : vector_2f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise negation <s:term type="expression">-v</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>normalize</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>normalize Definition</s:formal-item-title>
@@ -3823,6 +3891,30 @@ expression =
         <s:paragraph>
           Return a vector pointing in the same direction as <s:term type="expression">v</s:term>
           but with a magnitude of <s:term type="constant">1</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>reflect</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>reflect Definition</s:formal-item-title>
+          <s:verbatim>function reflect (i : vector_2f, n : vector_2f) : vector_2f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the reflection of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          as given by <s:term type="expression">i - 2.0 ✕ dot(n, i) ✕ n</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>refract</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>refract Definition</s:formal-item-title>
+          <s:verbatim>function refract (i : vector_2f, n : vector_2f, e : float) : vector_2f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the refraction vector of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          with the given ratio of indices of refraction <s:term type="expression">e</s:term>.
         </s:paragraph>
       </s:subsection>
       <s:subsection>
@@ -3847,12 +3939,28 @@ expression =
         <s:paragraph>Return the component-wise addition  <s:term type="expression">v0 + v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>add_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>add_scalar Definition</s:formal-item-title>
+          <s:verbatim>function add_scalar (v : vector_2i, x : integer) : vector_2i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the addition  <s:term type="expression">(v[x] + s, v[y] + s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>dot Definition</s:formal-item-title>
-          <s:verbatim>function dot (v0 : vector_2i, v1 : vector_2i) : float</s:verbatim>
+          <s:verbatim>function dot (v0 : vector_2i, v1 : vector_2i) : integer</s:verbatim>
         </s:formal-item>
         <s:paragraph>Return the dot product <s:term type="expression">v0 ⋅ v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>interpolate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>interpolate Definition</s:formal-item-title>
+          <s:verbatim>function interpolate (v0 : vector_2i, v1 : vector_2i, t : float) : vector_2i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the linear interpolation <s:term type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -3871,6 +3979,22 @@ expression =
         <s:paragraph>Return the component-wise multiplication <s:term type="expression">v0 ✕ v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>multiply_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>multiply_scalar Definition</s:formal-item-title>
+          <s:verbatim>function multiply_scalar (v0 : vector_2i, x : integer) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the multiplication <s:term type="expression">(v[x] ✕ s, v[y] ✕ s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>negate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>negate Definition</s:formal-item-title>
+          <s:verbatim>function negate (v : vector_2i) : vector_2i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise negation <s:term type="expression">-v</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>normalize</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>normalize Definition</s:formal-item-title>
@@ -3879,6 +4003,30 @@ expression =
         <s:paragraph>
           Return a vector pointing in the same direction as <s:term type="expression">v</s:term>
           but with a magnitude of <s:term type="constant">1</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>reflect</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>reflect Definition</s:formal-item-title>
+          <s:verbatim>function reflect (i : vector_2i, n : vector_2i) : vector_2i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the reflection of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          as given by <s:term type="expression">i - 2.0 ✕ dot(n, i) ✕ n</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>refract</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>refract Definition</s:formal-item-title>
+          <s:verbatim>function refract (i : vector_2i, n : vector_2i, e : float) : vector_2i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the refraction vector of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          with the given ratio of indices of refraction <s:term type="expression">e</s:term>.
         </s:paragraph>
       </s:subsection>
       <s:subsection>
@@ -3903,12 +4051,36 @@ expression =
         <s:paragraph>Return the component-wise addition  <s:term type="expression">v0 + v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>add_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>add_scalar Definition</s:formal-item-title>
+          <s:verbatim>function add_scalar (v : vector_3f, x : integer) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the addition  <s:term type="expression">(v[x] + s, v[y] + s, v[z] + s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>cross</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>cross Definition</s:formal-item-title>
+          <s:verbatim>function cross (v0 : vector_3f, v1 : vector_3f) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the cross product <s:term type="expression">v0 ✕ v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>dot Definition</s:formal-item-title>
-          <s:verbatim>function dot (v0 : vector_3f, v1 : vector_3f) : float</s:verbatim>
+          <s:verbatim>function dot (v0 : vector_3f, v1 : vector_3f) : integer</s:verbatim>
         </s:formal-item>
         <s:paragraph>Return the dot product <s:term type="expression">v0 ⋅ v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>interpolate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>interpolate Definition</s:formal-item-title>
+          <s:verbatim>function interpolate (v0 : vector_3f, v1 : vector_3f, t : float) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the linear interpolation <s:term type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -3927,6 +4099,22 @@ expression =
         <s:paragraph>Return the component-wise multiplication <s:term type="expression">v0 ✕ v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>multiply_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>multiply_scalar Definition</s:formal-item-title>
+          <s:verbatim>function multiply_scalar (v0 : vector_3f, x : float) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the multiplication <s:term type="expression">(v[x] ✕ s, v[y] ✕ s, v[z] ✕ s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>negate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>negate Definition</s:formal-item-title>
+          <s:verbatim>function negate (v : vector_3f) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise negation <s:term type="expression">-v</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>normalize</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>normalize Definition</s:formal-item-title>
@@ -3935,6 +4123,30 @@ expression =
         <s:paragraph>
           Return a vector pointing in the same direction as <s:term type="expression">v</s:term>
           but with a magnitude of <s:term type="constant">1</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>reflect</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>reflect Definition</s:formal-item-title>
+          <s:verbatim>function reflect (i : vector_3f, n : vector_3f) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the reflection of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          as given by <s:term type="expression">i - 2.0 ✕ dot(n, i) ✕ n</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>refract</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>refract Definition</s:formal-item-title>
+          <s:verbatim>function refract (i : vector_3f, n : vector_3f, e : float) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the refraction vector of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          with the given ratio of indices of refraction <s:term type="expression">e</s:term>.
         </s:paragraph>
       </s:subsection>
       <s:subsection>
@@ -3959,12 +4171,28 @@ expression =
         <s:paragraph>Return the component-wise addition  <s:term type="expression">v0 + v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>add_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>add_scalar Definition</s:formal-item-title>
+          <s:verbatim>function add_scalar (v : vector_3i, x : integer) : vector_3i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the addition  <s:term type="expression">(v[x] + s, v[y] + s, v[z] + s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>dot Definition</s:formal-item-title>
-          <s:verbatim>function dot (v0 : vector_3i, v1 : vector_3i) : float</s:verbatim>
+          <s:verbatim>function dot (v0 : vector_3i, v1 : vector_3i) : integer</s:verbatim>
         </s:formal-item>
         <s:paragraph>Return the dot product <s:term type="expression">v0 ⋅ v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>interpolate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>interpolate Definition</s:formal-item-title>
+          <s:verbatim>function interpolate (v0 : vector_3i, v1 : vector_3i, t : float) : vector_3i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the linear interpolation <s:term type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -3983,6 +4211,22 @@ expression =
         <s:paragraph>Return the component-wise multiplication <s:term type="expression">v0 ✕ v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>multiply_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>multiply_scalar Definition</s:formal-item-title>
+          <s:verbatim>function multiply_scalar (v0 : vector_3i, x : float) : vector_3i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the multiplication <s:term type="expression">(v[x] ✕ s, v[y] ✕ s, v[z] ✕ s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>negate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>negate Definition</s:formal-item-title>
+          <s:verbatim>function negate (v : vector_3i) : vector_3i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise negation <s:term type="expression">-v</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>normalize</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>normalize Definition</s:formal-item-title>
@@ -3991,6 +4235,30 @@ expression =
         <s:paragraph>
           Return a vector pointing in the same direction as <s:term type="expression">v</s:term>
           but with a magnitude of <s:term type="constant">1</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>reflect</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>reflect Definition</s:formal-item-title>
+          <s:verbatim>function reflect (i : vector_3i, n : vector_3i) : vector_3i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the reflection of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          as given by <s:term type="expression">i - 2.0 ✕ dot(n, i) ✕ n</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>refract</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>refract Definition</s:formal-item-title>
+          <s:verbatim>function refract (i : vector_3i, n : vector_3i, e : float) : vector_3i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the refraction vector of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          with the given ratio of indices of refraction <s:term type="expression">e</s:term>.
         </s:paragraph>
       </s:subsection>
       <s:subsection>
@@ -4015,12 +4283,28 @@ expression =
         <s:paragraph>Return the component-wise addition  <s:term type="expression">v0 + v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>add_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>add_scalar Definition</s:formal-item-title>
+          <s:verbatim>function add_scalar (v : vector_4f, x : integer) : vector_4f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the addition <s:term type="expression">(v[x] + s, v[y] + s, v[z] + s, v[w] + s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>dot Definition</s:formal-item-title>
-          <s:verbatim>function dot (v0 : vector_4f, v1 : vector_4f) : float</s:verbatim>
+          <s:verbatim>function dot (v0 : vector_4f, v1 : vector_4f) : integer</s:verbatim>
         </s:formal-item>
         <s:paragraph>Return the dot product <s:term type="expression">v0 ⋅ v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>interpolate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>interpolate Definition</s:formal-item-title>
+          <s:verbatim>function interpolate (v0 : vector_4f, v1 : vector_4f, t : float) : vector_4f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the linear interpolation <s:term type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -4039,6 +4323,22 @@ expression =
         <s:paragraph>Return the component-wise multiplication <s:term type="expression">v0 ✕ v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>multiply_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>multiply_scalar Definition</s:formal-item-title>
+          <s:verbatim>function multiply_scalar (v0 : vector_4f, x : float) : vector_4f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the multiplication <s:term type="expression">(v[x] ✕ s, v[y] ✕ s, v[z] ✕ s, v[w] ✕ s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>negate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>negate Definition</s:formal-item-title>
+          <s:verbatim>function negate (v : vector_4f) : vector_4f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise negation <s:term type="expression">-v</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>normalize</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>normalize Definition</s:formal-item-title>
@@ -4047,6 +4347,30 @@ expression =
         <s:paragraph>
           Return a vector pointing in the same direction as <s:term type="expression">v</s:term>
           but with a magnitude of <s:term type="constant">1</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>reflect</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>reflect Definition</s:formal-item-title>
+          <s:verbatim>function reflect (i : vector_4f, n : vector_4f) : vector_4f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the reflection of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          as given by <s:term type="expression">i - 2.0 ✕ dot(n, i) ✕ n</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>refract</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>refract Definition</s:formal-item-title>
+          <s:verbatim>function refract (i : vector_4f, n : vector_4f, e : float) : vector_4f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the refraction vector of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          with the given ratio of indices of refraction <s:term type="expression">e</s:term>.
         </s:paragraph>
       </s:subsection>
       <s:subsection>
@@ -4071,12 +4395,28 @@ expression =
         <s:paragraph>Return the component-wise addition  <s:term type="expression">v0 + v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>add_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>add_scalar Definition</s:formal-item-title>
+          <s:verbatim>function add_scalar (v : vector_4i, x : integer) : vector_4i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the addition  <s:term type="expression">(v[x] + s, v[y] + s, v[z] + s, v[w] + s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>dot Definition</s:formal-item-title>
-          <s:verbatim>function dot (v0 : vector_4i, v1 : vector_4i) : float</s:verbatim>
+          <s:verbatim>function dot (v0 : vector_4i, v1 : vector_4i) : integer</s:verbatim>
         </s:formal-item>
         <s:paragraph>Return the dot product <s:term type="expression">v0 ⋅ v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>interpolate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>interpolate Definition</s:formal-item-title>
+          <s:verbatim>function interpolate (v0 : vector_4i, v1 : vector_4i, t : float) : vector_4i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the linear interpolation <s:term type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -4095,6 +4435,22 @@ expression =
         <s:paragraph>Return the component-wise multiplication <s:term type="expression">v0 ✕ v1</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>multiply_scalar</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>multiply_scalar Definition</s:formal-item-title>
+          <s:verbatim>function multiply_scalar (v0 : vector_4i, x : float) : vector_4i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the multiplication <s:term type="expression">(v[x] ✕ s, v[y] ✕ s, v[z] ✕ s, v[w] ✕ s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>negate</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>negate Definition</s:formal-item-title>
+          <s:verbatim>function negate (v : vector_4i) : vector_4i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise negation <s:term type="expression">-v</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>normalize</s:subsection-title>
         <s:formal-item kind="specifications">
           <s:formal-item-title>normalize Definition</s:formal-item-title>
@@ -4103,6 +4459,30 @@ expression =
         <s:paragraph>
           Return a vector pointing in the same direction as <s:term type="expression">v</s:term>
           but with a magnitude of <s:term type="constant">1</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>reflect</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>reflect Definition</s:formal-item-title>
+          <s:verbatim>function reflect (i : vector_4i, n : vector_4i) : vector_4i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the reflection of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          as given by <s:term type="expression">i - 2.0 ✕ dot(n, i) ✕ n</s:term>.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>refract</s:subsection-title>
+        <s:formal-item kind="specifications">
+          <s:formal-item-title>refract Definition</s:formal-item-title>
+          <s:verbatim>function refract (i : vector_4i, n : vector_4i, e : float) : vector_4i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph> 
+          Return the refraction vector of the incident vector 
+          <s:term type="expression">i</s:term> with respect to the vector <s:term type="expression">n</s:term>,
+          with the given ratio of indices of refraction <s:term type="expression">e</s:term>.
         </s:paragraph>
       </s:subsection>
       <s:subsection>
