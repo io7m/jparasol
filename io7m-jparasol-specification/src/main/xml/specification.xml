@@ -2836,8 +2836,29 @@ expression =
       <s:subsection>
         <s:subsection-title>Constructors</s:subsection-title>
         <s:paragraph>
-          The type has a single <s:term type="term">constructor</s:term> of
-          type <s:term type="type">integer → integer</s:term>.
+          The type has the following <s:term type="term">constructors</s:term>:
+        </s:paragraph>
+        <s:formal-item kind="specifications" type="specifications">
+          <s:formal-item-title>Constructors</s:formal-item-title>
+          <s:list-unordered>
+            <s:list-item><s:term type="type">integer → integer</s:term></s:list-item>
+            <s:list-item><s:term type="type">boolean → integer</s:term></s:list-item>
+            <s:list-item><s:term type="type">float → integer</s:term></s:list-item>
+          </s:list-unordered>
+        </s:formal-item>
+        <s:paragraph>
+          The constructor taking a value <s:term type="variable">v</s:term> of 
+          type <s:term type="type">boolean</s:term>
+          results in an integer value <s:term type="constant">0</s:term> iff
+          <s:term type="expression">v = false</s:term> and
+          an integer value <s:term type="constant">1</s:term> iff
+          <s:term type="expression">v = true</s:term>.
+        </s:paragraph>
+        <s:paragraph>
+          The constructor taking a value <s:term type="variable">v</s:term> of 
+          type <s:term type="type">float</s:term>
+          results in an integer value consisting of the integral part of
+          <s:term type="variable">v</s:term> with the fractional part truncated.
         </s:paragraph>
         <s:paragraph>
           The <s:term type="type">integer</s:term> type is a
@@ -2865,8 +2886,30 @@ expression =
       <s:subsection>
         <s:subsection-title>Constructors</s:subsection-title>
         <s:paragraph>
-          The type has a single <s:term type="term">constructor</s:term> of
-          type <s:term type="type">float → float</s:term>.
+          The type has the following <s:term type="term">constructors</s:term>:
+        </s:paragraph>
+        <s:formal-item kind="specifications" type="specifications">
+          <s:formal-item-title>Constructors</s:formal-item-title>
+          <s:list-unordered>
+            <s:list-item><s:term type="type">integer → float</s:term></s:list-item>
+            <s:list-item><s:term type="type">boolean → float</s:term></s:list-item>
+            <s:list-item><s:term type="type">float → float</s:term></s:list-item>
+          </s:list-unordered>
+        </s:formal-item>
+        <s:paragraph>
+          The constructor taking a value <s:term type="variable">v</s:term> of 
+          type <s:term type="type">boolean</s:term>
+          results in a value <s:term type="constant">0.0</s:term> iff
+          <s:term type="expression">v = false</s:term> and
+          a value <s:term type="constant">1.0</s:term>
+          <s:term type="expression">v = true</s:term>.
+        </s:paragraph>
+        <s:paragraph>
+          The constructor taking a value <s:term type="variable">v</s:term> of 
+          type <s:term type="type">integer</s:term>
+          results in an value with an integral part as close as possible to the
+          value of <s:term type="variable">v</s:term> dependent on the internal
+          precision of the <s:term type="type">float</s:term> type.
         </s:paragraph>
         <s:paragraph>
           The <s:term type="type">float</s:term> type is a
@@ -2895,8 +2938,29 @@ expression =
       <s:subsection>
         <s:subsection-title>Constructors</s:subsection-title>
         <s:paragraph>
-          The type has a single <s:term type="term">constructor</s:term> of
-          type <s:term type="type">boolean → boolean</s:term>.
+          The type has the following <s:term type="term">constructors</s:term>:
+        </s:paragraph>
+        <s:formal-item kind="specifications" type="specifications">
+          <s:formal-item-title>Constructors</s:formal-item-title>
+          <s:list-unordered>
+            <s:list-item><s:term type="type">boolean → boolean</s:term></s:list-item>
+            <s:list-item><s:term type="type">float → boolean</s:term></s:list-item>
+            <s:list-item><s:term type="type">integer → boolean</s:term></s:list-item>
+          </s:list-unordered>
+        </s:formal-item>
+        <s:paragraph>
+          The constructor taking a value <s:term type="variable">v</s:term> of 
+          type <s:term type="type">float</s:term>
+          results in a value <s:term type="constant">false</s:term> iff
+          <s:term type="expression">v = 0.0</s:term> and
+          a value <s:term type="constant">true</s:term> otherwise.
+        </s:paragraph>
+        <s:paragraph>
+          The constructor taking a value <s:term type="variable">v</s:term> of 
+          type <s:term type="type">integer</s:term>
+          results in a value <s:term type="constant">false</s:term> iff
+          <s:term type="expression">v = 0</s:term> and
+          a value <s:term type="constant">true</s:term> otherwise.
         </s:paragraph>
         <s:paragraph>
           The <s:term type="type">boolean</s:term> type is a
