@@ -43,9 +43,12 @@ import com.io7m.jparasol.typed.TType.TVector4F;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentInput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutput;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputData;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputDepth;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexInput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexOutput;
+import com.io7m.jparasol.typed.ast.TASTFragmentShaderOutputVisitor;
 
 public final class GVersionChecker
 {
@@ -326,14 +329,45 @@ public final class GVersionChecker
       final @Nonnull TASTDShaderFragment fs)
       throws ConstraintError
     {
-      if (fs.getOutputs().size() > 1) {
-        final TokenIdentifierLower name = fs.getName();
-        final GVersionCheckExclusionReason reason =
-          new GVersionCheckExclusionReason(
-            name.getFile(),
-            name.getPosition(),
-            "The fragment shader declares more than one output");
-        supported.excludeES(GVersionES.GLSL_ES_100, reason);
+      final TASTFragmentShaderOutputVisitor<Boolean, ConstraintError> counter =
+        new TASTFragmentShaderOutputVisitor<Boolean, ConstraintError>() {
+          private int count = 0;
+
+          @Override public Boolean fragmentShaderVisitOutputData(
+            final @Nonnull TASTDShaderFragmentOutputData d)
+            throws ConstraintError,
+              ConstraintError
+          {
+            ++this.count;
+
+            if (this.count > 1) {
+              final TokenIdentifierLower name = fs.getName();
+              final GVersionCheckExclusionReason reason =
+                new GVersionCheckExclusionReason(
+                  name.getFile(),
+                  name.getPosition(),
+                  "The fragment shader declares more than one output");
+              supported.excludeES(GVersionES.GLSL_ES_100, reason);
+              return Boolean.FALSE;
+            }
+
+            return Boolean.TRUE;
+          }
+
+          @Override public Boolean fragmentShaderVisitOutputDepth(
+            final @Nonnull TASTDShaderFragmentOutputDepth v)
+            throws ConstraintError,
+              ConstraintError
+          {
+            return Boolean.TRUE;
+          }
+        };
+
+      for (final TASTDShaderFragmentOutput o : fs.getOutputs()) {
+        final Boolean r = o.fragmentShaderOutputVisitableAccept(counter);
+        if (r.booleanValue() == false) {
+          return;
+        }
       }
     }
 

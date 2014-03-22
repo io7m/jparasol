@@ -78,10 +78,10 @@ public abstract class UASTCDeclaration
 
   public static final class UASTCDExternal
   {
+    private final @Nonnull Option<UASTCExpression> emulation;
     private final boolean                          fragment_shader_allowed;
     private final @Nonnull TokenIdentifierLower    name;
     private final boolean                          vertex_shader_allowed;
-    private final @Nonnull Option<UASTCExpression> emulation;
 
     public UASTCDExternal(
       final @Nonnull TokenIdentifierLower name,
@@ -94,18 +94,6 @@ public abstract class UASTCDeclaration
       this.vertex_shader_allowed = vertex_shader_allowed;
       this.fragment_shader_allowed = fragment_shader_allowed;
       this.emulation = Constraints.constrainNotNull(emulation, "Emulation");
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.emulation.hashCode();
-      result =
-        (prime * result) + (this.fragment_shader_allowed ? 1231 : 1237);
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + (this.vertex_shader_allowed ? 1231 : 1237);
-      return result;
     }
 
     @Override public boolean equals(
@@ -144,6 +132,18 @@ public abstract class UASTCDeclaration
     public @Nonnull TokenIdentifierLower getName()
     {
       return this.name;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.emulation.hashCode();
+      result =
+        (prime * result) + (this.fragment_shader_allowed ? 1231 : 1237);
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + (this.vertex_shader_allowed ? 1231 : 1237);
+      return result;
     }
 
     public boolean isFragmentShaderAllowed()
@@ -699,9 +699,12 @@ public abstract class UASTCDeclaration
         r_inputs.add(ri);
       }
 
+      final UASTCFragmentShaderOutputVisitor<PO, E> ov =
+        v.fragmentShaderVisitOutputsPre();
+
       final List<PO> r_outputs = new ArrayList<PO>();
       for (final UASTCDShaderFragmentOutput o : this.outputs) {
-        final PO ro = v.fragmentShaderVisitOutput(o);
+        final PO ro = o.fragmentShaderOutputVisitableAccept(ov);
         r_outputs.add(ro);
       }
 
@@ -857,24 +860,16 @@ public abstract class UASTCDeclaration
     }
   }
 
-  public static final class UASTCDShaderFragmentOutput extends
-    UASTCDShaderFragmentParameters
+  public static abstract class UASTCDShaderFragmentOutput extends
+    UASTCDShaderFragmentParameters implements
+    UASTCFragmentShaderOutputVisitable
   {
-    private final int index;
-
     public UASTCDShaderFragmentOutput(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTCTypePath type,
-      final int index)
+      final @Nonnull UASTCTypePath type)
       throws ConstraintError
     {
       super(name, type);
-      this.index = index;
-    }
-
-    public int getIndex()
-    {
-      return this.index;
     }
   }
 
@@ -901,6 +896,61 @@ public abstract class UASTCDeclaration
     public @Nonnull UASTCEVariable getVariable()
     {
       return this.variable;
+    }
+  }
+
+  public static final class UASTCDShaderFragmentOutputData extends
+    UASTCDShaderFragmentOutput
+  {
+    private final int index;
+
+    public UASTCDShaderFragmentOutputData(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTCTypePath type,
+      final int index)
+      throws ConstraintError
+    {
+      super(name, type);
+      this.index = index;
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends UASTCFragmentShaderOutputVisitor<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitOutputData(this);
+    }
+
+    public int getIndex()
+    {
+      return this.index;
+    }
+  }
+
+  public static final class UASTCDShaderFragmentOutputDepth extends
+    UASTCDShaderFragmentOutput
+  {
+    public UASTCDShaderFragmentOutputDepth(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTCTypePath type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends UASTCFragmentShaderOutputVisitor<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitOutputDepth(this);
     }
   }
 

@@ -59,6 +59,8 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragm
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentLocalValue;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutputData;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentParameter;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderProgram;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderVertex;
@@ -109,8 +111,9 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShade
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentInput;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentLocalDiscard;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentLocalValue;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutputData;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentParameter;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderProgram;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertex;
@@ -140,6 +143,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariab
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTURecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpressionVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderLocalVisitor;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderOutputVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTULocalLevelVisitor;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUModuleVisitor;
@@ -473,8 +477,8 @@ public final class Resolver
     private final @Nonnull Log                               log;
     private final @Nonnull UASTUDModule                      module;
     private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @Nonnull UASTUDShaderFragment              shader;
     private final @Nonnull Map<String, TokenIdentifierLower> outputs_declared;
+    private final @Nonnull UASTUDShaderFragment              shader;
 
     public FragmentShaderResolver(
       final @Nonnull Log log,
@@ -544,31 +548,6 @@ public final class Resolver
         this.shader);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRDShaderFragmentOutput
-      fragmentShaderVisitOutput(
-        final @Nonnull UASTUDShaderFragmentOutput o)
-        throws ResolverError,
-          ConstraintError
-    {
-      final UniqueNameLocal oname = o.getName();
-      final UASTUTypePath otype = o.getType();
-      final UASTRTypeName type =
-        Resolver.lookupType(
-          this.modules,
-          this.module,
-          otype.getModule(),
-          otype.getName());
-
-      this.outputs_declared
-        .put(oname.getCurrent(), o.getName().getOriginal());
-
-      return new UASTRDShaderFragmentOutput(
-        oname.getOriginal(),
-        type,
-        o.getIndex());
-    }
-
     @Override public
       UASTRDShaderFragmentOutputAssignment
       fragmentShaderVisitOutputAssignment(
@@ -587,6 +566,66 @@ public final class Resolver
 
       final UASTREVariable variable = new UASTREVariable(name);
       return new UASTRDShaderFragmentOutputAssignment(a.getName(), variable);
+    }
+
+    @SuppressWarnings("synthetic-access") @Override public
+      UASTUFragmentShaderOutputVisitor<UASTRDShaderFragmentOutput, ResolverError>
+      fragmentShaderVisitOutputsPre()
+        throws ResolverError,
+          ConstraintError
+    {
+      return new UASTUFragmentShaderOutputVisitor<UASTRDShaderFragmentOutput, ResolverError>() {
+        @Override public
+          UASTRDShaderFragmentOutput
+          fragmentShaderVisitOutputData(
+            final @Nonnull UASTUDShaderFragmentOutputData d)
+            throws ResolverError,
+              ConstraintError
+        {
+          final UniqueNameLocal oname = d.getName();
+          final UASTUTypePath otype = d.getType();
+          final UASTRTypeName type =
+            Resolver.lookupType(
+              FragmentShaderResolver.this.modules,
+              FragmentShaderResolver.this.module,
+              otype.getModule(),
+              otype.getName());
+
+          FragmentShaderResolver.this.outputs_declared.put(
+            oname.getCurrent(),
+            d.getName().getOriginal());
+
+          return new UASTRDShaderFragmentOutputData(
+            oname.getOriginal(),
+            type,
+            d.getIndex());
+        }
+
+        @Override public
+          UASTRDShaderFragmentOutput
+          fragmentShaderVisitOutputDepth(
+            final @Nonnull UASTUDShaderFragmentOutputDepth d)
+            throws ResolverError,
+              ConstraintError
+        {
+          final UniqueNameLocal oname = d.getName();
+          final UASTUTypePath otype = d.getType();
+          final UASTRTypeName type =
+            Resolver.lookupType(
+              FragmentShaderResolver.this.modules,
+              FragmentShaderResolver.this.module,
+              otype.getModule(),
+              otype.getName());
+
+          FragmentShaderResolver.this.outputs_declared.put(
+            oname.getCurrent(),
+            d.getName().getOriginal());
+
+          return new UASTRDShaderFragmentOutputDepth(
+            oname.getOriginal(),
+            type);
+        }
+      };
     }
 
     @SuppressWarnings("synthetic-access") @Override public
@@ -1095,19 +1134,6 @@ public final class Resolver
         v));
     }
 
-    @Override public @Nonnull UASTRDType typeVisitTypeRecord(
-      final @Nonnull UASTUDTypeRecord r)
-      throws ResolverError,
-        ConstraintError
-    {
-      return r.recordTypeVisitableAccept(new RecordTypeResolver(
-        this.log,
-        this.module,
-        this.modules,
-        this.type_graph,
-        r));
-    }
-
     @Override public UASTRDTerm termVisitValueExternal(
       final @Nonnull UASTUDValueExternal v)
       throws ResolverError,
@@ -1119,6 +1145,19 @@ public final class Resolver
         this.modules,
         this.term_graph,
         v));
+    }
+
+    @Override public @Nonnull UASTRDType typeVisitTypeRecord(
+      final @Nonnull UASTUDTypeRecord r)
+      throws ResolverError,
+        ConstraintError
+    {
+      return r.recordTypeVisitableAccept(new RecordTypeResolver(
+        this.log,
+        this.module,
+        this.modules,
+        this.type_graph,
+        r));
     }
   }
 
@@ -1824,34 +1863,6 @@ public final class Resolver
           emulation));
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRDTerm
-      termVisitValueExternal(
-        final @Nonnull UASTUDValueExternal v)
-        throws ResolverError,
-          ConstraintError
-    {
-      final UASTUDExternal original_external = v.getExternal();
-
-      final UASTUTypePath type_name = v.getAscription();
-      final UASTRTypeName ascription =
-        Resolver.lookupType(
-          TermResolver.this.modules,
-          TermResolver.this.module,
-          type_name.getModule(),
-          type_name.getName());
-
-      this.term_graph.addTerm(this.module.getPath(), v.getName());
-      final Option<UASTRExpression> none = Option.none();
-      final UASTRDExternal external =
-        new UASTRDExternal(
-          original_external.getName(),
-          original_external.isVertexShaderAllowed(),
-          original_external.isFragmentShaderAllowed(),
-          none);
-      return new UASTRDValueExternal(v.getName(), ascription, external);
-    }
-
     @Override public UASTRDValueDefined termVisitValueDefined(
       final @Nonnull UASTUDValueDefined v)
       throws ResolverError,
@@ -1888,6 +1899,34 @@ public final class Resolver
 
       this.term_graph.addTerm(this.module.getPath(), v.getName());
       return new UASTRDValueDefined(v.getName(), ascription, ex);
+    }
+
+    @SuppressWarnings("synthetic-access") @Override public
+      UASTRDTerm
+      termVisitValueExternal(
+        final @Nonnull UASTUDValueExternal v)
+        throws ResolverError,
+          ConstraintError
+    {
+      final UASTUDExternal original_external = v.getExternal();
+
+      final UASTUTypePath type_name = v.getAscription();
+      final UASTRTypeName ascription =
+        Resolver.lookupType(
+          TermResolver.this.modules,
+          TermResolver.this.module,
+          type_name.getModule(),
+          type_name.getName());
+
+      this.term_graph.addTerm(this.module.getPath(), v.getName());
+      final Option<UASTRExpression> none = Option.none();
+      final UASTRDExternal external =
+        new UASTRDExternal(
+          original_external.getName(),
+          original_external.isVertexShaderAllowed(),
+          original_external.isFragmentShaderAllowed(),
+          none);
+      return new UASTRDValueExternal(v.getName(), ascription, external);
     }
   }
 

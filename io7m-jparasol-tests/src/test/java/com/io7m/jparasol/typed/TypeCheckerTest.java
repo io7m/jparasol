@@ -115,6 +115,16 @@ public final class TypeCheckerTest
 
   @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
     void
+    testFragmentShaderDepthBadType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/fragment-shader-depth-bad-type-0.p" },
+      Code.TYPE_ERROR_SHADER_DEPTH_NOT_FLOAT);
+  }
+
+  @SuppressWarnings("static-method") @Test(expected = TypeCheckerError.class) public
+    void
     testFragmentShaderAssignmentBadType_0()
       throws TypeCheckerError
   {

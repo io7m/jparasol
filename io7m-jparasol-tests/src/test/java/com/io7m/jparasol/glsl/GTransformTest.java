@@ -134,6 +134,27 @@ public final class GTransformTest
     GWriter.writeFragmentShader(System.out, s);
   }
 
+  @SuppressWarnings("static-method") @Test public void testFragmentSimple_1()
+    throws ConstraintError,
+      GFFIError
+  {
+    final TASTShaderNameFlat shader = TestPipeline.shaderName("x.y.M", "f");
+    final Prepared p =
+      new Prepared(
+        shader,
+        new String[] { "glsl/transform/fragment-simple-1.p" });
+
+    final GASTShaderFragment s =
+      GTransform.transformFragment(
+        p.typed,
+        p.topology,
+        shader,
+        GVersionFull.GLSL_UPPER,
+        p.log);
+
+    GWriter.writeFragmentShader(System.out, s);
+  }
+
   @SuppressWarnings("static-method") @Test public
     void
     testFragmentTemporaries_0()

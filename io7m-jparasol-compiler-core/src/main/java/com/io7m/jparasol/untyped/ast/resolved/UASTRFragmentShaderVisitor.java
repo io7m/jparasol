@@ -23,7 +23,6 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragment;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentInput;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutputAssignment;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentParameter;
 
@@ -50,15 +49,16 @@ public interface UASTRFragmentShaderVisitor<F, PI, PP, PO, L, O, E extends Throw
       throws E,
         ConstraintError;
 
-  public @Nonnull PO fragmentShaderVisitOutput(
-    final @Nonnull UASTRDShaderFragmentOutput o)
-    throws E,
-      ConstraintError;
-
   public @Nonnull O fragmentShaderVisitOutputAssignment(
     final @Nonnull UASTRDShaderFragmentOutputAssignment a)
     throws E,
       ConstraintError;
+
+  public @Nonnull
+    UASTRFragmentShaderOutputVisitor<PO, E>
+    fragmentShaderVisitOutputsPre()
+      throws E,
+        ConstraintError;
 
   public @Nonnull PP fragmentShaderVisitParameter(
     final @Nonnull UASTRDShaderFragmentParameter p)

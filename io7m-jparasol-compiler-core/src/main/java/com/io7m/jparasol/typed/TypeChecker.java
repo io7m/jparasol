@@ -40,6 +40,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.typed.TGraphs.GlobalGraph;
 import com.io7m.jparasol.typed.TType.TBoolean;
 import com.io7m.jparasol.typed.TType.TConstructor;
+import com.io7m.jparasol.typed.TType.TFloat;
 import com.io7m.jparasol.typed.TType.TFunction;
 import com.io7m.jparasol.typed.TType.TFunctionArgument;
 import com.io7m.jparasol.typed.TType.TManifestType;
@@ -65,6 +66,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentLocalDisca
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentLocalValue;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputData;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputDepth;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentParameter;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderProgram;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
@@ -109,8 +112,9 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragm
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentInput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentLocalDiscard;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentLocalValue;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutputData;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentParameter;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderProgram;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderVertex;
@@ -141,6 +145,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREVariable;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpressionVisitor;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderLocalVisitor;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderOutputVisitor;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderVisitor;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRLocalLevelVisitor;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderName;
@@ -732,31 +737,6 @@ public final class TypeChecker
     }
 
     @SuppressWarnings("synthetic-access") @Override public
-      TASTDShaderFragmentOutput
-      fragmentShaderVisitOutput(
-        final @Nonnull UASTRDShaderFragmentOutput o)
-        throws TypeCheckerError,
-          ConstraintError
-    {
-      final TType t =
-        TypeChecker.lookupType(
-          this.module,
-          this.checked_modules,
-          this.checked_types,
-          o.getType());
-
-      if (t instanceof TRecord) {
-        throw TypeCheckerError.shaderFragmentOutputBadType(o);
-      }
-
-      this.outputs.put(o.getName().getActual(), (TValueType) t);
-      return new TASTDShaderFragmentOutput(
-        o.getName(),
-        (TValueType) t,
-        o.getIndex());
-    }
-
-    @SuppressWarnings("synthetic-access") @Override public
       TASTDShaderFragmentOutputAssignment
       fragmentShaderVisitOutputAssignment(
         final @Nonnull UASTRDShaderFragmentOutputAssignment a)
@@ -784,6 +764,66 @@ public final class TypeChecker
         TypeChecker.mapTermName(a.getVariable().getName());
       final TASTEVariable variable = new TASTEVariable(type, name);
       return new TASTDShaderFragmentOutputAssignment(a_name, variable);
+    }
+
+    @SuppressWarnings("synthetic-access") @Override public
+      UASTRFragmentShaderOutputVisitor<TASTDShaderFragmentOutput, TypeCheckerError>
+      fragmentShaderVisitOutputsPre()
+        throws TypeCheckerError,
+          ConstraintError
+    {
+      return new UASTRFragmentShaderOutputVisitor<TASTDShaderFragmentOutput, TypeCheckerError>() {
+        @Override public
+          TASTDShaderFragmentOutput
+          fragmentShaderVisitOutputData(
+            final @Nonnull UASTRDShaderFragmentOutputData d)
+            throws TypeCheckerError,
+              ConstraintError
+        {
+          final TType t =
+            TypeChecker.lookupType(
+              TypeCheckerFragmentShader.this.module,
+              TypeCheckerFragmentShader.this.checked_modules,
+              TypeCheckerFragmentShader.this.checked_types,
+              d.getType());
+
+          if (t instanceof TRecord) {
+            throw TypeCheckerError.shaderFragmentOutputBadType(d);
+          }
+
+          TypeCheckerFragmentShader.this.outputs.put(
+            d.getName().getActual(),
+            (TValueType) t);
+          return new TASTDShaderFragmentOutputData(
+            d.getName(),
+            (TValueType) t,
+            d.getIndex());
+        }
+
+        @Override public
+          TASTDShaderFragmentOutput
+          fragmentShaderVisitOutputDepth(
+            final @Nonnull UASTRDShaderFragmentOutputDepth d)
+            throws TypeCheckerError,
+              ConstraintError
+        {
+          final TType t =
+            TypeChecker.lookupType(
+              TypeCheckerFragmentShader.this.module,
+              TypeCheckerFragmentShader.this.checked_modules,
+              TypeCheckerFragmentShader.this.checked_types,
+              d.getType());
+
+          if ((t instanceof TFloat) == false) {
+            throw TypeCheckerError.shaderFragmentOutputDepthWrongType(d);
+          }
+
+          TypeCheckerFragmentShader.this.outputs.put(
+            d.getName().getActual(),
+            (TValueType) t);
+          return new TASTDShaderFragmentOutputDepth(d.getName());
+        }
+      };
     }
 
     @SuppressWarnings("synthetic-access") @Override public

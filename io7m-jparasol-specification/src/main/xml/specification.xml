@@ -1622,6 +1622,7 @@ shader_declarations =
           and a sequence of assignments of values to the declared
           <s:term type="term">outputs</s:term>. A vertex shader must also define exactly
           one output of type <s:link target="com.io7m.parasol.1.0.0.types.vectors">vector_4f</s:link>,
+          indicated with the <s:term type="keyword">vertex</s:term> keyword,
           to which must be assigned a value representing the current homogeneous vertex
           position.
         </s:paragraph>
@@ -1726,6 +1727,13 @@ end;]]></s:verbatim>
           <s:term type="term">shader_fragment_local_declaration</s:term>, and a sequence
           of assignments of values to the declared
           <s:term type="term">outputs</s:term>.
+        </s:paragraph>
+        <s:paragraph>
+          A fragment shader may define at most
+          one output of type <s:link target="com.io7m.parasol.1.0.0.types.float">float</s:link>,
+          indicated with the <s:term type="keyword">depth</s:term> keyword,
+          to which must be assigned a value representing the current desired fragment depth (overriding
+          the depth value typically calculated by the graphics system's rasterizer).
         </s:paragraph>
         <s:paragraph>
           A <s:term type="term">shader_fragment_local_declaration</s:term> is
@@ -4697,10 +4705,14 @@ shader_fragment_input_declaration =
 shader_fragment_output_declaration =
   "out" , name_lower , ":" , type_path , "as" , integer_literal ;
 
+shader_fragment_output_depth_declaration =
+  "out" , "depth", name_lower , ":" , type_path ;
+
 shader_fragment_parameter =
     shader_parameter_declaration
   | shader_fragment_input_declaration
-  | shader_fragment_output_declaration ;
+  | shader_fragment_output_declaration
+  | shader_fragment_output_depth_declaration ;
 
 shader_fragment_parameters =
   { shader_fragment_parameter , ";" } ;

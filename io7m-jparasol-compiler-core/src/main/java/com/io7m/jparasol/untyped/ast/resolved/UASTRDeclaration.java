@@ -761,9 +761,12 @@ public abstract class UASTRDeclaration
         r_inputs.add(ri);
       }
 
+      final UASTRFragmentShaderOutputVisitor<PO, E> vo =
+        v.fragmentShaderVisitOutputsPre();
+
       final List<PO> r_outputs = new ArrayList<PO>();
       for (final UASTRDShaderFragmentOutput o : this.outputs) {
-        final PO ro = v.fragmentShaderVisitOutput(o);
+        final PO ro = o.fragmentShaderOutputVisitableAccept(vo);
         r_outputs.add(ro);
       }
 
@@ -971,20 +974,73 @@ public abstract class UASTRDeclaration
     }
   }
 
-  public static final class UASTRDShaderFragmentOutput extends
-    UASTRDShaderFragmentParameters
+  public static abstract class UASTRDShaderFragmentOutput extends
+    UASTRDShaderFragmentParameters implements
+    UASTRFragmentShaderOutputVisitable
   {
-    private final int                           index;
     private final @Nonnull TokenIdentifierLower name;
 
     public UASTRDShaderFragmentOutput(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTRTypeName type)
+      throws ConstraintError
+    {
+      super(type);
+      this.name = Constraints.constrainNotNull(name, "Name");
+    }
+
+    public final @Nonnull TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+  }
+
+  public static final class UASTRDShaderFragmentOutputDepth extends
+    UASTRDShaderFragmentOutput
+  {
+    public UASTRDShaderFragmentOutputDepth(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTRTypeName type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTRDShaderFragmentOutputDepth ");
+      builder.append(super.getName().getActual());
+      builder.append(" ");
+      builder.append(super.getType());
+      builder.append("]");
+      return builder.toString();
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends UASTRFragmentShaderOutputVisitor<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitOutputDepth(this);
+    }
+  }
+
+  public static final class UASTRDShaderFragmentOutputData extends
+    UASTRDShaderFragmentOutput
+  {
+    private final int index;
+
+    public UASTRDShaderFragmentOutputData(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull UASTRTypeName type,
       final int index)
       throws ConstraintError
     {
-      super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
+      super(name, type);
       this.index = index;
     }
 
@@ -993,20 +1049,28 @@ public abstract class UASTRDeclaration
       return this.index;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
-    {
-      return this.name;
-    }
-
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTRDShaderFragmentOutput ");
-      builder.append(this.name.getActual());
+      builder.append("[UASTRDShaderFragmentOutputData ");
+      builder.append(super.getName().getActual());
+      builder.append(" ");
+      builder.append(super.getType());
       builder.append(" ");
       builder.append(this.index);
       builder.append("]");
       return builder.toString();
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends UASTRFragmentShaderOutputVisitor<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitOutputData(this);
     }
   }
 

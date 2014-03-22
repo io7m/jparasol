@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Nonnull;
 
@@ -29,6 +30,7 @@ import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jaux.functional.Function;
+import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Pair;
 import com.io7m.jaux.functional.Unit;
 import com.io7m.jlog.Level;
@@ -46,7 +48,8 @@ import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEVariable;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentConditionalDiscard;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentLocalVariable;
-import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputAssignment;
+import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputDataAssignment;
+import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputDepthAssignment;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragmentInput;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragmentOutput;
@@ -97,6 +100,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentLocalDisca
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentLocalValue;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputData;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputDepth;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentParameter;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexInput;
@@ -126,6 +131,7 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
 import com.io7m.jparasol.typed.ast.TASTExpressionVisitor;
 import com.io7m.jparasol.typed.ast.TASTFragmentShaderLocalVisitor;
+import com.io7m.jparasol.typed.ast.TASTFragmentShaderOutputVisitor;
 import com.io7m.jparasol.typed.ast.TASTLocalLevelVisitor;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jparasol.typed.ast.TASTTermName;
@@ -1170,10 +1176,12 @@ public final class GTransform
                 .getGlobalTermName(flat);
             }
 
-            @Override public GTermName termNameVisitLocal(
-              final TASTTermNameLocal t)
-              throws ConstraintError,
-                ConstraintError
+            @SuppressWarnings("synthetic-access") @Override public
+              GTermName
+              termNameVisitLocal(
+                final TASTTermNameLocal t)
+                throws ConstraintError,
+                  ConstraintError
             {
               final String name = t.getCurrent();
               assert ExpressionTransformer.this.bindings.containsKey(name);
@@ -1530,27 +1538,56 @@ public final class GTransform
      * Translate writes to named and numbered outputs.
      */
 
-    final List<GASTFragmentOutputAssignment> writes =
-      new ArrayList<GASTFragmentOutputAssignment>();
+    final List<GASTFragmentOutputDataAssignment> writes =
+      new ArrayList<GASTFragmentOutputDataAssignment>();
+    final AtomicReference<GASTFragmentOutputDepthAssignment> depth_write =
+      new AtomicReference<GASTFragmentOutputDepthAssignment>();
 
     for (final TASTDShaderFragmentOutputAssignment f : fragment.getWrites()) {
       final TokenIdentifierLower f_name = f.getName();
       final TASTDShaderFragmentOutput output =
         GTransform.findFragmentOutput(fragment, f_name.getActual());
 
-      final GShaderOutputName name =
-        new GShaderOutputName(f_name.getActual());
+      output
+        .fragmentShaderOutputVisitableAccept(new TASTFragmentShaderOutputVisitor<Unit, GFFIError>() {
+          @Override public Unit fragmentShaderVisitOutputData(
+            final @Nonnull TASTDShaderFragmentOutputData od)
+            throws GFFIError,
+              ConstraintError
+          {
+            final GShaderOutputName name =
+              new GShaderOutputName(f_name.getActual());
+            final GTermName value =
+              context.lookupTermName(bindings, f.getVariable().getName());
+            writes.add(new GASTFragmentOutputDataAssignment(name, od
+              .getIndex(), value));
+            return Unit.unit();
+          }
 
-      final GTermName value =
-        context.lookupTermName(bindings, f.getVariable().getName());
+          @Override public Unit fragmentShaderVisitOutputDepth(
+            final @Nonnull TASTDShaderFragmentOutputDepth v)
+            throws GFFIError,
+              ConstraintError
+          {
+            assert depth_write.get() == null;
 
-      writes.add(new GASTFragmentOutputAssignment(
-        name,
-        output.getIndex(),
-        value));
+            final GShaderOutputName name =
+              new GShaderOutputName(f_name.getActual());
+            final GTermName value =
+              context.lookupTermName(bindings, f.getVariable().getName());
+            depth_write
+              .set(new GASTFragmentOutputDepthAssignment(name, value));
+            return Unit.unit();
+          }
+        });
     }
 
-    return new GASTShaderMainFragment(statements, writes);
+    @SuppressWarnings("unchecked") final Option<GASTFragmentOutputDepthAssignment> depth_write_opt =
+      (Option<GASTFragmentOutputDepthAssignment>) ((depth_write.get() != null)
+        ? Option.some(depth_write.get())
+        : Option.none());
+
+    return new GASTShaderMainFragment(statements, writes, depth_write_opt);
   }
 
   private static @Nonnull List<GASTShaderFragmentOutput> makeFragmentOutputs(
@@ -1562,10 +1599,31 @@ public final class GTransform
       new ArrayList<GASTShaderFragmentOutput>();
 
     for (final TASTDShaderFragmentOutput o : outputs) {
-      final GShaderOutputName name =
-        new GShaderOutputName(o.getName().getActual());
-      final GTypeName type = context.getTypeName(o.getType());
-      results.add(new GASTShaderFragmentOutput(name, o.getIndex(), type));
+      o
+        .fragmentShaderOutputVisitableAccept(new TASTFragmentShaderOutputVisitor<Unit, ConstraintError>() {
+          @Override public Unit fragmentShaderVisitOutputData(
+            final @Nonnull TASTDShaderFragmentOutputData od)
+            throws ConstraintError,
+              ConstraintError
+          {
+            final GShaderOutputName name =
+              new GShaderOutputName(od.getName().getActual());
+            final GTypeName type = context.getTypeName(od.getType());
+            results.add(new GASTShaderFragmentOutput(
+              name,
+              od.getIndex(),
+              type));
+            return Unit.unit();
+          }
+
+          @Override public Unit fragmentShaderVisitOutputDepth(
+            final @Nonnull TASTDShaderFragmentOutputDepth v)
+            throws ConstraintError,
+              ConstraintError
+          {
+            return Unit.unit();
+          }
+        });
     }
 
     return results;

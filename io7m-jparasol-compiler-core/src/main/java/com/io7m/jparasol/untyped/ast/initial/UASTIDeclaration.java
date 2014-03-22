@@ -75,10 +75,10 @@ public abstract class UASTIDeclaration
 
   public static final class UASTIDExternal
   {
+    private final @Nonnull Option<UASTIExpression> emulation;
     private final boolean                          fragment_shader_allowed;
     private final @Nonnull TokenIdentifierLower    name;
     private final boolean                          vertex_shader_allowed;
-    private final @Nonnull Option<UASTIExpression> emulation;
 
     public UASTIDExternal(
       final @Nonnull TokenIdentifierLower name,
@@ -528,9 +528,12 @@ public abstract class UASTIDeclaration
         r_inputs.add(ri);
       }
 
+      final UASTIFragmentShaderOutputVisitor<PO, E> ov =
+        v.fragmentShaderVisitOutputsPre();
+
       final List<PO> r_outputs = new ArrayList<PO>();
       for (final UASTIDShaderFragmentOutput o : this.outputs) {
-        final PO ro = v.fragmentShaderVisitOutput(o);
+        final PO ro = o.fragmentShaderOutputVisitableAccept(ov);
         r_outputs.add(ro);
       }
 
@@ -686,27 +689,6 @@ public abstract class UASTIDeclaration
     }
   }
 
-  public static final class UASTIDShaderFragmentOutput extends
-    UASTIDShaderFragmentParameters
-  {
-    private final int index;
-
-    public UASTIDShaderFragmentOutput(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type,
-      final int index)
-      throws ConstraintError
-    {
-      super(name, type);
-      this.index = index;
-    }
-
-    public int getIndex()
-    {
-      return this.index;
-    }
-  }
-
   public static final class UASTIDShaderFragmentOutputAssignment extends
     UASTIDeclarationShaderLevel
   {
@@ -730,6 +712,74 @@ public abstract class UASTIDeclaration
     public @Nonnull UASTIEVariable getVariable()
     {
       return this.variable;
+    }
+  }
+
+  public static abstract class UASTIDShaderFragmentOutput extends
+    UASTIDShaderFragmentParameters implements
+    UASTIFragmentShaderOutputVisitable
+  {
+    public UASTIDShaderFragmentOutput(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+  }
+
+  public static final class UASTIDShaderFragmentOutputData extends
+    UASTIDShaderFragmentOutput
+  {
+    private final int index;
+
+    public UASTIDShaderFragmentOutputData(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type,
+      final int index)
+      throws ConstraintError
+    {
+      super(name, type);
+      this.index = index;
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends UASTIFragmentShaderOutputVisitor<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitOutputData(this);
+    }
+
+    public int getIndex()
+    {
+      return this.index;
+    }
+  }
+
+  public static final class UASTIDShaderFragmentOutputDepth extends
+    UASTIDShaderFragmentOutput
+  {
+    public UASTIDShaderFragmentOutputDepth(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull UASTITypePath type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends UASTIFragmentShaderOutputVisitor<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitOutputDepth(this);
     }
   }
 

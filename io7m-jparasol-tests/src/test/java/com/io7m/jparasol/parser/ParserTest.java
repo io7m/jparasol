@@ -46,8 +46,9 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragme
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentInput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalDiscard;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalValue;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputData;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentParameter;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgram;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertex;
@@ -162,12 +163,14 @@ public class ParserTest
 
     Assert.assertEquals(2, r.getOutputs().size());
     {
-      final UASTIDShaderFragmentOutput ro0 = r.getOutputs().get(0);
+      final UASTIDShaderFragmentOutputData ro0 =
+        (UASTIDShaderFragmentOutputData) r.getOutputs().get(0);
       Assert.assertEquals("out_pos", ro0.getName().getActual());
       Assert.assertEquals(0, ro0.getIndex());
       Assert.assertEquals("vector_4f", ro0.getType().getName().getActual());
 
-      final UASTIDShaderFragmentOutput ro1 = r.getOutputs().get(1);
+      final UASTIDShaderFragmentOutputData ro1 =
+        (UASTIDShaderFragmentOutputData) r.getOutputs().get(1);
       Assert.assertEquals("out_pos2", ro1.getName().getActual());
       Assert.assertEquals(1, ro1.getIndex());
       Assert.assertEquals("vector_4f", ro1.getType().getName().getActual());
@@ -239,12 +242,14 @@ public class ParserTest
 
     Assert.assertEquals(2, r.getOutputs().size());
     {
-      final UASTIDShaderFragmentOutput ro0 = r.getOutputs().get(0);
+      final UASTIDShaderFragmentOutputData ro0 =
+        (UASTIDShaderFragmentOutputData) r.getOutputs().get(0);
       Assert.assertEquals("out_pos", ro0.getName().getActual());
       Assert.assertEquals(0, ro0.getIndex());
       Assert.assertEquals("vector_4f", ro0.getType().getName().getActual());
 
-      final UASTIDShaderFragmentOutput ro1 = r.getOutputs().get(1);
+      final UASTIDShaderFragmentOutputData ro1 =
+        (UASTIDShaderFragmentOutputData) r.getOutputs().get(1);
       Assert.assertEquals("out_pos2", ro1.getName().getActual());
       Assert.assertEquals(1, ro1.getIndex());
       Assert.assertEquals("vector_4f", ro1.getType().getName().getActual());
@@ -286,7 +291,7 @@ public class ParserTest
 
   @SuppressWarnings("static-method") @Test public
     void
-    testDFragmentShaderOutput_0()
+    testDFragmentShaderOutputData_0()
       throws IOException,
         LexerError,
         ConstraintError,
@@ -294,10 +299,27 @@ public class ParserTest
   {
     final Parser p =
       ParserTest.makeStringInternalParser("out x : integer as 23");
-    final UASTIDShaderFragmentOutput r = p.declarationFragmentShaderOutput();
+    final UASTIDShaderFragmentOutputData r =
+      (UASTIDShaderFragmentOutputData) p.declarationFragmentShaderOutput();
     Assert.assertEquals("x", r.getName().getActual());
     Assert.assertEquals("integer", r.getType().getName().getActual());
     Assert.assertEquals(23, r.getIndex());
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testDFragmentShaderOutputDepth_0()
+      throws IOException,
+        LexerError,
+        ConstraintError,
+        ParserError
+  {
+    final Parser p =
+      ParserTest.makeStringInternalParser("out depth x : float");
+    final UASTIDShaderFragmentOutputDepth r =
+      (UASTIDShaderFragmentOutputDepth) p.declarationFragmentShaderOutput();
+    Assert.assertEquals("x", r.getName().getActual());
+    Assert.assertEquals("float", r.getType().getName().getActual());
   }
 
   @SuppressWarnings("static-method") @Test public

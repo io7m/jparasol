@@ -733,9 +733,12 @@ public abstract class UASTUDeclaration
         r_inputs.add(ri);
       }
 
+      final UASTUFragmentShaderOutputVisitor<PO, E> ov =
+        v.fragmentShaderVisitOutputsPre();
+
       final List<PO> r_outputs = new ArrayList<PO>();
       for (final UASTUDShaderFragmentOutput o : this.outputs) {
-        final PO ro = v.fragmentShaderVisitOutput(o);
+        final PO ro = o.fragmentShaderOutputVisitableAccept(ov);
         r_outputs.add(ro);
       }
 
@@ -967,12 +970,25 @@ public abstract class UASTUDeclaration
     }
   }
 
-  public static final class UASTUDShaderFragmentOutput extends
-    UASTUDShaderFragmentParameters
+  public static abstract class UASTUDShaderFragmentOutput extends
+    UASTUDShaderFragmentParameters implements
+    UASTUFragmentShaderOutputVisitable
+  {
+    public UASTUDShaderFragmentOutput(
+      final @Nonnull UniqueNameLocal name,
+      final @Nonnull UASTUTypePath type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+  }
+
+  public static final class UASTUDShaderFragmentOutputData extends
+    UASTUDShaderFragmentOutput
   {
     private final int index;
 
-    public UASTUDShaderFragmentOutput(
+    public UASTUDShaderFragmentOutputData(
       final @Nonnull UniqueNameLocal name,
       final @Nonnull UASTUTypePath type,
       final int index)
@@ -980,6 +996,17 @@ public abstract class UASTUDeclaration
     {
       super(name, type);
       this.index = index;
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends UASTUFragmentShaderOutputVisitor<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitOutputData(this);
     }
 
     public int getIndex()
@@ -998,6 +1025,29 @@ public abstract class UASTUDeclaration
       builder.append(this.index);
       builder.append("]");
       return builder.toString();
+    }
+  }
+
+  public static final class UASTUDShaderFragmentOutputDepth extends
+    UASTUDShaderFragmentOutput
+  {
+    public UASTUDShaderFragmentOutputDepth(
+      final @Nonnull UniqueNameLocal name,
+      final @Nonnull UASTUTypePath type)
+      throws ConstraintError
+    {
+      super(name, type);
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends UASTUFragmentShaderOutputVisitor<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitOutputDepth(this);
     }
   }
 

@@ -8,5 +8,7 @@ void
 main (void)
 {
   vec4 pl_rgba = texture2D (u_texture, something.xy);
+  float pl_z = pl_rgba.z;
   gl_FragColor = pl_rgba;
+  gl_FragDepth = pl_z;
 }

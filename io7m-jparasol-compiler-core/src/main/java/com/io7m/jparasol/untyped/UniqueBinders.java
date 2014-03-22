@@ -50,8 +50,9 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragme
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentInput;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentLocalDiscard;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentLocalValue;
-import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentOutputData;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentParameter;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderProgram;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderVertex;
@@ -82,6 +83,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpressionVisitor;
 import com.io7m.jparasol.untyped.ast.checked.UASTCFragmentShaderLocalVisitor;
+import com.io7m.jparasol.untyped.ast.checked.UASTCFragmentShaderOutputVisitor;
 import com.io7m.jparasol.untyped.ast.checked.UASTCFragmentShaderVisitor;
 import com.io7m.jparasol.untyped.ast.checked.UASTCFunctionVisitor;
 import com.io7m.jparasol.untyped.ast.checked.UASTCLocalLevelVisitor;
@@ -112,6 +114,8 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShade
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentLocalValue;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutputData;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderFragmentParameter;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderProgram;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertex;
@@ -565,17 +569,6 @@ public final class UniqueBinders
       return new UASTUDShaderFragmentLocalValue(value_new);
     }
 
-    @Override public UASTUDShaderFragmentOutput fragmentShaderVisitOutput(
-      final @Nonnull UASTCDShaderFragmentOutput o)
-      throws UniqueBindersError,
-        ConstraintError
-    {
-      final UniqueNameLocal name =
-        new UniqueNameLocal(o.getName(), o.getName().getActual());
-      final UASTUTypePath type = UniqueBinders.mapTypePath(o.getType());
-      return new UASTUDShaderFragmentOutput(name, type, o.getIndex());
-    }
-
     @Override public
       UASTUDShaderFragmentOutputAssignment
       fragmentShaderVisitOutputAssignment(
@@ -599,6 +592,41 @@ public final class UniqueBinders
       final UniqueNameLocal name = this.context.addBinding(p.getName());
       final UASTUTypePath type = UniqueBinders.mapTypePath(p.getType());
       return new UASTUDShaderFragmentParameter(name, type);
+    }
+
+    @Override public
+      UASTCFragmentShaderOutputVisitor<UASTUDShaderFragmentOutput, UniqueBindersError>
+      fragmentShaderVisitOutputsPre()
+        throws UniqueBindersError,
+          ConstraintError
+    {
+      return new UASTCFragmentShaderOutputVisitor<UASTUDShaderFragmentOutput, UniqueBindersError>() {
+        @Override public
+          UASTUDShaderFragmentOutput
+          fragmentShaderVisitOutputData(
+            final @Nonnull UASTCDShaderFragmentOutputData o)
+            throws UniqueBindersError,
+              ConstraintError
+        {
+          final UniqueNameLocal name =
+            new UniqueNameLocal(o.getName(), o.getName().getActual());
+          final UASTUTypePath type = UniqueBinders.mapTypePath(o.getType());
+          return new UASTUDShaderFragmentOutputData(name, type, o.getIndex());
+        }
+
+        @Override public
+          UASTUDShaderFragmentOutput
+          fragmentShaderVisitOutputDepth(
+            final @Nonnull UASTCDShaderFragmentOutputDepth o)
+            throws UniqueBindersError,
+              ConstraintError
+        {
+          final UniqueNameLocal name =
+            new UniqueNameLocal(o.getName(), o.getName().getActual());
+          final UASTUTypePath type = UniqueBinders.mapTypePath(o.getType());
+          return new UASTUDShaderFragmentOutputDepth(name, type);
+        }
+      };
     }
   }
 

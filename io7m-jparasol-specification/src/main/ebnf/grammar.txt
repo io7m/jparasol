@@ -188,10 +188,14 @@ shader_fragment_input_declaration =
 shader_fragment_output_declaration =
   "out" , name_lower , ":" , type_path , "as" , integer_literal ;
 
+shader_fragment_output_depth_declaration =
+  "out" , "depth", name_lower , ":" , type_path ;
+
 shader_fragment_parameter =
     shader_parameter_declaration
   | shader_fragment_input_declaration
-  | shader_fragment_output_declaration ;
+  | shader_fragment_output_declaration
+  | shader_fragment_output_depth_declaration ;
 
 shader_fragment_parameters =
   { shader_fragment_parameter , ";" } ;

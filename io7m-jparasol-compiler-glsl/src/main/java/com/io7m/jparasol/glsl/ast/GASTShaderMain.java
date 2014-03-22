@@ -4,22 +4,32 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputAssignment;
+import com.io7m.jaux.functional.Option;
+import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputDataAssignment;
+import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputDepthAssignment;
 import com.io7m.jparasol.glsl.ast.GASTStatement.GASTVertexShaderStatement.GASTVertexOutputAssignment;
 
 public abstract class GASTShaderMain
 {
   public static final class GASTShaderMainFragment extends GASTShaderMain
   {
-    private final @Nonnull List<GASTFragmentShaderStatement>  statements;
-    private final @Nonnull List<GASTFragmentOutputAssignment> writes;
+    private final @Nonnull Option<GASTFragmentOutputDepthAssignment> depth_write;
+    private final @Nonnull List<GASTFragmentShaderStatement>         statements;
+    private final @Nonnull List<GASTFragmentOutputDataAssignment>    writes;
 
     public GASTShaderMainFragment(
       final @Nonnull List<GASTFragmentShaderStatement> statements,
-      final @Nonnull List<GASTFragmentOutputAssignment> writes)
+      final @Nonnull List<GASTFragmentOutputDataAssignment> writes,
+      final @Nonnull Option<GASTFragmentOutputDepthAssignment> depth_write)
     {
       this.statements = statements;
       this.writes = writes;
+      this.depth_write = depth_write;
+    }
+
+    public @Nonnull Option<GASTFragmentOutputDepthAssignment> getDepthWrite()
+    {
+      return this.depth_write;
     }
 
     @Override public boolean equals(
@@ -35,13 +45,9 @@ public abstract class GASTShaderMain
         return false;
       }
       final GASTShaderMainFragment other = (GASTShaderMainFragment) obj;
-      if (!this.statements.equals(other.statements)) {
-        return false;
-      }
-      if (!this.writes.equals(other.writes)) {
-        return false;
-      }
-      return true;
+      return this.depth_write.equals(other.depth_write)
+        && this.statements.equals(other.statements)
+        && this.writes.equals(other.writes);
     }
 
     public @Nonnull List<GASTFragmentShaderStatement> getStatements()
@@ -49,7 +55,7 @@ public abstract class GASTShaderMain
       return this.statements;
     }
 
-    public @Nonnull List<GASTFragmentOutputAssignment> getWrites()
+    public @Nonnull List<GASTFragmentOutputDataAssignment> getWrites()
     {
       return this.writes;
     }
@@ -58,6 +64,7 @@ public abstract class GASTShaderMain
     {
       final int prime = 31;
       int result = 1;
+      result = (prime * result) + this.depth_write.hashCode();
       result = (prime * result) + this.statements.hashCode();
       result = (prime * result) + this.writes.hashCode();
       return result;
@@ -66,10 +73,12 @@ public abstract class GASTShaderMain
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
-      builder.append("[GASTTermFragmentMainFunction ");
+      builder.append("[GASTShaderMainFragment statements=");
       builder.append(this.statements);
-      builder.append(" ");
+      builder.append(" writes=");
       builder.append(this.writes);
+      builder.append(" depth_write=");
+      builder.append(this.depth_write);
       builder.append("]");
       return builder.toString();
     }

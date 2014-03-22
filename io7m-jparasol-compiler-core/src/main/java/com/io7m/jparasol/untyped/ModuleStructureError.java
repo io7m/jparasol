@@ -37,7 +37,8 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDTerm;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDType;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragment;
-import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutput;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputData;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderParameters;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderVertexOutput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
@@ -62,6 +63,7 @@ public final class ModuleStructureError extends CompilerError
     MODULE_STRUCTURE_SHADER_CONFLICT,
     MODULE_STRUCTURE_SHADER_OUTPUT_ASSIGNMENT_CONFLICT,
     MODULE_STRUCTURE_SHADER_OUTPUT_ASSIGNMENT_MISSING,
+    MODULE_STRUCTURE_SHADER_OUTPUT_DEPTH_DUPLICATE,
     MODULE_STRUCTURE_SHADER_OUTPUT_INDEX_DUPLICATE,
     MODULE_STRUCTURE_SHADER_OUTPUT_INDEX_INVALID,
     MODULE_STRUCTURE_SHADER_OUTPUT_INDEX_MISSING,
@@ -329,6 +331,25 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
+  public static
+    ModuleStructureError
+    moduleShaderFragmentOutputDepthDuplicate(
+      final @Nonnull UASTIDShaderFragmentOutputDepth existing,
+      final @Nonnull UASTIDShaderFragmentOutputDepth current)
+      throws ConstraintError
+  {
+    final TokenIdentifierLower name = current.getName();
+    final StringBuilder m = new StringBuilder();
+    m
+      .append("At most one depth output is permitted in the definition of a fragment shader. The original output is at ");
+    m.append(existing.getName().getPosition());
+    return new ModuleStructureError(
+      Code.MODULE_STRUCTURE_SHADER_OUTPUT_DEPTH_DUPLICATE,
+      m.toString(),
+      name.getFile(),
+      name.getPosition());
+  }
+
   public static ModuleStructureError moduleShaderLocalConflict(
     final @Nonnull UASTIDValueLocal current,
     final @Nonnull UASTIDValueLocal original)
@@ -386,8 +407,8 @@ public final class ModuleStructureError extends CompilerError
   public static @Nonnull
     ModuleStructureError
     moduleShaderOutputIndexDuplicate(
-      final @Nonnull UASTIDShaderFragmentOutput current,
-      final @Nonnull UASTIDShaderFragmentOutput original)
+      final @Nonnull UASTIDShaderFragmentOutputData current,
+      final @Nonnull UASTIDShaderFragmentOutputData original)
       throws ConstraintError
   {
     final TokenIdentifierLower orig_name = original.getName();
@@ -406,7 +427,7 @@ public final class ModuleStructureError extends CompilerError
   }
 
   public static @Nonnull ModuleStructureError moduleShaderOutputIndexInvalid(
-    final @Nonnull UASTIDShaderFragmentOutput o)
+    final @Nonnull UASTIDShaderFragmentOutputData o)
     throws ConstraintError
   {
     final StringBuilder m = new StringBuilder();
@@ -424,7 +445,7 @@ public final class ModuleStructureError extends CompilerError
 
   public static @Nonnull ModuleStructureError moduleShaderOutputIndexMissing(
     final @Nonnull UASTIDShaderFragment shader,
-    final @Nonnull Map<Integer, UASTIDShaderFragmentOutput> outputs,
+    final @Nonnull Map<Integer, UASTIDShaderFragmentOutputData> outputs,
     final int index)
     throws ConstraintError
   {

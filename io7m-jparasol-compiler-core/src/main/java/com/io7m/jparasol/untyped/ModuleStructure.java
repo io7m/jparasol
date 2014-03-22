@@ -30,6 +30,7 @@ import com.io7m.jaux.UnreachableCodeException;
 import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Option.Some;
 import com.io7m.jaux.functional.PartialFunction;
+import com.io7m.jaux.functional.Unit;
 import com.io7m.jlog.Log;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
@@ -53,6 +54,8 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragme
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentLocalValue;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentOutputData;
+import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderFragmentParameter;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderProgram;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDShaderVertex;
@@ -100,6 +103,8 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragme
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputData;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentParameter;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderParameters;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgram;
@@ -130,6 +135,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpressionVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTIFragmentShaderLocalVisitor;
+import com.io7m.jparasol.untyped.ast.initial.UASTIFragmentShaderOutputVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTIFragmentShaderVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTIFunctionVisitor;
 import com.io7m.jparasol.untyped.ast.initial.UASTILocalLevelVisitor;
@@ -218,6 +224,8 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIVertexShaderVisitor;
  * <li>Outputs with discontinuous indices (
  * <code>out out0 : vector4f as 2; out out1 : vector4f as 0;</code>)</li>
  * <li>Outputs with negative indices</li>
+ * <li>Multiple fragment shader depth outputs (
+ * <code>out depth out0 : float; out depth out1 : float;</code>)</li>
  * </ul>
  * 
  * For units:
@@ -426,8 +434,9 @@ public final class ModuleStructure
   {
     private final @Nonnull HashMap<String, UASTIDShaderFragmentLocalValue>       locals;
     private final @Nonnull HashMap<String, UASTIDShaderFragmentOutputAssignment> output_assignments;
-    private final @Nonnull HashMap<Integer, UASTIDShaderFragmentOutput>          output_indices;
+    private final @Nonnull HashMap<Integer, UASTIDShaderFragmentOutputData>      output_indices;
     private int                                                                  output_max;
+    private @CheckForNull UASTIDShaderFragmentOutputDepth                        output_depth;
     private final @Nonnull HashMap<String, UASTIDShaderFragmentOutput>           outputs;
     private final @Nonnull HashMap<String, UASTIDShaderParameters>               parameters;
     private final @Nonnull UASTIDShaderFragment                                  shader;
@@ -443,7 +452,8 @@ public final class ModuleStructure
         new HashMap<String, UASTIDShaderFragmentOutputAssignment>();
       this.output_max = -1;
       this.output_indices =
-        new HashMap<Integer, UASTIDShaderFragmentOutput>();
+        new HashMap<Integer, UASTIDShaderFragmentOutputData>();
+      this.output_depth = null;
     }
 
     private void addOutputAssignment(
@@ -464,8 +474,8 @@ public final class ModuleStructure
       this.output_assignments.put(name, a);
     }
 
-    private void addShaderParameter(
-      final UASTIDShaderParameters p)
+    @SuppressWarnings("synthetic-access") private void addShaderParameter(
+      final @Nonnull UASTIDShaderParameters p)
       throws ModuleStructureError,
         ConstraintError
     {
@@ -484,20 +494,56 @@ public final class ModuleStructure
           final UASTIDShaderFragmentOutput out =
             (UASTIDShaderFragmentOutput) p;
 
-          if (out.getIndex() < 0) {
-            throw ModuleStructureError.moduleShaderOutputIndexInvalid(out);
-          }
+          final HashMap<Integer, UASTIDShaderFragmentOutputData> out_ind =
+            this.output_indices;
 
-          this.output_max = Math.max(out.getIndex(), this.output_max);
+          out
+            .fragmentShaderOutputVisitableAccept(new UASTIFragmentShaderOutputVisitor<Unit, ModuleStructureError>() {
+              @Override public Unit fragmentShaderVisitOutputData(
+                final @Nonnull UASTIDShaderFragmentOutputData out_data)
+                throws ModuleStructureError,
+                  ConstraintError
+              {
+                if (out_data.getIndex() < 0) {
+                  throw ModuleStructureError
+                    .moduleShaderOutputIndexInvalid(out_data);
+                }
 
-          final Integer current_index = Integer.valueOf(out.getIndex());
-          if (this.output_indices.containsKey(current_index)) {
-            throw ModuleStructureError.moduleShaderOutputIndexDuplicate(
-              out,
-              this.output_indices.get(current_index));
-          }
+                FragmentShaderChecker.this.output_max =
+                  Math.max(
+                    out_data.getIndex(),
+                    FragmentShaderChecker.this.output_max);
 
-          this.output_indices.put(current_index, out);
+                final Integer current_index =
+                  Integer.valueOf(out_data.getIndex());
+                if (out_ind.containsKey(current_index)) {
+                  throw ModuleStructureError
+                    .moduleShaderOutputIndexDuplicate(
+                      out_data,
+                      out_ind.get(current_index));
+                }
+
+                out_ind.put(current_index, out_data);
+                return Unit.unit();
+              }
+
+              @Override public Unit fragmentShaderVisitOutputDepth(
+                final @Nonnull UASTIDShaderFragmentOutputDepth v)
+                throws ModuleStructureError,
+                  ConstraintError
+              {
+                if (FragmentShaderChecker.this.output_depth != null) {
+                  throw ModuleStructureError
+                    .moduleShaderFragmentOutputDepthDuplicate(
+                      FragmentShaderChecker.this.output_depth,
+                      v);
+                }
+
+                FragmentShaderChecker.this.output_depth = v;
+                return Unit.unit();
+              }
+            });
+
           this.outputs.put(name, out);
         }
 
@@ -582,18 +628,6 @@ public final class ModuleStructure
       return new FragmentShaderLocalChecker();
     }
 
-    @Override public UASTCDShaderFragmentOutput fragmentShaderVisitOutput(
-      final @Nonnull UASTIDShaderFragmentOutput o)
-      throws ModuleStructureError,
-        ConstraintError
-    {
-      this.addShaderParameter(o);
-      return new UASTCDShaderFragmentOutput(
-        o.getName(),
-        ModuleStructure.typePath(o.getType()),
-        o.getIndex());
-    }
-
     @Override public
       UASTCDShaderFragmentOutputAssignment
       fragmentShaderVisitOutputAssignment(
@@ -620,6 +654,42 @@ public final class ModuleStructure
       return new UASTCDShaderFragmentParameter(
         p.getName(),
         ModuleStructure.typePath(p.getType()));
+    }
+
+    @SuppressWarnings("synthetic-access") @Override public
+      UASTIFragmentShaderOutputVisitor<UASTCDShaderFragmentOutput, ModuleStructureError>
+      fragmentShaderVisitOutputsPre()
+        throws ModuleStructureError,
+          ConstraintError
+    {
+      return new UASTIFragmentShaderOutputVisitor<UASTCDShaderFragmentOutput, ModuleStructureError>() {
+        @Override public
+          UASTCDShaderFragmentOutputData
+          fragmentShaderVisitOutputData(
+            final @Nonnull UASTIDShaderFragmentOutputData d)
+            throws ModuleStructureError,
+              ConstraintError
+        {
+          FragmentShaderChecker.this.addShaderParameter(d);
+          return new UASTCDShaderFragmentOutputData(
+            d.getName(),
+            ModuleStructure.typePath(d.getType()),
+            d.getIndex());
+        }
+
+        @Override public
+          UASTCDShaderFragmentOutputDepth
+          fragmentShaderVisitOutputDepth(
+            final @Nonnull UASTIDShaderFragmentOutputDepth d)
+            throws ModuleStructureError,
+              ConstraintError
+        {
+          FragmentShaderChecker.this.addShaderParameter(d);
+          return new UASTCDShaderFragmentOutputDepth(
+            d.getName(),
+            ModuleStructure.typePath(d.getType()));
+        }
+      };
     }
   }
 
@@ -855,10 +925,8 @@ public final class ModuleStructure
         final ExpressionChecker ec = new ExpressionChecker();
         final UASTCExpression ex =
           v.getExpression().expressionVisitableAccept(ec);
-        return new UASTCDValueLocal(
-          name,
-          ModuleStructure.mapTypePath(v.getAscription()),
-          ex);
+        return new UASTCDValueLocal(name, ModuleStructure.mapTypePath(v
+          .getAscription()), ex);
       } catch (final NameRestrictionsException x) {
         throw new ModuleStructureError(x);
       }

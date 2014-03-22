@@ -75,10 +75,13 @@ module M is
     parameter u_texture     : sampler_2d;
     parameter u_texture_opt : sampler_2d;
     out out_0               : vector_4f as 0;
+    out depth od_0          : float;
   with
     value rgba = S.texture (u_texture, something [x y]);
+    value z    = rgba [z];
   as
     out out_0 = rgba;
+    out od_0  = z;
   end;
 
   shader program everything_opt is

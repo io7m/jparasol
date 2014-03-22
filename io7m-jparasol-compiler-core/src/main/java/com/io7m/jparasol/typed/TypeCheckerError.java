@@ -50,6 +50,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderVisitor;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentInput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutput;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderVertexInput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderVertexOutput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderName;
@@ -81,6 +82,7 @@ public final class TypeCheckerError extends CompilerError
     TYPE_ERROR_RECORD_FIELD_NOT_MANIFEST,
     TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE,
     TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE,
+    TYPE_ERROR_SHADER_DEPTH_NOT_FLOAT,
     TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN,
     TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE,
     TYPE_ERROR_SHADER_WRONG_SHADER_TYPE,
@@ -149,6 +151,17 @@ public final class TypeCheckerError extends CompilerError
       o.getName().getPosition(),
       Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE,
       "An output of a fragment shader cannot be of a record type");
+  }
+
+  public static TypeCheckerError shaderFragmentOutputDepthWrongType(
+    final @Nonnull UASTRDShaderFragmentOutputDepth d)
+    throws ConstraintError
+  {
+    return new TypeCheckerError(
+      d.getName().getFile(),
+      d.getName().getPosition(),
+      Code.TYPE_ERROR_SHADER_DEPTH_NOT_FLOAT,
+      "The depth output of a fragment shader must be of type float");
   }
 
   public static @Nonnull TypeCheckerError shaderNotFragment(
@@ -745,13 +758,13 @@ public final class TypeCheckerError extends CompilerError
     this.code = code;
   }
 
-  public @Nonnull Code getCode()
-  {
-    return this.code;
-  }
-
   @Override public String getCategory()
   {
     return "type-checker";
+  }
+
+  public @Nonnull Code getCode()
+  {
+    return this.code;
   }
 }

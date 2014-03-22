@@ -135,6 +135,24 @@ public abstract class Token
     }
   }
 
+  public static final class TokenDepth extends Token
+  {
+    @SuppressWarnings("synthetic-access") public TokenDepth(
+      final @Nonnull File file,
+      final @Nonnull Position position)
+      throws ConstraintError
+    {
+      super(Type.TOKEN_DEPTH, file, position);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("TokenDepth []");
+      return builder.toString();
+    }
+  }
+
   public static final class TokenDot extends Token
   {
     @SuppressWarnings("synthetic-access") public TokenDot(
@@ -1023,6 +1041,7 @@ public abstract class Token
     TOKEN_COMMA("comma"),
     TOKEN_CURLY_LEFT("'{'"),
     TOKEN_CURLY_RIGHT("'}'"),
+    TOKEN_DEPTH("keyword 'depth'"),
     TOKEN_DISCARD("keyword 'discard'"),
     TOKEN_DOT("'.'"),
     TOKEN_ELSE("keyword 'else'"),

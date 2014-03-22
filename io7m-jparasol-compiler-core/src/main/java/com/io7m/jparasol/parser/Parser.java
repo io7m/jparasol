@@ -60,6 +60,8 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragme
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentLocalValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutput;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputData;
+import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentOutputDepth;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentParameter;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderFragmentParameters;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDShaderProgram;
@@ -325,20 +327,42 @@ public final class Parser
       ConstraintError
   {
     this.parserConsumeExact(Type.TOKEN_OUT);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
-    final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_COLON);
-    final UASTITypePath type = this.declarationTypePath();
-    this.parserConsumeExact(Type.TOKEN_AS);
-    this.parserExpectExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
-    final TokenLiteralIntegerDecimal index =
-      (TokenLiteralIntegerDecimal) this.token;
-    this.parserConsumeExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
+    this.parserExpectOneOf(new Type[] {
+      Type.TOKEN_IDENTIFIER_LOWER,
+      Type.TOKEN_DEPTH });
 
-    return new UASTIDShaderFragmentOutput(name, type, index
-      .getValue()
-      .intValue());
+    switch (this.token.getType()) {
+      case TOKEN_IDENTIFIER_LOWER:
+      {
+        final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(Type.TOKEN_COLON);
+        final UASTITypePath type = this.declarationTypePath();
+        this.parserConsumeExact(Type.TOKEN_AS);
+        this.parserExpectExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
+        final TokenLiteralIntegerDecimal index =
+          (TokenLiteralIntegerDecimal) this.token;
+        this.parserConsumeExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
+
+        final int i = index.getValue().intValue();
+        return new UASTIDShaderFragmentOutputData(name, type, i);
+      }
+      case TOKEN_DEPTH:
+      {
+        this.parserConsumeExact(Type.TOKEN_DEPTH);
+        final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
+        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(Type.TOKEN_COLON);
+        final UASTITypePath type = this.declarationTypePath();
+
+        return new UASTIDShaderFragmentOutputDepth(name, type);
+      }
+      // $CASES-OMITTED$
+      default:
+      {
+        throw new UnreachableCodeException();
+      }
+    }
   }
 
   public @Nonnull

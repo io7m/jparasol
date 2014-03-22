@@ -34,6 +34,7 @@ import com.io7m.jparasol.lexer.Token.TokenDiscard;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.typed.TType;
+import com.io7m.jparasol.typed.TType.TFloat;
 import com.io7m.jparasol.typed.TType.TFunction;
 import com.io7m.jparasol.typed.TType.TManifestType;
 import com.io7m.jparasol.typed.TType.TRecord;
@@ -1209,21 +1210,19 @@ public abstract class TASTDeclaration
     }
   }
 
-  public static final class TASTDShaderFragmentOutput extends
-    TASTDShaderFragmentParameters
+  public static abstract class TASTDShaderFragmentOutput extends
+    TASTDShaderFragmentParameters implements
+    TASTFragmentShaderOutputVisitable
   {
-    private final int                           index;
     private final @Nonnull TokenIdentifierLower name;
 
     public TASTDShaderFragmentOutput(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TValueType type,
-      final int index)
+      final @Nonnull TValueType type)
       throws ConstraintError
     {
       super(type);
       this.name = Constraints.constrainNotNull(name, "Name");
-      this.index = index;
     }
 
     @Override public boolean equals(
@@ -1239,18 +1238,10 @@ public abstract class TASTDeclaration
         return false;
       }
       final TASTDShaderFragmentOutput other = (TASTDShaderFragmentOutput) obj;
-      if (this.index != other.index) {
-        return false;
-      }
       if (!this.name.equals(other.name)) {
         return false;
       }
       return true;
-    }
-
-    public int getIndex()
-    {
-      return this.index;
     }
 
     public @Nonnull TokenIdentifierLower getName()
@@ -1262,7 +1253,6 @@ public abstract class TASTDeclaration
     {
       final int prime = 31;
       int result = 1;
-      result = (prime * result) + this.index;
       result = (prime * result) + this.name.hashCode();
       return result;
     }
@@ -1272,8 +1262,6 @@ public abstract class TASTDeclaration
       final StringBuilder builder = new StringBuilder();
       builder.append("[TASTDShaderFragmentOutput ");
       builder.append(this.name.getActual());
-      builder.append(" ");
-      builder.append(this.index);
       builder.append("]");
       return builder.toString();
     }
@@ -1345,6 +1333,97 @@ public abstract class TASTDeclaration
       builder.append(this.variable);
       builder.append("]");
       return builder.toString();
+    }
+  }
+
+  public static final class TASTDShaderFragmentOutputData extends
+    TASTDShaderFragmentOutput
+  {
+    private final int index;
+
+    public TASTDShaderFragmentOutputData(
+      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull TValueType type,
+      final int index)
+      throws ConstraintError
+    {
+      super(name, type);
+      this.index = index;
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj)) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final TASTDShaderFragmentOutputData other =
+        (TASTDShaderFragmentOutputData) obj;
+      if (this.index != other.index) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends TASTFragmentShaderOutputVisitor<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitOutputData(this);
+    }
+
+    public int getIndex()
+    {
+      return this.index;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.index;
+      return result;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[TASTDShaderFragmentOutputData index=");
+      builder.append(this.index);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
+  public static final class TASTDShaderFragmentOutputDepth extends
+    TASTDShaderFragmentOutput
+  {
+    public TASTDShaderFragmentOutputDepth(
+      final @Nonnull TokenIdentifierLower name)
+      throws ConstraintError
+    {
+      super(name, TFloat.get());
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends TASTFragmentShaderOutputVisitor<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final @Nonnull V v)
+        throws E,
+          ConstraintError
+    {
+      return v.fragmentShaderVisitOutputDepth(this);
     }
   }
 

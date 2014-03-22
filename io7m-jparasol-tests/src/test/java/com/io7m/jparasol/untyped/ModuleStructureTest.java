@@ -432,6 +432,18 @@ public final class ModuleStructureTest
   @SuppressWarnings("static-method") @Test(
     expected = ModuleStructureError.class) public
     void
+    testModuleShaderFragmentDuplicateOutDepth_0()
+      throws ConstraintError,
+        ModuleStructureError
+  {
+    ModuleStructureTest.checkMustFailWithCode(
+      new String[] { "module-shader-f-duplicate-out-depth-0.p" },
+      Code.MODULE_STRUCTURE_SHADER_OUTPUT_DEPTH_DUPLICATE);
+  }
+
+  @SuppressWarnings("static-method") @Test(
+    expected = ModuleStructureError.class) public
+    void
     testModuleShaderFragmentDuplicateOutIndex_0()
       throws ConstraintError,
         ModuleStructureError
@@ -564,6 +576,18 @@ public final class ModuleStructureTest
   @SuppressWarnings("static-method") @Test(
     expected = ModuleStructureError.class) public
     void
+    testModuleShaderFragmentMissingWrite_1()
+      throws ConstraintError,
+        ModuleStructureError
+  {
+    ModuleStructureTest.checkMustFailWithCode(
+      new String[] { "module-shader-f-missing-write-1.p" },
+      Code.MODULE_STRUCTURE_SHADER_OUTPUT_ASSIGNMENT_MISSING);
+  }
+
+  @SuppressWarnings("static-method") @Test(
+    expected = ModuleStructureError.class) public
+    void
     testModuleShaderVertexDuplicateParam_0()
       throws ConstraintError,
         ModuleStructureError
@@ -672,18 +696,6 @@ public final class ModuleStructureTest
   @SuppressWarnings("static-method") @Test(
     expected = ModuleStructureError.class) public
     void
-    testModuleValueExternalMissingAscription_0()
-      throws ConstraintError,
-        ModuleStructureError
-  {
-    ModuleStructureTest.checkMustFailWithCodeInternal(
-      new String[] { "module-value-external-missing-ascription-0.p" },
-      Code.MODULE_STRUCTURE_VALUE_EXTERNAL_LACKS_ASCRIPTION);
-  }
-
-  @SuppressWarnings("static-method") @Test(
-    expected = ModuleStructureError.class) public
-    void
     testModuleValueExternalHasExpression_0()
       throws ConstraintError,
         ModuleStructureError
@@ -691,6 +703,18 @@ public final class ModuleStructureTest
     ModuleStructureTest.checkMustFailWithCodeInternal(
       new String[] { "module-value-external-has-expression-0.p" },
       Code.MODULE_STRUCTURE_VALUE_EXTERNAL_HAS_EXPRESSION);
+  }
+
+  @SuppressWarnings("static-method") @Test(
+    expected = ModuleStructureError.class) public
+    void
+    testModuleValueExternalMissingAscription_0()
+      throws ConstraintError,
+        ModuleStructureError
+  {
+    ModuleStructureTest.checkMustFailWithCodeInternal(
+      new String[] { "module-value-external-missing-ascription-0.p" },
+      Code.MODULE_STRUCTURE_VALUE_EXTERNAL_LACKS_ASCRIPTION);
   }
 
   @SuppressWarnings({ "boxing", "static-method" }) @Test public

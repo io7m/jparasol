@@ -178,25 +178,31 @@ public abstract class GASTFragmentShaderStatement implements
     }
   }
 
-  /**
-   * Specifically does not extend the statement class, in order to prevent
-   * interleaving of writes with other statements.
-   */
-
-  public static final class GASTFragmentOutputAssignment
+  public static abstract class GASTFragmentOutputAssignment
   {
-    private final int                        index;
     private final @Nonnull GShaderOutputName name;
     private final @Nonnull GTermName         value;
 
     public GASTFragmentOutputAssignment(
       final @Nonnull GShaderOutputName name,
-      final int index,
       final @Nonnull GTermName value)
     {
       this.name = name;
-      this.index = index;
       this.value = value;
+    }
+
+    public @Nonnull GShaderOutputName getName()
+    {
+      return this.name;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.name.hashCode();
+      result = (prime * result) + this.value.hashCode();
+      return result;
     }
 
     @Override public boolean equals(
@@ -211,15 +217,79 @@ public abstract class GASTFragmentShaderStatement implements
       if (this.getClass() != obj.getClass()) {
         return false;
       }
-      final GASTFragmentShaderStatement.GASTFragmentOutputAssignment other =
-        (GASTFragmentShaderStatement.GASTFragmentOutputAssignment) obj;
+      final GASTFragmentOutputAssignment other =
+        (GASTFragmentOutputAssignment) obj;
+      return this.name.equals(other.name) && this.value.equals(other.value);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[GASTFragmentOutputAssignment ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.value);
+      builder.append("]");
+      return builder.toString();
+    }
+
+    public @Nonnull GTermName getValue()
+    {
+      return this.value;
+    }
+  }
+
+  /**
+   * Specifically does not extend the statement class, in order to prevent
+   * interleaving of writes with other statements.
+   */
+
+  public static final class GASTFragmentOutputDataAssignment extends
+    GASTFragmentOutputAssignment
+  {
+    private final int index;
+
+    public GASTFragmentOutputDataAssignment(
+      final @Nonnull GShaderOutputName name,
+      final int index,
+      final @Nonnull GTermName value)
+    {
+      super(name, value);
+      this.index = index;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = (prime * result) + this.index;
+      return result;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[GASTFragmentOutputDataAssignment ");
+      builder.append(this.index);
+      builder.append("]");
+      return builder.toString();
+    }
+
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj)) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final GASTFragmentOutputDataAssignment other =
+        (GASTFragmentOutputDataAssignment) obj;
       if (this.index != other.index) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.value.equals(other.value)) {
         return false;
       }
       return true;
@@ -229,25 +299,21 @@ public abstract class GASTFragmentShaderStatement implements
     {
       return this.index;
     }
+  }
 
-    public @Nonnull GShaderOutputName getName()
-    {
-      return this.name;
-    }
+  /**
+   * Specifically does not extend the statement class, in order to prevent
+   * interleaving of writes with other statements.
+   */
 
-    public @Nonnull GTermName getValue()
+  public static final class GASTFragmentOutputDepthAssignment extends
+    GASTFragmentOutputAssignment
+  {
+    public GASTFragmentOutputDepthAssignment(
+      final @Nonnull GShaderOutputName name,
+      final @Nonnull GTermName value)
     {
-      return this.value;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.index;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.value.hashCode();
-      return result;
+      super(name, value);
     }
   }
 }

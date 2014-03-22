@@ -23,7 +23,9 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jaux.functional.Option;
 import com.io7m.jaux.functional.Pair;
+import com.io7m.jaux.functional.PartialFunction;
 import com.io7m.jaux.functional.Unit;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
@@ -50,7 +52,8 @@ import com.io7m.jparasol.glsl.ast.GASTExpressionVisitor;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentConditionalDiscard;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentLocalVariable;
-import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputAssignment;
+import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputDataAssignment;
+import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputDepthAssignment;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatementVisitor;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragmentInput;
@@ -626,10 +629,32 @@ public final class GWriter
     for (final GASTFragmentShaderStatement s : main.getStatements()) {
       s.fragmentStatementVisitableAccept(new FragmentStatementWriter(writer));
     }
-    for (final GASTFragmentOutputAssignment w : main.getWrites()) {
+    for (final GASTFragmentOutputDataAssignment w : main.getWrites()) {
       GWriter.writeFragmentOutputAssignment(writer, outputs, w, version);
     }
+
+    GWriter.writeFragmentOutputDepth(writer, main.getDepthWrite());
+
     writer.println("}");
+  }
+
+  private static void writeFragmentOutputDepth(
+    final @Nonnull PrintWriter writer,
+    final @Nonnull Option<GASTFragmentOutputDepthAssignment> write)
+    throws ConstraintError
+  {
+    write
+      .mapPartial(new PartialFunction<GASTFragmentOutputDepthAssignment, Unit, ConstraintError>() {
+        @Override public Unit call(
+          final @Nonnull GASTFragmentOutputDepthAssignment x)
+          throws ConstraintError
+        {
+          writer.print("  gl_FragDepth = ");
+          writer.print(x.getValue().show());
+          writer.println(";");
+          return Unit.unit();
+        }
+      });
   }
 
   private static void writeFragmentOutput(
@@ -671,7 +696,7 @@ public final class GWriter
   private static void writeFragmentOutputAssignment(
     final @Nonnull PrintWriter writer,
     final int outputs,
-    final @Nonnull GASTFragmentOutputAssignment w,
+    final @Nonnull GASTFragmentOutputDataAssignment w,
     final @Nonnull GVersion version)
     throws ConstraintError
   {
