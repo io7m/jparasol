@@ -31,46 +31,46 @@ public abstract class CompilerError extends Exception
   private final @Nonnull Position position;
 
   public CompilerError(
-    final @Nonnull File file,
-    final @Nonnull Position position)
+    final @Nonnull File in_file,
+    final @Nonnull Position in_position)
     throws ConstraintError
   {
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.position = Constraints.constrainNotNull(in_position, "Position");
   }
 
   public CompilerError(
     final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
+    final @Nonnull File in_file,
+    final @Nonnull Position in_position)
     throws ConstraintError
   {
     super(message);
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.position = Constraints.constrainNotNull(in_position, "Position");
   }
 
   public CompilerError(
     final @Nonnull Throwable x,
-    final @Nonnull File file,
-    final @Nonnull Position position)
+    final @Nonnull File in_file,
+    final @Nonnull Position in_position)
     throws ConstraintError
   {
     super(x);
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.position = Constraints.constrainNotNull(in_position, "Position");
   }
 
   public CompilerError(
     final @Nonnull Throwable x,
     final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
+    final @Nonnull File in_file,
+    final @Nonnull Position in_position)
     throws ConstraintError
   {
     super(message, x);
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.position = Constraints.constrainNotNull(in_position, "Position");
   }
 
   public final @Nonnull File getFile()

@@ -29,9 +29,9 @@ public abstract class GASTFragmentShaderStatement implements
     private final @Nonnull GASTExpression condition;
 
     public GASTFragmentConditionalDiscard(
-      final @Nonnull GASTExpression condition)
+      final @Nonnull GASTExpression in_condition)
     {
-      this.condition = condition;
+      this.condition = in_condition;
     }
 
     @Override public boolean equals(
@@ -95,13 +95,13 @@ public abstract class GASTFragmentShaderStatement implements
     private final @Nonnull GTypeName      type;
 
     public GASTFragmentLocalVariable(
-      final @Nonnull GTermNameLocal name,
-      final @Nonnull GTypeName type,
-      final @Nonnull GASTExpression expression)
+      final @Nonnull GTermNameLocal in_name,
+      final @Nonnull GTypeName in_type,
+      final @Nonnull GASTExpression in_expression)
     {
-      this.name = name;
-      this.type = type;
-      this.expression = expression;
+      this.name = in_name;
+      this.type = in_type;
+      this.expression = in_expression;
     }
 
     @Override public boolean equals(
@@ -184,11 +184,11 @@ public abstract class GASTFragmentShaderStatement implements
     private final @Nonnull GTermName         value;
 
     public GASTFragmentOutputAssignment(
-      final @Nonnull GShaderOutputName name,
-      final @Nonnull GTermName value)
+      final @Nonnull GShaderOutputName in_name,
+      final @Nonnull GTermName in_value)
     {
-      this.name = name;
-      this.value = value;
+      this.name = in_name;
+      this.value = in_value;
     }
 
     public @Nonnull GShaderOutputName getName()
@@ -251,11 +251,11 @@ public abstract class GASTFragmentShaderStatement implements
 
     public GASTFragmentOutputDataAssignment(
       final @Nonnull GShaderOutputName name,
-      final int index,
+      final int in_index,
       final @Nonnull GTermName value)
     {
       super(name, value);
-      this.index = index;
+      this.index = in_index;
     }
 
     @Override public int hashCode()

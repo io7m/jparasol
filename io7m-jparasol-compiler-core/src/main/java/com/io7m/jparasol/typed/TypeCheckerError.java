@@ -750,12 +750,12 @@ public final class TypeCheckerError extends CompilerError
   private TypeCheckerError(
     final @Nonnull File file,
     final @Nonnull Position position,
-    final @Nonnull Code code,
+    final @Nonnull Code in_code,
     final @Nonnull String message)
     throws ConstraintError
   {
     super(message, file, position);
-    this.code = code;
+    this.code = in_code;
   }
 
   @Override public String getCategory()

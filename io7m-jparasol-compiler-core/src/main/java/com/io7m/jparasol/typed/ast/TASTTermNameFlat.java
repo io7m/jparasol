@@ -37,12 +37,12 @@ public final class TASTTermNameFlat implements NameFlat
   private final @Nonnull ModulePathFlat path;
 
   public TASTTermNameFlat(
-    final @Nonnull ModulePathFlat path,
-    final @Nonnull String name)
+    final @Nonnull ModulePathFlat in_path,
+    final @Nonnull String in_name)
     throws ConstraintError
   {
-    this.path = Constraints.constrainNotNull(path, "Path");
-    this.name = Constraints.constrainNotNull(name, "Name");
+    this.path = Constraints.constrainNotNull(in_path, "Path");
+    this.name = Constraints.constrainNotNull(in_name, "Name");
   }
 
   @Override public boolean equals(

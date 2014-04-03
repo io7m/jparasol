@@ -153,17 +153,19 @@ public final class GTransform
     private final @Nonnull TValueType type;
 
     private Binding(
-      final @Nonnull String original,
-      final @Nonnull TValueType type,
-      final @Nonnull String current,
-      final boolean external)
+      final @Nonnull String in_original,
+      final @Nonnull TValueType in_type,
+      final @Nonnull String in_current,
+      final boolean in_external)
     {
-      this.original = original;
-      this.current = current;
-      this.type = type;
-      this.external = external;
+      this.original = in_original;
+      this.current = in_current;
+      this.type = in_type;
+      this.external = in_external;
 
-      assert (external == true ? original.equals(current) : true);
+      assert (this.external == true
+        ? this.original.equals(this.current)
+        : true);
     }
 
     public static @Nonnull Binding newExternalBinding(
@@ -290,17 +292,17 @@ public final class GTransform
     private final @Nonnull GNameContext<TTypeNameFlat, GTypeName>          types_names;
 
     public Context(
-      final @Nonnull TASTCompilation compilation,
-      final @Nonnull Topology topology,
-      final @Nonnull TASTShaderNameFlat shader_name,
-      final @Nonnull Log log)
+      final @Nonnull TASTCompilation in_compilation,
+      final @Nonnull Topology in_topology,
+      final @Nonnull TASTShaderNameFlat in_shader_name,
+      final @Nonnull Log in_log)
     {
-      this.log = new Log(log, "context");
+      this.log = new Log(in_log, "context");
 
       this.ffi = GFFI.newFFI(this.log);
-      this.compilation = compilation;
-      this.topology = topology;
-      this.shader_name = shader_name;
+      this.compilation = in_compilation;
+      this.topology = in_topology;
+      this.shader_name = in_shader_name;
       this.temporary_prime = new AtomicInteger(0);
 
       this.types_names =
@@ -473,15 +475,15 @@ public final class GTransform
     private final @Nonnull GVersion                                         version;
 
     public ExpressionStatementTransformer(
-      final @Nonnull Context context,
-      final @Nonnull Map<String, Binding> bindings,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-      final @Nonnull GVersion version)
+      final @Nonnull Context in_context,
+      final @Nonnull Map<String, Binding> in_bindings,
+      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_declarations,
+      final @Nonnull GVersion in_version)
     {
-      this.context = context;
-      this.bindings = bindings;
-      this.declarations = declarations;
-      this.version = version;
+      this.context = in_context;
+      this.bindings = in_bindings;
+      this.declarations = in_declarations;
+      this.version = in_version;
     }
 
     @Override public GASTScope expressionVisitApplication(
@@ -823,15 +825,15 @@ public final class GTransform
     private final @Nonnull GVersion                                         version;
 
     public ExpressionTransformer(
-      final @Nonnull Context context,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-      final @Nonnull Map<String, Binding> bindings,
-      final @Nonnull GVersion version)
+      final @Nonnull Context in_context,
+      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_declarations,
+      final @Nonnull Map<String, Binding> in_bindings,
+      final @Nonnull GVersion in_version)
     {
-      this.context = context;
-      this.declarations = declarations;
-      this.bindings = bindings;
-      this.version = version;
+      this.context = in_context;
+      this.declarations = in_declarations;
+      this.bindings = in_bindings;
+      this.version = in_version;
     }
 
     @Override public GASTExpression expressionVisitApplication(
@@ -1287,15 +1289,15 @@ public final class GTransform
     private final @Nonnull GVersion                                         version;
 
     public TermTransformer(
-      final @Nonnull Context context,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-      final @Nonnull TASTTermNameFlat name,
-      final @Nonnull GVersion version)
+      final @Nonnull Context in_context,
+      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_declarations,
+      final @Nonnull TASTTermNameFlat in_name,
+      final @Nonnull GVersion in_version)
     {
-      this.context = context;
-      this.declarations = declarations;
-      this.name = name;
-      this.version = version;
+      this.context = in_context;
+      this.declarations = in_declarations;
+      this.name = in_name;
+      this.version = in_version;
     }
 
     @Override public GASTTermFunction termVisitFunctionDefined(

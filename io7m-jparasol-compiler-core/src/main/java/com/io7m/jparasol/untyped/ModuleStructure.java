@@ -442,9 +442,9 @@ public final class ModuleStructure
     private final @Nonnull UASTIDShaderFragment                                  shader;
 
     public FragmentShaderChecker(
-      final @Nonnull UASTIDShaderFragment shader)
+      final @Nonnull UASTIDShaderFragment in_shader)
     {
-      this.shader = shader;
+      this.shader = in_shader;
       this.locals = new HashMap<String, UASTIDShaderFragmentLocalValue>();
       this.parameters = new HashMap<String, UASTIDShaderParameters>();
       this.outputs = new HashMap<String, UASTIDShaderFragmentOutput>();
@@ -946,9 +946,9 @@ public final class ModuleStructure
 
     public ModuleChecker(
       final @Nonnull ModulePath path,
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
-      this.log = log;
+      this.log = in_log;
       this.current_path = path;
       this.current_path_flat = ModulePathFlat.fromModulePath(path);
 
@@ -1096,9 +1096,9 @@ public final class ModuleStructure
 
     public ModuleDeclarationChecker(
       final @Nonnull ModulePath path,
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
-      this.log = log;
+      this.log = in_log;
       this.current_path = path;
       this.current_path_flat = ModulePathFlat.fromModulePath(path);
       this.terms = new HashMap<String, UASTCDTerm>();
@@ -1336,9 +1336,9 @@ public final class ModuleStructure
     private final @Nonnull UASTIDShaderVertex                                  shader;
 
     public VertexShaderChecker(
-      final @Nonnull UASTIDShaderVertex shader)
+      final @Nonnull UASTIDShaderVertex in_shader)
     {
-      this.shader = shader;
+      this.shader = in_shader;
       this.locals = new HashMap<String, UASTIDShaderVertexLocalValue>();
       this.parameters = new HashMap<String, UASTIDShaderParameters>();
       this.outputs = new HashMap<String, UASTIDShaderVertexOutput>();
@@ -1594,13 +1594,13 @@ public final class ModuleStructure
   private final @Nonnull Log              log;
 
   private ModuleStructure(
-    final @Nonnull UASTICompilation compilation,
-    final @Nonnull Log log)
+    final @Nonnull UASTICompilation in_compilation,
+    final @Nonnull Log in_log)
     throws ConstraintError
   {
-    this.log = new Log(log, "module-structure");
+    this.log = new Log(in_log, "module-structure");
     this.compilation =
-      Constraints.constrainNotNull(compilation, "Compilation");
+      Constraints.constrainNotNull(in_compilation, "Compilation");
   }
 
   public @Nonnull UASTCCompilation check()

@@ -30,11 +30,11 @@ public final class Position
   private final int                     line;
 
   public Position(
-    final int line,
-    final int column)
+    final int in_line,
+    final int in_column)
   {
-    this.line = line;
-    this.column = column;
+    this.line = in_line;
+    this.column = in_column;
   }
 
   @Override public boolean equals(

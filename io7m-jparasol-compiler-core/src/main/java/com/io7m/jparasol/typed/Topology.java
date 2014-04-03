@@ -137,13 +137,13 @@ public final class Topology
   private final @Nonnull List<TTypeNameFlat>    types;
 
   private Topology(
-    final @Nonnull TASTShaderNameFlat shader_name,
-    final @Nonnull List<TASTTermNameFlat> terms,
-    final @Nonnull List<TTypeNameFlat> types)
+    final @Nonnull TASTShaderNameFlat in_shader_name,
+    final @Nonnull List<TASTTermNameFlat> in_terms,
+    final @Nonnull List<TTypeNameFlat> in_types)
   {
-    this.shader_name = shader_name;
-    this.terms = terms;
-    this.types = types;
+    this.shader_name = in_shader_name;
+    this.terms = in_terms;
+    this.types = in_types;
   }
 
   public @Nonnull TASTShaderNameFlat getShaderName()

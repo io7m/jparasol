@@ -34,10 +34,10 @@ public abstract class TASTNameTypeTermFlat implements
     private final @Nonnull TASTTermNameFlat name;
 
     public Term(
-      final @Nonnull TASTTermNameFlat name)
+      final @Nonnull TASTTermNameFlat in_name)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(
@@ -94,10 +94,10 @@ public abstract class TASTNameTypeTermFlat implements
     private final @Nonnull TTypeNameFlat name;
 
     public Type(
-      final @Nonnull TTypeNameFlat name)
+      final @Nonnull TTypeNameFlat in_name)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(

@@ -25,9 +25,9 @@ public final class GFieldName implements NameShow
   private final @Nonnull String name;
 
   public GFieldName(
-    final @Nonnull String name)
+    final @Nonnull String in_name)
   {
-    this.name = name;
+    this.name = in_name;
   }
 
   @Override public boolean equals(

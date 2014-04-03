@@ -623,40 +623,41 @@ import com.io7m.jlog.Log;
   private final @Nonnull SortedSet<VertexParameter>                vertex_parameters;
 
   private PGLSLMetaXML(
-    final @Nonnull String name,
-    final @Nonnull SortedSet<Integer> supports_es,
-    final @Nonnull SortedSet<Integer> supports_full,
-    final @Nonnull SortedSet<VertexInput> vertex_inputs,
-    final @Nonnull SortedSet<VertexParameter> vertex_parameters,
-    final @Nonnull SortedSet<VertexOutput> vertex_outputs,
-    final @Nonnull SortedSet<FragmentInput> fragment_inputs,
-    final @Nonnull SortedSet<FragmentParameter> fragment_parameters,
-    final @Nonnull SortedMap<Integer, FragmentOutput> fragment_outputs,
-    final @CheckForNull SortedMap<Version, CompactedShaders> compact_mappings)
+    final @Nonnull String in_name,
+    final @Nonnull SortedSet<Integer> in_supports_es,
+    final @Nonnull SortedSet<Integer> in_supports_full,
+    final @Nonnull SortedSet<VertexInput> in_vertex_inputs,
+    final @Nonnull SortedSet<VertexParameter> in_vertex_parameters,
+    final @Nonnull SortedSet<VertexOutput> in_vertex_outputs,
+    final @Nonnull SortedSet<FragmentInput> in_fragment_inputs,
+    final @Nonnull SortedSet<FragmentParameter> in_fragment_parameters,
+    final @Nonnull SortedMap<Integer, FragmentOutput> in_fragment_outputs,
+    final @CheckForNull SortedMap<Version, CompactedShaders> in_compact_mappings)
     throws ConstraintError
   {
-    this.name = Constraints.constrainNotNull(name, "Name");
+    this.name = Constraints.constrainNotNull(in_name, "Name");
     this.supports_es =
-      Constraints.constrainNotNull(supports_es, "ES versions");
+      Constraints.constrainNotNull(in_supports_es, "ES versions");
     this.supports_full =
-      Constraints.constrainNotNull(supports_full, "Full versions");
+      Constraints.constrainNotNull(in_supports_full, "Full versions");
 
     this.vertex_parameters =
-      Constraints.constrainNotNull(vertex_parameters, "Vertex parameters");
+      Constraints.constrainNotNull(in_vertex_parameters, "Vertex parameters");
     this.vertex_inputs =
-      Constraints.constrainNotNull(vertex_inputs, "Vertex inputs");
+      Constraints.constrainNotNull(in_vertex_inputs, "Vertex inputs");
     this.vertex_outputs =
-      Constraints.constrainNotNull(vertex_outputs, "Vertex outputs");
+      Constraints.constrainNotNull(in_vertex_outputs, "Vertex outputs");
 
     this.fragment_parameters =
-      Constraints
-        .constrainNotNull(fragment_parameters, "Fragment parameters");
+      Constraints.constrainNotNull(
+        in_fragment_parameters,
+        "Fragment parameters");
     this.fragment_inputs =
-      Constraints.constrainNotNull(fragment_inputs, "Fragment inputs");
+      Constraints.constrainNotNull(in_fragment_inputs, "Fragment inputs");
     this.fragment_outputs =
-      Constraints.constrainNotNull(fragment_outputs, "Fragment outputs");
+      Constraints.constrainNotNull(in_fragment_outputs, "Fragment outputs");
 
-    this.compact_mappings = compact_mappings;
+    this.compact_mappings = in_compact_mappings;
   }
 
   /**

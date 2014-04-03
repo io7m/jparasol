@@ -49,11 +49,11 @@ public final class GVersionNumberSetParser
     public final @Nonnull Option<Integer> value;
 
     public Bound(
-      final @Nonnull BoundType type,
-      final @Nonnull Option<Integer> value)
+      final @Nonnull BoundType in_type,
+      final @Nonnull Option<Integer> in_value)
     {
-      this.type = type;
-      this.value = value;
+      this.type = in_type;
+      this.value = in_value;
     }
   }
 
@@ -70,9 +70,9 @@ public final class GVersionNumberSetParser
       public final int value;
 
       public SegmentAtom(
-        final int value)
+        final int in_value)
       {
-        this.value = value;
+        this.value = in_value;
       }
     }
 
@@ -82,11 +82,11 @@ public final class GVersionNumberSetParser
       public final @Nonnull Bound upper;
 
       public SegmentRange(
-        final @Nonnull Bound lower,
-        final @Nonnull Bound upper)
+        final @Nonnull Bound in_lower,
+        final @Nonnull Bound in_upper)
       {
-        this.lower = lower;
-        this.upper = upper;
+        this.lower = in_lower;
+        this.upper = in_upper;
       }
     }
   }
@@ -347,14 +347,14 @@ public final class GVersionNumberSetParser
   private @Nonnull GVersionNumberSetToken       token;
 
   public GVersionNumberSetParser(
-    final @Nonnull GVersionNumberSetLexer lexer)
+    final @Nonnull GVersionNumberSetLexer in_lexer)
     throws ConstraintError,
       IOException,
       LexerError
   {
-    this.lexer = Constraints.constrainNotNull(lexer, "Lexer");
+    this.lexer = Constraints.constrainNotNull(in_lexer, "Lexer");
     this.message = new StringBuilder();
-    this.token = lexer.token();
+    this.token = in_lexer.token();
   }
 
   @SuppressWarnings("boxing") public @Nonnull Bound boundLower()

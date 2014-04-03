@@ -27,9 +27,9 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
     private final @Nonnull String name;
 
     public GTermNameExternal(
-      final @Nonnull String name)
+      final @Nonnull String in_name)
     {
-      this.name = name;
+      this.name = in_name;
     }
 
     @Override public boolean equals(
@@ -86,9 +86,9 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
     private final @Nonnull String name;
 
     public GTermNameGlobal(
-      final @Nonnull String name)
+      final @Nonnull String in_name)
     {
-      this.name = name;
+      this.name = in_name;
     }
 
     @Override public boolean equals(
@@ -145,9 +145,9 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
     private final @Nonnull String name;
 
     public GTermNameLocal(
-      final @Nonnull String name)
+      final @Nonnull String in_name)
     {
-      this.name = name;
+      this.name = in_name;
     }
 
     @Override public boolean equals(

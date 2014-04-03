@@ -31,10 +31,10 @@ public abstract class TTypeName implements TTypeNameVisitable
     private final @Nonnull String name;
 
     public TTypeNameBuiltIn(
-      final @Nonnull String name)
+      final @Nonnull String in_name)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(
@@ -102,13 +102,13 @@ public abstract class TTypeName implements TTypeNameVisitable
     private final @Nonnull ModulePath           path;
 
     public TTypeNameGlobal(
-      final @Nonnull ModulePath path,
-      final @Nonnull TokenIdentifierLower name)
+      final @Nonnull ModulePath in_path,
+      final @Nonnull TokenIdentifierLower in_name)
       throws ConstraintError
     {
-      this.path = Constraints.constrainNotNull(path, "Path");
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.flat = ModulePathFlat.fromModulePath(path);
+      this.path = Constraints.constrainNotNull(in_path, "Path");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.flat = ModulePathFlat.fromModulePath(in_path);
     }
 
     @Override public boolean equals(

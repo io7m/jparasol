@@ -661,7 +661,7 @@ public class Frontend
     mout.close();
   }
 
-  protected static void writeShader(
+  static void writeShader(
     final @Nonnull Log logx,
     final @Nonnull File v_name,
     final @Nonnull File f_name,

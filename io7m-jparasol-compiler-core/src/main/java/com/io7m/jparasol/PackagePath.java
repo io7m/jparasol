@@ -89,10 +89,11 @@ public final class PackagePath
   private final @Nonnull List<TokenIdentifierLower> components;
 
   private PackagePath(
-    final @Nonnull List<TokenIdentifierLower> components)
+    final @Nonnull List<TokenIdentifierLower> in_components)
     throws ConstraintError
   {
-    this.components = Constraints.constrainNotNull(components, "Components");
+    this.components =
+      Constraints.constrainNotNull(in_components, "Components");
   }
 
   @Override public boolean equals(

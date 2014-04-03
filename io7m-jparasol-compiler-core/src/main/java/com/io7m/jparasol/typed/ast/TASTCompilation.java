@@ -47,29 +47,31 @@ public final class TASTCompilation
   private final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference>          type_graph;
 
   public TASTCompilation(
-    final @Nonnull List<ModulePathFlat> module_topology,
-    final @Nonnull Map<ModulePathFlat, TASTDModule> modules,
-    final @Nonnull Map<ModulePathFlat, ModulePath> paths,
-    final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> term_graph,
-    final @Nonnull DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference> term_type_graph,
-    final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference> type_graph,
-    final @Nonnull DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference> shader_type_graph,
-    final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> shader_term_graph)
+    final @Nonnull List<ModulePathFlat> in_module_topology,
+    final @Nonnull Map<ModulePathFlat, TASTDModule> in_modules,
+    final @Nonnull Map<ModulePathFlat, ModulePath> in_paths,
+    final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> in_term_graph,
+    final @Nonnull DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference> in_term_type_graph,
+    final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference> in_type_graph,
+    final @Nonnull DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference> in_shader_type_graph,
+    final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> in_shader_term_graph)
     throws ConstraintError
   {
     this.module_topology =
-      Constraints.constrainNotNull(module_topology, "Module topology");
-    this.modules = Constraints.constrainNotNull(modules, "Modules");
-    this.paths = Constraints.constrainNotNull(paths, "Paths");
+      Constraints.constrainNotNull(in_module_topology, "Module topology");
+    this.modules = Constraints.constrainNotNull(in_modules, "Modules");
+    this.paths = Constraints.constrainNotNull(in_paths, "Paths");
 
-    this.term_graph = Constraints.constrainNotNull(term_graph, "Term graph");
-    this.type_graph = Constraints.constrainNotNull(type_graph, "Type graph");
+    this.term_graph =
+      Constraints.constrainNotNull(in_term_graph, "Term graph");
+    this.type_graph =
+      Constraints.constrainNotNull(in_type_graph, "Type graph");
     this.term_type_graph =
-      Constraints.constrainNotNull(term_type_graph, "Term/type graph");
+      Constraints.constrainNotNull(in_term_type_graph, "Term/type graph");
     this.shader_term_graph =
-      Constraints.constrainNotNull(shader_term_graph, "Shader/Term graph");
+      Constraints.constrainNotNull(in_shader_term_graph, "Shader/Term graph");
     this.shader_type_graph =
-      Constraints.constrainNotNull(shader_type_graph, "Shader/Type graph");
+      Constraints.constrainNotNull(in_shader_type_graph, "Shader/Type graph");
   }
 
   public @Nonnull Map<ModulePathFlat, TASTDModule> getModules()

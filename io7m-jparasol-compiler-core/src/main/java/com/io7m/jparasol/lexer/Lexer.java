@@ -497,10 +497,10 @@ public final class Lexer
   private @Nonnull File file = new File("<stdin>");
 
   public void setFile(
-    final @Nonnull File file)
+    final @Nonnull File in_file)
     throws ConstraintError
   {
-    this.file = Constraints.constrainNotNull(file, "File name");
+    this.file = Constraints.constrainNotNull(in_file, "File name");
   }
 
   public @Nonnull File getFile()

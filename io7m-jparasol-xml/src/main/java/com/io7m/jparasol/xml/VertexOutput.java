@@ -36,12 +36,12 @@ import com.io7m.jaux.Constraints.ConstraintError;
   private final @Nonnull String type;
 
   VertexOutput(
-    final @Nonnull String name,
-    final @Nonnull String type)
+    final @Nonnull String in_name,
+    final @Nonnull String in_type)
     throws ConstraintError
   {
-    this.name = Constraints.constrainNotNull(name, "Output name");
-    this.type = Constraints.constrainNotNull(type, "Output type");
+    this.name = Constraints.constrainNotNull(in_name, "Output name");
+    this.type = Constraints.constrainNotNull(in_type, "Output type");
   }
 
   @Override public int compareTo(

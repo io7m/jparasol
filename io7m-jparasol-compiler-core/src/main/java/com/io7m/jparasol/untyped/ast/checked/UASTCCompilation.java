@@ -33,12 +33,12 @@ public final class UASTCCompilation
   private final @Nonnull Map<ModulePathFlat, ModulePath>   paths;
 
   public UASTCCompilation(
-    final @Nonnull Map<ModulePathFlat, UASTCDModule> modules,
-    final @Nonnull Map<ModulePathFlat, ModulePath> paths)
+    final @Nonnull Map<ModulePathFlat, UASTCDModule> in_modules,
+    final @Nonnull Map<ModulePathFlat, ModulePath> in_paths)
     throws ConstraintError
   {
-    this.modules = Constraints.constrainNotNull(modules, "Modules");
-    this.paths = Constraints.constrainNotNull(paths, "Paths");
+    this.modules = Constraints.constrainNotNull(in_modules, "Modules");
+    this.paths = Constraints.constrainNotNull(in_paths, "Paths");
   }
 
   public @Nonnull Map<ModulePathFlat, UASTCDModule> getModules()

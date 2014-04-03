@@ -447,9 +447,9 @@ public final class GVersionChecker
   private final @Nonnull Log log;
 
   private GVersionChecker(
-    final @Nonnull Log log)
+    final @Nonnull Log in_log)
   {
-    this.log = new Log(log, "version-checker");
+    this.log = new Log(in_log, "version-checker");
   }
 
   public @Nonnull GVersionsSupported checkFragmentShader(

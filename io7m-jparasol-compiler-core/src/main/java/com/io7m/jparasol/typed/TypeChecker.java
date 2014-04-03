@@ -181,10 +181,10 @@ public final class TypeChecker
     private final @Nonnull Map<String, TValueType> terms;
 
     private LocalTypes(
-      final @CheckForNull LocalTypes parent)
+      final @CheckForNull LocalTypes in_parent)
     {
       this.terms = new HashMap<String, TValueType>();
-      this.parent = parent;
+      this.parent = in_parent;
     }
 
     public void addTerm(
@@ -231,19 +231,19 @@ public final class TypeChecker
     private final @Nonnull UASTRDModule                     module;
 
     public TypeCheckerExpression(
-      final @Nonnull UASTRDModule module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull LocalTypes locals,
-      final @Nonnull Log log)
+      final @Nonnull UASTRDModule in_module,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull LocalTypes in_locals,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.checked_modules = checked_modules;
-      this.checked_types = checked_types;
-      this.checked_terms = checked_terms;
-      this.locals = locals;
-      this.log = log;
+      this.module = in_module;
+      this.checked_modules = in_checked_modules;
+      this.checked_types = in_checked_types;
+      this.checked_terms = in_checked_terms;
+      this.locals = in_locals;
+      this.log = in_log;
     }
 
     @SuppressWarnings("synthetic-access") @Override public
@@ -659,17 +659,17 @@ public final class TypeChecker
     private final @Nonnull Map<String, TValueType>          outputs;
 
     public TypeCheckerFragmentShader(
-      final @Nonnull UASTRDModule module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Log log)
+      final @Nonnull UASTRDModule in_module,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.checked_modules = checked_modules;
-      this.checked_types = checked_types;
-      this.checked_terms = checked_terms;
-      this.log = log;
+      this.module = in_module;
+      this.checked_modules = in_checked_modules;
+      this.checked_types = in_checked_types;
+      this.checked_terms = in_checked_terms;
+      this.log = in_log;
       this.locals = LocalTypes.initial();
       this.outputs = new HashMap<String, TValueType>();
     }
@@ -864,19 +864,19 @@ public final class TypeChecker
     private final @Nonnull UASTRDModule                     module;
 
     public TypeCheckerFragmentShaderLocal(
-      final @Nonnull UASTRDModule module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull LocalTypes locals,
-      final @Nonnull Log log)
+      final @Nonnull UASTRDModule in_module,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull LocalTypes in_locals,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.checked_modules = checked_modules;
-      this.checked_types = checked_types;
-      this.checked_terms = checked_terms;
-      this.locals = locals;
-      this.log = log;
+      this.module = in_module;
+      this.checked_modules = in_checked_modules;
+      this.checked_types = in_checked_types;
+      this.checked_terms = in_checked_terms;
+      this.locals = in_locals;
+      this.log = in_log;
     }
 
     @Override public
@@ -936,19 +936,19 @@ public final class TypeChecker
     private final @Nonnull UASTRDModule                     module;
 
     public TypeCheckerLocal(
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull LocalTypes locals,
-      final @Nonnull Log log,
-      final @Nonnull UASTRDModule module)
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull LocalTypes in_locals,
+      final @Nonnull Log in_log,
+      final @Nonnull UASTRDModule in_module)
     {
-      this.checked_modules = checked_modules;
-      this.checked_terms = checked_terms;
-      this.checked_types = checked_types;
-      this.locals = locals;
-      this.log = log;
-      this.module = module;
+      this.checked_modules = in_checked_modules;
+      this.checked_terms = in_checked_terms;
+      this.checked_types = in_checked_types;
+      this.locals = in_locals;
+      this.log = in_log;
+      this.module = in_module;
     }
 
     @Override public TASTDValueLocal localVisitValueLocal(
@@ -1009,19 +1009,19 @@ public final class TypeChecker
     private final @Nonnull UASTRDModule                     module;
 
     public TypeCheckerModule(
-      final @Nonnull UASTRDModule module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Log log)
+      final @Nonnull UASTRDModule in_module,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.checked_modules = checked_modules;
-      this.log = new Log(log, "module-checker");
+      this.module = in_module;
+      this.checked_modules = in_checked_modules;
+      this.log = new Log(in_log, "module-checker");
 
-      if (log.enabled(Level.LOG_DEBUG)) {
+      if (in_log.enabled(Level.LOG_DEBUG)) {
         final StringBuilder m = new StringBuilder();
         m.append("Checking ");
-        m.append(module.getFlat().getActual());
-        log.debug(m.toString());
+        m.append(in_module.getFlat().getActual());
+        in_log.debug(m.toString());
       }
     }
 
@@ -1250,19 +1250,19 @@ public final class TypeChecker
     private final @Nonnull UASTRDModule                     module;
 
     public TypeCheckerShaderDeclaration(
-      final @Nonnull UASTRDModule module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Map<String, TASTDShader> checked_shaders,
-      final @Nonnull Log log)
+      final @Nonnull UASTRDModule in_module,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Map<String, TASTDShader> in_checked_shaders,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.checked_modules = checked_modules;
-      this.checked_types = checked_types;
-      this.checked_terms = checked_terms;
-      this.checked_shaders = checked_shaders;
-      this.log = log;
+      this.module = in_module;
+      this.checked_modules = in_checked_modules;
+      this.checked_types = in_checked_types;
+      this.checked_terms = in_checked_terms;
+      this.checked_shaders = in_checked_shaders;
+      this.log = in_log;
     }
 
     @Override public TASTDShaderFragment moduleVisitFragmentShader(
@@ -1338,17 +1338,17 @@ public final class TypeChecker
     private final @Nonnull UASTRDModule                     module;
 
     public TypeCheckerTermDeclaration(
-      final @Nonnull UASTRDModule module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Log log)
+      final @Nonnull UASTRDModule in_module,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.checked_modules = checked_modules;
-      this.checked_types = checked_types;
-      this.checked_terms = checked_terms;
-      this.log = log;
+      this.module = in_module;
+      this.checked_modules = in_checked_modules;
+      this.checked_types = in_checked_types;
+      this.checked_terms = in_checked_terms;
+      this.log = in_log;
     }
 
     @SuppressWarnings("synthetic-access") @Override public @Nonnull
@@ -1591,15 +1591,15 @@ public final class TypeChecker
     private final @Nonnull UASTRDModule                     module;
 
     public TypeCheckerTypeDeclaration(
-      final @Nonnull UASTRDModule module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Log log)
+      final @Nonnull UASTRDModule in_module,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.checked_modules = checked_modules;
-      this.checked_types = checked_types;
-      this.log = log;
+      this.module = in_module;
+      this.checked_modules = in_checked_modules;
+      this.checked_types = in_checked_types;
+      this.log = in_log;
     }
 
     @SuppressWarnings("synthetic-access") @Override public @Nonnull
@@ -1663,17 +1663,17 @@ public final class TypeChecker
     private final @Nonnull Map<String, TValueType>          outputs;
 
     public TypeCheckerVertexShader(
-      final @Nonnull UASTRDModule module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Log log)
+      final @Nonnull UASTRDModule in_module,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.checked_modules = checked_modules;
-      this.checked_types = checked_types;
-      this.checked_terms = checked_terms;
-      this.log = log;
+      this.module = in_module;
+      this.checked_modules = in_checked_modules;
+      this.checked_types = in_checked_types;
+      this.checked_terms = in_checked_terms;
+      this.log = in_log;
       this.locals = LocalTypes.initial();
       this.outputs = new HashMap<String, TValueType>();
     }
@@ -1836,19 +1836,19 @@ public final class TypeChecker
     private final @Nonnull UASTRDModule                     module;
 
     public TypeCheckerVertexShaderLocal(
-      final @Nonnull UASTRDModule module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull LocalTypes locals,
-      final @Nonnull Log log)
+      final @Nonnull UASTRDModule in_module,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull LocalTypes in_locals,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.checked_modules = checked_modules;
-      this.checked_types = checked_types;
-      this.checked_terms = checked_terms;
-      this.locals = locals;
-      this.log = log;
+      this.module = in_module;
+      this.checked_modules = in_checked_modules;
+      this.checked_types = in_checked_types;
+      this.checked_terms = in_checked_terms;
+      this.locals = in_locals;
+      this.log = in_log;
     }
 
     @Override public TASTDShaderVertexLocalValue vertexShaderVisitLocalValue(
@@ -2015,13 +2015,13 @@ public final class TypeChecker
   private final @Nonnull Log              log;
 
   private TypeChecker(
-    final @Nonnull UASTRCompilation compilation,
-    final @Nonnull Log log)
+    final @Nonnull UASTRCompilation in_compilation,
+    final @Nonnull Log in_log)
     throws ConstraintError
   {
-    this.log = new Log(log, "type-checker");
+    this.log = new Log(in_log, "type-checker");
     this.compilation =
-      Constraints.constrainNotNull(compilation, "Compilation");
+      Constraints.constrainNotNull(in_compilation, "Compilation");
   }
 
   public @Nonnull TASTCompilation check()

@@ -135,14 +135,14 @@ public final class ExternalsError extends CompilerError
   private final @Nonnull Code code;
 
   private ExternalsError(
-    final @Nonnull Code code,
+    final @Nonnull Code in_code,
     final @Nonnull String message,
     final @Nonnull File file,
     final @Nonnull Position position)
     throws ConstraintError
   {
     super(message, file, position);
-    this.code = Constraints.constrainNotNull(code, "Code");
+    this.code = Constraints.constrainNotNull(in_code, "Code");
   }
 
   public @Nonnull Code getCode()

@@ -52,9 +52,9 @@ public abstract class GVersion implements GVersionVisitable
     private final int number;
 
     public GVersionES(
-      final int number)
+      final int in_number)
     {
-      this.number = number;
+      this.number = in_number;
     }
 
     @Override public int compareTo(
@@ -175,9 +175,9 @@ public abstract class GVersion implements GVersionVisitable
     private final int number;
 
     public GVersionFull(
-      final int number)
+      final int in_number)
     {
-      this.number = number;
+      this.number = in_number;
     }
 
     @Override public int compareTo(

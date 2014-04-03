@@ -31,10 +31,10 @@ public abstract class UASTRTypeName implements UASTRTypeNameVisitable
     private final @Nonnull TokenIdentifierLower name;
 
     public UASTRTypeNameBuiltIn(
-      final @Nonnull TokenIdentifierLower name)
+      final @Nonnull TokenIdentifierLower in_name)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public @Nonnull TokenIdentifierLower getName()
@@ -66,13 +66,13 @@ public abstract class UASTRTypeName implements UASTRTypeNameVisitable
     private final @Nonnull ModulePath           path;
 
     public UASTRTypeNameGlobal(
-      final @Nonnull ModulePath path,
-      final @Nonnull TokenIdentifierLower name)
+      final @Nonnull ModulePath in_path,
+      final @Nonnull TokenIdentifierLower in_name)
       throws ConstraintError
     {
-      this.path = Constraints.constrainNotNull(path, "Path");
-      this.flat = ModulePathFlat.fromModulePath(path);
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.path = Constraints.constrainNotNull(in_path, "Path");
+      this.flat = ModulePathFlat.fromModulePath(in_path);
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     public @Nonnull ModulePathFlat getFlat()

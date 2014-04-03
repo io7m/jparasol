@@ -50,17 +50,16 @@ public final class NameRestrictions
     private final @Nonnull TokenIdentifier token;
 
     public NameRestrictionsException(
-      final @Nonnull NameRestricted code,
-      final @Nonnull TokenIdentifier token,
+      final @Nonnull NameRestricted in_code,
+      final @Nonnull TokenIdentifier in_token,
       final @Nonnull String message)
       throws ConstraintError
     {
-      super(
-        message,
-        Constraints.constrainNotNull(token, "Token").getFile(),
-        token.getPosition());
-      this.code = Constraints.constrainNotNull(code, "Code");
-      this.token = token;
+      super(message, Constraints
+        .constrainNotNull(in_token, "Token")
+        .getFile(), in_token.getPosition());
+      this.code = Constraints.constrainNotNull(in_code, "Code");
+      this.token = in_token;
     }
 
     public @Nonnull NameRestricted getCode()

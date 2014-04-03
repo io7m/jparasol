@@ -38,9 +38,9 @@ public final class ModulePathFlat implements NameShow
   private final @Nonnull String actual;
 
   public ModulePathFlat(
-    final @Nonnull String actual)
+    final @Nonnull String in_actual)
   {
-    this.actual = actual;
+    this.actual = in_actual;
   }
 
   @Override public boolean equals(

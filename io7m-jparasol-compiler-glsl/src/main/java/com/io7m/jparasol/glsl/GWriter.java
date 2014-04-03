@@ -375,9 +375,9 @@ public final class GWriter
     private final @Nonnull PrintWriter writer;
 
     public FragmentStatementWriter(
-      final @Nonnull PrintWriter writer)
+      final @Nonnull PrintWriter in_writer)
     {
-      this.writer = writer;
+      this.writer = in_writer;
     }
 
     @Override public Unit fragmentShaderConditionalDiscardVisit(
@@ -425,12 +425,12 @@ public final class GWriter
     private final @Nonnull PrintWriter w;
 
     public StatementWriter(
-      final @Nonnull PrintWriter w,
-      final int indent)
+      final @Nonnull PrintWriter in_w,
+      final int in_indent)
     {
-      this.w = w;
-      this.indent = indent;
-      this.indent_text = StatementWriter.makeIndentText(indent);
+      this.w = in_w;
+      this.indent = in_indent;
+      this.indent_text = StatementWriter.makeIndentText(in_indent);
     }
 
     void indentDecrease()

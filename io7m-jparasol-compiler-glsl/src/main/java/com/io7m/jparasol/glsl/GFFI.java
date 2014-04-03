@@ -1844,9 +1844,9 @@ public final class GFFI
   private final @Nonnull Log log;
 
   private GFFI(
-    final @Nonnull Log log)
+    final @Nonnull Log in_log)
   {
-    this.log = new Log(log, "ffi");
+    this.log = new Log(in_log, "ffi");
   }
 
   public @Nonnull GFFIExpression getExpression(

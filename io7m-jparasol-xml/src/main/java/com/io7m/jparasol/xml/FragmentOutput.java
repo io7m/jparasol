@@ -37,14 +37,14 @@ import com.io7m.jaux.Constraints.ConstraintError;
   private final @Nonnull String  type;
 
   FragmentOutput(
-    final @Nonnull Integer index,
-    final @Nonnull String name,
-    final @Nonnull String type)
+    final @Nonnull Integer in_index,
+    final @Nonnull String in_name,
+    final @Nonnull String in_type)
     throws ConstraintError
   {
-    this.index = Constraints.constrainNotNull(index, "Index");
-    this.name = Constraints.constrainNotNull(name, "Output name");
-    this.type = Constraints.constrainNotNull(type, "Output type");
+    this.index = Constraints.constrainNotNull(in_index, "Index");
+    this.name = Constraints.constrainNotNull(in_name, "Output name");
+    this.type = Constraints.constrainNotNull(in_type, "Output type");
   }
 
   @Override public int compareTo(

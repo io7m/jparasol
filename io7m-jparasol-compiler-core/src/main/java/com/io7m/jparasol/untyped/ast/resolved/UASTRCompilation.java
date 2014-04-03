@@ -35,15 +35,15 @@ public final class UASTRCompilation
   private final @Nonnull Map<ModulePathFlat, ModulePath>   paths;
 
   public UASTRCompilation(
-    final @Nonnull List<ModulePathFlat> module_topology,
-    final @Nonnull Map<ModulePathFlat, UASTRDModule> modules,
-    final @Nonnull Map<ModulePathFlat, ModulePath> paths)
+    final @Nonnull List<ModulePathFlat> in_module_topology,
+    final @Nonnull Map<ModulePathFlat, UASTRDModule> in_modules,
+    final @Nonnull Map<ModulePathFlat, ModulePath> in_paths)
     throws ConstraintError
   {
     this.module_topology =
-      Constraints.constrainNotNull(module_topology, "Module topology");
-    this.modules = Constraints.constrainNotNull(modules, "Modules");
-    this.paths = Constraints.constrainNotNull(paths, "Paths");
+      Constraints.constrainNotNull(in_module_topology, "Module topology");
+    this.modules = Constraints.constrainNotNull(in_modules, "Modules");
+    this.paths = Constraints.constrainNotNull(in_paths, "Paths");
   }
 
   public @Nonnull Map<ModulePathFlat, UASTRDModule> getModules()

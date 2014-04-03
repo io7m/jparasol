@@ -92,16 +92,17 @@ public abstract class TASTDeclaration
     private final boolean                         vertex_shader_allowed;
 
     public TASTDExternal(
-      final @Nonnull TokenIdentifierLower name,
-      final boolean vertex_shader_allowed,
-      final boolean fragment_shader_allowed,
-      final @Nonnull Option<TASTExpression> emulation)
+      final @Nonnull TokenIdentifierLower in_name,
+      final boolean in_vertex_shader_allowed,
+      final boolean in_fragment_shader_allowed,
+      final @Nonnull Option<TASTExpression> in_emulation)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.vertex_shader_allowed = vertex_shader_allowed;
-      this.fragment_shader_allowed = fragment_shader_allowed;
-      this.emulation = Constraints.constrainNotNull(emulation, "Emulation");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.vertex_shader_allowed = in_vertex_shader_allowed;
+      this.fragment_shader_allowed = in_fragment_shader_allowed;
+      this.emulation =
+        Constraints.constrainNotNull(in_emulation, "Emulation");
     }
 
     @Override public boolean equals(
@@ -193,12 +194,12 @@ public abstract class TASTDeclaration
     private final @Nonnull TValueType        type;
 
     public TASTDFunctionArgument(
-      final @Nonnull TASTTermNameLocal name,
-      final @Nonnull TValueType type)
+      final @Nonnull TASTTermNameLocal in_name,
+      final @Nonnull TValueType in_type)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
     }
 
     @Override public boolean equals(
@@ -266,18 +267,19 @@ public abstract class TASTDeclaration
     private final @Nonnull TFunction                   type;
 
     public TASTDFunctionDefined(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<TASTDFunctionArgument> arguments,
-      final @Nonnull TASTExpression body,
-      final @Nonnull TFunction type)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull List<TASTDFunctionArgument> in_arguments,
+      final @Nonnull TASTExpression in_body,
+      final @Nonnull TFunction in_type)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
-      this.body = Constraints.constrainNotNull(body, "Body");
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.arguments =
+        Constraints.constrainNotNull(in_arguments, "Arguments");
+      this.body = Constraints.constrainNotNull(in_body, "Body");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
 
-      assert body.getType().equals(type.getReturnType());
+      assert in_body.getType().equals(in_type.getReturnType());
     }
 
     @Override public boolean equals(
@@ -381,16 +383,17 @@ public abstract class TASTDeclaration
     private final @Nonnull TFunction                   type;
 
     public TASTDFunctionExternal(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<TASTDFunctionArgument> arguments,
-      final @Nonnull TFunction type,
-      final @Nonnull TASTDExternal external)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull List<TASTDFunctionArgument> in_arguments,
+      final @Nonnull TFunction in_type,
+      final @Nonnull TASTDExternal in_external)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
-      this.type = Constraints.constrainNotNull(type, "Type");
-      this.external = Constraints.constrainNotNull(external, "External");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.arguments =
+        Constraints.constrainNotNull(in_arguments, "Arguments");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.external = Constraints.constrainNotNull(in_external, "External");
 
       this.external.getEmulation().mapPartial(
         new PartialFunction<TASTExpression, Unit, ConstraintError>() {
@@ -398,7 +401,7 @@ public abstract class TASTDeclaration
             final @Nonnull TASTExpression x)
             throws ConstraintError
           {
-            assert x.getType().equals(type.getReturnType());
+            assert x.getType().equals(in_type.getReturnType());
             return Unit.unit();
           }
         });
@@ -500,12 +503,12 @@ public abstract class TASTDeclaration
     private final @Nonnull Option<TokenIdentifierUpper> rename;
 
     public TASTDImport(
-      final @Nonnull ModulePath path,
-      final @Nonnull Option<TokenIdentifierUpper> rename)
+      final @Nonnull ModulePath in_path,
+      final @Nonnull Option<TokenIdentifierUpper> in_rename)
       throws ConstraintError
     {
-      this.path = Constraints.constrainNotNull(path, "Path");
-      this.rename = Constraints.constrainNotNull(rename, "Rename");
+      this.path = Constraints.constrainNotNull(in_path, "Path");
+      this.rename = Constraints.constrainNotNull(in_rename, "Rename");
     }
 
     @Override public boolean equals(
@@ -580,40 +583,40 @@ public abstract class TASTDeclaration
     private final @Nonnull Map<String, TASTDType>           types;
 
     public TASTDModule(
-      final @Nonnull ModulePath path,
-      final @Nonnull List<TASTDImport> imports,
-      final @Nonnull Map<ModulePathFlat, TASTDImport> imported_modules,
-      final @Nonnull Map<String, TASTDImport> imported_names,
-      final @Nonnull Map<String, TASTDImport> imported_renames,
-      final @Nonnull Map<String, TASTDTerm> terms,
-      final @Nonnull List<String> term_topology,
-      final @Nonnull Map<String, TASTDType> types,
-      final @Nonnull List<String> type_topology,
-      final @Nonnull Map<String, TASTDShader> shaders,
-      final @Nonnull List<String> shader_topology)
+      final @Nonnull ModulePath in_path,
+      final @Nonnull List<TASTDImport> in_imports,
+      final @Nonnull Map<ModulePathFlat, TASTDImport> in_imported_modules,
+      final @Nonnull Map<String, TASTDImport> in_imported_names,
+      final @Nonnull Map<String, TASTDImport> in_imported_renames,
+      final @Nonnull Map<String, TASTDTerm> in_terms,
+      final @Nonnull List<String> in_term_topology,
+      final @Nonnull Map<String, TASTDType> in_types,
+      final @Nonnull List<String> in_type_topology,
+      final @Nonnull Map<String, TASTDShader> in_shaders,
+      final @Nonnull List<String> in_shader_topology)
       throws ConstraintError
     {
-      this.path = Constraints.constrainNotNull(path, "Path");
+      this.path = Constraints.constrainNotNull(in_path, "Path");
 
-      this.imports = Constraints.constrainNotNull(imports, "Imports");
+      this.imports = Constraints.constrainNotNull(in_imports, "Imports");
       this.imported_modules =
-        Constraints.constrainNotNull(imported_modules, "Imported modules");
+        Constraints.constrainNotNull(in_imported_modules, "Imported modules");
       this.imported_names =
-        Constraints.constrainNotNull(imported_names, "Imported names");
+        Constraints.constrainNotNull(in_imported_names, "Imported names");
       this.imported_renames =
-        Constraints.constrainNotNull(imported_renames, "Imported renames");
+        Constraints.constrainNotNull(in_imported_renames, "Imported renames");
 
-      this.terms = Constraints.constrainNotNull(terms, "Terms");
+      this.terms = Constraints.constrainNotNull(in_terms, "Terms");
       this.term_topology =
-        Constraints.constrainNotNull(term_topology, "Term topology");
+        Constraints.constrainNotNull(in_term_topology, "Term topology");
 
-      this.types = Constraints.constrainNotNull(types, "Types");
+      this.types = Constraints.constrainNotNull(in_types, "Types");
       this.type_topology =
-        Constraints.constrainNotNull(type_topology, "Type topology");
+        Constraints.constrainNotNull(in_type_topology, "Type topology");
 
-      this.shaders = Constraints.constrainNotNull(shaders, "Shaders");
+      this.shaders = Constraints.constrainNotNull(in_shaders, "Shaders");
       this.shader_topology =
-        Constraints.constrainNotNull(shader_topology, "Shader topology");
+        Constraints.constrainNotNull(in_shader_topology, "Shader topology");
     }
 
     @Override public boolean equals(
@@ -732,10 +735,10 @@ public abstract class TASTDeclaration
     private final @Nonnull PackagePath path;
 
     public TASTDPackage(
-      final @Nonnull PackagePath path)
+      final @Nonnull PackagePath in_path)
       throws ConstraintError
     {
-      this.path = Constraints.constrainNotNull(path, "Path");
+      this.path = Constraints.constrainNotNull(in_path, "Path");
     }
 
     @Override public boolean equals(
@@ -790,10 +793,10 @@ public abstract class TASTDeclaration
     private final @Nonnull TokenIdentifierLower name;
 
     protected TASTDShader(
-      final @Nonnull TokenIdentifierLower name)
+      final @Nonnull TokenIdentifierLower in_name)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(
@@ -840,20 +843,20 @@ public abstract class TASTDeclaration
 
     public TASTDShaderFragment(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<TASTDShaderFragmentInput> inputs,
-      final @Nonnull List<TASTDShaderFragmentOutput> outputs,
-      final @Nonnull List<TASTDShaderFragmentParameter> parameters,
-      final @Nonnull List<TASTDShaderFragmentLocal> locals,
-      final @Nonnull List<TASTDShaderFragmentOutputAssignment> writes)
+      final @Nonnull List<TASTDShaderFragmentInput> in_inputs,
+      final @Nonnull List<TASTDShaderFragmentOutput> in_outputs,
+      final @Nonnull List<TASTDShaderFragmentParameter> in_parameters,
+      final @Nonnull List<TASTDShaderFragmentLocal> in_locals,
+      final @Nonnull List<TASTDShaderFragmentOutputAssignment> in_writes)
       throws ConstraintError
     {
       super(name);
-      this.inputs = Constraints.constrainNotNull(inputs, "Inputs");
-      this.outputs = Constraints.constrainNotNull(outputs, "Outputs");
+      this.inputs = Constraints.constrainNotNull(in_inputs, "Inputs");
+      this.outputs = Constraints.constrainNotNull(in_outputs, "Outputs");
       this.parameters =
-        Constraints.constrainNotNull(parameters, "Parameters");
-      this.locals = Constraints.constrainNotNull(locals, "Locals");
-      this.writes = Constraints.constrainNotNull(writes, "Writes");
+        Constraints.constrainNotNull(in_parameters, "Parameters");
+      this.locals = Constraints.constrainNotNull(in_locals, "Locals");
+      this.writes = Constraints.constrainNotNull(in_writes, "Writes");
     }
 
     @Override public boolean equals(
@@ -1009,12 +1012,12 @@ public abstract class TASTDeclaration
     private final @Nonnull TASTTermNameLocal name;
 
     public TASTDShaderFragmentInput(
-      final @Nonnull TASTTermNameLocal name,
+      final @Nonnull TASTTermNameLocal in_name,
       final @Nonnull TValueType type)
       throws ConstraintError
     {
       super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(
@@ -1072,13 +1075,13 @@ public abstract class TASTDeclaration
     private final @Nonnull TASTExpression expression;
 
     public TASTDShaderFragmentLocalDiscard(
-      final TokenDiscard discard,
-      final TASTExpression expression)
+      final TokenDiscard in_discard,
+      final TASTExpression in_expression)
       throws ConstraintError
     {
-      this.discard = Constraints.constrainNotNull(discard, "Discard");
+      this.discard = Constraints.constrainNotNull(in_discard, "Discard");
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
+        Constraints.constrainNotNull(in_expression, "Expression");
     }
 
     @Override public boolean equals(
@@ -1150,10 +1153,10 @@ public abstract class TASTDeclaration
     private final @Nonnull TASTDValueLocal value;
 
     public TASTDShaderFragmentLocalValue(
-      final @Nonnull TASTDValueLocal value)
+      final @Nonnull TASTDValueLocal in_value)
       throws ConstraintError
     {
-      this.value = Constraints.constrainNotNull(value, "Value");
+      this.value = Constraints.constrainNotNull(in_value, "Value");
     }
 
     @Override public boolean equals(
@@ -1217,12 +1220,12 @@ public abstract class TASTDeclaration
     private final @Nonnull TokenIdentifierLower name;
 
     public TASTDShaderFragmentOutput(
-      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull TokenIdentifierLower in_name,
       final @Nonnull TValueType type)
       throws ConstraintError
     {
       super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(
@@ -1274,12 +1277,12 @@ public abstract class TASTDeclaration
     private final @Nonnull TASTEVariable        variable;
 
     public TASTDShaderFragmentOutputAssignment(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TASTEVariable variable)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull TASTEVariable in_variable)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.variable = Constraints.constrainNotNull(variable, "Variable");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.variable = Constraints.constrainNotNull(in_variable, "Variable");
     }
 
     @Override public boolean equals(
@@ -1344,11 +1347,11 @@ public abstract class TASTDeclaration
     public TASTDShaderFragmentOutputData(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull TValueType type,
-      final int index)
+      final int in_index)
       throws ConstraintError
     {
       super(name, type);
-      this.index = index;
+      this.index = in_index;
     }
 
     @Override public boolean equals(
@@ -1433,12 +1436,12 @@ public abstract class TASTDeclaration
     private final @Nonnull TASTTermNameLocal name;
 
     public TASTDShaderFragmentParameter(
-      final @Nonnull TASTTermNameLocal name,
+      final @Nonnull TASTTermNameLocal in_name,
       final @Nonnull TValueType type)
       throws ConstraintError
     {
       super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(
@@ -1501,10 +1504,10 @@ public abstract class TASTDeclaration
     private final @Nonnull TValueType type;
 
     TASTDShaderParameters(
-      final @Nonnull TValueType type)
+      final @Nonnull TValueType in_type)
       throws ConstraintError
     {
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
     }
 
     @Override public boolean equals(
@@ -1547,15 +1550,15 @@ public abstract class TASTDeclaration
 
     public TASTDShaderProgram(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TASTShaderName vertex_shader,
-      final @Nonnull TASTShaderName fragment_shader)
+      final @Nonnull TASTShaderName in_vertex_shader,
+      final @Nonnull TASTShaderName in_fragment_shader)
       throws ConstraintError
     {
       super(name);
       this.vertex_shader =
-        Constraints.constrainNotNull(vertex_shader, "Vertex shader");
+        Constraints.constrainNotNull(in_vertex_shader, "Vertex shader");
       this.fragment_shader =
-        Constraints.constrainNotNull(fragment_shader, "Fragment shader");
+        Constraints.constrainNotNull(in_fragment_shader, "Fragment shader");
     }
 
     @Override public boolean equals(
@@ -1633,20 +1636,20 @@ public abstract class TASTDeclaration
 
     public TASTDShaderVertex(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<TASTDShaderVertexInput> inputs,
-      final @Nonnull List<TASTDShaderVertexOutput> outputs,
-      final @Nonnull List<TASTDShaderVertexParameter> parameters,
-      final @Nonnull List<TASTDShaderVertexLocalValue> values,
-      final @Nonnull List<TASTDShaderVertexOutputAssignment> writes)
+      final @Nonnull List<TASTDShaderVertexInput> in_inputs,
+      final @Nonnull List<TASTDShaderVertexOutput> in_outputs,
+      final @Nonnull List<TASTDShaderVertexParameter> in_parameters,
+      final @Nonnull List<TASTDShaderVertexLocalValue> in_values,
+      final @Nonnull List<TASTDShaderVertexOutputAssignment> in_writes)
       throws ConstraintError
     {
       super(name);
-      this.inputs = Constraints.constrainNotNull(inputs, "Inputs");
-      this.outputs = Constraints.constrainNotNull(outputs, "Outputs");
+      this.inputs = Constraints.constrainNotNull(in_inputs, "Inputs");
+      this.outputs = Constraints.constrainNotNull(in_outputs, "Outputs");
       this.parameters =
-        Constraints.constrainNotNull(parameters, "Parameters");
-      this.values = Constraints.constrainNotNull(values, "Values");
-      this.writes = Constraints.constrainNotNull(writes, "Writes");
+        Constraints.constrainNotNull(in_parameters, "Parameters");
+      this.values = Constraints.constrainNotNull(in_values, "Values");
+      this.writes = Constraints.constrainNotNull(in_writes, "Writes");
     }
 
     @Override public boolean equals(
@@ -1802,12 +1805,12 @@ public abstract class TASTDeclaration
     private final @Nonnull TASTTermNameLocal name;
 
     public TASTDShaderVertexInput(
-      final @Nonnull TASTTermNameLocal name,
+      final @Nonnull TASTTermNameLocal in_name,
       final @Nonnull TValueType type)
       throws ConstraintError
     {
       super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(
@@ -1858,10 +1861,10 @@ public abstract class TASTDeclaration
     private final @Nonnull TASTDValueLocal value;
 
     public TASTDShaderVertexLocalValue(
-      final @Nonnull TASTDValueLocal value)
+      final @Nonnull TASTDValueLocal in_value)
       throws ConstraintError
     {
-      this.value = Constraints.constrainNotNull(value, "Value");
+      this.value = Constraints.constrainNotNull(in_value, "Value");
     }
 
     @Override public boolean equals(
@@ -1914,14 +1917,14 @@ public abstract class TASTDeclaration
     private final @Nonnull TokenIdentifierLower name;
 
     public TASTDShaderVertexOutput(
-      final @Nonnull TokenIdentifierLower name,
+      final @Nonnull TokenIdentifierLower in_name,
       final @Nonnull TValueType type,
-      final boolean main)
+      final boolean in_main)
       throws ConstraintError
     {
       super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.main = main;
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.main = in_main;
     }
 
     @Override public boolean equals(
@@ -1984,12 +1987,12 @@ public abstract class TASTDeclaration
     private final @Nonnull TASTEVariable        variable;
 
     public TASTDShaderVertexOutputAssignment(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TASTEVariable variable)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull TASTEVariable in_variable)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.variable = Constraints.constrainNotNull(variable, "Variable");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.variable = Constraints.constrainNotNull(in_variable, "Variable");
     }
 
     @Override public boolean equals(
@@ -2052,12 +2055,12 @@ public abstract class TASTDeclaration
     private final @Nonnull TASTTermNameLocal name;
 
     public TASTDShaderVertexParameter(
-      final @Nonnull TASTTermNameLocal name,
+      final @Nonnull TASTTermNameLocal in_name,
       final @Nonnull TValueType type)
       throws ConstraintError
     {
       super(type);
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(
@@ -2155,14 +2158,14 @@ public abstract class TASTDeclaration
     private final @Nonnull TRecord                    type;
 
     public TASTDTypeRecord(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<TASTDTypeRecordField> fields,
-      final @Nonnull TRecord type)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull List<TASTDTypeRecordField> in_fields,
+      final @Nonnull TRecord in_type)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.type = Constraints.constrainNotNull(type, "Type");
-      this.fields = Constraints.constrainNotNull(fields, "Fields");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.fields = Constraints.constrainNotNull(in_fields, "Fields");
     }
 
     @Override public boolean equals(
@@ -2244,12 +2247,12 @@ public abstract class TASTDeclaration
     private final @Nonnull TManifestType        type;
 
     public TASTDTypeRecordField(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TManifestType type)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull TManifestType in_type)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
     }
 
     @Override public boolean equals(
@@ -2320,13 +2323,13 @@ public abstract class TASTDeclaration
     private final @Nonnull TokenIdentifierLower name;
 
     public TASTDValueDefined(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TASTExpression expression)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull TASTExpression in_expression)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
+        Constraints.constrainNotNull(in_expression, "Expression");
     }
 
     @Override public boolean equals(
@@ -2409,14 +2412,14 @@ public abstract class TASTDeclaration
     private final @Nonnull TValueType           type;
 
     public TASTDValueExternal(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TValueType type,
-      final @Nonnull TASTDExternal external)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull TValueType in_type,
+      final @Nonnull TASTDExternal in_external)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.type = Constraints.constrainNotNull(type, "Type");
-      this.external = Constraints.constrainNotNull(external, "External");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.external = Constraints.constrainNotNull(in_external, "External");
       assert this.external.getEmulation().isNone();
     }
 
@@ -2499,13 +2502,13 @@ public abstract class TASTDeclaration
     private final @Nonnull TASTTermNameLocal name;
 
     public TASTDValueLocal(
-      final @Nonnull TASTTermNameLocal name,
-      final @Nonnull TASTExpression expression)
+      final @Nonnull TASTTermNameLocal in_name,
+      final @Nonnull TASTExpression in_expression)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
+        Constraints.constrainNotNull(in_expression, "Expression");
     }
 
     @Override public boolean equals(

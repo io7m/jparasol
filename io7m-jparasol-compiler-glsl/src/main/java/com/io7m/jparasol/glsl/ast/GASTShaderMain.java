@@ -18,13 +18,13 @@ public abstract class GASTShaderMain
     private final @Nonnull List<GASTFragmentOutputDataAssignment>    writes;
 
     public GASTShaderMainFragment(
-      final @Nonnull List<GASTFragmentShaderStatement> statements,
-      final @Nonnull List<GASTFragmentOutputDataAssignment> writes,
-      final @Nonnull Option<GASTFragmentOutputDepthAssignment> depth_write)
+      final @Nonnull List<GASTFragmentShaderStatement> in_statements,
+      final @Nonnull List<GASTFragmentOutputDataAssignment> in_writes,
+      final @Nonnull Option<GASTFragmentOutputDepthAssignment> in_depth_write)
     {
-      this.statements = statements;
-      this.writes = writes;
-      this.depth_write = depth_write;
+      this.statements = in_statements;
+      this.writes = in_writes;
+      this.depth_write = in_depth_write;
     }
 
     public @Nonnull Option<GASTFragmentOutputDepthAssignment> getDepthWrite()
@@ -90,11 +90,11 @@ public abstract class GASTShaderMain
     private final @Nonnull List<GASTVertexOutputAssignment> writes;
 
     public GASTShaderMainVertex(
-      final @Nonnull List<GASTStatement> statements,
-      final @Nonnull List<GASTVertexOutputAssignment> writes)
+      final @Nonnull List<GASTStatement> in_statements,
+      final @Nonnull List<GASTVertexOutputAssignment> in_writes)
     {
-      this.statements = statements;
-      this.writes = writes;
+      this.statements = in_statements;
+      this.writes = in_writes;
     }
 
     @Override public boolean equals(

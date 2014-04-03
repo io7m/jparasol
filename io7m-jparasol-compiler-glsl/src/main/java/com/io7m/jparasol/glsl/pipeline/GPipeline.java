@@ -56,13 +56,13 @@ public final class GPipeline
   private final @Nonnull GVersionChecker checker;
 
   private GPipeline(
-    final @Nonnull TASTCompilation typed,
-    final @Nonnull Log log)
+    final @Nonnull TASTCompilation in_typed,
+    final @Nonnull Log in_log)
     throws ConstraintError
   {
-    this.typed = Constraints.constrainNotNull(typed, "Typed AST");
-    this.log = new Log(log, "gpipeline");
-    this.checker = GVersionChecker.newVersionChecker(log);
+    this.typed = Constraints.constrainNotNull(in_typed, "Typed AST");
+    this.log = new Log(in_log, "gpipeline");
+    this.checker = GVersionChecker.newVersionChecker(in_log);
   }
 
   public static @Nonnull GPipeline newPipeline(

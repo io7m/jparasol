@@ -31,13 +31,13 @@ public final class UASTRShaderName
   private final @Nonnull ModulePath           path;
 
   public UASTRShaderName(
-    final @Nonnull ModulePath path,
-    final @Nonnull TokenIdentifierLower name)
+    final @Nonnull ModulePath in_path,
+    final @Nonnull TokenIdentifierLower in_name)
     throws ConstraintError
   {
-    this.path = Constraints.constrainNotNull(path, "Path");
-    this.flat = ModulePathFlat.fromModulePath(path);
-    this.name = Constraints.constrainNotNull(name, "Name");
+    this.path = Constraints.constrainNotNull(in_path, "Path");
+    this.flat = ModulePathFlat.fromModulePath(in_path);
+    this.name = Constraints.constrainNotNull(in_name, "Name");
   }
 
   public @Nonnull ModulePathFlat getFlat()

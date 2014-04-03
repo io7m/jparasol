@@ -37,14 +37,15 @@ public final class UASTIUnit
   private final @Nonnull UASTIDPackage      package_name;
 
   public UASTIUnit(
-    final @Nonnull File file,
-    final @Nonnull UASTIDPackage package_name,
-    final @Nonnull List<UASTIDModule> modules)
+    final @Nonnull File in_file,
+    final @Nonnull UASTIDPackage in_package_name,
+    final @Nonnull List<UASTIDModule> in_modules)
     throws ConstraintError
   {
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.package_name = Constraints.constrainNotNull(package_name, "Package");
-    this.modules = Constraints.constrainNotNull(modules, "Modules");
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.package_name =
+      Constraints.constrainNotNull(in_package_name, "Package");
+    this.modules = Constraints.constrainNotNull(in_modules, "Modules");
   }
 
   public @Nonnull File getFile()

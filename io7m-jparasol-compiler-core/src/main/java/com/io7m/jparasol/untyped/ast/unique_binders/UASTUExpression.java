@@ -42,12 +42,13 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull UniqueName            name;
 
     public UASTUEApplication(
-      final @Nonnull UniqueName name,
-      final @Nonnull List<UASTUExpression> arguments)
+      final @Nonnull UniqueName in_name,
+      final @Nonnull List<UASTUExpression> in_arguments)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.arguments =
+        Constraints.constrainNotNull(in_arguments, "Arguments");
     }
 
     @Override public
@@ -94,10 +95,10 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull TokenLiteralBoolean token;
 
     public UASTUEBoolean(
-      final @Nonnull Token.TokenLiteralBoolean token)
+      final @Nonnull Token.TokenLiteralBoolean in_token)
       throws ConstraintError
     {
-      this.token = Constraints.constrainNotNull(token, "Token");
+      this.token = Constraints.constrainNotNull(in_token, "Token");
     }
 
     @Override public
@@ -139,16 +140,17 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull TokenIf         token;
 
     public UASTUEConditional(
-      final @Nonnull TokenIf token,
-      final @Nonnull UASTUExpression condition,
-      final @Nonnull UASTUExpression left,
-      final @Nonnull UASTUExpression right)
+      final @Nonnull TokenIf in_token,
+      final @Nonnull UASTUExpression in_condition,
+      final @Nonnull UASTUExpression in_left,
+      final @Nonnull UASTUExpression in_right)
       throws ConstraintError
     {
-      this.token = Constraints.constrainNotNull(token, "Token");
-      this.condition = Constraints.constrainNotNull(condition, "Condition");
-      this.left = Constraints.constrainNotNull(left, "Left");
-      this.right = Constraints.constrainNotNull(right, "Right");
+      this.token = Constraints.constrainNotNull(in_token, "Token");
+      this.condition =
+        Constraints.constrainNotNull(in_condition, "Condition");
+      this.left = Constraints.constrainNotNull(in_left, "Left");
+      this.right = Constraints.constrainNotNull(in_right, "Right");
     }
 
     @Override public
@@ -205,10 +207,10 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull TokenLiteralInteger token;
 
     public UASTUEInteger(
-      final @Nonnull Token.TokenLiteralInteger token)
+      final @Nonnull Token.TokenLiteralInteger in_token)
       throws ConstraintError
     {
-      this.token = Constraints.constrainNotNull(token, "Token");
+      this.token = Constraints.constrainNotNull(in_token, "Token");
     }
 
     @Override public
@@ -249,14 +251,14 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull TokenLet               token;
 
     public UASTUELet(
-      final @Nonnull TokenLet token,
-      final @Nonnull List<UASTUDValueLocal> bindings,
-      final @Nonnull UASTUExpression body)
+      final @Nonnull TokenLet in_token,
+      final @Nonnull List<UASTUDValueLocal> in_bindings,
+      final @Nonnull UASTUExpression in_body)
       throws ConstraintError
     {
-      this.token = Constraints.constrainNotNull(token, "Token");
-      this.bindings = Constraints.constrainNotNull(bindings, "Bindings");
-      this.body = Constraints.constrainNotNull(body, "Body");
+      this.token = Constraints.constrainNotNull(in_token, "Token");
+      this.bindings = Constraints.constrainNotNull(in_bindings, "Bindings");
+      this.body = Constraints.constrainNotNull(in_body, "Body");
     }
 
     @Override public
@@ -316,12 +318,13 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull UASTUTypePath         name;
 
     public UASTUENew(
-      final @Nonnull UASTUTypePath name,
-      final @Nonnull List<UASTUExpression> arguments)
+      final @Nonnull UASTUTypePath in_name,
+      final @Nonnull List<UASTUExpression> in_arguments)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.arguments =
+        Constraints.constrainNotNull(in_arguments, "Arguments");
     }
 
     @Override public
@@ -367,10 +370,10 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull TokenLiteralReal token;
 
     public UASTUEReal(
-      final @Nonnull Token.TokenLiteralReal token)
+      final @Nonnull Token.TokenLiteralReal in_token)
       throws ConstraintError
     {
-      this.token = Constraints.constrainNotNull(token, "Token");
+      this.token = Constraints.constrainNotNull(in_token, "Token");
     }
 
     @Override public
@@ -410,13 +413,14 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull UASTUTypePath                    type_path;
 
     public UASTUERecord(
-      final @Nonnull UASTUTypePath type_path,
-      final @Nonnull List<UASTURecordFieldAssignment> assignments)
+      final @Nonnull UASTUTypePath in_type_path,
+      final @Nonnull List<UASTURecordFieldAssignment> in_assignments)
       throws ConstraintError
     {
-      this.type_path = Constraints.constrainNotNull(type_path, "Type path");
+      this.type_path =
+        Constraints.constrainNotNull(in_type_path, "Type path");
       this.assignments =
-        Constraints.constrainNotNull(assignments, "Assignments");
+        Constraints.constrainNotNull(in_assignments, "Assignments");
     }
 
     @Override public
@@ -462,13 +466,13 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull TokenIdentifierLower field;
 
     public UASTUERecordProjection(
-      final @Nonnull UASTUExpression expression,
-      final @Nonnull TokenIdentifierLower field)
+      final @Nonnull UASTUExpression in_expression,
+      final @Nonnull TokenIdentifierLower in_field)
       throws ConstraintError
     {
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
-      this.field = Constraints.constrainNotNull(field, "Field");
+        Constraints.constrainNotNull(in_expression, "Expression");
+      this.field = Constraints.constrainNotNull(in_field, "Field");
     }
 
     @Override public
@@ -512,13 +516,13 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull List<TokenIdentifierLower> fields;
 
     public UASTUESwizzle(
-      final @Nonnull UASTUExpression expression,
-      final @Nonnull List<TokenIdentifierLower> fields)
+      final @Nonnull UASTUExpression in_expression,
+      final @Nonnull List<TokenIdentifierLower> in_fields)
       throws ConstraintError
     {
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
-      this.fields = Constraints.constrainNotNull(fields, "Fields");
+        Constraints.constrainNotNull(in_expression, "Expression");
+      this.fields = Constraints.constrainNotNull(in_fields, "Fields");
     }
 
     @Override public
@@ -564,10 +568,10 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull UniqueName name;
 
     public UASTUEVariable(
-      final @Nonnull UniqueName name)
+      final @Nonnull UniqueName in_name)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public
@@ -602,13 +606,13 @@ public abstract class UASTUExpression implements UASTUExpressionVisitable
     private final @Nonnull TokenIdentifierLower name;
 
     public UASTURecordFieldAssignment(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTUExpression expression)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull UASTUExpression in_expression)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
+        Constraints.constrainNotNull(in_expression, "Expression");
     }
 
     public @Nonnull UASTUExpression getExpression()

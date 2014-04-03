@@ -31,11 +31,11 @@ public abstract class GASTTypeDeclaration implements
     private final @Nonnull GTypeName                         name;
 
     public GASTTypeRecord(
-      final @Nonnull GTypeName name,
-      final @Nonnull List<Pair<GFieldName, GTypeName>> fields)
+      final @Nonnull GTypeName in_name,
+      final @Nonnull List<Pair<GFieldName, GTypeName>> in_fields)
     {
-      this.name = name;
-      this.fields = fields;
+      this.name = in_name;
+      this.fields = in_fields;
     }
 
     @Override public boolean equals(

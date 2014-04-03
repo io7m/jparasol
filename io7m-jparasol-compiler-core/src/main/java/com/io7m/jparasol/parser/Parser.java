@@ -124,16 +124,16 @@ public final class Parser
   private @Nonnull Token               token;
 
   private Parser(
-    final boolean internal,
-    final @Nonnull Lexer lexer)
+    final boolean in_internal,
+    final @Nonnull Lexer in_lexer)
     throws ConstraintError,
       IOException,
       LexerError
   {
-    this.internal = internal;
-    this.lexer = Constraints.constrainNotNull(lexer, "Lexer");
+    this.internal = in_internal;
+    this.lexer = Constraints.constrainNotNull(in_lexer, "Lexer");
     this.message = new StringBuilder();
-    this.token = lexer.token();
+    this.token = in_lexer.token();
   }
 
   public @Nonnull UASTIDExternal declarationExternal()

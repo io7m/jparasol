@@ -40,12 +40,12 @@ import com.io7m.jaux.Constraints.ConstraintError;
   private final int          version;
 
   Version(
-    final int version,
-    final @Nonnull API api)
+    final int in_version,
+    final @Nonnull API in_api)
     throws ConstraintError
   {
-    this.version = version;
-    this.api = Constraints.constrainNotNull(api, "API");
+    this.version = in_version;
+    this.api = Constraints.constrainNotNull(in_api, "API");
   }
 
   @Override public int compareTo(

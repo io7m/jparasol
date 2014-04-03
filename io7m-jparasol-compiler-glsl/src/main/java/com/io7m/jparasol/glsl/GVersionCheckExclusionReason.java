@@ -31,14 +31,14 @@ public final class GVersionCheckExclusionReason
   private final @Nonnull Position position;
 
   public GVersionCheckExclusionReason(
-    final @Nonnull File file,
-    final @Nonnull Position position,
-    final @Nonnull String message)
+    final @Nonnull File in_file,
+    final @Nonnull Position in_position,
+    final @Nonnull String in_message)
     throws ConstraintError
   {
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
-    this.message = Constraints.constrainNotNull(message, "Message");
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.position = Constraints.constrainNotNull(in_position, "Position");
+    this.message = Constraints.constrainNotNull(in_message, "Message");
   }
 
   @Override public boolean equals(

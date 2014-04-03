@@ -84,16 +84,17 @@ public abstract class UASTCDeclaration
     private final boolean                          vertex_shader_allowed;
 
     public UASTCDExternal(
-      final @Nonnull TokenIdentifierLower name,
-      final boolean vertex_shader_allowed,
-      final boolean fragment_shader_allowed,
-      final @Nonnull Option<UASTCExpression> emulation)
+      final @Nonnull TokenIdentifierLower in_name,
+      final boolean in_vertex_shader_allowed,
+      final boolean in_fragment_shader_allowed,
+      final @Nonnull Option<UASTCExpression> in_emulation)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.vertex_shader_allowed = vertex_shader_allowed;
-      this.fragment_shader_allowed = fragment_shader_allowed;
-      this.emulation = Constraints.constrainNotNull(emulation, "Emulation");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.vertex_shader_allowed = in_vertex_shader_allowed;
+      this.fragment_shader_allowed = in_fragment_shader_allowed;
+      this.emulation =
+        Constraints.constrainNotNull(in_emulation, "Emulation");
     }
 
     @Override public boolean equals(
@@ -186,12 +187,12 @@ public abstract class UASTCDeclaration
     private final @Nonnull UASTCTypePath        type;
 
     public UASTCDFunctionArgument(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTCTypePath type)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull UASTCTypePath in_type)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
     }
 
     public @Nonnull TokenIdentifierLower getName()
@@ -217,17 +218,18 @@ public abstract class UASTCDeclaration
     private final @Nonnull UASTCTypePath                return_type;
 
     public UASTCDFunctionDefined(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<UASTCDFunctionArgument> arguments,
-      final @Nonnull UASTCTypePath return_type,
-      final @Nonnull UASTCExpression body)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull List<UASTCDFunctionArgument> in_arguments,
+      final @Nonnull UASTCTypePath in_return_type,
+      final @Nonnull UASTCExpression in_body)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.arguments =
+        Constraints.constrainNotNull(in_arguments, "Arguments");
       this.return_type =
-        Constraints.constrainNotNull(return_type, "Return type");
-      this.body = Constraints.constrainNotNull(body, "Body");
+        Constraints.constrainNotNull(in_return_type, "Return type");
+      this.body = Constraints.constrainNotNull(in_body, "Body");
     }
 
     @Override public
@@ -306,17 +308,18 @@ public abstract class UASTCDeclaration
     private final @Nonnull UASTCTypePath                return_type;
 
     public UASTCDFunctionExternal(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<UASTCDFunctionArgument> arguments,
-      final @Nonnull UASTCTypePath return_type,
-      final @Nonnull UASTCDExternal external)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull List<UASTCDFunctionArgument> in_arguments,
+      final @Nonnull UASTCTypePath in_return_type,
+      final @Nonnull UASTCDExternal in_external)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.arguments =
+        Constraints.constrainNotNull(in_arguments, "Arguments");
       this.return_type =
-        Constraints.constrainNotNull(return_type, "Return type");
-      this.external = Constraints.constrainNotNull(external, "External");
+        Constraints.constrainNotNull(in_return_type, "Return type");
+      this.external = Constraints.constrainNotNull(in_external, "External");
     }
 
     @Override public
@@ -393,12 +396,12 @@ public abstract class UASTCDeclaration
     private final @Nonnull Option<TokenIdentifierUpper> rename;
 
     public UASTCDImport(
-      final @Nonnull ModulePath path,
-      final @Nonnull Option<TokenIdentifierUpper> rename)
+      final @Nonnull ModulePath in_path,
+      final @Nonnull Option<TokenIdentifierUpper> in_rename)
       throws ConstraintError
     {
-      this.path = Constraints.constrainNotNull(path, "Path");
-      this.rename = Constraints.constrainNotNull(rename, "Rename");
+      this.path = Constraints.constrainNotNull(in_path, "Path");
+      this.rename = Constraints.constrainNotNull(in_rename, "Rename");
     }
 
     @Override public boolean equals(
@@ -461,32 +464,32 @@ public abstract class UASTCDeclaration
     private final @Nonnull Map<String, UASTCDType>           types;
 
     public UASTCDModule(
-      final @Nonnull ModulePath path,
-      final @Nonnull List<UASTCDImport> imports,
-      final @Nonnull Map<ModulePathFlat, UASTCDImport> imported_modules,
-      final @Nonnull Map<String, UASTCDImport> imported_names,
-      final @Nonnull Map<String, UASTCDImport> imported_renames,
-      final @Nonnull List<UASTCDeclarationModuleLevel> declarations,
-      final @Nonnull Map<String, UASTCDTerm> terms,
-      final @Nonnull Map<String, UASTCDType> types,
-      final @Nonnull Map<String, UASTCDShader> shaders)
+      final @Nonnull ModulePath in_path,
+      final @Nonnull List<UASTCDImport> in_imports,
+      final @Nonnull Map<ModulePathFlat, UASTCDImport> in_imported_modules,
+      final @Nonnull Map<String, UASTCDImport> in_imported_names,
+      final @Nonnull Map<String, UASTCDImport> in_imported_renames,
+      final @Nonnull List<UASTCDeclarationModuleLevel> in_declarations,
+      final @Nonnull Map<String, UASTCDTerm> in_terms,
+      final @Nonnull Map<String, UASTCDType> in_types,
+      final @Nonnull Map<String, UASTCDShader> in_shaders)
       throws ConstraintError
     {
-      this.path = Constraints.constrainNotNull(path, "Path");
+      this.path = Constraints.constrainNotNull(in_path, "Path");
 
-      this.imports = Constraints.constrainNotNull(imports, "Imports");
+      this.imports = Constraints.constrainNotNull(in_imports, "Imports");
       this.imported_modules =
-        Constraints.constrainNotNull(imported_modules, "Imported modules");
+        Constraints.constrainNotNull(in_imported_modules, "Imported modules");
       this.imported_names =
-        Constraints.constrainNotNull(imported_names, "Imported names");
+        Constraints.constrainNotNull(in_imported_names, "Imported names");
       this.imported_renames =
-        Constraints.constrainNotNull(imported_renames, "Imported renames");
+        Constraints.constrainNotNull(in_imported_renames, "Imported renames");
 
       this.declarations =
-        Constraints.constrainNotNull(declarations, "Declarations");
-      this.terms = Constraints.constrainNotNull(terms, "Terms");
-      this.types = Constraints.constrainNotNull(types, "Types");
-      this.shaders = Constraints.constrainNotNull(shaders, "Shaders");
+        Constraints.constrainNotNull(in_declarations, "Declarations");
+      this.terms = Constraints.constrainNotNull(in_terms, "Terms");
+      this.types = Constraints.constrainNotNull(in_types, "Types");
+      this.shaders = Constraints.constrainNotNull(in_shaders, "Shaders");
     }
 
     public @Nonnull List<UASTCDeclarationModuleLevel> getDeclarations()
@@ -613,10 +616,10 @@ public abstract class UASTCDeclaration
     private final @Nonnull PackagePath path;
 
     public UASTCDPackage(
-      final @Nonnull PackagePath path)
+      final @Nonnull PackagePath in_path)
       throws ConstraintError
     {
-      this.path = Constraints.constrainNotNull(path, "Path");
+      this.path = Constraints.constrainNotNull(in_path, "Path");
     }
 
     public @Nonnull PackagePath getPath()
@@ -646,10 +649,10 @@ public abstract class UASTCDeclaration
     private final @Nonnull TokenIdentifierLower name;
 
     protected UASTCDShader(
-      final @Nonnull TokenIdentifierLower name)
+      final @Nonnull TokenIdentifierLower in_name)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public final @Nonnull TokenIdentifierLower getName()
@@ -669,20 +672,20 @@ public abstract class UASTCDeclaration
 
     public UASTCDShaderFragment(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<UASTCDShaderFragmentInput> inputs,
-      final @Nonnull List<UASTCDShaderFragmentOutput> outputs,
-      final @Nonnull List<UASTCDShaderFragmentParameter> parameters,
-      final @Nonnull List<UASTCDShaderFragmentLocal> locals,
-      final @Nonnull List<UASTCDShaderFragmentOutputAssignment> writes)
+      final @Nonnull List<UASTCDShaderFragmentInput> in_inputs,
+      final @Nonnull List<UASTCDShaderFragmentOutput> in_outputs,
+      final @Nonnull List<UASTCDShaderFragmentParameter> in_parameters,
+      final @Nonnull List<UASTCDShaderFragmentLocal> in_locals,
+      final @Nonnull List<UASTCDShaderFragmentOutputAssignment> in_writes)
       throws ConstraintError
     {
       super(name);
-      this.inputs = Constraints.constrainNotNull(inputs, "Inputs");
-      this.outputs = Constraints.constrainNotNull(outputs, "Outputs");
+      this.inputs = Constraints.constrainNotNull(in_inputs, "Inputs");
+      this.outputs = Constraints.constrainNotNull(in_outputs, "Outputs");
       this.parameters =
-        Constraints.constrainNotNull(parameters, "Parameters");
-      this.locals = Constraints.constrainNotNull(locals, "Locals");
-      this.writes = Constraints.constrainNotNull(writes, "Writes");
+        Constraints.constrainNotNull(in_parameters, "Parameters");
+      this.locals = Constraints.constrainNotNull(in_locals, "Locals");
+      this.writes = Constraints.constrainNotNull(in_writes, "Writes");
     }
 
     @Override public
@@ -800,13 +803,13 @@ public abstract class UASTCDeclaration
     private final @Nonnull UASTCExpression expression;
 
     public UASTCDShaderFragmentLocalDiscard(
-      final TokenDiscard discard,
-      final UASTCExpression expression)
+      final TokenDiscard in_discard,
+      final UASTCExpression in_expression)
       throws ConstraintError
     {
-      this.discard = Constraints.constrainNotNull(discard, "Discard");
+      this.discard = Constraints.constrainNotNull(in_discard, "Discard");
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
+        Constraints.constrainNotNull(in_expression, "Expression");
     }
 
     @Override public
@@ -837,10 +840,10 @@ public abstract class UASTCDeclaration
     private final @Nonnull UASTCDValueLocal value;
 
     public UASTCDShaderFragmentLocalValue(
-      final @Nonnull UASTCDValueLocal value)
+      final @Nonnull UASTCDValueLocal in_value)
       throws ConstraintError
     {
-      this.value = Constraints.constrainNotNull(value, "Value");
+      this.value = Constraints.constrainNotNull(in_value, "Value");
     }
 
     @Override public
@@ -880,12 +883,12 @@ public abstract class UASTCDeclaration
     private final @Nonnull UASTCEVariable       variable;
 
     public UASTCDShaderFragmentOutputAssignment(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTCEVariable variable)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull UASTCEVariable in_variable)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.variable = Constraints.constrainNotNull(variable, "Variable");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.variable = Constraints.constrainNotNull(in_variable, "Variable");
     }
 
     public @Nonnull TokenIdentifierLower getName()
@@ -907,11 +910,11 @@ public abstract class UASTCDeclaration
     public UASTCDShaderFragmentOutputData(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull UASTCTypePath type,
-      final int index)
+      final int in_index)
       throws ConstraintError
     {
       super(name, type);
-      this.index = index;
+      this.index = in_index;
     }
 
     @Override public
@@ -985,12 +988,12 @@ public abstract class UASTCDeclaration
     private final @Nonnull UASTCTypePath        type;
 
     UASTCDShaderParameters(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTCTypePath type)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull UASTCTypePath in_type)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
     }
 
     public final @Nonnull TokenIdentifierLower getName()
@@ -1011,15 +1014,15 @@ public abstract class UASTCDeclaration
 
     public UASTCDShaderProgram(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTCShaderPath vertex_shader,
-      final @Nonnull UASTCShaderPath fragment_shader)
+      final @Nonnull UASTCShaderPath in_vertex_shader,
+      final @Nonnull UASTCShaderPath in_fragment_shader)
       throws ConstraintError
     {
       super(name);
       this.vertex_shader =
-        Constraints.constrainNotNull(vertex_shader, "Vertex shader");
+        Constraints.constrainNotNull(in_vertex_shader, "Vertex shader");
       this.fragment_shader =
-        Constraints.constrainNotNull(fragment_shader, "Fragment shader");
+        Constraints.constrainNotNull(in_fragment_shader, "Fragment shader");
     }
 
     public @Nonnull UASTCShaderPath getFragmentShader()
@@ -1055,20 +1058,20 @@ public abstract class UASTCDeclaration
 
     public UASTCDShaderVertex(
       final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<UASTCDShaderVertexInput> inputs,
-      final @Nonnull List<UASTCDShaderVertexOutput> outputs,
-      final @Nonnull List<UASTCDShaderVertexParameter> parameters,
-      final @Nonnull List<UASTCDShaderVertexLocalValue> locals,
-      final @Nonnull List<UASTCDShaderVertexOutputAssignment> writes)
+      final @Nonnull List<UASTCDShaderVertexInput> in_inputs,
+      final @Nonnull List<UASTCDShaderVertexOutput> in_outputs,
+      final @Nonnull List<UASTCDShaderVertexParameter> in_parameters,
+      final @Nonnull List<UASTCDShaderVertexLocalValue> in_locals,
+      final @Nonnull List<UASTCDShaderVertexOutputAssignment> in_writes)
       throws ConstraintError
     {
       super(name);
-      this.inputs = Constraints.constrainNotNull(inputs, "Inputs");
-      this.outputs = Constraints.constrainNotNull(outputs, "Outputs");
+      this.inputs = Constraints.constrainNotNull(in_inputs, "Inputs");
+      this.outputs = Constraints.constrainNotNull(in_outputs, "Outputs");
       this.parameters =
-        Constraints.constrainNotNull(parameters, "Parameters");
-      this.locals = Constraints.constrainNotNull(locals, "Values");
-      this.writes = Constraints.constrainNotNull(writes, "Writes");
+        Constraints.constrainNotNull(in_parameters, "Parameters");
+      this.locals = Constraints.constrainNotNull(in_locals, "Values");
+      this.writes = Constraints.constrainNotNull(in_writes, "Writes");
     }
 
     public @Nonnull List<UASTCDShaderVertexInput> getInputs()
@@ -1176,10 +1179,10 @@ public abstract class UASTCDeclaration
     private final @Nonnull UASTCDValueLocal value;
 
     public UASTCDShaderVertexLocalValue(
-      final @Nonnull UASTCDValueLocal value)
+      final @Nonnull UASTCDValueLocal in_value)
       throws ConstraintError
     {
-      this.value = Constraints.constrainNotNull(value, "Value");
+      this.value = Constraints.constrainNotNull(in_value, "Value");
     }
 
     public @Nonnull UASTCDValueLocal getValue()
@@ -1196,11 +1199,11 @@ public abstract class UASTCDeclaration
     public UASTCDShaderVertexOutput(
       final @Nonnull TokenIdentifierLower name,
       final @Nonnull UASTCTypePath type,
-      final boolean main)
+      final boolean in_main)
       throws ConstraintError
     {
       super(name, type);
-      this.main = main;
+      this.main = in_main;
     }
 
     public final boolean isMain()
@@ -1216,12 +1219,12 @@ public abstract class UASTCDeclaration
     private final @Nonnull UASTCEVariable       variable;
 
     public UASTCDShaderVertexOutputAssignment(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTCEVariable variable)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull UASTCEVariable in_variable)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.variable = Constraints.constrainNotNull(variable, "Variable");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.variable = Constraints.constrainNotNull(in_variable, "Variable");
     }
 
     public @Nonnull TokenIdentifierLower getName()
@@ -1300,12 +1303,12 @@ public abstract class UASTCDeclaration
     private final @Nonnull TokenIdentifierLower        name;
 
     public UASTCDTypeRecord(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<UASTCDTypeRecordField> fields)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull List<UASTCDTypeRecordField> in_fields)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.fields = Constraints.constrainNotNull(fields, "Fields");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.fields = Constraints.constrainNotNull(in_fields, "Fields");
     }
 
     public @Nonnull List<UASTCDTypeRecordField> getFields()
@@ -1355,12 +1358,12 @@ public abstract class UASTCDeclaration
     private final @Nonnull UASTCTypePath        type;
 
     public UASTCDTypeRecordField(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTCTypePath type)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull UASTCTypePath in_type)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
     }
 
     public @Nonnull TokenIdentifierLower getName()
@@ -1391,16 +1394,16 @@ public abstract class UASTCDeclaration
     private final @Nonnull TokenIdentifierLower  name;
 
     public UASTCDValueDefined(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull Option<UASTCTypePath> ascription,
-      final @Nonnull UASTCExpression expression)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull Option<UASTCTypePath> in_ascription,
+      final @Nonnull UASTCExpression in_expression)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
       this.ascription =
-        Constraints.constrainNotNull(ascription, "Ascription");
+        Constraints.constrainNotNull(in_ascription, "Ascription");
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
+        Constraints.constrainNotNull(in_expression, "Expression");
     }
 
     public @Nonnull Option<UASTCTypePath> getAscription()
@@ -1452,15 +1455,15 @@ public abstract class UASTCDeclaration
     private final @Nonnull TokenIdentifierLower name;
 
     public UASTCDValueExternal(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTCTypePath ascription,
-      final @Nonnull UASTCDExternal external)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull UASTCTypePath in_ascription,
+      final @Nonnull UASTCDExternal in_external)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
       this.ascription =
-        Constraints.constrainNotNull(ascription, "Ascription");
-      this.external = Constraints.constrainNotNull(external, "External");
+        Constraints.constrainNotNull(in_ascription, "Ascription");
+      this.external = Constraints.constrainNotNull(in_external, "External");
       assert this.external.getEmulation().isNone();
     }
 
@@ -1513,16 +1516,16 @@ public abstract class UASTCDeclaration
     private final @Nonnull TokenIdentifierLower  name;
 
     public UASTCDValueLocal(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull Option<UASTCTypePath> ascription,
-      final @Nonnull UASTCExpression expression)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull Option<UASTCTypePath> in_ascription,
+      final @Nonnull UASTCExpression in_expression)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
       this.ascription =
-        Constraints.constrainNotNull(ascription, "Ascription");
+        Constraints.constrainNotNull(in_ascription, "Ascription");
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
+        Constraints.constrainNotNull(in_expression, "Expression");
     }
 
     public @Nonnull Option<UASTCTypePath> getAscription()

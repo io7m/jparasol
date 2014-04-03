@@ -177,17 +177,17 @@ public final class UniqueBinders
     private final @CheckForNull UASTCDTerm              root;
 
     public Context(
-      final @Nonnull ModuleContext module,
-      final @CheckForNull Context parent,
-      final @CheckForNull UASTCDTerm root,
-      final @Nonnull Map<String, UniqueNameLocal> names,
-      final @Nonnull Log log)
+      final @Nonnull ModuleContext in_module,
+      final @CheckForNull Context in_parent,
+      final @CheckForNull UASTCDTerm in_root,
+      final @Nonnull Map<String, UniqueNameLocal> in_names,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.parent = parent;
-      this.names = names;
-      this.log = log;
-      this.root = root;
+      this.module = in_module;
+      this.parent = in_parent;
+      this.names = in_names;
+      this.log = in_log;
+      this.root = in_root;
       this.depth = this.parent == null ? 1 : this.parent.getDepth() + 1;
     }
 
@@ -318,9 +318,9 @@ public final class UniqueBinders
     private @Nonnull Context context;
 
     public ExpressionTransformer(
-      final @Nonnull Context context)
+      final @Nonnull Context in_context)
     {
-      this.context = context;
+      this.context = in_context;
     }
 
     @Override public UASTUEApplication expressionVisitApplication(
@@ -498,9 +498,9 @@ public final class UniqueBinders
     private final @Nonnull Context context;
 
     public FragmentShaderTransformer(
-      final @Nonnull Context context)
+      final @Nonnull Context in_context)
     {
-      this.context = context.withNew();
+      this.context = in_context.withNew();
     }
 
     @Override public
@@ -778,9 +778,9 @@ public final class UniqueBinders
     private final @Nonnull Context context;
 
     public LocalTransformer(
-      final @Nonnull Context context)
+      final @Nonnull Context in_context)
     {
-      this.context = context;
+      this.context = in_context;
     }
 
     @Override public UASTUDValueLocal localVisitValueLocal(
@@ -825,10 +825,10 @@ public final class UniqueBinders
     private final @Nonnull Log           log;
 
     public ModuleTransformer(
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
       this.context = new ModuleContext();
-      this.log = new Log(log, "module-transformer");
+      this.log = new Log(in_log, "module-transformer");
     }
 
     @Override public
@@ -1007,9 +1007,9 @@ public final class UniqueBinders
     private final @Nonnull Context context;
 
     public VertexShaderTransformer(
-      final @Nonnull Context context)
+      final @Nonnull Context in_context)
     {
-      this.context = context;
+      this.context = in_context;
     }
 
     @Override public
@@ -1141,13 +1141,13 @@ public final class UniqueBinders
   private final @Nonnull Log              log;
 
   private UniqueBinders(
-    final @Nonnull UASTCCompilation compilation,
-    final @Nonnull Log log)
+    final @Nonnull UASTCCompilation in_compilation,
+    final @Nonnull Log in_log)
     throws ConstraintError
   {
-    this.log = new Log(log, "unique-binders");
+    this.log = new Log(in_log, "unique-binders");
     this.compilation =
-      Constraints.constrainNotNull(compilation, "Compilation");
+      Constraints.constrainNotNull(in_compilation, "Compilation");
   }
 
   public @Nonnull UASTUCompilation run()

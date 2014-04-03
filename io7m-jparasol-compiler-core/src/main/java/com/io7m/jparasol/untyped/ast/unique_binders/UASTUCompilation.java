@@ -33,12 +33,12 @@ public final class UASTUCompilation
   private final @Nonnull Map<ModulePathFlat, ModulePath>   paths;
 
   public UASTUCompilation(
-    final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-    final @Nonnull Map<ModulePathFlat, ModulePath> paths)
+    final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
+    final @Nonnull Map<ModulePathFlat, ModulePath> in_paths)
     throws ConstraintError
   {
-    this.modules = Constraints.constrainNotNull(modules, "Modules");
-    this.paths = Constraints.constrainNotNull(paths, "Paths");
+    this.modules = Constraints.constrainNotNull(in_modules, "Modules");
+    this.paths = Constraints.constrainNotNull(in_paths, "Paths");
   }
 
   public @Nonnull Map<ModulePathFlat, UASTUDModule> getModules()

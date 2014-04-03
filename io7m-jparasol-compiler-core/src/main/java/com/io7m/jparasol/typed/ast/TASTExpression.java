@@ -49,14 +49,15 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TType                type;
 
     public TASTEApplication(
-      final @Nonnull TASTTermName name,
-      final @Nonnull List<TASTExpression> arguments,
-      final @Nonnull TType type)
+      final @Nonnull TASTTermName in_name,
+      final @Nonnull List<TASTExpression> in_arguments,
+      final @Nonnull TType in_type)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.arguments =
+        Constraints.constrainNotNull(in_arguments, "Arguments");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
     }
 
     @Override public boolean equals(
@@ -148,10 +149,10 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TokenLiteralBoolean token;
 
     public TASTEBoolean(
-      final @Nonnull Token.TokenLiteralBoolean token)
+      final @Nonnull Token.TokenLiteralBoolean in_token)
       throws ConstraintError
     {
-      this.token = Constraints.constrainNotNull(token, "Token");
+      this.token = Constraints.constrainNotNull(in_token, "Token");
     }
 
     @Override public boolean equals(
@@ -224,14 +225,15 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TASTExpression right;
 
     public TASTEConditional(
-      final @Nonnull TASTExpression condition,
-      final @Nonnull TASTExpression left,
-      final @Nonnull TASTExpression right)
+      final @Nonnull TASTExpression in_condition,
+      final @Nonnull TASTExpression in_left,
+      final @Nonnull TASTExpression in_right)
       throws ConstraintError
     {
-      this.condition = Constraints.constrainNotNull(condition, "Condition");
-      this.left = Constraints.constrainNotNull(left, "Left");
-      this.right = Constraints.constrainNotNull(right, "Right");
+      this.condition =
+        Constraints.constrainNotNull(in_condition, "Condition");
+      this.left = Constraints.constrainNotNull(in_left, "Left");
+      this.right = Constraints.constrainNotNull(in_right, "Right");
 
       assert (this.condition.getType().equals(TBoolean.get()));
       assert (this.left.getType().equals(this.right.getType()));
@@ -342,10 +344,10 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TokenLiteralInteger token;
 
     public TASTEInteger(
-      final @Nonnull Token.TokenLiteralInteger token)
+      final @Nonnull Token.TokenLiteralInteger in_token)
       throws ConstraintError
     {
-      this.token = Constraints.constrainNotNull(token, "Token");
+      this.token = Constraints.constrainNotNull(in_token, "Token");
     }
 
     @Override public boolean equals(
@@ -418,14 +420,14 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TokenLet              token;
 
     public TASTELet(
-      final @Nonnull TokenLet token,
-      final @Nonnull List<TASTDValueLocal> bindings,
-      final @Nonnull TASTExpression body)
+      final @Nonnull TokenLet in_token,
+      final @Nonnull List<TASTDValueLocal> in_bindings,
+      final @Nonnull TASTExpression in_body)
       throws ConstraintError
     {
-      this.token = Constraints.constrainNotNull(token, "Token");
-      this.bindings = Constraints.constrainNotNull(bindings, "Bindings");
-      this.body = Constraints.constrainNotNull(body, "Body");
+      this.token = Constraints.constrainNotNull(in_token, "Token");
+      this.bindings = Constraints.constrainNotNull(in_bindings, "Bindings");
+      this.body = Constraints.constrainNotNull(in_body, "Body");
     }
 
     @Override public boolean equals(
@@ -526,12 +528,13 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TValueType           type;
 
     public TASTENew(
-      final @Nonnull TValueType type,
-      final @Nonnull List<TASTExpression> arguments)
+      final @Nonnull TValueType in_type,
+      final @Nonnull List<TASTExpression> in_arguments)
       throws ConstraintError
     {
-      this.type = Constraints.constrainNotNull(type, "Type");
-      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.arguments =
+        Constraints.constrainNotNull(in_arguments, "Arguments");
     }
 
     @Override public boolean equals(
@@ -614,10 +617,10 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TokenLiteralReal token;
 
     public TASTEReal(
-      final @Nonnull Token.TokenLiteralReal token)
+      final @Nonnull Token.TokenLiteralReal in_token)
       throws ConstraintError
     {
-      this.token = Constraints.constrainNotNull(token, "Token");
+      this.token = Constraints.constrainNotNull(in_token, "Token");
     }
 
     @Override public boolean equals(
@@ -689,13 +692,13 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TRecord                         type;
 
     public TASTERecord(
-      final @Nonnull TRecord type,
-      final @Nonnull List<TASTRecordFieldAssignment> assignments)
+      final @Nonnull TRecord in_type,
+      final @Nonnull List<TASTRecordFieldAssignment> in_assignments)
       throws ConstraintError
     {
-      this.type = Constraints.constrainNotNull(type, "Type path");
+      this.type = Constraints.constrainNotNull(in_type, "Type path");
       this.assignments =
-        Constraints.constrainNotNull(assignments, "Assignments");
+        Constraints.constrainNotNull(in_assignments, "Assignments");
     }
 
     @Override public boolean equals(
@@ -769,15 +772,15 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TValueType           type;
 
     public TASTERecordProjection(
-      final @Nonnull TValueType type,
-      final @Nonnull TASTExpression expression,
-      final @Nonnull TokenIdentifierLower field)
+      final @Nonnull TValueType in_type,
+      final @Nonnull TASTExpression in_expression,
+      final @Nonnull TokenIdentifierLower in_field)
       throws ConstraintError
     {
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
-      this.field = Constraints.constrainNotNull(field, "Field");
+        Constraints.constrainNotNull(in_expression, "Expression");
+      this.field = Constraints.constrainNotNull(in_field, "Field");
     }
 
     @Override public boolean equals(
@@ -865,15 +868,15 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TValueType                 type;
 
     public TASTESwizzle(
-      final @Nonnull TValueType type,
-      final @Nonnull TASTExpression expression,
-      final @Nonnull List<TokenIdentifierLower> fields)
+      final @Nonnull TValueType in_type,
+      final @Nonnull TASTExpression in_expression,
+      final @Nonnull List<TokenIdentifierLower> in_fields)
       throws ConstraintError
     {
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
-      this.fields = Constraints.constrainNotNull(fields, "Fields");
+        Constraints.constrainNotNull(in_expression, "Expression");
+      this.fields = Constraints.constrainNotNull(in_fields, "Fields");
       assert (this.expression.getType() instanceof TVectorType);
     }
 
@@ -963,12 +966,12 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TType        type;
 
     public TASTEVariable(
-      final @Nonnull TType type,
-      final @Nonnull TASTTermName name)
+      final @Nonnull TType in_type,
+      final @Nonnull TASTTermName in_name)
       throws ConstraintError
     {
-      this.type = Constraints.constrainNotNull(type, "Type");
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(
@@ -1039,13 +1042,13 @@ public abstract class TASTExpression implements TASTExpressionVisitable
     private final @Nonnull TokenIdentifierLower name;
 
     public TASTRecordFieldAssignment(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TASTExpression expression)
+      final @Nonnull TokenIdentifierLower in_name,
+      final @Nonnull TASTExpression in_expression)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
       this.expression =
-        Constraints.constrainNotNull(expression, "Expression");
+        Constraints.constrainNotNull(in_expression, "Expression");
     }
 
     @Override public boolean equals(

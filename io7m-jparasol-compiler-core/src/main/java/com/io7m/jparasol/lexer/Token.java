@@ -318,11 +318,11 @@ public abstract class Token
     public TokenIdentifierLower(
       final @Nonnull File file,
       final @Nonnull Position position,
-      final @Nonnull String text)
+      final @Nonnull String in_text)
       throws ConstraintError
     {
       super(Type.TOKEN_IDENTIFIER_LOWER, file, position);
-      this.text = Constraints.constrainNotNull(text, "Text");
+      this.text = Constraints.constrainNotNull(in_text, "Text");
     }
 
     @Override public boolean equals(
@@ -374,11 +374,11 @@ public abstract class Token
     public TokenIdentifierUpper(
       final @Nonnull File file,
       final @Nonnull Position position,
-      final @Nonnull String text)
+      final @Nonnull String in_text)
       throws ConstraintError
     {
       super(Type.TOKEN_IDENTIFIER_UPPER, file, position);
-      this.text = Constraints.constrainNotNull(text, "Text");
+      this.text = Constraints.constrainNotNull(in_text, "Text");
     }
 
     @Override public boolean equals(
@@ -520,11 +520,11 @@ public abstract class Token
     @SuppressWarnings("synthetic-access") public TokenLiteralBoolean(
       final @Nonnull File file,
       final @Nonnull Position position,
-      final boolean value)
+      final boolean in_value)
       throws ConstraintError
     {
       super(Type.TOKEN_LITERAL_BOOLEAN, file, position);
-      this.value = value;
+      this.value = in_value;
     }
 
     @Override public boolean equals(
@@ -593,11 +593,11 @@ public abstract class Token
     @SuppressWarnings("synthetic-access") private TokenLiteralIntegerDecimal(
       final @Nonnull File file,
       final @Nonnull Position position,
-      final @Nonnull BigInteger value)
+      final @Nonnull BigInteger in_value)
       throws ConstraintError
     {
       super(Type.TOKEN_LITERAL_INTEGER_DECIMAL, file, position);
-      this.value = value;
+      this.value = in_value;
     }
 
     @Override public boolean equals(
@@ -661,11 +661,11 @@ public abstract class Token
     @SuppressWarnings("synthetic-access") private TokenLiteralReal(
       final @Nonnull File file,
       final @Nonnull Position position,
-      final @Nonnull BigDecimal value)
+      final @Nonnull BigDecimal in_value)
       throws ConstraintError
     {
       super(Type.TOKEN_LITERAL_REAL, file, position);
-      this.value = Constraints.constrainNotNull(value, "Value");
+      this.value = Constraints.constrainNotNull(in_value, "Value");
     }
 
     @Override public boolean equals(
@@ -1085,9 +1085,9 @@ public abstract class Token
     private final @Nonnull String description;
 
     private Type(
-      final @Nonnull String description)
+      final @Nonnull String in_description)
     {
-      this.description = description;
+      this.description = in_description;
     }
 
     public @Nonnull String getDescription()
@@ -1101,14 +1101,14 @@ public abstract class Token
   private final @Nonnull Type     type;
 
   private Token(
-    final @Nonnull Type type,
-    final @Nonnull File file,
-    final @Nonnull Position position)
+    final @Nonnull Type in_type,
+    final @Nonnull File in_file,
+    final @Nonnull Position in_position)
     throws ConstraintError
   {
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
-    this.type = Constraints.constrainNotNull(type, "Type");
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.position = Constraints.constrainNotNull(in_position, "Position");
+    this.type = Constraints.constrainNotNull(in_type, "Type");
   }
 
   @Override public boolean equals(

@@ -36,15 +36,15 @@ public abstract class GASTTermDeclaration implements
     private final @Nonnull GASTScope                             statement;
 
     public GASTTermFunction(
-      final @Nonnull GTermNameGlobal name,
-      final @Nonnull GTypeName returns,
-      final @Nonnull List<Pair<GTermNameLocal, GTypeName>> parameters,
-      final @Nonnull GASTScope statement)
+      final @Nonnull GTermNameGlobal in_name,
+      final @Nonnull GTypeName in_returns,
+      final @Nonnull List<Pair<GTermNameLocal, GTypeName>> in_parameters,
+      final @Nonnull GASTScope in_statement)
     {
-      this.name = name;
-      this.returns = returns;
-      this.parameters = parameters;
-      this.statement = statement;
+      this.name = in_name;
+      this.returns = in_returns;
+      this.parameters = in_parameters;
+      this.statement = in_statement;
     }
 
     @Override public boolean equals(
@@ -139,13 +139,13 @@ public abstract class GASTTermDeclaration implements
     private final @Nonnull GTypeName       type;
 
     public GASTTermValue(
-      final @Nonnull GTermNameGlobal name,
-      final @Nonnull GTypeName type,
-      final @Nonnull GASTExpression expression)
+      final @Nonnull GTermNameGlobal in_name,
+      final @Nonnull GTypeName in_type,
+      final @Nonnull GASTExpression in_expression)
     {
-      this.name = name;
-      this.type = type;
-      this.expression = expression;
+      this.name = in_name;
+      this.type = in_type;
+      this.expression = in_expression;
     }
 
     @Override public boolean equals(

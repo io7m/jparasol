@@ -28,13 +28,13 @@ public final class ModulePath
   private final @Nonnull PackagePath          package_path;
 
   public ModulePath(
-    final @Nonnull PackagePath package_path,
-    final @Nonnull TokenIdentifierUpper name)
+    final @Nonnull PackagePath in_package_path,
+    final @Nonnull TokenIdentifierUpper in_name)
     throws ConstraintError
   {
     this.package_path =
-      Constraints.constrainNotNull(package_path, "Package path");
-    this.name = Constraints.constrainNotNull(name, "Module name");
+      Constraints.constrainNotNull(in_package_path, "Package path");
+    this.name = Constraints.constrainNotNull(in_name, "Module name");
   }
 
   @Override public boolean equals(

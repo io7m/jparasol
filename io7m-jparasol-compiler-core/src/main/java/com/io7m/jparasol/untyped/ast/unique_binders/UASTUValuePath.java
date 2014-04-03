@@ -37,12 +37,12 @@ public final class UASTUValuePath
   private final @Nonnull Token.TokenIdentifierLower         name;
 
   public UASTUValuePath(
-    final @Nonnull Option<TokenIdentifierUpper> module,
-    final @Nonnull TokenIdentifierLower name)
+    final @Nonnull Option<TokenIdentifierUpper> in_module,
+    final @Nonnull TokenIdentifierLower in_name)
     throws ConstraintError
   {
-    this.module = Constraints.constrainNotNull(module, "Module");
-    this.name = Constraints.constrainNotNull(name, "Name");
+    this.module = Constraints.constrainNotNull(in_module, "Module");
+    this.name = Constraints.constrainNotNull(in_name, "Name");
   }
 
   @Override public boolean equals(

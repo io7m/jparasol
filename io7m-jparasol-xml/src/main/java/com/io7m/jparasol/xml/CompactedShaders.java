@@ -16,14 +16,14 @@ import com.io7m.jaux.Constraints.ConstraintError;
   private final @Nonnull String vertex_shader;
 
   CompactedShaders(
-    final @Nonnull String vertex_shader,
-    final @Nonnull String fragment_shader)
+    final @Nonnull String in_vertex_shader,
+    final @Nonnull String in_fragment_shader)
     throws ConstraintError
   {
     this.vertex_shader =
-      Constraints.constrainNotNull(vertex_shader, "Vertex shader");
+      Constraints.constrainNotNull(in_vertex_shader, "Vertex shader");
     this.fragment_shader =
-      Constraints.constrainNotNull(fragment_shader, "Fragment shader");
+      Constraints.constrainNotNull(in_fragment_shader, "Fragment shader");
   }
 
   @Override public boolean equals(

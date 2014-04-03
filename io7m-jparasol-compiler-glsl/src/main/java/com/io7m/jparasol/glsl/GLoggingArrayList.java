@@ -37,12 +37,12 @@ public final class GLoggingArrayList<T> extends ArrayList<T>
   private final @Nonnull Function<T, String> show;
 
   public GLoggingArrayList(
-    final @Nonnull Function<T, String> show,
-    final @Nonnull Log log)
+    final @Nonnull Function<T, String> in_show,
+    final @Nonnull Log in_log)
   {
     super();
-    this.show = show;
-    this.log = log;
+    this.show = in_show;
+    this.log = in_log;
   }
 
   @Override public void add(

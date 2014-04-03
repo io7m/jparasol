@@ -36,12 +36,12 @@ import com.io7m.jaux.Constraints.ConstraintError;
   private final @Nonnull String type;
 
   FragmentParameter(
-    final @Nonnull String name,
-    final @Nonnull String type)
+    final @Nonnull String in_name,
+    final @Nonnull String in_type)
     throws ConstraintError
   {
-    this.name = Constraints.constrainNotNull(name, "Parameter name");
-    this.type = Constraints.constrainNotNull(type, "Parameter type");
+    this.name = Constraints.constrainNotNull(in_name, "Parameter name");
+    this.type = Constraints.constrainNotNull(in_type, "Parameter type");
   }
 
   @Override public int compareTo(

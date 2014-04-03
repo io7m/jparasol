@@ -34,12 +34,12 @@ public abstract class UniqueName implements UniqueNameVisitable
     private final @Nonnull TokenIdentifierLower original;
 
     public UniqueNameLocal(
-      final @Nonnull TokenIdentifierLower original,
-      final @Nonnull String current)
+      final @Nonnull TokenIdentifierLower in_original,
+      final @Nonnull String in_current)
       throws ConstraintError
     {
-      this.original = Constraints.constrainNotNull(original, "Original");
-      this.current = Constraints.constrainNotNull(current, "Current");
+      this.original = Constraints.constrainNotNull(in_original, "Original");
+      this.current = Constraints.constrainNotNull(in_current, "Current");
     }
 
     @Override public boolean equals(
@@ -117,12 +117,12 @@ public abstract class UniqueName implements UniqueNameVisitable
     private final @Nonnull TokenIdentifierLower         name;
 
     public UniqueNameNonLocal(
-      final @Nonnull Option<TokenIdentifierUpper> module,
-      final @Nonnull TokenIdentifierLower name)
+      final @Nonnull Option<TokenIdentifierUpper> in_module,
+      final @Nonnull TokenIdentifierLower in_name)
       throws ConstraintError
     {
-      this.module = Constraints.constrainNotNull(module, "Module");
-      this.name = Constraints.constrainNotNull(name, "Name");
+      this.module = Constraints.constrainNotNull(in_module, "Module");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
     }
 
     @Override public boolean equals(

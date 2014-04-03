@@ -41,9 +41,9 @@ public final class PackagePathFlat
   private final @Nonnull String actual;
 
   private PackagePathFlat(
-    final @Nonnull String actual)
+    final @Nonnull String in_actual)
   {
-    this.actual = actual;
+    this.actual = in_actual;
   }
 
   @Override public boolean equals(

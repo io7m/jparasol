@@ -45,9 +45,9 @@ public abstract class GFFIExpression implements GFFIExpressionVisitable
     private final @Nonnull GASTExpression expression;
 
     public GFFIExpressionBuiltIn(
-      final @Nonnull GASTExpression expression)
+      final @Nonnull GASTExpression in_expression)
     {
-      this.expression = expression;
+      this.expression = in_expression;
     }
 
     public @Nonnull GASTExpression getExpression()

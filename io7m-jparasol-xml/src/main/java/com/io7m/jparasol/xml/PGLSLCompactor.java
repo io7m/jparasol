@@ -84,12 +84,12 @@ public final class PGLSLCompactor
     private final @Nonnull List<String> lines;
 
     Source(
-      final @Nonnull List<String> lines,
-      final @Nonnull String hash)
+      final @Nonnull List<String> in_lines,
+      final @Nonnull String in_hash)
       throws ConstraintError
     {
-      this.lines = Constraints.constrainNotNull(lines, "Lines");
-      this.hash = Constraints.constrainNotNull(hash, "Hash");
+      this.lines = Constraints.constrainNotNull(in_lines, "Lines");
+      this.hash = Constraints.constrainNotNull(in_hash, "Hash");
     }
 
     public @Nonnull String getHash()
@@ -258,9 +258,9 @@ public final class PGLSLCompactor
   private final @Nonnull TreeMap<Version, CompactedShaders> mappings;
 
   private PGLSLCompactor(
-    final @Nonnull File directory,
-    final @Nonnull File output_directory,
-    final @Nonnull Log log)
+    final @Nonnull File in_directory,
+    final @Nonnull File in_output_directory,
+    final @Nonnull Log in_log)
     throws ConstraintError,
       ValidityException,
       ParsingException,
@@ -269,12 +269,13 @@ public final class PGLSLCompactor
       SAXException,
       ParserConfigurationException
   {
-    this.log = new Log(Constraints.constrainNotNull(log, "Log"), "compactor");
-    this.directory = Constraints.constrainNotNull(directory, "Directory");
+    this.log =
+      new Log(Constraints.constrainNotNull(in_log, "Log"), "compactor");
+    this.directory = Constraints.constrainNotNull(in_directory, "Directory");
     this.output_directory =
-      Constraints.constrainNotNull(output_directory, "Output directory");
+      Constraints.constrainNotNull(in_output_directory, "Output directory");
 
-    this.meta = PGLSLCompactor.getMeta(directory, log);
+    this.meta = PGLSLCompactor.getMeta(in_directory, in_log);
     Constraints.constrainArbitrary(
       this.meta.isCompacted() == false,
       "Not already compacted");
@@ -287,10 +288,10 @@ public final class PGLSLCompactor
     this.mappings = new TreeMap<Version, CompactedShaders>();
 
     PGLSLCompactor.loadSources(
-      log,
+      in_log,
       this.meta.getSupportsES(),
       "glsl-es-",
-      directory,
+      in_directory,
       this.es_vertex_sources_by_version,
       this.es_fragment_sources_by_version,
       this.sources_by_hash);
@@ -304,10 +305,10 @@ public final class PGLSLCompactor
       API.API_GLSL_ES);
 
     PGLSLCompactor.loadSources(
-      log,
+      in_log,
       this.meta.getSupportsFull(),
       "glsl-",
-      directory,
+      in_directory,
       this.full_vertex_sources_by_version,
       this.full_fragment_sources_by_version,
       this.sources_by_hash);

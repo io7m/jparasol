@@ -133,9 +133,9 @@ public abstract class TType implements TTypeVisitable
     private final @Nonnull List<TValueType> parameters;
 
     private TConstructor(
-      final @Nonnull List<TValueType> parameters)
+      final @Nonnull List<TValueType> in_parameters)
     {
-      this.parameters = parameters;
+      this.parameters = in_parameters;
     }
 
     @Override public boolean equals(
@@ -305,13 +305,14 @@ public abstract class TType implements TTypeVisitable
     private final @Nonnull TValueType              return_type;
 
     public TFunction(
-      final @Nonnull List<TFunctionArgument> arguments,
-      final @Nonnull TValueType return_type)
+      final @Nonnull List<TFunctionArgument> in_arguments,
+      final @Nonnull TValueType in_return_type)
       throws ConstraintError
     {
-      this.arguments = Constraints.constrainNotNull(arguments, "Arguments");
+      this.arguments =
+        Constraints.constrainNotNull(in_arguments, "Arguments");
       this.return_type =
-        Constraints.constrainNotNull(return_type, "Return type");
+        Constraints.constrainNotNull(in_return_type, "Return type");
 
       final StringBuilder m = new StringBuilder();
       m.append(TType.formatFunctionArguments(this.arguments));
@@ -373,12 +374,12 @@ public abstract class TType implements TTypeVisitable
     private final @Nonnull TValueType type;
 
     public TFunctionArgument(
-      final @Nonnull String name,
-      final @Nonnull TValueType type)
+      final @Nonnull String in_name,
+      final @Nonnull TValueType in_type)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
     }
 
     @Override public boolean equals(
@@ -698,12 +699,12 @@ public abstract class TType implements TTypeVisitable
     private final @Nonnull TTypeNameGlobal    name;
 
     public TRecord(
-      final @Nonnull TTypeNameGlobal name,
-      final @Nonnull List<TRecordField> fields)
+      final @Nonnull TTypeNameGlobal in_name,
+      final @Nonnull List<TRecordField> in_fields)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.fields = Constraints.constrainNotNull(fields, "Fields");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.fields = Constraints.constrainNotNull(in_fields, "Fields");
     }
 
     @Override public boolean equals(
@@ -781,12 +782,12 @@ public abstract class TType implements TTypeVisitable
     private final @Nonnull TManifestType type;
 
     public TRecordField(
-      final @Nonnull String name,
-      final @Nonnull TManifestType type)
+      final @Nonnull String in_name,
+      final @Nonnull TManifestType in_type)
       throws ConstraintError
     {
-      this.name = Constraints.constrainNotNull(name, "Name");
-      this.type = Constraints.constrainNotNull(type, "Type");
+      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.type = Constraints.constrainNotNull(in_type, "Type");
     }
 
     @Override public boolean equals(

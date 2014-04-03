@@ -87,11 +87,11 @@ public abstract class GVersionNumberSetToken
     @SuppressWarnings("synthetic-access") private TokenLiteralIntegerDecimal(
       final @Nonnull File file,
       final @Nonnull Position position,
-      final @Nonnull BigInteger value)
+      final @Nonnull BigInteger in_value)
       throws ConstraintError
     {
       super(Type.TOKEN_LITERAL_INTEGER_DECIMAL, file, position);
-      this.value = value;
+      this.value = in_value;
     }
 
     @Override public boolean equals(
@@ -223,9 +223,9 @@ public abstract class GVersionNumberSetToken
     private final @Nonnull String description;
 
     private Type(
-      final @Nonnull String description)
+      final @Nonnull String in_description)
     {
-      this.description = description;
+      this.description = in_description;
     }
 
     public @Nonnull String getDescription()
@@ -239,14 +239,14 @@ public abstract class GVersionNumberSetToken
   private final @Nonnull Type     type;
 
   private GVersionNumberSetToken(
-    final @Nonnull Type type,
-    final @Nonnull File file,
-    final @Nonnull Position position)
+    final @Nonnull Type in_type,
+    final @Nonnull File in_file,
+    final @Nonnull Position in_position)
     throws ConstraintError
   {
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
-    this.type = Constraints.constrainNotNull(type, "Type");
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.position = Constraints.constrainNotNull(in_position, "Position");
+    this.type = Constraints.constrainNotNull(in_type, "Type");
   }
 
   @Override public boolean equals(

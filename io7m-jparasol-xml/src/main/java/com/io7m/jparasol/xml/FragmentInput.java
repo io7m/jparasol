@@ -36,12 +36,12 @@ import com.io7m.jaux.Constraints.ConstraintError;
   private final @Nonnull String type;
 
   FragmentInput(
-    final @Nonnull String name,
-    final @Nonnull String type)
+    final @Nonnull String in_name,
+    final @Nonnull String in_type)
     throws ConstraintError
   {
-    this.name = Constraints.constrainNotNull(name, "Input name");
-    this.type = Constraints.constrainNotNull(type, "Input type");
+    this.name = Constraints.constrainNotNull(in_name, "Input name");
+    this.type = Constraints.constrainNotNull(in_type, "Input type");
   }
 
   @Override public int compareTo(

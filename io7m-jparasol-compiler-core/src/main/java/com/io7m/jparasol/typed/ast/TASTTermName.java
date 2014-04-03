@@ -40,15 +40,15 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     private final @Nonnull TokenIdentifierLower token;
 
     public TASTTermNameExternal(
-      final @Nonnull TokenIdentifierLower token,
-      final @Nonnull String current)
+      final @Nonnull TokenIdentifierLower in_token,
+      final @Nonnull String in_current)
       throws ConstraintError
     {
       super(
-        Constraints.constrainNotNull(token, "Token").getFile(),
-        Constraints.constrainNotNull(token, "Token").getPosition());
-      this.token = token;
-      this.current = Constraints.constrainNotNull(current, "Current");
+        Constraints.constrainNotNull(in_token, "Token").getFile(),
+        Constraints.constrainNotNull(in_token, "Token").getPosition());
+      this.token = in_token;
+      this.current = Constraints.constrainNotNull(in_current, "Current");
     }
 
     @Override public boolean equals(
@@ -126,15 +126,15 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     private final @Nonnull ModulePath           path;
 
     public TASTTermNameGlobal(
-      final @Nonnull ModulePath path,
+      final @Nonnull ModulePath in_path,
       final @Nonnull TokenIdentifierLower actual)
       throws ConstraintError
     {
       super(
         Constraints.constrainNotNull(actual, "Actual").getFile(),
         Constraints.constrainNotNull(actual, "Actual").getPosition());
-      this.path = Constraints.constrainNotNull(path, "Path");
-      this.flat = ModulePathFlat.fromModulePath(path);
+      this.path = Constraints.constrainNotNull(in_path, "Path");
+      this.flat = ModulePathFlat.fromModulePath(in_path);
       this.name = actual;
     }
 
@@ -231,15 +231,15 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     private final @Nonnull TokenIdentifierLower original;
 
     public TASTTermNameLocal(
-      final @Nonnull TokenIdentifierLower original,
-      final @Nonnull String current)
+      final @Nonnull TokenIdentifierLower in_original,
+      final @Nonnull String in_current)
       throws ConstraintError
     {
       super(
-        Constraints.constrainNotNull(original, "Original").getFile(),
-        Constraints.constrainNotNull(original, "Original").getPosition());
-      this.original = original;
-      this.current = Constraints.constrainNotNull(current, "Current");
+        Constraints.constrainNotNull(in_original, "Original").getFile(),
+        Constraints.constrainNotNull(in_original, "Original").getPosition());
+      this.original = in_original;
+      this.current = Constraints.constrainNotNull(in_current, "Current");
     }
 
     @Override public boolean equals(
@@ -315,12 +315,12 @@ public abstract class TASTTermName implements TASTTermNameVisitable
   private final @Nonnull Position position;
 
   protected TASTTermName(
-    final @Nonnull File file,
-    final @Nonnull Position position)
+    final @Nonnull File in_file,
+    final @Nonnull Position in_position)
     throws ConstraintError
   {
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.position = Constraints.constrainNotNull(in_position, "Position");
   }
 
   @Override public boolean equals(

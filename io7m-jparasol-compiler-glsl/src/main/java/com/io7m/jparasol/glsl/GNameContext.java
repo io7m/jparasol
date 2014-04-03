@@ -45,11 +45,11 @@ public final class GNameContext<T extends NameShow, U>
   private final @Nonnull HashSet<String>     used;
 
   private GNameContext(
-    final @Nonnull Log log,
-    final @Nonnull GNameConstructor<U> constructor)
+    final @Nonnull Log in_log,
+    final @Nonnull GNameConstructor<U> in_constructor)
   {
-    this.log = new Log(log, "names");
-    this.constructor = constructor;
+    this.log = new Log(in_log, "names");
+    this.constructor = in_constructor;
     this.prime = new AtomicInteger(0);
     this.used = new HashSet<String>();
     this.existing = new HashMap<T, U>();

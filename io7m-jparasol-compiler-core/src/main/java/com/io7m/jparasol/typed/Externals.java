@@ -75,19 +75,19 @@ public final class Externals
     private final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>       term_term;
 
     public ShaderChecker(
-      final @Nonnull Map<ModulePathFlat, TASTDModule> modules,
-      final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> term_shader,
-      final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> term_term,
-      final @Nonnull ModulePathFlat path,
-      final @Nonnull String name,
-      final @Nonnull Log log)
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_modules,
+      final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> in_term_shader,
+      final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> in_term_term,
+      final @Nonnull ModulePathFlat in_path,
+      final @Nonnull String in_name,
+      final @Nonnull Log in_log)
     {
-      this.modules = modules;
-      this.term_shader = term_shader;
-      this.term_term = term_term;
-      this.path = path;
-      this.name = name;
-      this.log = log;
+      this.modules = in_modules;
+      this.term_shader = in_term_shader;
+      this.term_term = in_term_term;
+      this.path = in_path;
+      this.name = in_name;
+      this.log = in_log;
     }
 
     private void checkDependencies(
@@ -189,21 +189,21 @@ public final class Externals
     private final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>       term_term;
 
     public TermDeclarationChecker(
-      final @Nonnull Shader start_shader,
-      final @Nonnull TASTTermNameFlat start_term,
-      final @Nonnull TASTReference start_term_reference,
-      final @Nonnull TASTTermNameFlat current_term,
-      final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> term_shader,
-      final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> term_term,
-      final @Nonnull Required required)
+      final @Nonnull Shader in_start_shader,
+      final @Nonnull TASTTermNameFlat in_start_term,
+      final @Nonnull TASTReference in_start_term_reference,
+      final @Nonnull TASTTermNameFlat in_current_term,
+      final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> in_term_shader,
+      final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> in_term_term,
+      final @Nonnull Required in_required)
     {
-      this.start_shader = start_shader;
-      this.start_term = start_term;
-      this.start_term_reference = start_term_reference;
-      this.current_term = current_term;
-      this.term_shader = term_shader;
-      this.term_term = term_term;
-      this.required = required;
+      this.start_shader = in_start_shader;
+      this.start_term = in_start_term;
+      this.start_term_reference = in_start_term_reference;
+      this.current_term = in_current_term;
+      this.term_shader = in_term_shader;
+      this.term_term = in_term_term;
+      this.required = in_required;
     }
 
     @Override public Unit termVisitFunctionDefined(
@@ -291,9 +291,9 @@ public final class Externals
   private final @Nonnull Log log;
 
   private Externals(
-    final @Nonnull Log log)
+    final @Nonnull Log in_log)
   {
-    this.log = new Log(log, "externals");
+    this.log = new Log(in_log, "externals");
   }
 
   public void check(

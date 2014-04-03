@@ -32,13 +32,13 @@ public abstract class GASTStatement implements GASTStatementVisitable
     private final @Nonnull GASTStatement  right;
 
     public GASTConditional(
-      final @Nonnull GASTExpression condition,
-      final @Nonnull GASTStatement left,
-      final @Nonnull GASTStatement right)
+      final @Nonnull GASTExpression in_condition,
+      final @Nonnull GASTStatement in_left,
+      final @Nonnull GASTStatement in_right)
     {
-      this.condition = condition;
-      this.left = left;
-      this.right = right;
+      this.condition = in_condition;
+      this.left = in_left;
+      this.right = in_right;
     }
 
     @Override public boolean equals(
@@ -132,13 +132,13 @@ public abstract class GASTStatement implements GASTStatementVisitable
     private final @Nonnull GTypeName      type;
 
     public GASTLocalVariable(
-      final @Nonnull GTermNameLocal name,
-      final @Nonnull GTypeName type,
-      final @Nonnull GASTExpression expression)
+      final @Nonnull GTermNameLocal in_name,
+      final @Nonnull GTypeName in_type,
+      final @Nonnull GASTExpression in_expression)
     {
-      this.name = name;
-      this.type = type;
-      this.expression = expression;
+      this.name = in_name;
+      this.type = in_type;
+      this.expression = in_expression;
     }
 
     @Override public boolean equals(
@@ -221,9 +221,9 @@ public abstract class GASTStatement implements GASTStatementVisitable
     private final @Nonnull GASTExpression expression;
 
     public GASTReturn(
-      final @Nonnull GASTExpression expression)
+      final @Nonnull GASTExpression in_expression)
     {
-      this.expression = expression;
+      this.expression = in_expression;
     }
 
     @Override public boolean equals(
@@ -283,9 +283,9 @@ public abstract class GASTStatement implements GASTStatementVisitable
     private final @Nonnull List<GASTStatement> statements;
 
     public GASTScope(
-      final @Nonnull List<GASTStatement> statements)
+      final @Nonnull List<GASTStatement> in_statements)
     {
-      this.statements = statements;
+      this.statements = in_statements;
     }
 
     @Override public boolean equals(
@@ -354,11 +354,11 @@ public abstract class GASTStatement implements GASTStatementVisitable
       private final @Nonnull GTermName         value;
 
       public GASTVertexOutputAssignment(
-        final @Nonnull GShaderOutputName name,
-        final @Nonnull GTermName value)
+        final @Nonnull GShaderOutputName in_name,
+        final @Nonnull GTermName in_value)
       {
-        this.name = name;
-        this.value = value;
+        this.name = in_name;
+        this.value = in_value;
       }
 
       @Override public boolean equals(

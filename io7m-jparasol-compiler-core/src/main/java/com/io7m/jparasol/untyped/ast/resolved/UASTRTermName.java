@@ -40,15 +40,15 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
     private final @Nonnull ModulePath           path;
 
     public UASTRTermNameGlobal(
-      final @Nonnull ModulePath path,
+      final @Nonnull ModulePath in_path,
       final @Nonnull TokenIdentifierLower actual)
       throws ConstraintError
     {
       super(
         Constraints.constrainNotNull(actual, "Actual").getFile(),
         Constraints.constrainNotNull(actual, "Actual").getPosition());
-      this.path = Constraints.constrainNotNull(path, "Path");
-      this.flat = ModulePathFlat.fromModulePath(path);
+      this.path = Constraints.constrainNotNull(in_path, "Path");
+      this.flat = ModulePathFlat.fromModulePath(in_path);
       this.name = actual;
     }
 
@@ -110,15 +110,15 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
     private final @Nonnull TokenIdentifierLower original;
 
     public UASTRTermNameLocal(
-      final @Nonnull TokenIdentifierLower original,
-      final @Nonnull String current)
+      final @Nonnull TokenIdentifierLower in_original,
+      final @Nonnull String in_current)
       throws ConstraintError
     {
       super(
-        Constraints.constrainNotNull(original, "Original").getFile(),
-        Constraints.constrainNotNull(original, "Original").getPosition());
-      this.original = original;
-      this.current = Constraints.constrainNotNull(current, "Current");
+        Constraints.constrainNotNull(in_original, "Original").getFile(),
+        Constraints.constrainNotNull(in_original, "Original").getPosition());
+      this.original = in_original;
+      this.current = Constraints.constrainNotNull(in_current, "Current");
     }
 
     public @Nonnull String getCurrent()
@@ -171,12 +171,12 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
   private final @Nonnull Position position;
 
   protected UASTRTermName(
-    final @Nonnull File file,
-    final @Nonnull Position position)
+    final @Nonnull File in_file,
+    final @Nonnull Position in_position)
     throws ConstraintError
   {
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.position = Constraints.constrainNotNull(position, "Position");
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.position = Constraints.constrainNotNull(in_position, "Position");
   }
 
   public final @Nonnull File getFile()

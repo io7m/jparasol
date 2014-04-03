@@ -40,21 +40,21 @@ public abstract class GASTShader
     private final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>>       types;
 
     public GASTShaderFragment(
-      final @Nonnull List<GASTShaderFragmentInput> inputs,
-      final @Nonnull GASTShaderMainFragment main,
-      final @Nonnull List<GASTShaderFragmentOutput> outputs,
-      final @Nonnull List<GASTShaderFragmentParameter> parameter,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
-      final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> types,
-      final @Nonnull GVersion glsl_version)
+      final @Nonnull List<GASTShaderFragmentInput> in_inputs,
+      final @Nonnull GASTShaderMainFragment in_main,
+      final @Nonnull List<GASTShaderFragmentOutput> in_outputs,
+      final @Nonnull List<GASTShaderFragmentParameter> in_parameter,
+      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_terms,
+      final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> in_types,
+      final @Nonnull GVersion in_glsl_version)
     {
-      this.inputs = inputs;
-      this.main = main;
-      this.outputs = outputs;
-      this.parameter = parameter;
-      this.terms = terms;
-      this.types = types;
-      this.glsl_version = glsl_version;
+      this.inputs = in_inputs;
+      this.main = in_main;
+      this.outputs = in_outputs;
+      this.parameter = in_parameter;
+      this.terms = in_terms;
+      this.types = in_types;
+      this.glsl_version = in_glsl_version;
     }
 
     @Override public boolean equals(
@@ -174,13 +174,13 @@ public abstract class GASTShader
     private final @Nonnull GTypeName        type_name;
 
     public GASTShaderFragmentInput(
-      final @Nonnull GShaderInputName name,
-      final @Nonnull GTypeName type_name,
-      final @Nonnull TType type)
+      final @Nonnull GShaderInputName in_name,
+      final @Nonnull GTypeName in_type_name,
+      final @Nonnull TType in_type)
     {
-      this.name = name;
-      this.type_name = type_name;
-      this.type = type;
+      this.name = in_name;
+      this.type_name = in_type_name;
+      this.type = in_type;
     }
 
     @Override public boolean equals(
@@ -252,13 +252,13 @@ public abstract class GASTShader
     private final @Nonnull GTypeName         type;
 
     public GASTShaderFragmentOutput(
-      final @Nonnull GShaderOutputName name,
-      final int index,
-      final @Nonnull GTypeName type)
+      final @Nonnull GShaderOutputName in_name,
+      final int in_index,
+      final @Nonnull GTypeName in_type)
     {
-      this.name = name;
-      this.index = index;
-      this.type = type;
+      this.name = in_name;
+      this.index = in_index;
+      this.type = in_type;
     }
 
     @Override public boolean equals(
@@ -332,13 +332,13 @@ public abstract class GASTShader
     private final @Nonnull GTypeName                 type;
 
     public GASTShaderFragmentParameter(
-      final @Nonnull GShaderParameterName name,
-      final @Nonnull GTypeName type,
-      final @Nonnull List<Pair<String, TType>> expanded)
+      final @Nonnull GShaderParameterName in_name,
+      final @Nonnull GTypeName in_type,
+      final @Nonnull List<Pair<String, TType>> in_expanded)
     {
-      this.name = name;
-      this.type = type;
-      this.expanded = expanded;
+      this.name = in_name;
+      this.type = in_type;
+      this.expanded = in_expanded;
     }
 
     @Override public boolean equals(
@@ -417,21 +417,21 @@ public abstract class GASTShader
     private final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>>       types;
 
     public GASTShaderVertex(
-      final @Nonnull List<GASTShaderVertexInput> inputs,
-      final @Nonnull GASTShaderMainVertex main,
-      final @Nonnull List<GASTShaderVertexOutput> outputs,
-      final @Nonnull List<GASTShaderVertexParameter> parameter,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
-      final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> types,
-      final @Nonnull GVersion glsl_version)
+      final @Nonnull List<GASTShaderVertexInput> in_inputs,
+      final @Nonnull GASTShaderMainVertex in_main,
+      final @Nonnull List<GASTShaderVertexOutput> in_outputs,
+      final @Nonnull List<GASTShaderVertexParameter> in_parameter,
+      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_terms,
+      final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> in_types,
+      final @Nonnull GVersion in_glsl_version)
     {
-      this.inputs = inputs;
-      this.main = main;
-      this.outputs = outputs;
-      this.parameter = parameter;
-      this.terms = terms;
-      this.types = types;
-      this.glsl_version = glsl_version;
+      this.inputs = in_inputs;
+      this.main = in_main;
+      this.outputs = in_outputs;
+      this.parameter = in_parameter;
+      this.terms = in_terms;
+      this.types = in_types;
+      this.glsl_version = in_glsl_version;
     }
 
     @Override public boolean equals(
@@ -550,11 +550,11 @@ public abstract class GASTShader
     private final @Nonnull GTypeName        type;
 
     public GASTShaderVertexInput(
-      final @Nonnull GShaderInputName name,
-      final @Nonnull GTypeName type)
+      final @Nonnull GShaderInputName in_name,
+      final @Nonnull GTypeName in_type)
     {
-      this.name = name;
-      this.type = type;
+      this.name = in_name;
+      this.type = in_type;
     }
 
     @Override public boolean equals(
@@ -617,13 +617,13 @@ public abstract class GASTShader
     private final @Nonnull GTypeName         type_name;
 
     public GASTShaderVertexOutput(
-      final @Nonnull GShaderOutputName name,
-      final @Nonnull GTypeName type_name,
-      final @Nonnull TType type)
+      final @Nonnull GShaderOutputName in_name,
+      final @Nonnull GTypeName in_type_name,
+      final @Nonnull TType in_type)
     {
-      this.name = name;
-      this.type_name = type_name;
-      this.type = type;
+      this.name = in_name;
+      this.type_name = in_type_name;
+      this.type = in_type;
     }
 
     @Override public boolean equals(
@@ -695,13 +695,13 @@ public abstract class GASTShader
     private final @Nonnull GTypeName                 type;
 
     public GASTShaderVertexParameter(
-      final @Nonnull GShaderParameterName name,
-      final @Nonnull GTypeName type,
-      final @Nonnull List<Pair<String, TType>> expanded)
+      final @Nonnull GShaderParameterName in_name,
+      final @Nonnull GTypeName in_type,
+      final @Nonnull List<Pair<String, TType>> in_expanded)
     {
-      this.name = name;
-      this.type = type;
-      this.expanded = expanded;
+      this.name = in_name;
+      this.type = in_type;
+      this.expanded = in_expanded;
     }
 
     @Override public boolean equals(

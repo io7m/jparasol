@@ -265,13 +265,13 @@ public final class Referenced
   private final @Nonnull Set<TTypeNameFlat>    types;
 
   private Referenced(
-    final @Nonnull TASTShaderNameFlat shader_name,
-    final @Nonnull Set<TASTTermNameFlat> terms,
-    final @Nonnull Set<TTypeNameFlat> types)
+    final @Nonnull TASTShaderNameFlat in_shader_name,
+    final @Nonnull Set<TASTTermNameFlat> in_terms,
+    final @Nonnull Set<TTypeNameFlat> in_types)
   {
-    this.shader_name = shader_name;
-    this.terms = terms;
-    this.types = types;
+    this.shader_name = in_shader_name;
+    this.terms = in_terms;
+    this.types = in_types;
   }
 
   public @Nonnull TASTShaderNameFlat getShaderName()

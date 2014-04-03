@@ -25,9 +25,9 @@ public final class GShaderOutputName implements NameShow
   private final @Nonnull String name;
 
   public GShaderOutputName(
-    final @Nonnull String name)
+    final @Nonnull String in_name)
   {
-    this.name = name;
+    this.name = in_name;
   }
 
   @Override public boolean equals(

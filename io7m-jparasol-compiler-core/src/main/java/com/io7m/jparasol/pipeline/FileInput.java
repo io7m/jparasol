@@ -46,14 +46,14 @@ public final class FileInput implements Input
   }
 
   public FileInput(
-    final boolean internal,
-    final @Nonnull File file,
-    final @Nonnull InputStream stream)
+    final boolean in_internal,
+    final @Nonnull File in_file,
+    final @Nonnull InputStream in_stream)
     throws ConstraintError
   {
-    this.internal = internal;
-    this.file = Constraints.constrainNotNull(file, "File");
-    this.stream = Constraints.constrainNotNull(stream, "Stream");
+    this.internal = in_internal;
+    this.file = Constraints.constrainNotNull(in_file, "File");
+    this.stream = Constraints.constrainNotNull(in_stream, "Stream");
   }
 
   @Override public boolean equals(

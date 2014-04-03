@@ -236,9 +236,9 @@ final class TGraphs
     private final @Nonnull Log                                                         log;
 
     public GlobalTermShaderGraph(
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
-      this.log = new Log(log, "global-shader-term-graph");
+      this.log = new Log(in_log, "global-shader-term-graph");
       this.graph =
         new DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference>(
           TASTReference.class);
@@ -333,9 +333,9 @@ final class TGraphs
     private final @Nonnull Log                                                   log;
 
     public GlobalTermTermGraph(
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
-      this.log = new Log(log, "global-term-term-graph");
+      this.log = new Log(in_log, "global-term-term-graph");
       this.graph =
         new DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>(
           TASTReference.class);
@@ -409,9 +409,9 @@ final class TGraphs
     private final @Nonnull Log                                                       log;
 
     public GlobalTermTypeGraph(
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
-      this.log = new Log(log, "global-term-type-graph");
+      this.log = new Log(in_log, "global-term-type-graph");
       this.graph =
         new DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference>(
           TASTReference.class);
@@ -506,9 +506,9 @@ final class TGraphs
     private final @Nonnull Log                                                         log;
 
     public GlobalTypeShaderGraph(
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
-      this.log = new Log(log, "global-shader-type-graph");
+      this.log = new Log(in_log, "global-shader-type-graph");
       this.graph =
         new DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference>(
           TASTReference.class);
@@ -603,9 +603,9 @@ final class TGraphs
     private final @Nonnull Log                                                log;
 
     public GlobalTypeTypeGraph(
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
-      this.log = new Log(log, "global-type-type-graph");
+      this.log = new Log(in_log, "global-type-type-graph");
       this.graph =
         new DirectedAcyclicGraph<TTypeNameFlat, TASTReference>(
           TASTReference.class);
@@ -680,21 +680,21 @@ final class TGraphs
     private final @Nonnull TASTShaderName                   source;
 
     public GraphBuilderFragmentShader(
-      final @Nonnull TASTShaderName source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Log log,
-      final @Nonnull ModulePath module_path,
-      final @Nonnull GlobalGraph graph)
+      final @Nonnull TASTShaderName in_source,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Log in_log,
+      final @Nonnull ModulePath in_module_path,
+      final @Nonnull GlobalGraph in_graph)
     {
-      this.source = source;
-      this.checked_modules = checked_modules;
-      this.checked_terms = checked_terms;
-      this.checked_types = checked_types;
-      this.log = log;
-      this.module_path = module_path;
-      this.graph = graph;
+      this.source = in_source;
+      this.checked_modules = in_checked_modules;
+      this.checked_terms = in_checked_terms;
+      this.checked_types = in_checked_types;
+      this.log = in_log;
+      this.module_path = in_module_path;
+      this.graph = in_graph;
     }
 
     private void addTypeReference(
@@ -818,21 +818,21 @@ final class TGraphs
     private final @Nonnull TASTShaderName                   source;
 
     public GraphBuilderFragmentShaderLocal(
-      final @Nonnull TASTShaderName source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Log log,
-      final @Nonnull ModulePath module_path,
-      final @Nonnull GlobalGraph graph)
+      final @Nonnull TASTShaderName in_source,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Log in_log,
+      final @Nonnull ModulePath in_module_path,
+      final @Nonnull GlobalGraph in_graph)
     {
-      this.source = source;
-      this.checked_modules = checked_modules;
-      this.checked_terms = checked_terms;
-      this.checked_types = checked_types;
-      this.log = log;
-      this.module_path = module_path;
-      this.graph = graph;
+      this.source = in_source;
+      this.checked_modules = in_checked_modules;
+      this.checked_terms = in_checked_terms;
+      this.checked_types = in_checked_types;
+      this.log = in_log;
+      this.module_path = in_module_path;
+      this.graph = in_graph;
     }
 
     @Override public
@@ -890,19 +890,19 @@ final class TGraphs
     private final @Nonnull ModulePath                       module_path;
 
     public GraphBuilderShader(
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Log log,
-      final @Nonnull ModulePath module_path,
-      final @Nonnull GlobalGraph graph)
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Log in_log,
+      final @Nonnull ModulePath in_module_path,
+      final @Nonnull GlobalGraph in_graph)
     {
-      this.checked_modules = checked_modules;
-      this.checked_terms = checked_terms;
-      this.checked_types = checked_types;
-      this.log = log;
-      this.module_path = module_path;
-      this.graph = graph;
+      this.checked_modules = in_checked_modules;
+      this.checked_terms = in_checked_terms;
+      this.checked_types = in_checked_types;
+      this.log = in_log;
+      this.module_path = in_module_path;
+      this.graph = in_graph;
     }
 
     @Override public TASTDShader moduleVisitFragmentShader(
@@ -978,21 +978,21 @@ final class TGraphs
     private final @Nonnull TASTShaderName                   source;
 
     public GraphBuilderShaderExpression(
-      final @Nonnull TASTShaderName source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Log log,
-      final @Nonnull ModulePath module_path,
-      final @Nonnull GlobalGraph graph)
+      final @Nonnull TASTShaderName in_source,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Log in_log,
+      final @Nonnull ModulePath in_module_path,
+      final @Nonnull GlobalGraph in_graph)
     {
-      this.source = source;
-      this.checked_modules = checked_modules;
-      this.checked_terms = checked_terms;
-      this.checked_types = checked_types;
-      this.log = log;
-      this.module_path = module_path;
-      this.graph = graph;
+      this.source = in_source;
+      this.checked_modules = in_checked_modules;
+      this.checked_terms = in_checked_terms;
+      this.checked_types = in_checked_types;
+      this.log = in_log;
+      this.module_path = in_module_path;
+      this.graph = in_graph;
     }
 
     @SuppressWarnings("synthetic-access") private void addTermReference(
@@ -1280,21 +1280,21 @@ final class TGraphs
     private final @Nonnull TASTShaderName                   source;
 
     public GraphBuilderShaderLocal(
-      final @Nonnull TASTShaderName source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Log log,
-      final @Nonnull ModulePath module_path,
-      final @Nonnull GlobalGraph graph)
+      final @Nonnull TASTShaderName in_source,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Log in_log,
+      final @Nonnull ModulePath in_module_path,
+      final @Nonnull GlobalGraph in_graph)
     {
-      this.checked_modules = checked_modules;
-      this.checked_terms = checked_terms;
-      this.checked_types = checked_types;
-      this.graph = graph;
-      this.log = log;
-      this.module_path = module_path;
-      this.source = source;
+      this.checked_modules = in_checked_modules;
+      this.checked_terms = in_checked_terms;
+      this.checked_types = in_checked_types;
+      this.graph = in_graph;
+      this.log = in_log;
+      this.module_path = in_module_path;
+      this.source = in_source;
     }
 
     @Override public TASTDValueLocal localVisitValueLocal(
@@ -1330,19 +1330,19 @@ final class TGraphs
     private final @Nonnull ModulePath                       module_path;
 
     public GraphBuilderTerm(
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Log log,
-      final @Nonnull ModulePath module_path,
-      final @Nonnull GlobalGraph graph)
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Log in_log,
+      final @Nonnull ModulePath in_module_path,
+      final @Nonnull GlobalGraph in_graph)
     {
-      this.checked_modules = checked_modules;
-      this.checked_terms = checked_terms;
-      this.checked_types = checked_types;
-      this.log = log;
-      this.module_path = module_path;
-      this.graph = graph;
+      this.checked_modules = in_checked_modules;
+      this.checked_terms = in_checked_terms;
+      this.checked_types = in_checked_types;
+      this.log = in_log;
+      this.module_path = in_module_path;
+      this.graph = in_graph;
     }
 
     private void addTermTypeReference(
@@ -1467,21 +1467,21 @@ final class TGraphs
     private final @Nonnull TASTTermNameGlobal               source;
 
     public GraphBuilderTermExpression(
-      final @Nonnull TASTTermNameGlobal source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Log log,
-      final @Nonnull ModulePath module_path,
-      final @Nonnull GlobalGraph graph)
+      final @Nonnull TASTTermNameGlobal in_source,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Log in_log,
+      final @Nonnull ModulePath in_module_path,
+      final @Nonnull GlobalGraph in_graph)
     {
-      this.source = source;
-      this.checked_modules = checked_modules;
-      this.checked_terms = checked_terms;
-      this.checked_types = checked_types;
-      this.log = log;
-      this.module_path = module_path;
-      this.graph = graph;
+      this.source = in_source;
+      this.checked_modules = in_checked_modules;
+      this.checked_terms = in_checked_terms;
+      this.checked_types = in_checked_types;
+      this.log = in_log;
+      this.module_path = in_module_path;
+      this.graph = in_graph;
     }
 
     @SuppressWarnings("synthetic-access") private void addTermReference(
@@ -1800,17 +1800,17 @@ final class TGraphs
     private final @Nonnull ModulePath                       module_path;
 
     public GraphBuilderType(
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Log log,
-      final @Nonnull ModulePath module_path,
-      final @Nonnull GlobalGraph graph)
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Log in_log,
+      final @Nonnull ModulePath in_module_path,
+      final @Nonnull GlobalGraph in_graph)
     {
-      this.checked_modules = checked_modules;
-      this.checked_types = checked_types;
-      this.log = log;
-      this.module_path = module_path;
-      this.graph = graph;
+      this.checked_modules = in_checked_modules;
+      this.checked_types = in_checked_types;
+      this.log = in_log;
+      this.module_path = in_module_path;
+      this.graph = in_graph;
     }
 
     @Override public TASTDType typeVisitTypeRecord(
@@ -1863,21 +1863,21 @@ final class TGraphs
     private final @Nonnull TASTShaderName                   source;
 
     public GraphBuilderVertexShader(
-      final @Nonnull TASTShaderName source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-      final @Nonnull Map<String, TASTDTerm> checked_terms,
-      final @Nonnull Map<String, TASTDType> checked_types,
-      final @Nonnull Log log,
-      final @Nonnull ModulePath module_path,
-      final @Nonnull GlobalGraph graph)
+      final @Nonnull TASTShaderName in_source,
+      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
+      final @Nonnull Map<String, TASTDType> in_checked_types,
+      final @Nonnull Log in_log,
+      final @Nonnull ModulePath in_module_path,
+      final @Nonnull GlobalGraph in_graph)
     {
-      this.source = source;
-      this.checked_modules = checked_modules;
-      this.checked_terms = checked_terms;
-      this.checked_types = checked_types;
-      this.log = log;
-      this.module_path = module_path;
-      this.graph = graph;
+      this.source = in_source;
+      this.checked_modules = in_checked_modules;
+      this.checked_terms = in_checked_terms;
+      this.checked_types = in_checked_types;
+      this.log = in_log;
+      this.module_path = in_module_path;
+      this.graph = in_graph;
     }
 
     private void addTypeReference(
@@ -2011,9 +2011,9 @@ final class TGraphs
   private final @Nonnull Log log;
 
   private TGraphs(
-    final @Nonnull Log log)
+    final @Nonnull Log in_log)
   {
-    this.log = log;
+    this.log = in_log;
   }
 
   public @Nonnull GlobalGraph check(

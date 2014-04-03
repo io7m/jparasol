@@ -91,12 +91,12 @@ public final class Batch
   private final @Nonnull ArrayList<Pair<String, String>> targets;
 
   private Batch(
-    final @Nonnull File base,
-    final @Nonnull ArrayList<Pair<String, String>> targets)
+    final @Nonnull File in_base,
+    final @Nonnull ArrayList<Pair<String, String>> in_targets)
     throws ConstraintError
   {
-    this.base = Constraints.constrainNotNull(base, "Base");
-    this.targets = Constraints.constrainNotNull(targets, "Targets");
+    this.base = Constraints.constrainNotNull(in_base, "Base");
+    this.targets = Constraints.constrainNotNull(in_targets, "Targets");
   }
 
   public @Nonnull File getBase()

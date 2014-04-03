@@ -170,15 +170,15 @@ public final class Resolver
     private final @CheckForNull TermGraph                    term_graph;
 
     public ExpressionResolver(
-      final @CheckForNull UASTUDTerm term,
-      final @Nonnull UASTUDModule module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-      final @CheckForNull TermGraph term_graph)
+      final @CheckForNull UASTUDTerm in_term,
+      final @Nonnull UASTUDModule in_module,
+      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
+      final @CheckForNull TermGraph in_term_graph)
     {
-      this.term = term;
-      this.module = module;
-      this.modules = modules;
-      this.term_graph = term_graph;
+      this.term = in_term;
+      this.module = in_module;
+      this.modules = in_modules;
+      this.term_graph = in_term_graph;
     }
 
     /**
@@ -431,15 +431,15 @@ public final class Resolver
     private final @Nonnull UASTUDShaderFragment              shader;
 
     public FragmentShaderLocalResolver(
-      final @Nonnull Log log,
-      final @Nonnull UASTUDModule module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-      final @Nonnull UASTUDShaderFragment shader)
+      final @Nonnull Log in_log,
+      final @Nonnull UASTUDModule in_module,
+      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
+      final @Nonnull UASTUDShaderFragment in_shader)
     {
-      this.module = module;
-      this.modules = modules;
-      this.shader = shader;
-      this.log = log;
+      this.module = in_module;
+      this.modules = in_modules;
+      this.shader = in_shader;
+      this.log = in_log;
     }
 
     @Override public
@@ -481,15 +481,15 @@ public final class Resolver
     private final @Nonnull UASTUDShaderFragment              shader;
 
     public FragmentShaderResolver(
-      final @Nonnull Log log,
-      final @Nonnull UASTUDModule module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
+      final @Nonnull Log in_log,
+      final @Nonnull UASTUDModule in_module,
+      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
       final @Nonnull UASTUDShaderFragment f)
     {
-      this.module = module;
-      this.modules = modules;
+      this.module = in_module;
+      this.modules = in_modules;
       this.shader = f;
-      this.log = log;
+      this.log = in_log;
       this.outputs_declared = new HashMap<String, TokenIdentifierLower>();
     }
 
@@ -664,13 +664,13 @@ public final class Resolver
       final @Nonnull ModulePathFlat target;
 
       public Import(
-        final @Nonnull UASTUDImport actual,
-        final @Nonnull ModulePathFlat importer,
-        final @Nonnull ModulePathFlat target)
+        final @Nonnull UASTUDImport in_actual,
+        final @Nonnull ModulePathFlat in_importer,
+        final @Nonnull ModulePathFlat in_target)
       {
-        this.actual = actual;
-        this.importer = importer;
-        this.target = target;
+        this.actual = in_actual;
+        this.importer = in_importer;
+        this.target = in_target;
       }
 
       @Override public boolean equals(
@@ -728,20 +728,20 @@ public final class Resolver
     private final @Nonnull StringBuilder                              message;
 
     public ImportResolver(
-      final @Nonnull UASTUCompilation compilation,
-      final @Nonnull Log log)
+      final @Nonnull UASTUCompilation in_compilation,
+      final @Nonnull Log in_log)
       throws ResolverError,
         ConstraintError
     {
-      this.log = new Log(log, "imports");
+      this.log = new Log(in_log, "imports");
       this.message = new StringBuilder();
-      this.compilation = compilation;
+      this.compilation = in_compilation;
 
       this.import_graph =
         new DirectedAcyclicGraph<UASTUDModule, Import>(Import.class);
 
       final Map<ModulePathFlat, UASTUDModule> modules =
-        compilation.getModules();
+        in_compilation.getModules();
 
       for (final ModulePathFlat path : modules.keySet()) {
         final UASTUDModule module = modules.get(path);
@@ -833,15 +833,15 @@ public final class Resolver
     private final @CheckForNull TermGraph                    term_graph;
 
     public LocalResolver(
-      final @CheckForNull UASTUDTerm term,
-      final @Nonnull UASTUDModule module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-      final @CheckForNull TermGraph term_graph)
+      final @CheckForNull UASTUDTerm in_term,
+      final @Nonnull UASTUDModule in_module,
+      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
+      final @CheckForNull TermGraph in_term_graph)
     {
-      this.term = term;
-      this.module = module;
-      this.modules = modules;
-      this.term_graph = term_graph;
+      this.term = in_term;
+      this.module = in_module;
+      this.modules = in_modules;
+      this.term_graph = in_term_graph;
     }
 
     @Override public UASTRDValueLocal localVisitValueLocal(
@@ -902,21 +902,23 @@ public final class Resolver
     private final @Nonnull TypeGraph                         type_graph;
 
     public ModuleResolver(
-      final @Nonnull UASTUDModule module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-      final @Nonnull Log log)
+      final @Nonnull UASTUDModule in_module,
+      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
+      final @Nonnull Log in_log)
     {
-      this.module = module;
-      this.modules = modules;
-      this.term_graph = new TermGraph(log);
-      this.type_graph = new TypeGraph(log);
-      this.shader_graph = new ShaderGraph(log);
-      this.log = new Log(log, "names");
+      this.module = in_module;
+      this.modules = in_modules;
+      this.term_graph = new TermGraph(in_log);
+      this.type_graph = new TypeGraph(in_log);
+      this.shader_graph = new ShaderGraph(in_log);
+      this.log = new Log(in_log, "names");
 
       if (this.log.enabled(Level.LOG_DEBUG)) {
         final StringBuilder m = new StringBuilder();
         m.append("Resolving ");
-        m.append(ModulePathFlat.fromModulePath(module.getPath()).getActual());
+        m.append(ModulePathFlat
+          .fromModulePath(in_module.getPath())
+          .getActual());
         this.log.debug(m.toString());
       }
     }
@@ -1171,16 +1173,16 @@ public final class Resolver
     private final @Nonnull TypeGraph                         type_graph;
 
     public RecordTypeResolver(
-      final @Nonnull Log log,
-      final @Nonnull UASTUDModule module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-      final @Nonnull TypeGraph type_graph,
+      final @Nonnull Log in_log,
+      final @Nonnull UASTUDModule in_module,
+      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
+      final @Nonnull TypeGraph in_type_graph,
       final @Nonnull UASTUDTypeRecord r)
     {
-      this.log = log;
-      this.module = module;
-      this.modules = modules;
-      this.type_graph = type_graph;
+      this.log = in_log;
+      this.module = in_module;
+      this.modules = in_modules;
+      this.type_graph = in_type_graph;
       this.type = r;
     }
 
@@ -1256,11 +1258,11 @@ public final class Resolver
     private final @Nonnull String         name;
 
     public Shader(
-      final @Nonnull ModulePathFlat module,
-      final @Nonnull String name)
+      final @Nonnull ModulePathFlat in_module,
+      final @Nonnull String in_name)
     {
-      this.module = module;
-      this.name = name;
+      this.module = in_module;
+      this.name = in_name;
     }
 
     @Override public boolean equals(
@@ -1305,12 +1307,12 @@ public final class Resolver
     private final @Nonnull Log                                           log;
 
     public ShaderGraph(
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
       this.graph =
         new DirectedAcyclicGraph<Shader, ShaderReference>(
           ShaderReference.class);
-      this.log = new Log(log, "shader-graph");
+      this.log = new Log(in_log, "shader-graph");
     }
 
     public void addShader(
@@ -1436,15 +1438,15 @@ public final class Resolver
     final @Nonnull TokenIdentifierLower target_name;
 
     public ShaderReference(
-      final @Nonnull ModulePath source_module,
-      final @Nonnull TokenIdentifierLower source_name,
-      final @Nonnull ModulePath target_module,
-      final @Nonnull TokenIdentifierLower target_name)
+      final @Nonnull ModulePath in_source_module,
+      final @Nonnull TokenIdentifierLower in_source_name,
+      final @Nonnull ModulePath in_target_module,
+      final @Nonnull TokenIdentifierLower in_target_name)
     {
-      this.source_module = source_module;
-      this.source_name = source_name;
-      this.target_module = target_module;
-      this.target_name = target_name;
+      this.source_module = in_source_module;
+      this.source_name = in_source_name;
+      this.target_module = in_target_module;
+      this.target_name = in_target_name;
     }
 
     @Override public boolean equals(
@@ -1497,11 +1499,11 @@ public final class Resolver
     private final @Nonnull String         name;
 
     public Term(
-      final @Nonnull ModulePathFlat module,
-      final @Nonnull String name)
+      final @Nonnull ModulePathFlat in_module,
+      final @Nonnull String in_name)
     {
-      this.module = module;
-      this.name = name;
+      this.module = in_module;
+      this.name = in_name;
     }
 
     @Override public boolean equals(
@@ -1546,11 +1548,11 @@ public final class Resolver
     private final @Nonnull Log                                       log;
 
     public TermGraph(
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
       this.graph =
         new DirectedAcyclicGraph<Term, TermReference>(TermReference.class);
-      this.log = new Log(log, "term-graph");
+      this.log = new Log(in_log, "term-graph");
     }
 
     public void addTerm(
@@ -1675,15 +1677,15 @@ public final class Resolver
     final @Nonnull TokenIdentifierLower target_name;
 
     public TermReference(
-      final @Nonnull ModulePath source_module,
-      final @Nonnull TokenIdentifierLower source_name,
-      final @Nonnull ModulePath target_module,
-      final @Nonnull TokenIdentifierLower target_name)
+      final @Nonnull ModulePath in_source_module,
+      final @Nonnull TokenIdentifierLower in_source_name,
+      final @Nonnull ModulePath in_target_module,
+      final @Nonnull TokenIdentifierLower in_target_name)
     {
-      this.source_module = source_module;
-      this.source_name = source_name;
-      this.target_module = target_module;
-      this.target_name = target_name;
+      this.source_module = in_source_module;
+      this.source_name = in_source_name;
+      this.target_module = in_target_module;
+      this.target_name = in_target_name;
     }
 
     @Override public boolean equals(
@@ -1736,16 +1738,16 @@ public final class Resolver
     private final @Nonnull TermGraph                         term_graph;
 
     public TermResolver(
-      final @Nonnull Log log,
-      final @Nonnull UASTUDModule module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-      final @Nonnull TermGraph term_graph,
+      final @Nonnull Log in_log,
+      final @Nonnull UASTUDModule in_module,
+      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
+      final @Nonnull TermGraph in_term_graph,
       final @Nonnull UASTUDTerm t)
     {
-      this.log = log;
-      this.module = module;
-      this.modules = modules;
-      this.term_graph = term_graph;
+      this.log = in_log;
+      this.module = in_module;
+      this.modules = in_modules;
+      this.term_graph = in_term_graph;
       this.term = t;
     }
 
@@ -1940,11 +1942,11 @@ public final class Resolver
     private final @Nonnull String         name;
 
     public Type(
-      final @Nonnull ModulePathFlat module,
-      final @Nonnull String name)
+      final @Nonnull ModulePathFlat in_module,
+      final @Nonnull String in_name)
     {
-      this.module = module;
-      this.name = name;
+      this.module = in_module;
+      this.name = in_name;
     }
 
     @Override public boolean equals(
@@ -1989,11 +1991,11 @@ public final class Resolver
     private final @Nonnull Log                                       log;
 
     public TypeGraph(
-      final @Nonnull Log log)
+      final @Nonnull Log in_log)
     {
       this.graph =
         new DirectedAcyclicGraph<Type, TypeReference>(TypeReference.class);
-      this.log = new Log(log, "type-graph");
+      this.log = new Log(in_log, "type-graph");
     }
 
     public void addType(
@@ -2119,15 +2121,15 @@ public final class Resolver
     final @Nonnull TokenIdentifierLower target_name;
 
     public TypeReference(
-      final @Nonnull ModulePath source_module,
-      final @Nonnull TokenIdentifierLower source_name,
-      final @Nonnull ModulePath target_module,
-      final @Nonnull TokenIdentifierLower target_name)
+      final @Nonnull ModulePath in_source_module,
+      final @Nonnull TokenIdentifierLower in_source_name,
+      final @Nonnull ModulePath in_target_module,
+      final @Nonnull TokenIdentifierLower in_target_name)
     {
-      this.source_module = source_module;
-      this.source_name = source_name;
-      this.target_module = target_module;
-      this.target_name = target_name;
+      this.source_module = in_source_module;
+      this.source_name = in_source_name;
+      this.target_module = in_target_module;
+      this.target_name = in_target_name;
     }
 
     @Override public boolean equals(
@@ -2179,15 +2181,15 @@ public final class Resolver
     private final @Nonnull UASTUDShaderVertex                shader;
 
     public VertexShaderLocalResolver(
-      final @Nonnull Log log,
-      final @Nonnull UASTUDModule module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-      final @Nonnull UASTUDShaderVertex shader)
+      final @Nonnull Log in_log,
+      final @Nonnull UASTUDModule in_module,
+      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
+      final @Nonnull UASTUDShaderVertex in_shader)
     {
-      this.module = module;
-      this.modules = modules;
-      this.shader = shader;
-      this.log = log;
+      this.module = in_module;
+      this.modules = in_modules;
+      this.shader = in_shader;
+      this.log = in_log;
     }
 
     @Override public
@@ -2215,15 +2217,15 @@ public final class Resolver
     private final @Nonnull UASTUDShaderVertex                shader;
 
     public VertexShaderResolver(
-      final @Nonnull Log log,
-      final @Nonnull UASTUDModule module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
+      final @Nonnull Log in_log,
+      final @Nonnull UASTUDModule in_module,
+      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
       final @Nonnull UASTUDShaderVertex v)
     {
-      this.module = module;
-      this.modules = modules;
+      this.module = in_module;
+      this.modules = in_modules;
       this.shader = v;
-      this.log = log;
+      this.log = in_log;
       this.outputs_declared = new HashMap<String, TokenIdentifierLower>();
     }
 
@@ -2495,13 +2497,13 @@ public final class Resolver
   private final @Nonnull Log              log;
 
   private Resolver(
-    final @Nonnull UASTUCompilation compilation,
-    final @Nonnull Log log)
+    final @Nonnull UASTUCompilation in_compilation,
+    final @Nonnull Log in_log)
     throws ConstraintError
   {
     this.compilation =
-      Constraints.constrainNotNull(compilation, "Compilation");
-    this.log = new Log(log, "resolver");
+      Constraints.constrainNotNull(in_compilation, "Compilation");
+    this.log = new Log(in_log, "resolver");
   }
 
   public final @Nonnull UASTRCompilation run()

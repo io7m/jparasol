@@ -366,14 +366,14 @@ public final class ResolverError extends CompilerError
   private final @Nonnull Code code;
 
   private ResolverError(
-    final @Nonnull Code code,
+    final @Nonnull Code in_code,
     final @Nonnull File file,
     final @Nonnull Position position,
     final @Nonnull String message)
     throws ConstraintError
   {
     super(message, file, position);
-    this.code = code;
+    this.code = in_code;
   }
 
   @Override public String getCategory()

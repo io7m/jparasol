@@ -310,11 +310,11 @@ public final class Occurences
     private final @Nonnull Set<String> found_names;
 
     public LocalChecker(
-      final @Nonnull Set<String> check_names,
-      final @Nonnull Set<String> found_names)
+      final @Nonnull Set<String> in_check_names,
+      final @Nonnull Set<String> in_found_names)
     {
-      this.check_names = check_names;
-      this.found_names = found_names;
+      this.check_names = in_check_names;
+      this.found_names = in_found_names;
     }
 
     @Override public Unit localVisitValueLocal(

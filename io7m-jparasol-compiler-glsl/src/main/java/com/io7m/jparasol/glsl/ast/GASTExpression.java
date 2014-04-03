@@ -36,13 +36,13 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final @Nonnull TType                type;
 
     public GASTEApplicationExternal(
-      final @Nonnull GTermNameExternal name,
-      final @Nonnull TType type,
-      final @Nonnull List<GASTExpression> arguments)
+      final @Nonnull GTermNameExternal in_name,
+      final @Nonnull TType in_type,
+      final @Nonnull List<GASTExpression> in_arguments)
     {
-      this.name = name;
-      this.type = type;
-      this.arguments = arguments;
+      this.name = in_name;
+      this.type = in_type;
+      this.arguments = in_arguments;
     }
 
     @Override public boolean equals(
@@ -132,13 +132,13 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final @Nonnull TType                type;
 
     public GASTEApplication(
-      final @Nonnull GTermNameGlobal name,
-      final @Nonnull TType type,
-      final @Nonnull List<GASTExpression> arguments)
+      final @Nonnull GTermNameGlobal in_name,
+      final @Nonnull TType in_type,
+      final @Nonnull List<GASTExpression> in_arguments)
     {
-      this.name = name;
-      this.type = type;
-      this.arguments = arguments;
+      this.name = in_name;
+      this.type = in_type;
+      this.arguments = in_arguments;
     }
 
     @Override public boolean equals(
@@ -535,11 +535,11 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final @Nonnull GASTExpression right;
 
     protected GASTEBinaryOp(
-      final @Nonnull GASTExpression left,
-      final @Nonnull GASTExpression right)
+      final @Nonnull GASTExpression in_left,
+      final @Nonnull GASTExpression in_right)
     {
-      this.left = left;
-      this.right = right;
+      this.left = in_left;
+      this.right = in_right;
     }
 
     @Override public boolean equals(
@@ -589,9 +589,9 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final boolean value;
 
     public GASTEBoolean(
-      final boolean value)
+      final boolean in_value)
     {
-      this.value = value;
+      this.value = in_value;
     }
 
     @Override public boolean equals(
@@ -649,11 +649,11 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final @Nonnull GTypeName            type;
 
     public GASTEConstruction(
-      final @Nonnull GTypeName type,
-      final @Nonnull List<GASTExpression> arguments)
+      final @Nonnull GTypeName in_type,
+      final @Nonnull List<GASTExpression> in_arguments)
     {
-      this.type = type;
-      this.arguments = arguments;
+      this.type = in_type;
+      this.arguments = in_arguments;
     }
 
     @Override public boolean equals(
@@ -730,9 +730,9 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final @Nonnull BigDecimal value;
 
     public GASTEFloat(
-      final @Nonnull BigDecimal value)
+      final @Nonnull BigDecimal in_value)
     {
-      this.value = value;
+      this.value = in_value;
     }
 
     @Override public boolean equals(
@@ -789,9 +789,9 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final @Nonnull BigInteger value;
 
     public GASTEInteger(
-      final @Nonnull BigInteger value)
+      final @Nonnull BigInteger in_value)
     {
-      this.value = value;
+      this.value = in_value;
     }
 
     @Override public boolean equals(
@@ -850,13 +850,13 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final @Nonnull TType          type;
 
     public GASTEProjection(
-      final @Nonnull GASTExpression body,
-      final @Nonnull GFieldName field,
-      final @Nonnull TType type)
+      final @Nonnull GASTExpression in_body,
+      final @Nonnull GFieldName in_field,
+      final @Nonnull TType in_type)
     {
-      this.body = body;
-      this.field = field;
-      this.type = type;
+      this.body = in_body;
+      this.field = in_field;
+      this.type = in_type;
     }
 
     @Override public boolean equals(
@@ -942,13 +942,13 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final @Nonnull TType            type;
 
     public GASTESwizzle(
-      final @Nonnull GASTExpression body,
-      final @Nonnull List<GFieldName> fields,
-      final @Nonnull TType type)
+      final @Nonnull GASTExpression in_body,
+      final @Nonnull List<GFieldName> in_fields,
+      final @Nonnull TType in_type)
     {
-      this.body = body;
-      this.fields = fields;
-      this.type = type;
+      this.body = in_body;
+      this.fields = in_fields;
+      this.type = in_type;
     }
 
     @Override public boolean equals(
@@ -1062,9 +1062,9 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final @Nonnull GASTExpression body;
 
     protected GASTEUnaryOp(
-      final @Nonnull GASTExpression body)
+      final @Nonnull GASTExpression in_body)
     {
-      this.body = body;
+      this.body = in_body;
     }
 
     public @Nonnull GASTExpression getBody()
@@ -1079,11 +1079,11 @@ public abstract class GASTExpression implements GASTExpressionVisitable
     private final @Nonnull GTypeName type;
 
     public GASTEVariable(
-      final @Nonnull GTypeName type,
-      final @Nonnull GTermName term)
+      final @Nonnull GTypeName in_type,
+      final @Nonnull GTermName in_term)
     {
-      this.type = type;
-      this.term = term;
+      this.type = in_type;
+      this.term = in_term;
     }
 
     @Override public boolean equals(

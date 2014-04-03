@@ -84,9 +84,9 @@ public final class CorePipeline
   private final @Nonnull Log              log;
 
   private CorePipeline(
-    final @Nonnull Log log)
+    final @Nonnull Log in_log)
   {
-    this.log = new Log(log, "pipeline");
+    this.log = new Log(in_log, "pipeline");
     this.inputs = new ArrayList<Input>();
   }
 

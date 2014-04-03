@@ -25,9 +25,9 @@ public final class GShaderParameterName implements NameShow
   private final @Nonnull String name;
 
   public GShaderParameterName(
-    final @Nonnull String name)
+    final @Nonnull String in_name)
   {
-    this.name = name;
+    this.name = in_name;
   }
 
   @Override public boolean equals(

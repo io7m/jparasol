@@ -38,23 +38,23 @@ public final class TASTReference
   private final @Nonnull TokenIdentifierLower target_name;
 
   public TASTReference(
-    final @Nonnull ModulePath source_module,
-    final @Nonnull TokenIdentifierLower source_name,
-    final @Nonnull ModulePath target_module,
-    final @Nonnull TokenIdentifierLower target_name)
+    final @Nonnull ModulePath in_source_module,
+    final @Nonnull TokenIdentifierLower in_source_name,
+    final @Nonnull ModulePath in_target_module,
+    final @Nonnull TokenIdentifierLower in_target_name)
     throws ConstraintError
   {
     this.source_module =
-      Constraints.constrainNotNull(source_module, "Source module");
+      Constraints.constrainNotNull(in_source_module, "Source module");
     this.source_name =
-      Constraints.constrainNotNull(source_name, "Source name");
+      Constraints.constrainNotNull(in_source_name, "Source name");
     this.target_module =
-      Constraints.constrainNotNull(target_module, "Target module");
+      Constraints.constrainNotNull(in_target_module, "Target module");
     this.target_name =
-      Constraints.constrainNotNull(target_name, "Target name");
+      Constraints.constrainNotNull(in_target_name, "Target name");
 
-    this.source_module_flat = ModulePathFlat.fromModulePath(source_module);
-    this.target_module_flat = ModulePathFlat.fromModulePath(target_module);
+    this.source_module_flat = ModulePathFlat.fromModulePath(in_source_module);
+    this.target_module_flat = ModulePathFlat.fromModulePath(in_target_module);
   }
 
   @Override public boolean equals(
