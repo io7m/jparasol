@@ -25,13 +25,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 
@@ -247,6 +251,15 @@ public class Frontend
       opts.addOption(OptionBuilder.create());
     }
 
+    {
+      OptionBuilder.withLongOpt("threads");
+      OptionBuilder.hasArg(true);
+      OptionBuilder.withArgName("count");
+      OptionBuilder
+        .withDescription("Set the number of threads to use during code generation");
+      opts.addOption(OptionBuilder.create());
+    }
+
     return opts;
   }
 
@@ -318,7 +331,8 @@ public class Frontend
     throws ParseException,
       CompilerError,
       IOException,
-      ConstraintError
+      ConstraintError,
+      InterruptedException
   {
     try {
       Frontend.runActual(log, args);
@@ -358,6 +372,10 @@ public class Frontend
       log.critical("internal compiler error: " + x.getMessage());
       x.printStackTrace(System.err);
       throw x;
+    } catch (final InterruptedException x) {
+      log.error(x.getMessage());
+      Frontend.showStackTraceIfNecessary(x);
+      throw x;
     }
   }
 
@@ -376,7 +394,8 @@ public class Frontend
       GFFIError,
       GVersionCheckerError,
       IOException,
-      ConstraintError
+      ConstraintError,
+      InterruptedException
   {
     Log logx = log;
 
@@ -392,11 +411,26 @@ public class Frontend
       Frontend.DEBUG = true;
       logx = Frontend.getLog(true);
     }
+
+    final ExecutorService exec;
+    if (line.hasOption("threads")) {
+      try {
+        final Integer count = Integer.valueOf(line.getOptionValue("threads"));
+        exec = Executors.newFixedThreadPool(count.intValue());
+      } catch (final NumberFormatException e) {
+        throw UIError
+          .incorrectCommandLine("Could not parse thread count value: "
+            + e.getMessage());
+      }
+    } else {
+      exec = Executors.newSingleThreadExecutor();
+    }
+
     if (line.hasOption("compile-batch")) {
-      Frontend.runCompileBatch(logx, line);
+      Frontend.runCompileBatch(logx, exec, line);
       return;
     } else if (line.hasOption("compile")) {
-      Frontend.runCompile(logx, line);
+      Frontend.runCompile(logx, exec, line);
       return;
     } else if (line.hasOption("check")) {
       Frontend.runCheck(logx, line);
@@ -425,11 +459,17 @@ public class Frontend
       IOException,
       ConstraintError
   {
-    Frontend.runCompileActual(logx, line.getArgs());
+    final List<File> files = new ArrayList<File>();
+    for (final String f : line.getArgs()) {
+      files.add(new File(f));
+    }
+
+    Frontend.runCompileActual(logx, files);
   }
 
   private static void runCompile(
     final @Nonnull Log logx,
+    final @Nonnull ExecutorService exec,
     final @Nonnull CommandLine line)
     throws LexerError,
       UIError,
@@ -442,7 +482,8 @@ public class Frontend
       TypeCheckerError,
       ResolverError,
       GFFIError,
-      GVersionCheckerError
+      GVersionCheckerError,
+      InterruptedException
   {
     final SortedSet<GVersionES> require_es = Frontend.getRequiredES(line);
     final SortedSet<GVersionFull> require_full =
@@ -456,21 +497,78 @@ public class Frontend
     final Pair<File, Position> meta =
       new Pair<File, Position>(new File("command line"), new Position(0, 0));
     final TASTShaderNameFlat shader = TASTShaderNameFlat.parse(args[1], meta);
-    final String[] files = Arrays.copyOfRange(args, 2, args.length);
+
+    final List<File> files = new ArrayList<File>();
+    for (int index = 2; index < args.length; ++index) {
+      files.add(new File(args[index]));
+    }
 
     final TASTCompilation typed = Frontend.runCompileActual(logx, files);
-    Frontend.runCompileMakeGLSL(
-      logx,
-      require_es,
-      require_full,
-      output,
-      shader,
-      typed);
+
+    try {
+      final Future<Unit> result = exec.submit(new Callable<Unit>() {
+        @SuppressWarnings("synthetic-access") @Override public Unit call()
+          throws Exception
+        {
+          try {
+            Frontend.runCompileMakeGLSL(
+              logx,
+              require_es,
+              require_full,
+              output,
+              shader,
+              typed);
+            return Unit.unit();
+          } catch (final ConstraintError e) {
+            throw new UnreachableCodeException(e);
+          }
+        }
+      });
+      result.get();
+    } catch (final ExecutionException e) {
+      Frontend.handleRunCompileMakeGLSLException(e);
+    } catch (final InterruptedException e) {
+      throw e;
+    }
+  }
+
+  private static void handleRunCompileMakeGLSLException(
+    final @Nonnull ExecutionException e)
+    throws ConstraintError,
+      UIError,
+      GFFIError,
+      GVersionCheckerError,
+      IOException
+  {
+    final Throwable cause = e.getCause();
+    assert cause != null;
+
+    if (cause instanceof UIError) {
+      throw (UIError) cause;
+    }
+
+    if (cause instanceof GFFIError) {
+      throw (GFFIError) cause;
+    }
+
+    if (cause instanceof GVersionCheckerError) {
+      throw (GVersionCheckerError) cause;
+    }
+
+    if (cause instanceof IOException) {
+      throw (IOException) cause;
+    }
+
+    if (cause instanceof ConstraintError) {
+      throw (ConstraintError) cause;
+    }
+
+    throw new UnreachableCodeException(e);
   }
 
   private static @Nonnull TASTCompilation runCompileActual(
     final @Nonnull Log logx,
-    final @Nonnull String files[])
+    final @Nonnull List<File> files)
     throws ConstraintError,
       LexerError,
       ParserError,
@@ -484,11 +582,9 @@ public class Frontend
     final CorePipeline pipe = CorePipeline.newPipeline(logx);
     pipe.pipeAddStandardLibrary();
 
-    for (final String file : files) {
-      pipe.pipeAddInput(new FileInput(
-        false,
-        new File(file),
-        new FileInputStream(new File(file))));
+    for (final File file : files) {
+      pipe
+        .pipeAddInput(new FileInput(false, file, new FileInputStream(file)));
     }
 
     final TASTCompilation typed = pipe.pipeCompile();
@@ -500,6 +596,7 @@ public class Frontend
 
   private static void runCompileBatch(
     final @Nonnull Log logx,
+    final @Nonnull ExecutorService exec,
     final @Nonnull CommandLine line)
     throws LexerError,
       ParserError,
@@ -512,32 +609,87 @@ public class Frontend
       TypeCheckerError,
       ResolverError,
       GFFIError,
-      GVersionCheckerError
+      GVersionCheckerError,
+      InterruptedException
   {
-    final SortedSet<GVersionES> require_es = Frontend.getRequiredES(line);
-    final SortedSet<GVersionFull> require_full =
-      Frontend.getRequiredFull(line);
+    try {
+      final SortedSet<GVersionES> require_es = Frontend.getRequiredES(line);
+      final SortedSet<GVersionFull> require_full =
+        Frontend.getRequiredFull(line);
 
-    final String[] args = line.getArgs();
-    if (args.length < 3) {
-      throw UIError.incorrectCommandLine("Too few arguments provided");
+      final String[] args = line.getArgs();
+      if (args.length < 3) {
+        throw UIError.incorrectCommandLine("Too few arguments provided");
+      }
+      final File basedir = new File(args[0]);
+      final File batch_file = new File(args[1]);
+      final File source_file = new File(args[2]);
+
+      final List<Pair<File, TASTShaderNameFlat>> batches =
+        Frontend.parseBatches(basedir, batch_file);
+      final List<File> sources = Frontend.parseSources(source_file);
+
+      final TASTCompilation typed = Frontend.runCompileActual(logx, sources);
+
+      final List<Future<Unit>> batch_futures = new ArrayList<Future<Unit>>();
+      for (final Pair<File, TASTShaderNameFlat> batch : batches) {
+        logx.debug("submitting batch job: " + batch.second);
+
+        final Future<Unit> f = exec.submit(new Callable<Unit>() {
+          @SuppressWarnings("synthetic-access") @Override public Unit call()
+            throws Exception
+          {
+            try {
+              Frontend.runCompileMakeGLSL(
+                logx,
+                require_es,
+                require_full,
+                batch.first,
+                batch.second,
+                typed);
+              return Unit.unit();
+            } catch (final ConstraintError e) {
+              throw new UnreachableCodeException(e);
+            }
+          }
+        });
+        batch_futures.add(f);
+      }
+
+      for (final Future<Unit> f : batch_futures) {
+        try {
+          f.get();
+        } catch (final ExecutionException e) {
+          Frontend.handleRunCompileMakeGLSLException(e);
+        }
+      }
+
+    } finally {
+      exec.shutdown();
     }
-    final File basedir = new File(args[0]);
-    final File batch_file = new File(args[1]);
-    final String[] files = Arrays.copyOfRange(args, 2, args.length);
+  }
 
-    final List<Pair<File, TASTShaderNameFlat>> batches =
-      Frontend.parseBatches(basedir, batch_file);
+  private static List<File> parseSources(
+    final @Nonnull File source_file)
+    throws IOException
+  {
+    final BufferedReader reader =
+      new BufferedReader(new FileReader(source_file));
+    final List<File> files = new ArrayList<File>();
 
-    final TASTCompilation typed = Frontend.runCompileActual(logx, files);
-    for (final Pair<File, TASTShaderNameFlat> batch : batches) {
-      Frontend.runCompileMakeGLSL(
-        logx,
-        require_es,
-        require_full,
-        batch.first,
-        batch.second,
-        typed);
+    try {
+      for (;;) {
+        final String line = reader.readLine();
+        if (line == null) {
+          break;
+        }
+
+        final File file = new File(line);
+        files.add(file);
+      }
+      return files;
+    } finally {
+      reader.close();
     }
   }
 
@@ -587,11 +739,11 @@ public class Frontend
     final String version = Frontend.getVersion();
 
     pw
-      .println("parasol-c: [options] --compile output.pc shader      file0 [file1 ... fileN]");
+      .println("parasol-c: [options] --compile output.pc shader         file0 [file1 ... fileN]");
     pw
-      .println("        or [options] --compile-batch basedir batches file0 [file1 ... fileN]");
+      .println("        or [options] --compile-batch basedir batch-list source-list");
     pw
-      .println("        or [options] --check                         file0 [file1 ... fileN]");
+      .println("        or [options] --check                            file0 [file1 ... fileN]");
     pw.println("        or [options] --show-versions");
     pw.println("        or [options] --version");
     pw.println();
@@ -602,7 +754,9 @@ public class Frontend
     pw
       .println("         shader       is the fully-qualified name of a shading program");
     pw
-      .println("         batches      is a file containing (output.pc , \":\" , shader) tuples, separated by newlines");
+      .println("         batch-list   is a file containing (output.pc , \":\" , shader) tuples, separated by newlines");
+    pw
+      .println("         source-list  is a file containing a set of filenames, separated by newlines");
     pw
       .println("         file[0 .. N] is a series of filenames containing source code");
     pw.println();

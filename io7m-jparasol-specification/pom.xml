@@ -7,7 +7,7 @@
   <groupId>com.io7m.jparasol.specification</groupId>
   <artifactId>io7m-jparasol-specification</artifactId>
   <name>io7m-jparasol-specification</name>
-  <version>0.3.15</version>
+  <version>0.4.0</version>
   <description>Minimalist pure functional shading language (specification)</description>
   <url>http://mvn.io7m.com/jparasol-specification/</url>
 
