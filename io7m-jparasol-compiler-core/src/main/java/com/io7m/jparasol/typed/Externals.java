@@ -19,16 +19,16 @@ package com.io7m.jparasol.typed;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Unit;
-import com.io7m.jlog.Level;
-import com.io7m.jlog.Log;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
@@ -43,20 +43,19 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTerm;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
-import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlat;
-import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlat.Shader;
+import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlatType;
 import com.io7m.jparasol.typed.ast.TASTReference;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
-import com.io7m.jparasol.typed.ast.TASTShaderVisitor;
+import com.io7m.jparasol.typed.ast.TASTShaderVisitorType;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
-import com.io7m.jparasol.typed.ast.TASTTermVisitor;
+import com.io7m.jparasol.typed.ast.TASTTermVisitorType;
 
 /**
  * A simple checker that determines if vertex-only or fragment-only external
  * functions can be reached from shaders of the wrong types.
  */
 
-public final class Externals
+@EqualityReference public final class Externals
 {
   private static enum Required
   {
@@ -64,23 +63,23 @@ public final class Externals
     REQUIRE_VERTEX_SHADER
   }
 
-  private static class ShaderChecker implements
-    TASTShaderVisitor<Unit, ExternalsError>
+  @EqualityReference private static final class ShaderChecker implements
+    TASTShaderVisitorType<Unit, ExternalsError>
   {
-    private final @Nonnull Log                                                         log;
-    private final @Nonnull Map<ModulePathFlat, TASTDModule>                            modules;
-    private final @Nonnull String                                                      name;
-    private final @Nonnull ModulePathFlat                                              path;
-    private final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> term_shader;
-    private final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>       term_term;
+    private final LogUsableType                                                   log;
+    private final Map<ModulePathFlat, TASTDModule>                                modules;
+    private final String                                                          name;
+    private final ModulePathFlat                                                  path;
+    private final DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference> term_shader;
+    private final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>           term_term;
 
     public ShaderChecker(
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_modules,
-      final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> in_term_shader,
-      final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> in_term_term,
-      final @Nonnull ModulePathFlat in_path,
-      final @Nonnull String in_name,
-      final @Nonnull Log in_log)
+      final Map<ModulePathFlat, TASTDModule> in_modules,
+      final DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference> in_term_shader,
+      final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> in_term_term,
+      final ModulePathFlat in_path,
+      final String in_name,
+      final LogUsableType in_log)
     {
       this.modules = in_modules;
       this.term_shader = in_term_shader;
@@ -91,32 +90,35 @@ public final class Externals
     }
 
     private void checkDependencies(
-      final @Nonnull Required required)
-      throws ConstraintError,
-        ExternalsError
+      final Required required)
+      throws ExternalsError
     {
       final TASTShaderNameFlat shader_name =
         new TASTShaderNameFlat(this.path, this.name);
-      final TASTNameTermShaderFlat.Shader start_shader =
-        new TASTNameTermShaderFlat.Shader(shader_name);
 
-      if (this.log.enabled(Level.LOG_DEBUG)) {
-        this.log.debug(String.format(
-          "Checking dependencies for %s %s",
-          start_shader.show(),
-          required));
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+        final String r =
+          String.format(
+            "Checking dependencies for %s %s",
+            shader_name.show(),
+            required);
+        assert r != null;
+        this.log.debug(r);
       }
 
       final Set<TASTReference> direct_terms =
-        this.term_shader.outgoingEdgesOf(start_shader);
+        this.term_shader.outgoingEdgesOf(shader_name);
 
       for (final TASTReference d : direct_terms) {
         final ModulePath target_module = d.getTargetModule();
 
+        final String r = d.getTargetName().getActual();
+        assert r != null;
+
         final TASTTermNameFlat start_term =
           new TASTTermNameFlat(
             ModulePathFlat.fromModulePath(target_module),
-            d.getTargetName().getActual());
+            r);
 
         final DepthFirstIterator<TASTTermNameFlat, TASTReference> di =
           new DepthFirstIterator<TASTTermNameFlat, TASTReference>(
@@ -125,13 +127,17 @@ public final class Externals
 
         while (di.hasNext()) {
           final TASTTermNameFlat current = di.next();
-          if (this.log.enabled(Level.LOG_DEBUG)) {
-            this.log.debug(String.format("Term %s", current.show()));
+
+          if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+            final String rr = String.format("Term %s", current.show());
+            assert rr != null;
+            this.log.debug(rr);
           }
 
+          assert current != null;
           final TASTDTerm term = this.lookupTerm(current);
           term.termVisitableAccept(new TermDeclarationChecker(
-            start_shader,
+            shader_name,
             start_term,
             d,
             current,
@@ -142,60 +148,59 @@ public final class Externals
       }
     }
 
-    private @Nonnull TASTDTerm lookupTerm(
-      final @Nonnull TASTTermNameFlat current)
+    private TASTDTerm lookupTerm(
+      final TASTTermNameFlat current)
     {
       final TASTDModule m = this.modules.get(current.getModulePath());
       assert m.getTerms().containsKey(current.getName());
-      return m.getTerms().get(current.getName());
+      final TASTDTerm r = m.getTerms().get(current.getName());
+      assert r != null;
+      return r;
     }
 
     @Override public Unit moduleVisitFragmentShader(
-      final @Nonnull TASTDShaderFragment f)
-      throws ExternalsError,
-        ConstraintError
+      final TASTDShaderFragment f)
+      throws ExternalsError
     {
       this.checkDependencies(Required.REQUIRE_FRAGMENT_SHADER);
       return Unit.unit();
     }
 
     @Override public Unit moduleVisitProgramShader(
-      final @Nonnull TASTDShaderProgram p)
-      throws ExternalsError,
-        ConstraintError
+      final TASTDShaderProgram p)
+      throws ExternalsError
     {
       return Unit.unit();
     }
 
     @Override public Unit moduleVisitVertexShader(
-      final @Nonnull TASTDShaderVertex f)
-      throws ExternalsError,
-        ConstraintError
+      final TASTDShaderVertex f)
+      throws ExternalsError
     {
       this.checkDependencies(Required.REQUIRE_VERTEX_SHADER);
       return Unit.unit();
     }
   }
 
-  private static final class TermDeclarationChecker implements
-    TASTTermVisitor<Unit, ExternalsError>
+  @EqualityReference private static final class TermDeclarationChecker implements
+    TASTTermVisitorType<Unit, ExternalsError>
   {
-    private final @Nonnull TASTTermNameFlat                                            current_term;
-    private final @Nonnull Required                                                    required;
-    private final @Nonnull TASTNameTermShaderFlat.Shader                               start_shader;
-    private final @Nonnull TASTTermNameFlat                                            start_term;
-    private final @Nonnull TASTReference                                               start_term_reference;
-    private final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> term_shader;
-    private final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>       term_term;
+    private final TASTTermNameFlat                                                current_term;
+    private final Required                                                        required;
+    private final TASTShaderNameFlat                                              start_shader;
+    private final TASTTermNameFlat                                                start_term;
+    private final TASTReference                                                   start_term_reference;
+    private final DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference> term_shader;
+    private final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>           term_term;
 
     public TermDeclarationChecker(
-      final @Nonnull Shader in_start_shader,
-      final @Nonnull TASTTermNameFlat in_start_term,
-      final @Nonnull TASTReference in_start_term_reference,
-      final @Nonnull TASTTermNameFlat in_current_term,
-      final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> in_term_shader,
-      final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> in_term_term,
-      final @Nonnull Required in_required)
+      final TASTShaderNameFlat in_start_shader,
+      final TASTTermNameFlat in_start_term,
+      final TASTReference in_start_term_reference,
+      final TASTTermNameFlat in_current_term,
+      final DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference> in_term_shader,
+      final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> in_term_term,
+      final Required in_required)
     {
       this.start_shader = in_start_shader;
       this.start_term = in_start_term;
@@ -206,27 +211,9 @@ public final class Externals
       this.required = in_required;
     }
 
-    @Override public Unit termVisitFunctionDefined(
-      final @Nonnull TASTDFunctionDefined f)
-      throws ConstraintError,
-        ExternalsError
-    {
-      return Unit.unit();
-    }
-
-    @Override public Unit termVisitFunctionExternal(
-      final @Nonnull TASTDFunctionExternal f)
-      throws ConstraintError,
-        ExternalsError
-    {
-      this.checkExternal(f.getExternal());
-      return Unit.unit();
-    }
-
     private void checkExternal(
       final TASTDExternal ext)
-      throws ExternalsError,
-        ConstraintError
+      throws ExternalsError
     {
       switch (this.required) {
         case REQUIRE_FRAGMENT_SHADER:
@@ -237,11 +224,14 @@ public final class Externals
                 this.term_term,
                 this.start_term,
                 this.current_term);
+            final GraphPath<TASTTermNameFlat, TASTReference> r =
+              dsp.getPath();
+            assert r != null;
             throw ExternalsError.termDisallowedInFragmentShader(
               this.start_shader,
               this.start_term_reference,
               this.current_term,
-              dsp.getPath());
+              r);
           }
           break;
         }
@@ -253,54 +243,88 @@ public final class Externals
                 this.term_term,
                 this.start_term,
                 this.current_term);
+            final GraphPath<TASTTermNameFlat, TASTReference> r =
+              dsp.getPath();
+            assert r != null;
             throw ExternalsError.termDisallowedInVertexShader(
               this.start_shader,
               this.start_term_reference,
               this.current_term,
-              dsp.getPath());
+              r);
           }
           break;
         }
       }
     }
 
+    @Override public Unit termVisitFunctionDefined(
+      final TASTDFunctionDefined f)
+      throws ExternalsError
+    {
+      return Unit.unit();
+    }
+
+    @Override public Unit termVisitFunctionExternal(
+      final TASTDFunctionExternal f)
+      throws ExternalsError
+    {
+      this.checkExternal(f.getExternal());
+      return Unit.unit();
+    }
+
     @Override public Unit termVisitValueDefined(
-      final @Nonnull TASTDValueDefined v)
-      throws ConstraintError,
-        ExternalsError
+      final TASTDValueDefined v)
+      throws ExternalsError
     {
       return Unit.unit();
     }
 
     @Override public Unit termVisitValueExternal(
-      final @Nonnull TASTDValueExternal v)
-      throws ExternalsError,
-        ConstraintError
+      final TASTDValueExternal v)
+      throws ExternalsError
     {
       this.checkExternal(v.getExternal());
       return Unit.unit();
     }
   }
 
-  public static @Nonnull Externals newExternalsChecker(
-    final @Nonnull Log log)
+  /**
+   * Construct a new externals checker.
+   * 
+   * @param log
+   *          The log interface
+   * @return A new checker
+   */
+
+  public static Externals newExternalsChecker(
+    final LogUsableType log)
   {
     return new Externals(log);
   }
 
-  private final @Nonnull Log log;
+  private final LogUsableType log;
 
   private Externals(
-    final @Nonnull Log in_log)
+    final LogUsableType in_log)
   {
-    this.log = new Log(in_log, "externals");
+    this.log = NullCheck.notNull(in_log, "Log").with("externals");
   }
 
+  /**
+   * Check the given typed AST.
+   * 
+   * @param compilation
+   *          The AST
+   * @throws ExternalsError
+   *           If an error occurs
+   */
+
   public void check(
-    final @Nonnull TASTCompilation compilation)
-    throws ExternalsError,
-      ConstraintError
+    final TASTCompilation compilation)
+    throws ExternalsError
   {
+    NullCheck.notNull(compilation, "AST");
+
     final Map<ModulePathFlat, TASTDModule> modules = compilation.getModules();
 
     for (final ModulePathFlat p : modules.keySet()) {
@@ -308,6 +332,9 @@ public final class Externals
       final Map<String, TASTDShader> shaders = m.getShaders();
       for (final String name : shaders.keySet()) {
         final TASTDShader s = shaders.get(name);
+
+        assert p != null;
+        assert name != null;
 
         final ShaderChecker c =
           new ShaderChecker(

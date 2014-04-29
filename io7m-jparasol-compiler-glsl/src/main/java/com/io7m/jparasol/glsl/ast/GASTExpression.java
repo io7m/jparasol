@@ -21,60 +21,72 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameExternal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.typed.TType;
 
-public abstract class GASTExpression implements GASTExpressionVisitable
+/**
+ * The type of GLSL expressions.
+ */
+
+@EqualityReference public abstract class GASTExpression
 {
-  public static final class GASTEApplicationExternal extends GASTExpression
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return The value returned by the visitor
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
+    A
+    expressionVisitableAccept(
+      final V v)
+      throws E;
+
+  /**
+   * The type of (external) function applications.
+   */
+
+  @EqualityReference public static final class GASTEApplicationExternal extends
+    GASTExpression
   {
-    private final @Nonnull List<GASTExpression> arguments;
-    private final @Nonnull GTermNameExternal    name;
-    private final @Nonnull TType                type;
+    private final List<GASTExpression> arguments;
+    private final GTermNameExternal    name;
+    private final TType                type;
+
+    /**
+     * Construct an expression.
+     * 
+     * @param in_name
+     *          The function name
+     * @param in_type
+     *          The type of expression
+     * @param in_arguments
+     *          The arguments
+     */
 
     public GASTEApplicationExternal(
-      final @Nonnull GTermNameExternal in_name,
-      final @Nonnull TType in_type,
-      final @Nonnull List<GASTExpression> in_arguments)
+      final GTermNameExternal in_name,
+      final TType in_type,
+      final List<GASTExpression> in_arguments)
     {
-      this.name = in_name;
-      this.type = in_type;
-      this.arguments = in_arguments;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTEApplicationExternal other = (GASTEApplicationExternal) obj;
-      if (!this.arguments.equals(other.arguments)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
     }
 
     @Override public
-      <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
+        final V v)
         throws E
     {
       v.expressionApplicationExternalVisitPre(this);
@@ -86,29 +98,31 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       return v.expressionApplicationExternalVisit(args, this);
     }
 
-    public @Nonnull List<GASTExpression> getArguments()
+    /**
+     * @return The arguments
+     */
+
+    public List<GASTExpression> getArguments()
     {
       return this.arguments;
     }
 
-    public @Nonnull GTermNameExternal getName()
+    /**
+     * @return The function name
+     */
+
+    public GTermNameExternal getName()
     {
       return this.name;
     }
 
-    public @Nonnull TType getType()
+    /**
+     * @return The return type
+     */
+
+    public TType getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.arguments.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -121,56 +135,49 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       builder.append(" ");
       builder.append(this.arguments);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTEApplication extends GASTExpression
+  /**
+   * The type of function applications.
+   */
+
+  @EqualityReference public static final class GASTEApplication extends
+    GASTExpression
   {
-    private final @Nonnull List<GASTExpression> arguments;
-    private final @Nonnull GTermNameGlobal      name;
-    private final @Nonnull TType                type;
+    private final List<GASTExpression> arguments;
+    private final GTermNameGlobal      name;
+    private final TType                type;
+
+    /**
+     * Construct an expression.
+     * 
+     * @param in_name
+     *          The function name
+     * @param in_type
+     *          The type of expression
+     * @param in_arguments
+     *          The arguments
+     */
 
     public GASTEApplication(
-      final @Nonnull GTermNameGlobal in_name,
-      final @Nonnull TType in_type,
-      final @Nonnull List<GASTExpression> in_arguments)
+      final GTermNameGlobal in_name,
+      final TType in_type,
+      final List<GASTExpression> in_arguments)
     {
-      this.name = in_name;
-      this.type = in_type;
-      this.arguments = in_arguments;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTEApplication other = (GASTEApplication) obj;
-      if (!this.arguments.equals(other.arguments)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
     }
 
     @Override public
-      <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
+        final V v)
         throws E
     {
       v.expressionApplicationVisitPre(this);
@@ -182,29 +189,31 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       return v.expressionApplicationVisit(args, this);
     }
 
-    public @Nonnull List<GASTExpression> getArguments()
+    /**
+     * @return The list of arguments
+     */
+
+    public List<GASTExpression> getArguments()
     {
       return this.arguments;
     }
 
-    public @Nonnull GTermNameGlobal getName()
+    /**
+     * @return The function name
+     */
+
+    public GTermNameGlobal getName()
     {
       return this.name;
     }
 
-    public @Nonnull TType getType()
+    /**
+     * @return The return type
+     */
+
+    public TType getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.arguments.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -217,23 +226,44 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       builder.append(" ");
       builder.append(this.arguments);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static abstract class GASTEBinaryOp extends GASTExpression
+  /**
+   * The type of binary op expressions.
+   */
+
+  @EqualityReference public static abstract class GASTEBinaryOp extends
+    GASTExpression
   {
-    public static final class GASTEBinaryOpDivide extends GASTEBinaryOp
+    /**
+     * The type of divisions.
+     */
+
+    @EqualityReference public static final class GASTEBinaryOpDivide extends
+      GASTEBinaryOp
     {
+      /**
+       * Construct a binary op expression.
+       * 
+       * @param left
+       *          The left expression
+       * @param right
+       *          The right expression
+       */
+
       public GASTEBinaryOpDivide(
-        final @Nonnull GASTExpression left,
-        final @Nonnull GASTExpression right)
+        final GASTExpression left,
+        final GASTExpression right)
       {
         super(left, right);
       }
 
       @Override public
-        <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+        <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
         A
         expressionVisitableAccept(
           final V v)
@@ -253,21 +283,37 @@ public abstract class GASTExpression implements GASTExpressionVisitable
         builder.append(" ");
         builder.append(this.getRight());
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
 
-    public static final class GASTEBinaryOpEqual extends GASTEBinaryOp
+    /**
+     * The type of equality comparisons.
+     */
+
+    @EqualityReference public static final class GASTEBinaryOpEqual extends
+      GASTEBinaryOp
     {
+      /**
+       * Construct a binary op expression.
+       * 
+       * @param left
+       *          The left expression
+       * @param right
+       *          The right expression
+       */
+
       public GASTEBinaryOpEqual(
-        final @Nonnull GASTExpression left,
-        final @Nonnull GASTExpression right)
+        final GASTExpression left,
+        final GASTExpression right)
       {
         super(left, right);
       }
 
       @Override public
-        <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+        <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
         A
         expressionVisitableAccept(
           final V v)
@@ -287,21 +333,37 @@ public abstract class GASTExpression implements GASTExpressionVisitable
         builder.append(" ");
         builder.append(this.getRight());
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
 
-    public static final class GASTEBinaryOpGreaterThan extends GASTEBinaryOp
+    /**
+     * The type of greater-than comparisons.
+     */
+
+    @EqualityReference public static final class GASTEBinaryOpGreaterThan extends
+      GASTEBinaryOp
     {
+      /**
+       * Construct a binary op expression.
+       * 
+       * @param left
+       *          The left expression
+       * @param right
+       *          The right expression
+       */
+
       public GASTEBinaryOpGreaterThan(
-        final @Nonnull GASTExpression left,
-        final @Nonnull GASTExpression right)
+        final GASTExpression left,
+        final GASTExpression right)
       {
         super(left, right);
       }
 
       @Override public
-        <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+        <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
         A
         expressionVisitableAccept(
           final V v)
@@ -321,22 +383,37 @@ public abstract class GASTExpression implements GASTExpressionVisitable
         builder.append(" ");
         builder.append(this.getRight());
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
 
-    public static final class GASTEBinaryOpGreaterThanOrEqual extends
+    /**
+     * The type of greater-than-or-equal comparisons.
+     */
+
+    @EqualityReference public static final class GASTEBinaryOpGreaterThanOrEqual extends
       GASTEBinaryOp
     {
+      /**
+       * Construct a binary op expression.
+       * 
+       * @param left
+       *          The left expression
+       * @param right
+       *          The right expression
+       */
+
       public GASTEBinaryOpGreaterThanOrEqual(
-        final @Nonnull GASTExpression left,
-        final @Nonnull GASTExpression right)
+        final GASTExpression left,
+        final GASTExpression right)
       {
         super(left, right);
       }
 
       @Override public
-        <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+        <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
         A
         expressionVisitableAccept(
           final V v)
@@ -356,21 +433,37 @@ public abstract class GASTExpression implements GASTExpressionVisitable
         builder.append(" ");
         builder.append(this.getRight());
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
 
-    public static final class GASTEBinaryOpLesserThan extends GASTEBinaryOp
+    /**
+     * The type of less-than comparisons.
+     */
+
+    @EqualityReference public static final class GASTEBinaryOpLesserThan extends
+      GASTEBinaryOp
     {
+      /**
+       * Construct a binary op expression.
+       * 
+       * @param left
+       *          The left expression
+       * @param right
+       *          The right expression
+       */
+
       public GASTEBinaryOpLesserThan(
-        final @Nonnull GASTExpression left,
-        final @Nonnull GASTExpression right)
+        final GASTExpression left,
+        final GASTExpression right)
       {
         super(left, right);
       }
 
       @Override public
-        <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+        <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
         A
         expressionVisitableAccept(
           final V v)
@@ -390,22 +483,37 @@ public abstract class GASTExpression implements GASTExpressionVisitable
         builder.append(" ");
         builder.append(this.getRight());
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
 
-    public static final class GASTEBinaryOpLesserThanOrEqual extends
+    /**
+     * The type of less-than-or-equal comparisons.
+     */
+
+    @EqualityReference public static final class GASTEBinaryOpLesserThanOrEqual extends
       GASTEBinaryOp
     {
+      /**
+       * Construct a binary op expression.
+       * 
+       * @param left
+       *          The left expression
+       * @param right
+       *          The right expression
+       */
+
       public GASTEBinaryOpLesserThanOrEqual(
-        final @Nonnull GASTExpression left,
-        final @Nonnull GASTExpression right)
+        final GASTExpression left,
+        final GASTExpression right)
       {
         super(left, right);
       }
 
       @Override public
-        <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+        <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
         A
         expressionVisitableAccept(
           final V v)
@@ -425,21 +533,37 @@ public abstract class GASTExpression implements GASTExpressionVisitable
         builder.append(" ");
         builder.append(this.getRight());
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
 
-    public static final class GASTEBinaryOpMultiply extends GASTEBinaryOp
+    /**
+     * The type of multiplications.
+     */
+
+    @EqualityReference public static final class GASTEBinaryOpMultiply extends
+      GASTEBinaryOp
     {
+      /**
+       * Construct a binary op expression.
+       * 
+       * @param left
+       *          The left expression
+       * @param right
+       *          The right expression
+       */
+
       public GASTEBinaryOpMultiply(
-        final @Nonnull GASTExpression left,
-        final @Nonnull GASTExpression right)
+        final GASTExpression left,
+        final GASTExpression right)
       {
         super(left, right);
       }
 
       @Override public
-        <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+        <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
         A
         expressionVisitableAccept(
           final V v)
@@ -459,21 +583,37 @@ public abstract class GASTExpression implements GASTExpressionVisitable
         builder.append(" ");
         builder.append(this.getRight());
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
 
-    public static final class GASTEBinaryOpPlus extends GASTEBinaryOp
+    /**
+     * The type of additions.
+     */
+
+    @EqualityReference public static final class GASTEBinaryOpPlus extends
+      GASTEBinaryOp
     {
+      /**
+       * Construct a binary op expression.
+       * 
+       * @param left
+       *          The left expression
+       * @param right
+       *          The right expression
+       */
+
       public GASTEBinaryOpPlus(
-        final @Nonnull GASTExpression left,
-        final @Nonnull GASTExpression right)
+        final GASTExpression left,
+        final GASTExpression right)
       {
         super(left, right);
       }
 
       @Override public
-        <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+        <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
         A
         expressionVisitableAccept(
           final V v)
@@ -493,21 +633,37 @@ public abstract class GASTExpression implements GASTExpressionVisitable
         builder.append(" ");
         builder.append(this.getRight());
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
 
-    public static final class GASTEBinaryOpSubtract extends GASTEBinaryOp
+    /**
+     * The type of subtractions.
+     */
+
+    @EqualityReference public static final class GASTEBinaryOpSubtract extends
+      GASTEBinaryOp
     {
+      /**
+       * Construct a binary op expression.
+       * 
+       * @param left
+       *          The left expression
+       * @param right
+       *          The right expression
+       */
+
       public GASTEBinaryOpSubtract(
-        final @Nonnull GASTExpression left,
-        final @Nonnull GASTExpression right)
+        final GASTExpression left,
+        final GASTExpression right)
       {
         super(left, right);
       }
 
       @Override public
-        <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+        <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
         A
         expressionVisitableAccept(
           final V v)
@@ -527,66 +683,57 @@ public abstract class GASTExpression implements GASTExpressionVisitable
         builder.append(" ");
         builder.append(this.getRight());
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
 
-    private final @Nonnull GASTExpression left;
-    private final @Nonnull GASTExpression right;
+    private final GASTExpression left;
+    private final GASTExpression right;
 
     protected GASTEBinaryOp(
-      final @Nonnull GASTExpression in_left,
-      final @Nonnull GASTExpression in_right)
+      final GASTExpression in_left,
+      final GASTExpression in_right)
     {
-      this.left = in_left;
-      this.right = in_right;
+      this.left = NullCheck.notNull(in_left, "Left expression");
+      this.right = NullCheck.notNull(in_right, "Right expression");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTEBinaryOp other = (GASTEBinaryOp) obj;
-      if (!this.left.equals(other.left)) {
-        return false;
-      }
-      if (!this.right.equals(other.right)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The left expression
+     */
 
-    public @Nonnull GASTExpression getLeft()
+    public final GASTExpression getLeft()
     {
       return this.left;
     }
 
-    public @Nonnull GASTExpression getRight()
+    /**
+     * @return The right expression
+     */
+
+    public final GASTExpression getRight()
     {
       return this.right;
     }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.left.hashCode();
-      result = (prime * result) + this.right.hashCode();
-      return result;
-    }
   }
 
-  public static final class GASTEBoolean extends GASTExpression
+  /**
+   * The type of boolean constants.
+   */
+
+  @EqualityReference public static final class GASTEBoolean extends
+    GASTExpression
   {
     private final boolean value;
+
+    /**
+     * Construct a constant.
+     * 
+     * @param in_value
+     *          The value
+     */
 
     public GASTEBoolean(
       final boolean in_value)
@@ -594,43 +741,23 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       this.value = in_value;
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTEBoolean other = (GASTEBoolean) obj;
-      return this.value == other.value;
-    }
-
     @Override public
-      <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
+        final V v)
         throws E
     {
       return v.expressionBooleanVisit(this);
     }
 
+    /**
+     * @return The value
+     */
+
     public boolean getValue()
     {
       return this.value;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + (this.value ? 1 : 0);
-      return result;
     }
 
     @Override public String toString()
@@ -639,50 +766,44 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       builder.append("[GASTEBoolean ");
       builder.append(this.value);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTEConstruction extends GASTExpression
+  /**
+   * The type of constructions.
+   */
+
+  @EqualityReference public static final class GASTEConstruction extends
+    GASTExpression
   {
-    private final @Nonnull List<GASTExpression> arguments;
-    private final @Nonnull GTypeName            type;
+    private final List<GASTExpression> arguments;
+    private final GTypeName            type;
+
+    /**
+     * Construct a new value.
+     * 
+     * @param in_type
+     *          The type
+     * @param in_arguments
+     *          The arguments
+     */
 
     public GASTEConstruction(
-      final @Nonnull GTypeName in_type,
-      final @Nonnull List<GASTExpression> in_arguments)
+      final GTypeName in_type,
+      final List<GASTExpression> in_arguments)
     {
-      this.type = in_type;
-      this.arguments = in_arguments;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTEConstruction other = (GASTEConstruction) obj;
-      if (!this.arguments.equals(other.arguments)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
     }
 
     @Override public
-      <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
+        final V v)
         throws E
     {
       v.expressionConstructionVisitPre(this);
@@ -694,23 +815,22 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       return v.expressionConstructionVisit(args, this);
     }
 
-    public @Nonnull List<GASTExpression> getArguments()
+    /**
+     * @return The arguments
+     */
+
+    public List<GASTExpression> getArguments()
     {
       return this.arguments;
     }
 
-    public @Nonnull GTypeName getType()
+    /**
+     * @return The type
+     */
+
+    public GTypeName getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.arguments.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -721,57 +841,51 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       builder.append(" ");
       builder.append(this.arguments);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTEFloat extends GASTExpression
+  /**
+   * The type of float constants.
+   */
+
+  @EqualityReference public static final class GASTEFloat extends
+    GASTExpression
   {
-    private final @Nonnull BigDecimal value;
+    private final BigDecimal value;
+
+    /**
+     * Construct a constant.
+     * 
+     * @param in_value
+     *          The value
+     */
 
     public GASTEFloat(
-      final @Nonnull BigDecimal in_value)
+      final BigDecimal in_value)
     {
-      this.value = in_value;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTEFloat other = (GASTEFloat) obj;
-      return this.value.equals(other.value);
+      this.value = NullCheck.notNull(in_value, "Value");
     }
 
     @Override public
-      <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
+        final V v)
         throws E
     {
       return v.expressionFloatVisit(this);
     }
 
-    public @Nonnull BigDecimal getValue()
+    /**
+     * @return The value
+     */
+
+    public BigDecimal getValue()
     {
       return this.value;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.value.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -780,57 +894,51 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       builder.append("[GASTEFloat ");
       builder.append(this.value);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTEInteger extends GASTExpression
+  /**
+   * The type of integer constants.
+   */
+
+  @EqualityReference public static final class GASTEInteger extends
+    GASTExpression
   {
-    private final @Nonnull BigInteger value;
+    private final BigInteger value;
+
+    /**
+     * Construct a constant.
+     * 
+     * @param in_value
+     *          The value
+     */
 
     public GASTEInteger(
-      final @Nonnull BigInteger in_value)
+      final BigInteger in_value)
     {
-      this.value = in_value;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTEInteger other = (GASTEInteger) obj;
-      return this.value.equals(other.value);
+      this.value = NullCheck.notNull(in_value, "Value");
     }
 
     @Override public
-      <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
+        final V v)
         throws E
     {
       return v.expressionIntegerVisit(this);
     }
 
-    public @Nonnull BigInteger getValue()
+    /**
+     * @return The value
+     */
+
+    public BigInteger getValue()
     {
       return this.value;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.value.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -839,53 +947,46 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       builder.append("[GASTEInteger ");
       builder.append(this.value);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTEProjection extends GASTExpression
+  /**
+   * The type of record projections.
+   */
+
+  @EqualityReference public static final class GASTEProjection extends
+    GASTExpression
   {
-    private final @Nonnull GASTExpression body;
-    private final @Nonnull GFieldName     field;
-    private final @Nonnull TType          type;
+    private final GASTExpression body;
+    private final GFieldName     field;
+    private final TType          type;
+
+    /**
+     * Construct a record projection.
+     * 
+     * @param in_body
+     *          The left-hand side of the projection
+     * @param in_field
+     *          The field
+     * @param in_type
+     *          The type
+     */
 
     public GASTEProjection(
-      final @Nonnull GASTExpression in_body,
-      final @Nonnull GFieldName in_field,
-      final @Nonnull TType in_type)
+      final GASTExpression in_body,
+      final GFieldName in_field,
+      final TType in_type)
     {
-      this.body = in_body;
-      this.field = in_field;
-      this.type = in_type;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTEProjection other = (GASTEProjection) obj;
-      if (!this.body.equals(other.body)) {
-        return false;
-      }
-      if (!this.field.equals(other.field)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
+      this.body = NullCheck.notNull(in_body, "Body");
+      this.field = NullCheck.notNull(in_field, "Field");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
     @Override public
-      <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
       A
       expressionVisitableAccept(
         final V v)
@@ -896,29 +997,31 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       return v.expressionProjectionVisit(x, this);
     }
 
-    public @Nonnull GASTExpression getBody()
+    /**
+     * @return The body
+     */
+
+    public GASTExpression getBody()
     {
       return this.body;
     }
 
-    public @Nonnull GFieldName getField()
+    /**
+     * @return The field
+     */
+
+    public GFieldName getField()
     {
       return this.field;
     }
 
-    public @Nonnull TType getType()
+    /**
+     * @return The type
+     */
+
+    public TType getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.body.hashCode();
-      result = (prime * result) + this.field.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -931,53 +1034,46 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       builder.append(" ");
       builder.append(this.type);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTESwizzle extends GASTExpression
+  /**
+   * The type of swizzle expressions.
+   */
+
+  @EqualityReference public static final class GASTESwizzle extends
+    GASTExpression
   {
-    private final @Nonnull GASTExpression   body;
-    private final @Nonnull List<GFieldName> fields;
-    private final @Nonnull TType            type;
+    private final GASTExpression   body;
+    private final List<GFieldName> fields;
+    private final TType            type;
+
+    /**
+     * Construct a swizzle expression.
+     * 
+     * @param in_body
+     *          The body
+     * @param in_fields
+     *          The list of fields
+     * @param in_type
+     *          The resulting type
+     */
 
     public GASTESwizzle(
-      final @Nonnull GASTExpression in_body,
-      final @Nonnull List<GFieldName> in_fields,
-      final @Nonnull TType in_type)
+      final GASTExpression in_body,
+      final List<GFieldName> in_fields,
+      final TType in_type)
     {
-      this.body = in_body;
-      this.fields = in_fields;
-      this.type = in_type;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTESwizzle other = (GASTESwizzle) obj;
-      if (!this.body.equals(other.body)) {
-        return false;
-      }
-      if (!this.fields.equals(other.fields)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
+      this.body = NullCheck.notNull(in_body, "Body");
+      this.fields = NullCheck.notNull(in_fields, "Fields");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
     @Override public
-      <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
       A
       expressionVisitableAccept(
         final V v)
@@ -988,29 +1084,31 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       return v.expressionSwizzleVisit(x, this);
     }
 
-    public @Nonnull GASTExpression getBody()
+    /**
+     * @return The expression body
+     */
+
+    public GASTExpression getBody()
     {
       return this.body;
     }
 
-    public @Nonnull List<GFieldName> getFields()
+    /**
+     * @return The list of fields
+     */
+
+    public List<GFieldName> getFields()
     {
       return this.fields;
     }
 
-    public @Nonnull TType getType()
+    /**
+     * @return The resulting type
+     */
+
+    public TType getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.body.hashCode();
-      result = (prime * result) + this.fields.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -1023,22 +1121,41 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       builder.append(" ");
       builder.append(this.type);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static abstract class GASTEUnaryOp extends GASTExpression
+  /**
+   * The type of unary op expressions.
+   */
+
+  @EqualityReference public static abstract class GASTEUnaryOp extends
+    GASTExpression
   {
-    public static final class GASTEUnaryOpNegate extends GASTEUnaryOp
+    /**
+     * The type of negations.
+     */
+
+    @EqualityReference public static final class GASTEUnaryOpNegate extends
+      GASTEUnaryOp
     {
+      /**
+       * Construct a negation.
+       * 
+       * @param body
+       *          The body of the expression
+       */
+
       public GASTEUnaryOpNegate(
-        final @Nonnull GASTExpression body)
+        final GASTExpression body)
       {
         super(body);
       }
 
       @Override public
-        <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+        <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
         A
         expressionVisitableAccept(
           final V v)
@@ -1055,61 +1172,59 @@ public abstract class GASTExpression implements GASTExpressionVisitable
         builder.append("[GASTEUnaryOpNegate ");
         builder.append(this.getBody());
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
 
-    private final @Nonnull GASTExpression body;
+    private final GASTExpression body;
 
     protected GASTEUnaryOp(
-      final @Nonnull GASTExpression in_body)
+      final GASTExpression in_body)
     {
-      this.body = in_body;
+      this.body = NullCheck.notNull(in_body, "Body");
     }
 
-    public @Nonnull GASTExpression getBody()
+    /**
+     * @return The expression body
+     */
+
+    public final GASTExpression getBody()
     {
       return this.body;
     }
   }
 
-  public static final class GASTEVariable extends GASTExpression
+  /**
+   * The type of variables.
+   */
+
+  @EqualityReference public static final class GASTEVariable extends
+    GASTExpression
   {
-    private final @Nonnull GTermName term;
-    private final @Nonnull GTypeName type;
+    private final GTermName term;
+    private final GTypeName type;
+
+    /**
+     * Construct a new variable.
+     * 
+     * @param in_type
+     *          The type
+     * @param in_term
+     *          The term
+     */
 
     public GASTEVariable(
-      final @Nonnull GTypeName in_type,
-      final @Nonnull GTermName in_term)
+      final GTypeName in_type,
+      final GTermName in_term)
     {
-      this.type = in_type;
-      this.term = in_term;
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTEVariable other = (GASTEVariable) obj;
-      if (!this.term.equals(other.term)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.term = NullCheck.notNull(in_term, "Term");
     }
 
     @Override public
-      <A, E extends Throwable, V extends GASTExpressionVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
       A
       expressionVisitableAccept(
         final V v)
@@ -1118,23 +1233,22 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       return v.expressionVariableVisit(this);
     }
 
-    public @Nonnull GTermName getTerm()
+    /**
+     * @return The variable name
+     */
+
+    public GTermName getTerm()
     {
       return this.term;
     }
 
-    public @Nonnull GTypeName getType()
+    /**
+     * @return The type name
+     */
+
+    public GTypeName getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.term.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -1145,7 +1259,9 @@ public abstract class GASTExpression implements GASTExpressionVisitable
       builder.append(" ");
       builder.append(this.term);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 }

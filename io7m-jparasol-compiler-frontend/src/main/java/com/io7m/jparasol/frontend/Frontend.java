@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
@@ -36,8 +35,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import javax.annotation.Nonnull;
 
 import nu.xom.Serializer;
 
@@ -50,12 +47,12 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnimplementedCodeException;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jaux.functional.Pair;
-import com.io7m.jaux.functional.Unit;
+import com.io7m.jfunctional.Pair;
+import com.io7m.jfunctional.Unit;
 import com.io7m.jlog.Log;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogPolicyAllOn;
+import com.io7m.jlog.LogUsableType;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.UIError;
 import com.io7m.jparasol.glsl.GFFIError;
@@ -67,7 +64,7 @@ import com.io7m.jparasol.glsl.GVersionCheckerError;
 import com.io7m.jparasol.glsl.GVersionNumberSetLexer;
 import com.io7m.jparasol.glsl.GVersionNumberSetParser;
 import com.io7m.jparasol.glsl.GVersionNumberSetParser.Segment;
-import com.io7m.jparasol.glsl.GVersionVisitor;
+import com.io7m.jparasol.glsl.GVersionVisitorType;
 import com.io7m.jparasol.glsl.GWriter;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertex;
@@ -77,44 +74,51 @@ import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.parser.ParserError;
 import com.io7m.jparasol.pipeline.CorePipeline;
 import com.io7m.jparasol.pipeline.FileInput;
-import com.io7m.jparasol.typed.TypeCheckerError;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
-import com.io7m.jparasol.untyped.ModuleStructureError;
-import com.io7m.jparasol.untyped.ResolverError;
-import com.io7m.jparasol.untyped.UniqueBindersError;
-import com.io7m.jparasol.untyped.UnitCombinerError;
+import com.io7m.junreachable.UnimplementedCodeException;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public class Frontend
+/**
+ * Command line compiler frontend.
+ */
+
+public final class Frontend
 {
-  private static boolean                DEBUG;
-  private static final @Nonnull Options OPTIONS;
+  private Frontend()
+  {
+
+  }
+
+  private static boolean       DEBUG;
+  private static final Options OPTIONS;
 
   static {
     OPTIONS = Frontend.makeOptions();
   }
 
-  public static @Nonnull Log getLog(
+  /**
+   * @param debug
+   *          <code>true</code> if debug logging should be enabled
+   * @return A log interface
+   */
+
+  public static LogUsableType getLog(
     final boolean debug)
   {
-    final Properties p = new Properties();
-    p.setProperty("com.io7m.jparasol.logs.compiler", "true");
-    p
-      .setProperty("com.io7m.jparasol.level", debug
-        ? "LOG_DEBUG"
-        : "LOG_INFO");
-    return new Log(p, "com.io7m.jparasol", "compiler");
+    return Log.newLog(LogPolicyAllOn.newPolicy(debug
+      ? LogLevel.LOG_DEBUG
+      : LogLevel.LOG_INFO), "compiler");
   }
 
   private static SortedSet<GVersionES> getRequiredES(
-    final @Nonnull CommandLine line)
+    final CommandLine line)
     throws LexerError,
       IOException,
-      ConstraintError,
       ParserError,
       UIError
   {
-    final TreeSet<GVersionES> versions = new TreeSet<GVersionES>();
+    final SortedSet<GVersionES> versions = new TreeSet<GVersionES>();
     if (line.hasOption("require-es")) {
       final String text = line.getOptionValue("require-es");
       final ByteArrayInputStream bs =
@@ -131,14 +135,13 @@ public class Frontend
   }
 
   private static SortedSet<GVersionFull> getRequiredFull(
-    final @Nonnull CommandLine line)
+    final CommandLine line)
     throws LexerError,
       IOException,
-      ConstraintError,
       UIError,
       ParserError
   {
-    final TreeSet<GVersionFull> versions = new TreeSet<GVersionFull>();
+    final SortedSet<GVersionFull> versions = new TreeSet<GVersionFull>();
     if (line.hasOption("require-full")) {
       final String text = line.getOptionValue("require-full");
       final ByteArrayInputStream bs =
@@ -154,7 +157,7 @@ public class Frontend
     return versions;
   }
 
-  private static @Nonnull String getVersion()
+  private static String getVersion()
   {
     final String pack =
       Frontend.class.getPackage().getImplementationVersion();
@@ -162,17 +165,6 @@ public class Frontend
       return "unavailable";
     }
     return pack;
-  }
-
-  public static void main(
-    final String args[])
-  {
-    final Log log = Frontend.getLog(false);
-    try {
-      Frontend.run(log, args);
-    } catch (final Throwable x) {
-      System.exit(1);
-    }
   }
 
   private static Options makeOptions()
@@ -264,11 +256,10 @@ public class Frontend
   }
 
   private static List<Pair<File, TASTShaderNameFlat>> parseBatches(
-    final @Nonnull File basedir,
-    final @Nonnull File batch_file)
+    final File basedir,
+    final File batch_file)
     throws IOException,
-      UIError,
-      ConstraintError
+      UIError
   {
     final BufferedReader reader =
       new BufferedReader(new FileReader(batch_file));
@@ -276,7 +267,7 @@ public class Frontend
     try {
 
       int line_no = 1;
-      final HashMap<String, Integer> outputs = new HashMap<String, Integer>();
+      final Map<String, Integer> outputs = new HashMap<String, Integer>();
       final List<Pair<File, TASTShaderNameFlat>> batches =
         new ArrayList<Pair<File, TASTShaderNameFlat>>();
 
@@ -302,21 +293,24 @@ public class Frontend
         }
         if (outputs.containsKey(output)) {
           final Integer old_line = outputs.get(output);
-          throw UIError.badBatch(line_no, batch_file, String.format(
-            "Output %s already specified at line %d",
-            output,
-            old_line));
+          final String s =
+            String.format(
+              "Output %s already specified at line %d",
+              output,
+              old_line);
+          assert s != null;
+          throw UIError.badBatch(line_no, batch_file, s);
         }
         outputs.put(output, Integer.valueOf(line_no));
         final String shader = segments[1].trim();
         final TASTShaderNameFlat shader_name =
-          TASTShaderNameFlat.parse(shader, new Pair<File, Position>(
-            batch_file,
-            new Position(line_no, 0)));
+          TASTShaderNameFlat.parse(
+            shader,
+            Pair.pair(batch_file, new Position(line_no, 0)));
 
         ++line_no;
         final File file = new File(basedir, output);
-        batches.add(new Pair<File, TASTShaderNameFlat>(file, shader_name));
+        batches.add(Pair.pair(file, shader_name));
       }
 
       return batches;
@@ -325,13 +319,29 @@ public class Frontend
     }
   }
 
+  /**
+   * Run the compiler with the given command line arguments.
+   * 
+   * @param log
+   *          A log interface
+   * @param args
+   *          Command line arguments
+   * @throws ParseException
+   *           On XML parse errors
+   * @throws CompilerError
+   *           On compilation errors
+   * @throws IOException
+   *           On I/O errors
+   * @throws InterruptedException
+   *           On threading errors
+   */
+
   public static void run(
-    final @Nonnull Log log,
-    final @Nonnull String[] args)
+    final LogUsableType log,
+    final String[] args)
     throws ParseException,
       CompilerError,
       IOException,
-      ConstraintError,
       InterruptedException
   {
     try {
@@ -356,10 +366,6 @@ public class Frontend
       log.error(x.getMessage());
       Frontend.showStackTraceIfNecessary(x);
       throw x;
-    } catch (final ConstraintError x) {
-      log.critical("internal compiler error: " + x.getMessage());
-      x.printStackTrace(System.err);
-      throw x;
     } catch (final UnimplementedCodeException x) {
       log.critical("internal compiler error: " + x.getMessage());
       x.printStackTrace(System.err);
@@ -380,24 +386,14 @@ public class Frontend
   }
 
   private static void runActual(
-    final @Nonnull Log log,
-    final @Nonnull String[] args)
+    final LogUsableType log,
+    final String[] args)
     throws ParseException,
-      LexerError,
-      UIError,
-      ParserError,
-      UnitCombinerError,
-      ModuleStructureError,
-      UniqueBindersError,
-      TypeCheckerError,
-      ResolverError,
-      GFFIError,
-      GVersionCheckerError,
       IOException,
-      ConstraintError,
-      InterruptedException
+      InterruptedException,
+      CompilerError
   {
-    Log logx = log;
+    LogUsableType logx = log;
 
     if (args.length == 0) {
       Frontend.showHelp();
@@ -447,17 +443,10 @@ public class Frontend
   }
 
   private static void runCheck(
-    final @Nonnull Log logx,
-    final @Nonnull CommandLine line)
-    throws LexerError,
-      ParserError,
-      UnitCombinerError,
-      ModuleStructureError,
-      UniqueBindersError,
-      TypeCheckerError,
-      ResolverError,
-      IOException,
-      ConstraintError
+    final LogUsableType logx,
+    final CommandLine line)
+    throws IOException,
+      CompilerError
   {
     final List<File> files = new ArrayList<File>();
     for (final String f : line.getArgs()) {
@@ -468,22 +457,12 @@ public class Frontend
   }
 
   private static void runCompile(
-    final @Nonnull Log logx,
-    final @Nonnull ExecutorService exec,
-    final @Nonnull CommandLine line)
-    throws LexerError,
-      UIError,
-      ParserError,
-      IOException,
-      ConstraintError,
-      UnitCombinerError,
-      ModuleStructureError,
-      UniqueBindersError,
-      TypeCheckerError,
-      ResolverError,
-      GFFIError,
-      GVersionCheckerError,
-      InterruptedException
+    final LogUsableType logx,
+    final ExecutorService exec,
+    final CommandLine line)
+    throws IOException,
+      InterruptedException,
+      CompilerError
   {
     final SortedSet<GVersionES> require_es = Frontend.getRequiredES(line);
     final SortedSet<GVersionFull> require_full =
@@ -495,7 +474,7 @@ public class Frontend
     }
     final File output = new File(args[0]);
     final Pair<File, Position> meta =
-      new Pair<File, Position>(new File("command line"), new Position(0, 0));
+      Pair.pair(new File("command line"), new Position(0, 0));
     final TASTShaderNameFlat shader = TASTShaderNameFlat.parse(args[1], meta);
 
     final List<File> files = new ArrayList<File>();
@@ -506,11 +485,11 @@ public class Frontend
     final TASTCompilation typed = Frontend.runCompileActual(logx, files);
 
     try {
-      final Future<Unit> result = exec.submit(new Callable<Unit>() {
-        @SuppressWarnings("synthetic-access") @Override public Unit call()
-          throws Exception
-        {
-          try {
+      try {
+        final Future<Unit> result = exec.submit(new Callable<Unit>() {
+          @SuppressWarnings("synthetic-access") @Override public Unit call()
+            throws Exception
+          {
             Frontend.runCompileMakeGLSL(
               logx,
               require_es,
@@ -519,23 +498,22 @@ public class Frontend
               shader,
               typed);
             return Unit.unit();
-          } catch (final ConstraintError e) {
-            throw new UnreachableCodeException(e);
           }
-        }
-      });
-      result.get();
-    } catch (final ExecutionException e) {
-      Frontend.handleRunCompileMakeGLSLException(e);
-    } catch (final InterruptedException e) {
-      throw e;
+        });
+        result.get();
+      } catch (final ExecutionException e) {
+        Frontend.handleRunCompileMakeGLSLException(e);
+      } catch (final InterruptedException e) {
+        throw e;
+      }
+    } finally {
+      exec.shutdown();
     }
   }
 
   private static void handleRunCompileMakeGLSLException(
-    final @Nonnull ExecutionException e)
-    throws ConstraintError,
-      UIError,
+    final ExecutionException e)
+    throws UIError,
       GFFIError,
       GVersionCheckerError,
       IOException
@@ -559,25 +537,14 @@ public class Frontend
       throw (IOException) cause;
     }
 
-    if (cause instanceof ConstraintError) {
-      throw (ConstraintError) cause;
-    }
-
     throw new UnreachableCodeException(e);
   }
 
-  private static @Nonnull TASTCompilation runCompileActual(
-    final @Nonnull Log logx,
-    final @Nonnull List<File> files)
-    throws ConstraintError,
-      LexerError,
-      ParserError,
-      UnitCombinerError,
-      ModuleStructureError,
-      UniqueBindersError,
-      TypeCheckerError,
-      ResolverError,
-      IOException
+  private static TASTCompilation runCompileActual(
+    final LogUsableType logx,
+    final List<File> files)
+    throws IOException,
+      CompilerError
   {
     final CorePipeline pipe = CorePipeline.newPipeline(logx);
     pipe.pipeAddStandardLibrary();
@@ -595,22 +562,12 @@ public class Frontend
   }
 
   private static void runCompileBatch(
-    final @Nonnull Log logx,
-    final @Nonnull ExecutorService exec,
-    final @Nonnull CommandLine line)
-    throws LexerError,
-      ParserError,
-      UIError,
-      IOException,
-      ConstraintError,
-      UnitCombinerError,
-      ModuleStructureError,
-      UniqueBindersError,
-      TypeCheckerError,
-      ResolverError,
-      GFFIError,
-      GVersionCheckerError,
-      InterruptedException
+    final LogUsableType logx,
+    final ExecutorService exec,
+    final CommandLine line)
+    throws IOException,
+      InterruptedException,
+      CompilerError
   {
     try {
       final SortedSet<GVersionES> require_es = Frontend.getRequiredES(line);
@@ -633,24 +590,20 @@ public class Frontend
 
       final List<Future<Unit>> batch_futures = new ArrayList<Future<Unit>>();
       for (final Pair<File, TASTShaderNameFlat> batch : batches) {
-        logx.debug("submitting batch job: " + batch.second);
+        logx.debug("submitting batch job: " + batch.getRight());
 
         final Future<Unit> f = exec.submit(new Callable<Unit>() {
           @SuppressWarnings("synthetic-access") @Override public Unit call()
             throws Exception
           {
-            try {
-              Frontend.runCompileMakeGLSL(
-                logx,
-                require_es,
-                require_full,
-                batch.first,
-                batch.second,
-                typed);
-              return Unit.unit();
-            } catch (final ConstraintError e) {
-              throw new UnreachableCodeException(e);
-            }
+            Frontend.runCompileMakeGLSL(
+              logx,
+              require_es,
+              require_full,
+              batch.getLeft(),
+              batch.getRight(),
+              typed);
+            return Unit.unit();
           }
         });
         batch_futures.add(f);
@@ -670,7 +623,7 @@ public class Frontend
   }
 
   private static List<File> parseSources(
-    final @Nonnull File source_file)
+    final File source_file)
     throws IOException
   {
     final BufferedReader reader =
@@ -694,14 +647,13 @@ public class Frontend
   }
 
   private static void runCompileMakeGLSL(
-    final @Nonnull Log logx,
-    final @Nonnull SortedSet<GVersionES> require_es,
-    final @Nonnull SortedSet<GVersionFull> require_full,
-    final @Nonnull File output_directory,
-    final @Nonnull TASTShaderNameFlat shader,
-    final @Nonnull TASTCompilation typed)
-    throws ConstraintError,
-      UIError,
+    final LogUsableType logx,
+    final SortedSet<GVersionES> require_es,
+    final SortedSet<GVersionFull> require_full,
+    final File output_directory,
+    final TASTShaderNameFlat shader,
+    final TASTCompilation typed)
+    throws UIError,
       GFFIError,
       GVersionCheckerError,
       IOException
@@ -714,15 +666,15 @@ public class Frontend
   }
 
   private static void runShowCompilerVersion(
-    final @Nonnull Log logx,
-    final @Nonnull CommandLine line)
+    final LogUsableType logx,
+    final CommandLine line)
   {
     System.out.println(Frontend.getVersion());
   }
 
   private static void runShowGLSLVersions(
-    final @Nonnull Log logx,
-    final @Nonnull CommandLine line)
+    final LogUsableType logx,
+    final CommandLine line)
   {
     for (final GVersionFull v : GVersionFull.ALL) {
       System.out.println(v.getLongName());
@@ -791,15 +743,12 @@ public class Frontend
     }
   }
 
-  private static
-    void
-    writeMeta(
-      final @Nonnull Log log,
-      final @Nonnull File output_directory,
-      final @Nonnull Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> shaders,
-      final @Nonnull TASTShaderNameFlat shader)
-      throws IOException,
-        ConstraintError
+  private static void writeMeta(
+    final LogUsableType log,
+    final File output_directory,
+    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> shaders,
+    final TASTShaderNameFlat shader)
+    throws IOException
   {
     final File meta = new File(output_directory, "meta.xml");
     log.debug("writing " + meta);
@@ -816,35 +765,31 @@ public class Frontend
   }
 
   static void writeShader(
-    final @Nonnull Log logx,
-    final @Nonnull File v_name,
-    final @Nonnull File f_name,
-    final @Nonnull Pair<GASTShaderVertex, GASTShaderFragment> pair)
-    throws ConstraintError,
-      IOException
+    final LogUsableType logx,
+    final File v_name,
+    final File f_name,
+    final Pair<GASTShaderVertex, GASTShaderFragment> pair)
+    throws IOException
   {
     logx.debug("writing " + v_name);
     final FileOutputStream vout = new FileOutputStream(v_name);
-    GWriter.writeVertexShader(vout, pair.first);
+    GWriter.writeVertexShader(vout, pair.getLeft());
     vout.flush();
     vout.close();
 
     logx.debug("writing " + f_name);
     final FileOutputStream fout = new FileOutputStream(f_name);
-    GWriter.writeFragmentShader(fout, pair.second);
+    GWriter.writeFragmentShader(fout, pair.getRight());
     fout.flush();
     fout.close();
   }
 
-  private static
-    void
-    writeShaders(
-      final @Nonnull Log logx,
-      final @Nonnull File output_directory,
-      final @Nonnull Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> shaders,
-      final @Nonnull TASTShaderNameFlat shader)
-      throws IOException,
-        ConstraintError
+  private static void writeShaders(
+    final LogUsableType logx,
+    final File output_directory,
+    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> shaders,
+    final TASTShaderNameFlat shader)
+    throws IOException
   {
     logx.info(String.format("writing shader %s", shader.show()));
 
@@ -856,41 +801,33 @@ public class Frontend
     for (final GVersion v : shaders.keySet()) {
       final Pair<GASTShaderVertex, GASTShaderFragment> pair = shaders.get(v);
 
-      v.versionAccept(new GVersionVisitor<Unit, IOException>() {
+      v.versionAccept(new GVersionVisitorType<Unit, IOException>() {
         @Override public Unit versionVisitES(
-          final @Nonnull GVersionES version)
+          final GVersionES version)
           throws IOException
         {
-          try {
-            final File v_name =
-              new File(output_directory, "glsl-es-"
-                + version.getNumber()
-                + ".v");
-            final File f_name =
-              new File(output_directory, "glsl-es-"
-                + version.getNumber()
-                + ".f");
-            Frontend.writeShader(logx, v_name, f_name, pair);
-            return Unit.unit();
-          } catch (final ConstraintError x) {
-            throw new UnreachableCodeException(x);
-          }
+          final File v_name =
+            new File(output_directory, "glsl-es-"
+              + version.getNumber()
+              + ".v");
+          final File f_name =
+            new File(output_directory, "glsl-es-"
+              + version.getNumber()
+              + ".f");
+          Frontend.writeShader(logx, v_name, f_name, pair);
+          return Unit.unit();
         }
 
         @Override public Unit versionVisitFull(
-          final @Nonnull GVersionFull version)
+          final GVersionFull version)
           throws IOException
         {
-          try {
-            final File v_name =
-              new File(output_directory, "glsl-" + version.getNumber() + ".v");
-            final File f_name =
-              new File(output_directory, "glsl-" + version.getNumber() + ".f");
-            Frontend.writeShader(logx, v_name, f_name, pair);
-            return Unit.unit();
-          } catch (final ConstraintError x) {
-            throw new UnreachableCodeException(x);
-          }
+          final File v_name =
+            new File(output_directory, "glsl-" + version.getNumber() + ".v");
+          final File f_name =
+            new File(output_directory, "glsl-" + version.getNumber() + ".f");
+          Frontend.writeShader(logx, v_name, f_name, pair);
+          return Unit.unit();
         }
       });
     }

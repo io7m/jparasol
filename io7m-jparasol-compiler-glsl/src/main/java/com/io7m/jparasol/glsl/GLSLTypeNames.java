@@ -16,11 +16,7 @@
 
 package com.io7m.jparasol.glsl;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
+import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jparasol.glsl.ast.GTypeName;
 import com.io7m.jparasol.typed.TType;
 import com.io7m.jparasol.typed.TType.TBoolean;
@@ -38,124 +34,139 @@ import com.io7m.jparasol.typed.TType.TVector3F;
 import com.io7m.jparasol.typed.TType.TVector3I;
 import com.io7m.jparasol.typed.TType.TVector4F;
 import com.io7m.jparasol.typed.TType.TVector4I;
-import com.io7m.jparasol.typed.TTypeVisitor;
+import com.io7m.jparasol.typed.TTypeVisitorType;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class GLSLTypeNames
+/**
+ * The names of GLSL types.
+ */
+
+@EqualityReference public final class GLSLTypeNames
 {
-  public static @Nonnull GTypeName getTypeName(
-    final @Nonnull TType type)
-    throws ConstraintError
+  /**
+   * @param type
+   *          The type
+   * @return The GLSL name of the given type
+   */
+
+  public static GTypeName getTypeName(
+    final TType type)
   {
-    Constraints.constrainArbitrary(
-      (type instanceof TRecord) == false,
-      "Type is built-in GLSL type");
+    if (type instanceof TRecord) {
+      throw new IllegalArgumentException("Expected a built-in type");
+    }
 
     return type
-      .ttypeVisitableAccept(new TTypeVisitor<GTypeName, ConstraintError>() {
+      .ttypeVisitableAccept(new TTypeVisitorType<GTypeName, UnreachableCodeException>() {
         @Override public GTypeName typeVisitBoolean(
-          final @Nonnull TBoolean t)
-          throws ConstraintError
+          final TBoolean t)
+          throws UnreachableCodeException
         {
           return new GTypeName("bool");
         }
 
         @Override public GTypeName typeVisitFloat(
-          final @Nonnull TFloat t)
-          throws ConstraintError
+          final TFloat t)
+          throws UnreachableCodeException
         {
           return new GTypeName("float");
         }
 
         @Override public GTypeName typeVisitFunction(
-          final @Nonnull TFunction t)
-          throws ConstraintError
+          final TFunction t)
+          throws UnreachableCodeException
         {
           throw new UnreachableCodeException();
         }
 
         @Override public GTypeName typeVisitInteger(
-          final @Nonnull TInteger t)
-          throws ConstraintError
+          final TInteger t)
+          throws UnreachableCodeException
         {
           return new GTypeName("int");
         }
 
         @Override public GTypeName typeVisitMatrix3x3F(
-          final @Nonnull TMatrix3x3F t)
-          throws ConstraintError
+          final TMatrix3x3F t)
+          throws UnreachableCodeException
         {
           return new GTypeName("mat3");
         }
 
         @Override public GTypeName typeVisitMatrix4x4F(
-          final @Nonnull TMatrix4x4F t)
-          throws ConstraintError
+          final TMatrix4x4F t)
+          throws UnreachableCodeException
         {
           return new GTypeName("mat4");
         }
 
         @Override public GTypeName typeVisitRecord(
-          final @Nonnull TRecord t)
-          throws ConstraintError
+          final TRecord t)
+          throws UnreachableCodeException
         {
           throw new UnreachableCodeException();
         }
 
         @Override public GTypeName typeVisitSampler2D(
-          final @Nonnull TSampler2D t)
-          throws ConstraintError
+          final TSampler2D t)
+          throws UnreachableCodeException
         {
           return new GTypeName("sampler2D");
         }
 
         @Override public GTypeName typeVisitSamplerCube(
-          final @Nonnull TSamplerCube t)
-          throws ConstraintError
+          final TSamplerCube t)
+          throws UnreachableCodeException
         {
           return new GTypeName("samplerCube");
         }
 
         @Override public GTypeName typeVisitVector2F(
-          final @Nonnull TVector2F t)
-          throws ConstraintError
+          final TVector2F t)
+          throws UnreachableCodeException
         {
           return new GTypeName("vec2");
         }
 
         @Override public GTypeName typeVisitVector2I(
-          final @Nonnull TVector2I t)
-          throws ConstraintError
+          final TVector2I t)
+          throws UnreachableCodeException
         {
           return new GTypeName("ivec2");
         }
 
         @Override public GTypeName typeVisitVector3F(
-          final @Nonnull TVector3F t)
-          throws ConstraintError
+          final TVector3F t)
+          throws UnreachableCodeException
         {
           return new GTypeName("vec3");
         }
 
         @Override public GTypeName typeVisitVector3I(
-          final @Nonnull TVector3I t)
-          throws ConstraintError
+          final TVector3I t)
+          throws UnreachableCodeException
         {
           return new GTypeName("ivec3");
         }
 
         @Override public GTypeName typeVisitVector4F(
-          final @Nonnull TVector4F t)
-          throws ConstraintError
+          final TVector4F t)
+          throws UnreachableCodeException
         {
           return new GTypeName("vec4");
         }
 
         @Override public GTypeName typeVisitVector4I(
-          final @Nonnull TVector4I t)
-          throws ConstraintError
+          final TVector4I t)
+          throws UnreachableCodeException
         {
           return new GTypeName("ivec4");
         }
       });
+  }
+
+  private GLSLTypeNames()
+  {
+    throw new UnreachableCodeException();
   }
 }

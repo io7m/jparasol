@@ -16,46 +16,45 @@
 
 package com.io7m.jparasol.untyped.ast.resolved;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-public final class UASTRShaderName
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public final class UASTRShaderName
 {
-  private final @Nonnull ModulePathFlat       flat;
-  private final @Nonnull TokenIdentifierLower name;
-  private final @Nonnull ModulePath           path;
+  private final ModulePathFlat       flat;
+  private final TokenIdentifierLower name;
+  private final ModulePath           path;
 
   public UASTRShaderName(
-    final @Nonnull ModulePath in_path,
-    final @Nonnull TokenIdentifierLower in_name)
-    throws ConstraintError
+    final ModulePath in_path,
+    final TokenIdentifierLower in_name)
   {
-    this.path = Constraints.constrainNotNull(in_path, "Path");
+    this.path = NullCheck.notNull(in_path, "Path");
     this.flat = ModulePathFlat.fromModulePath(in_path);
-    this.name = Constraints.constrainNotNull(in_name, "Name");
+    this.name = NullCheck.notNull(in_name, "Name");
   }
 
-  public @Nonnull ModulePathFlat getFlat()
+  public ModulePathFlat getFlat()
   {
     return this.flat;
   }
 
-  public @Nonnull TokenIdentifierLower getName()
+  public TokenIdentifierLower getName()
   {
     return this.name;
   }
 
-  public @Nonnull ModulePath getPath()
+  public ModulePath getPath()
   {
     return this.path;
   }
 
-  public @Nonnull String show()
+  public String show()
   {
     final StringBuilder s = new StringBuilder();
     s.append(this.flat.getActual());

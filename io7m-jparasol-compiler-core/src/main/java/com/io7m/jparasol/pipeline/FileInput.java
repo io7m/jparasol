@@ -19,45 +19,44 @@ package com.io7m.jparasol.pipeline;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+/**
+ * An input based on a file.
+ */
 
-public final class FileInput implements Input
+@EqualityStructural public final class FileInput implements InputType
 {
-  private final @Nonnull File        file;
-  private final boolean              internal;
-  private final @Nonnull InputStream stream;
+  private final File        file;
+  private final boolean     internal;
+  private final InputStream stream;
 
-  @Override public @Nonnull File getFile()
-  {
-    return this.file;
-  }
-
-  @Override public boolean isInternal()
-  {
-    return this.internal;
-  }
-
-  @Override public @Nonnull InputStream getStream()
-  {
-    return this.stream;
-  }
+  /**
+   * Construct a new file input.
+   * 
+   * @param in_internal
+   *          <code>true</code> if the unit to be parsed is "internal"
+   *          (standard library)
+   * @param in_file
+   *          The file name
+   * @param in_stream
+   *          An open stream for the file
+   */
 
   public FileInput(
     final boolean in_internal,
-    final @Nonnull File in_file,
-    final @Nonnull InputStream in_stream)
-    throws ConstraintError
+    final File in_file,
+    final InputStream in_stream)
   {
     this.internal = in_internal;
-    this.file = Constraints.constrainNotNull(in_file, "File");
-    this.stream = Constraints.constrainNotNull(in_stream, "Stream");
+    this.file = NullCheck.notNull(in_file, "File");
+    this.stream = NullCheck.notNull(in_stream, "Stream");
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -81,6 +80,16 @@ public final class FileInput implements Input
     return true;
   }
 
+  @Override public File getFile()
+  {
+    return this.file;
+  }
+
+  @Override public InputStream getStream()
+  {
+    return this.stream;
+  }
+
   @Override public int hashCode()
   {
     final int prime = 31;
@@ -89,6 +98,11 @@ public final class FileInput implements Input
     result = (prime * result) + (this.internal ? 1231 : 1237);
     result = (prime * result) + this.stream.hashCode();
     return result;
+  }
+
+  @Override public boolean isInternal()
+  {
+    return this.internal;
   }
 
   @Override public String toString()
@@ -101,6 +115,8 @@ public final class FileInput implements Input
     builder.append(" ");
     builder.append(this.stream);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

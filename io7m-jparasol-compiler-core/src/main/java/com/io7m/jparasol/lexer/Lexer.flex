@@ -18,9 +18,8 @@ package com.io7m.jparasol.lexer;
 
 import java.io.File;
 import java.io.IOException;
-import javax.annotation.Nonnull;
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+
+// CHECKSTYLE:OFF
 
 %%
 
@@ -42,15 +41,14 @@ import com.io7m.jaux.Constraints.ConstraintError;
     return this.yylex();
   }
 
-  private @Nonnull File file = new File("<stdin>");
+  private  File file = new File("<stdin>");
 
-  public void setFile(final @Nonnull File file)
-    throws ConstraintError
+  public void setFile(final  File file)
   {
-    this.file = Constraints.constrainNotNull(file, "File name");
+    this.file = NullCheck.notNull(file, "File name");
   }
 
-  public @Nonnull File getFile()
+  public  File getFile()
   {
     return this.file;
   }

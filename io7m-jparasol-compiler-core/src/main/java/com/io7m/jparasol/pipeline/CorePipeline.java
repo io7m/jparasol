@@ -21,27 +21,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jlog.Level;
-import com.io7m.jlog.Log;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.lexer.Lexer;
-import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.parser.Parser;
-import com.io7m.jparasol.parser.ParserError;
 import com.io7m.jparasol.typed.TypeChecker;
-import com.io7m.jparasol.typed.TypeCheckerError;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.untyped.ModuleStructure;
-import com.io7m.jparasol.untyped.ModuleStructureError;
 import com.io7m.jparasol.untyped.Resolver;
-import com.io7m.jparasol.untyped.ResolverError;
 import com.io7m.jparasol.untyped.UniqueBinders;
-import com.io7m.jparasol.untyped.UniqueBindersError;
-import com.io7m.jparasol.untyped.UnitCombinerError;
 import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
 import com.io7m.jparasol.untyped.ast.initial.UASTICompilation;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
@@ -53,9 +47,9 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
  * output.
  */
 
-public final class CorePipeline
+@EqualityReference public final class CorePipeline
 {
-  private static final @Nonnull HashSet<String> STANDARD_LIBRARY;
+  private static final Set<String> STANDARD_LIBRARY;
 
   static {
     STANDARD_LIBRARY = new HashSet<String>();
@@ -74,64 +68,86 @@ public final class CorePipeline
     CorePipeline.STANDARD_LIBRARY.add("Vector4i.p");
   }
 
-  public static @Nonnull CorePipeline newPipeline(
-    final @Nonnull Log log)
+  /**
+   * Construct a new compiler pipeline.
+   * 
+   * @param log
+   *          The log interface
+   * @return A new pipeline
+   */
+
+  public static CorePipeline newPipeline(
+    final LogUsableType log)
   {
     return new CorePipeline(log);
   }
 
-  private final @Nonnull ArrayList<Input> inputs;
-  private final @Nonnull Log              log;
+  private final List<InputType> inputs;
+  private final LogUsableType   log;
 
   private CorePipeline(
-    final @Nonnull Log in_log)
+    final LogUsableType in_log)
   {
-    this.log = new Log(in_log, "pipeline");
-    this.inputs = new ArrayList<Input>();
+    this.log = NullCheck.notNull(in_log, "Log").with("pipeline");
+    this.inputs = new ArrayList<InputType>();
   }
 
+  /**
+   * Add an input to the pipeline.
+   * 
+   * @param input
+   *          An input
+   */
+
   public void pipeAddInput(
-    final @Nonnull Input input)
+    final InputType input)
   {
-    if (this.log.enabled(Level.LOG_DEBUG)) {
+    NullCheck.notNull(input, "Input");
+
+    if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
       final String internal = input.isInternal() ? "internal " : "";
-      this.log.debug(String.format(
-        "Added %sinput %s",
-        internal,
-        input.getFile()));
+      final String r =
+        String.format("Added %sinput %s", internal, input.getFile());
+      assert r != null;
+      this.log.debug(r);
     }
+
     this.inputs.add(input);
   }
 
+  /**
+   * Add the standard library to the pipeline.
+   */
+
   public void pipeAddStandardLibrary()
   {
-    try {
-      for (final String b : CorePipeline.STANDARD_LIBRARY) {
-        final String p = "/com/io7m/jparasol/" + b;
-        @SuppressWarnings("resource") final InputStream s =
-          CorePipeline.class.getResourceAsStream(p);
-        assert s != null;
-        final File f = new File(p);
-        this.pipeAddInput(new FileInput(true, f, s));
-      }
-    } catch (final ConstraintError x) {
-      throw new UnreachableCodeException(x);
+    for (final String b : CorePipeline.STANDARD_LIBRARY) {
+      final String p = "/com/io7m/jparasol/" + b;
+      @SuppressWarnings("resource") final InputStream s =
+        CorePipeline.class.getResourceAsStream(p);
+      assert s != null;
+      final File f = new File(p);
+      this.pipeAddInput(new FileInput(true, f, s));
     }
   }
 
-  public @Nonnull TASTCompilation pipeCompile()
-    throws LexerError,
-      IOException,
-      ConstraintError,
-      ParserError,
-      UnitCombinerError,
-      ModuleStructureError,
-      UniqueBindersError,
-      TypeCheckerError,
-      ResolverError
+  /**
+   * Run the compiler.
+   * 
+   * @return A type-checked AST.
+   * @throws CompilerError
+   *           If an error occurs at any stage in the pipeline; the precise
+   *           type of exception describes which.
+   * @throws IOException
+   *           If an I/O error occurs
+   */
+
+  public TASTCompilation pipeCompile()
+    throws CompilerError,
+      IOException
   {
-    final ArrayList<UASTIUnit> units = new ArrayList<UASTIUnit>();
-    for (final Input i : this.inputs) {
+    final List<UASTIUnit> units = new ArrayList<UASTIUnit>();
+    for (final InputType i : this.inputs) {
       final Lexer lexer = new Lexer(i.getStream());
       lexer.setFile(i.getFile());
 
@@ -163,10 +179,17 @@ public final class CorePipeline
     return type_checker.check();
   }
 
+  /**
+   * Close the pipeline, closing all inputs.
+   * 
+   * @throws IOException
+   *           If an I/O error occurs
+   */
+
   public void pipeClose()
     throws IOException
   {
-    for (final Input i : this.inputs) {
+    for (final InputType i : this.inputs) {
       i.getStream().close();
     }
   }

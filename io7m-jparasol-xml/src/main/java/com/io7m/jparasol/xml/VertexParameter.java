@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,32 +16,29 @@
 
 package com.io7m.jparasol.xml;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
 import nu.xom.Attribute;
 import nu.xom.Element;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 
 /**
  * A vertex shader parameter.
  */
 
-@Immutable public final class VertexParameter implements
+@EqualityStructural public final class VertexParameter implements
   Comparable<VertexParameter>
 {
-  private final @Nonnull String name;
-  private final @Nonnull String type;
+  private final String name;
+  private final String type;
 
   VertexParameter(
-    final @Nonnull String in_name,
-    final @Nonnull String in_type)
-    throws ConstraintError
+    final String in_name,
+    final String in_type)
   {
-    this.name = Constraints.constrainNotNull(in_name, "Parameter name");
-    this.type = Constraints.constrainNotNull(in_type, "Parameter type");
+    this.name = NullCheck.notNull(in_name, "Parameter name");
+    this.type = NullCheck.notNull(in_type, "Parameter type");
   }
 
   @Override public int compareTo(
@@ -51,7 +48,7 @@ import com.io7m.jaux.Constraints.ConstraintError;
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -73,20 +70,20 @@ import com.io7m.jaux.Constraints.ConstraintError;
   }
 
   /**
-   * Retrieve the name of the parameter.
+   * @return The name of the parameter.
    */
 
-  public @Nonnull String getName()
+  public String getName()
   {
     return this.name;
   }
 
   /**
-   * Retrieve the name of the type of the parameter. This is the type as it
-   * appears in GLSL.
+   * @return The name of the type of the parameter. This is the type as it
+   *         appears in GLSL.
    */
 
-  public @Nonnull String getType()
+  public String getType()
   {
     return this.type;
   }
@@ -108,10 +105,16 @@ import com.io7m.jaux.Constraints.ConstraintError;
     builder.append(" ");
     builder.append(this.type);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 
-  public @Nonnull Element toXML()
+  /**
+   * @return The current output as XML
+   */
+
+  public Element toXML()
   {
     final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:parameter", uri);

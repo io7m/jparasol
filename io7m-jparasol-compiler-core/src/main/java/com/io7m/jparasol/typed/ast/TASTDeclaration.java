@@ -20,13 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Option;
-import com.io7m.jaux.functional.PartialFunction;
-import com.io7m.jaux.functional.Unit;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.PartialFunctionType;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
@@ -41,14 +39,17 @@ import com.io7m.jparasol.typed.TType.TRecord;
 import com.io7m.jparasol.typed.TType.TValueType;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public abstract class TASTDeclaration
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public abstract class TASTDeclaration
 {
   /**
    * The type of local declarations.
    */
 
-  public static abstract class TASTDeclarationLocalLevel extends
+  @EqualityReference public static abstract class TASTDeclarationLocalLevel extends
     TASTDeclaration
   {
     // Nothing
@@ -58,17 +59,17 @@ public abstract class TASTDeclaration
    * The type of module-level declarations.
    */
 
-  public static abstract class TASTDeclarationModuleLevel extends
+  @EqualityReference public static abstract class TASTDeclarationModuleLevel extends
     TASTDeclaration
   {
-    public abstract @Nonnull TokenIdentifierLower getName();
+    public abstract TokenIdentifierLower getName();
   }
 
   /**
    * The type of shader-level declarations.
    */
 
-  public static abstract class TASTDeclarationShaderLevel extends
+  @EqualityReference public static abstract class TASTDeclarationShaderLevel extends
     TASTDeclaration
   {
     // Nothing
@@ -78,81 +79,39 @@ public abstract class TASTDeclaration
    * The type of unit-level declarations.
    */
 
-  public static abstract class TASTDeclarationUnitLevel extends
+  @EqualityReference public static abstract class TASTDeclarationUnitLevel extends
     TASTDeclaration
   {
     // Nothing
   }
 
-  public static final class TASTDExternal
+  @EqualityReference public static final class TASTDExternal
   {
-    private final @Nonnull Option<TASTExpression> emulation;
-    private final boolean                         fragment_shader_allowed;
-    private final @Nonnull TokenIdentifierLower   name;
-    private final boolean                         vertex_shader_allowed;
+    private final OptionType<TASTExpression> emulation;
+    private final boolean                    fragment_shader_allowed;
+    private final TokenIdentifierLower       name;
+    private final boolean                    vertex_shader_allowed;
 
     public TASTDExternal(
-      final @Nonnull TokenIdentifierLower in_name,
+      final TokenIdentifierLower in_name,
       final boolean in_vertex_shader_allowed,
       final boolean in_fragment_shader_allowed,
-      final @Nonnull Option<TASTExpression> in_emulation)
-      throws ConstraintError
+      final OptionType<TASTExpression> in_emulation)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
       this.vertex_shader_allowed = in_vertex_shader_allowed;
       this.fragment_shader_allowed = in_fragment_shader_allowed;
-      this.emulation =
-        Constraints.constrainNotNull(in_emulation, "Emulation");
+      this.emulation = NullCheck.notNull(in_emulation, "Emulation");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDExternal other = (TASTDExternal) obj;
-      if (!this.emulation.equals(other.emulation)) {
-        return false;
-      }
-      if (this.fragment_shader_allowed != other.fragment_shader_allowed) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (this.vertex_shader_allowed != other.vertex_shader_allowed) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull Option<TASTExpression> getEmulation()
+    public OptionType<TASTExpression> getEmulation()
     {
       return this.emulation;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.emulation.hashCode();
-      result =
-        (prime * result) + (this.fragment_shader_allowed ? 1231 : 1237);
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + (this.vertex_shader_allowed ? 1231 : 1237);
-      return result;
     }
 
     public boolean isFragmentShaderAllowed()
@@ -175,7 +134,9 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.fragment_shader_allowed);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -183,64 +144,33 @@ public abstract class TASTDeclaration
    * The type of function declarations.
    */
 
-  public static abstract class TASTDFunction extends TASTDTerm
+  @EqualityReference public static abstract class TASTDFunction extends
+    TASTDTerm
   {
-    @Override public abstract @Nonnull TFunction getType();
+    @Override public abstract TFunction getType();
   }
 
-  public static final class TASTDFunctionArgument
+  @EqualityReference public static final class TASTDFunctionArgument
   {
-    private final @Nonnull TASTTermNameLocal name;
-    private final @Nonnull TValueType        type;
+    private final TASTTermNameLocal name;
+    private final TValueType        type;
 
     public TASTDFunctionArgument(
-      final @Nonnull TASTTermNameLocal in_name,
-      final @Nonnull TValueType in_type)
-      throws ConstraintError
+      final TASTTermNameLocal in_name,
+      final TValueType in_type)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDFunctionArgument other = (TASTDFunctionArgument) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TASTTermNameLocal getName()
+    public TASTTermNameLocal getName()
     {
       return this.name;
     }
 
-    public @Nonnull TValueType getType()
+    public TValueType getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -251,7 +181,9 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.type.getName());
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -259,100 +191,59 @@ public abstract class TASTDeclaration
    * Fully defined functions.
    */
 
-  public static final class TASTDFunctionDefined extends TASTDFunction
+  @EqualityReference public static final class TASTDFunctionDefined extends
+    TASTDFunction
   {
-    private final @Nonnull List<TASTDFunctionArgument> arguments;
-    private final @Nonnull TASTExpression              body;
-    private final @Nonnull TokenIdentifierLower        name;
-    private final @Nonnull TFunction                   type;
+    private final List<TASTDFunctionArgument> arguments;
+    private final TASTExpression              body;
+    private final TokenIdentifierLower        name;
+    private final TFunction                   type;
 
     public TASTDFunctionDefined(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull List<TASTDFunctionArgument> in_arguments,
-      final @Nonnull TASTExpression in_body,
-      final @Nonnull TFunction in_type)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final List<TASTDFunctionArgument> in_arguments,
+      final TASTExpression in_body,
+      final TFunction in_type)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.arguments =
-        Constraints.constrainNotNull(in_arguments, "Arguments");
-      this.body = Constraints.constrainNotNull(in_body, "Body");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
+      this.body = NullCheck.notNull(in_body, "Body");
+      this.type = NullCheck.notNull(in_type, "Type");
 
       assert in_body.getType().equals(in_type.getReturnType());
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDFunctionDefined other = (TASTDFunctionDefined) obj;
-      if (!this.arguments.equals(other.arguments)) {
-        return false;
-      }
-      if (!this.body.equals(other.body)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull List<TASTDFunctionArgument> getArguments()
+    public List<TASTDFunctionArgument> getArguments()
     {
       return this.arguments;
     }
 
-    public @Nonnull TASTExpression getBody()
+    public TASTExpression getBody()
     {
       return this.body;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull TType getReturnType()
+    public TType getReturnType()
     {
       return this.body.getType();
     }
 
-    @Override public @Nonnull TFunction getType()
+    @Override public TFunction getType()
     {
       return this.type;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.arguments.hashCode();
-      result = (prime * result) + this.body.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
-    }
-
     @Override public
-      <T, E extends Throwable, V extends TASTTermVisitor<T, E>>
+      <T, E extends Throwable, V extends TASTTermVisitorType<T, E>>
       T
       termVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.termVisitFunctionDefined(this);
     }
@@ -367,7 +258,9 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.body);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -375,104 +268,64 @@ public abstract class TASTDeclaration
    * Functions with external declarations (private FFI).
    */
 
-  public static final class TASTDFunctionExternal extends TASTDFunction
+  @EqualityReference public static final class TASTDFunctionExternal extends
+    TASTDFunction
   {
-    private final @Nonnull List<TASTDFunctionArgument> arguments;
-    private final @Nonnull TASTDExternal               external;
-    private final @Nonnull TokenIdentifierLower        name;
-    private final @Nonnull TFunction                   type;
+    private final List<TASTDFunctionArgument> arguments;
+    private final TASTDExternal               external;
+    private final TokenIdentifierLower        name;
+    private final TFunction                   type;
 
     public TASTDFunctionExternal(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull List<TASTDFunctionArgument> in_arguments,
-      final @Nonnull TFunction in_type,
-      final @Nonnull TASTDExternal in_external)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final List<TASTDFunctionArgument> in_arguments,
+      final TFunction in_type,
+      final TASTDExternal in_external)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.arguments =
-        Constraints.constrainNotNull(in_arguments, "Arguments");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
-      this.external = Constraints.constrainNotNull(in_external, "External");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.external = NullCheck.notNull(in_external, "External");
 
-      this.external.getEmulation().mapPartial(
-        new PartialFunction<TASTExpression, Unit, ConstraintError>() {
-          @Override public Unit call(
-            final @Nonnull TASTExpression x)
-            throws ConstraintError
-          {
-            assert x.getType().equals(in_type.getReturnType());
-            return Unit.unit();
-          }
-        });
+      this.external
+        .getEmulation()
+        .mapPartial(
+          new PartialFunctionType<TASTExpression, Unit, UnreachableCodeException>() {
+            @Override public Unit call(
+              final TASTExpression x)
+            {
+              assert x.getType().equals(in_type.getReturnType());
+              return Unit.unit();
+            }
+          });
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDFunctionExternal other = (TASTDFunctionExternal) obj;
-      if (!this.arguments.equals(other.arguments)) {
-        return false;
-      }
-      if (!this.external.equals(other.external)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull List<TASTDFunctionArgument> getArguments()
+    public List<TASTDFunctionArgument> getArguments()
     {
       return this.arguments;
     }
 
-    public @Nonnull TASTDExternal getExternal()
+    public TASTDExternal getExternal()
     {
       return this.external;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    @Override public @Nonnull TFunction getType()
+    @Override public TFunction getType()
     {
       return this.type;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.arguments.hashCode();
-      result = (prime * result) + this.external.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
-    }
-
     @Override public
-      <T, E extends Throwable, V extends TASTTermVisitor<T, E>>
+      <T, E extends Throwable, V extends TASTTermVisitorType<T, E>>
       T
       termVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.termVisitFunctionExternal(this);
     }
@@ -489,7 +342,9 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.external);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -497,59 +352,28 @@ public abstract class TASTDeclaration
    * Import declarations.
    */
 
-  public static final class TASTDImport extends TASTDeclaration
+  @EqualityReference public static final class TASTDImport extends
+    TASTDeclaration
   {
-    private final @Nonnull ModulePath                   path;
-    private final @Nonnull Option<TokenIdentifierUpper> rename;
+    private final ModulePath                       path;
+    private final OptionType<TokenIdentifierUpper> rename;
 
     public TASTDImport(
-      final @Nonnull ModulePath in_path,
-      final @Nonnull Option<TokenIdentifierUpper> in_rename)
-      throws ConstraintError
+      final ModulePath in_path,
+      final OptionType<TokenIdentifierUpper> in_rename)
     {
-      this.path = Constraints.constrainNotNull(in_path, "Path");
-      this.rename = Constraints.constrainNotNull(in_rename, "Rename");
+      this.path = NullCheck.notNull(in_path, "Path");
+      this.rename = NullCheck.notNull(in_rename, "Rename");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDImport other = (TASTDImport) obj;
-      if (!this.path.equals(other.path)) {
-        return false;
-      }
-      if (!this.rename.equals(other.rename)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull ModulePath getPath()
+    public ModulePath getPath()
     {
       return this.path;
     }
 
-    public @Nonnull Option<TokenIdentifierUpper> getRename()
+    public OptionType<TokenIdentifierUpper> getRename()
     {
       return this.rename;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.path.hashCode();
-      result = (prime * result) + this.rename.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -560,7 +384,9 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.rename);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -568,152 +394,85 @@ public abstract class TASTDeclaration
    * Module declarations.
    */
 
-  public static final class TASTDModule extends TASTDeclarationUnitLevel
+  @EqualityReference public static final class TASTDModule extends
+    TASTDeclarationUnitLevel
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDImport> imported_modules;
-    private final @Nonnull Map<String, TASTDImport>         imported_names;
-    private final @Nonnull Map<String, TASTDImport>         imported_renames;
-    private final @Nonnull List<TASTDImport>                imports;
-    private final @Nonnull ModulePath                       path;
-    private final @Nonnull List<String>                     shader_topology;
-    private final @Nonnull Map<String, TASTDShader>         shaders;
-    private final @Nonnull List<String>                     term_topology;
-    private final @Nonnull Map<String, TASTDTerm>           terms;
-    private final @Nonnull List<String>                     type_topology;
-    private final @Nonnull Map<String, TASTDType>           types;
+    private final Map<ModulePathFlat, TASTDImport> imported_modules;
+    private final Map<String, TASTDImport>         imported_names;
+    private final Map<String, TASTDImport>         imported_renames;
+    private final List<TASTDImport>                imports;
+    private final ModulePath                       path;
+    private final List<String>                     shader_topology;
+    private final Map<String, TASTDShader>         shaders;
+    private final List<String>                     term_topology;
+    private final Map<String, TASTDTerm>           terms;
+    private final List<String>                     type_topology;
+    private final Map<String, TASTDType>           types;
 
     public TASTDModule(
-      final @Nonnull ModulePath in_path,
-      final @Nonnull List<TASTDImport> in_imports,
-      final @Nonnull Map<ModulePathFlat, TASTDImport> in_imported_modules,
-      final @Nonnull Map<String, TASTDImport> in_imported_names,
-      final @Nonnull Map<String, TASTDImport> in_imported_renames,
-      final @Nonnull Map<String, TASTDTerm> in_terms,
-      final @Nonnull List<String> in_term_topology,
-      final @Nonnull Map<String, TASTDType> in_types,
-      final @Nonnull List<String> in_type_topology,
-      final @Nonnull Map<String, TASTDShader> in_shaders,
-      final @Nonnull List<String> in_shader_topology)
-      throws ConstraintError
+      final ModulePath in_path,
+      final List<TASTDImport> in_imports,
+      final Map<ModulePathFlat, TASTDImport> in_imported_modules,
+      final Map<String, TASTDImport> in_imported_names,
+      final Map<String, TASTDImport> in_imported_renames,
+      final Map<String, TASTDTerm> in_terms,
+      final List<String> in_term_topology,
+      final Map<String, TASTDType> in_types,
+      final List<String> in_type_topology,
+      final Map<String, TASTDShader> in_shaders,
+      final List<String> in_shader_topology)
     {
-      this.path = Constraints.constrainNotNull(in_path, "Path");
+      this.path = NullCheck.notNull(in_path, "Path");
 
-      this.imports = Constraints.constrainNotNull(in_imports, "Imports");
+      this.imports = NullCheck.notNull(in_imports, "Imports");
       this.imported_modules =
-        Constraints.constrainNotNull(in_imported_modules, "Imported modules");
+        NullCheck.notNull(in_imported_modules, "Imported modules");
       this.imported_names =
-        Constraints.constrainNotNull(in_imported_names, "Imported names");
+        NullCheck.notNull(in_imported_names, "Imported names");
       this.imported_renames =
-        Constraints.constrainNotNull(in_imported_renames, "Imported renames");
+        NullCheck.notNull(in_imported_renames, "Imported renames");
 
-      this.terms = Constraints.constrainNotNull(in_terms, "Terms");
+      this.terms = NullCheck.notNull(in_terms, "Terms");
       this.term_topology =
-        Constraints.constrainNotNull(in_term_topology, "Term topology");
+        NullCheck.notNull(in_term_topology, "Term topology");
 
-      this.types = Constraints.constrainNotNull(in_types, "Types");
+      this.types = NullCheck.notNull(in_types, "Types");
       this.type_topology =
-        Constraints.constrainNotNull(in_type_topology, "Type topology");
+        NullCheck.notNull(in_type_topology, "Type topology");
 
-      this.shaders = Constraints.constrainNotNull(in_shaders, "Shaders");
+      this.shaders = NullCheck.notNull(in_shaders, "Shaders");
       this.shader_topology =
-        Constraints.constrainNotNull(in_shader_topology, "Shader topology");
+        NullCheck.notNull(in_shader_topology, "Shader topology");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDModule other = (TASTDModule) obj;
-      if (!this.imported_modules.equals(other.imported_modules)) {
-        return false;
-      }
-      if (!this.imported_names.equals(other.imported_names)) {
-        return false;
-      }
-      if (!this.imported_renames.equals(other.imported_renames)) {
-        return false;
-      }
-      if (!this.imports.equals(other.imports)) {
-        return false;
-      }
-      if (!this.path.equals(other.path)) {
-        return false;
-      }
-      if (!this.shader_topology.equals(other.shader_topology)) {
-        return false;
-      }
-      if (!this.shaders.equals(other.shaders)) {
-        return false;
-      }
-      if (!this.term_topology.equals(other.term_topology)) {
-        return false;
-      }
-      if (!this.terms.equals(other.terms)) {
-        return false;
-      }
-      if (!this.type_topology.equals(other.type_topology)) {
-        return false;
-      }
-      if (!this.types.equals(other.types)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull List<TASTDImport> getImports()
+    public List<TASTDImport> getImports()
     {
       return this.imports;
     }
 
-    public @Nonnull ModulePath getPath()
+    public ModulePath getPath()
     {
       return this.path;
     }
 
-    public @Nonnull Map<String, TASTDShader> getShaders()
+    public Map<String, TASTDShader> getShaders()
     {
       return this.shaders;
     }
 
-    public @Nonnull List<String> getShaderTopology()
+    public List<String> getShaderTopology()
     {
       return this.shader_topology;
     }
 
-    public @Nonnull Map<String, TASTDTerm> getTerms()
+    public Map<String, TASTDTerm> getTerms()
     {
       return this.terms;
     }
 
-    public @Nonnull Map<String, TASTDType> getTypes()
+    public Map<String, TASTDType> getTypes()
     {
       return this.types;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.imported_modules.hashCode();
-      result = (prime * result) + this.imported_names.hashCode();
-      result = (prime * result) + this.imported_renames.hashCode();
-      result = (prime * result) + this.imports.hashCode();
-      result = (prime * result) + this.path.hashCode();
-      result = (prime * result) + this.shader_topology.hashCode();
-      result = (prime * result) + this.shaders.hashCode();
-      result = (prime * result) + this.term_topology.hashCode();
-      result = (prime * result) + this.terms.hashCode();
-      result = (prime * result) + this.type_topology.hashCode();
-      result = (prime * result) + this.types.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -722,7 +481,9 @@ public abstract class TASTDeclaration
       builder.append("[TASTDModule ");
       builder.append(ModulePathFlat.fromModulePath(this.path).getActual());
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -730,47 +491,20 @@ public abstract class TASTDeclaration
    * Package declarations.
    */
 
-  public static final class TASTDPackage extends TASTDeclarationUnitLevel
+  @EqualityReference public static final class TASTDPackage extends
+    TASTDeclarationUnitLevel
   {
-    private final @Nonnull PackagePath path;
+    private final PackagePath path;
 
     public TASTDPackage(
-      final @Nonnull PackagePath in_path)
-      throws ConstraintError
+      final PackagePath in_path)
     {
-      this.path = Constraints.constrainNotNull(in_path, "Path");
+      this.path = NullCheck.notNull(in_path, "Path");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDPackage other = (TASTDPackage) obj;
-      if (!this.path.equals(other.path)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull PackagePath getPath()
+    public PackagePath getPath()
     {
       return this.path;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.path.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -779,7 +513,9 @@ public abstract class TASTDeclaration
       builder.append("[TASTDPackage ");
       builder.append(this.path);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -787,146 +523,96 @@ public abstract class TASTDeclaration
    * The type of shader declarations.
    */
 
-  public static abstract class TASTDShader extends TASTDeclarationModuleLevel implements
-    TASTShaderVisitable
+  @EqualityReference public static abstract class TASTDShader extends
+    TASTDeclarationModuleLevel
   {
-    private final @Nonnull TokenIdentifierLower name;
+    private final TokenIdentifierLower name;
+
+    public abstract
+      <T, E extends Throwable, V extends TASTShaderVisitorType<T, E>>
+      T
+      shaderVisitableAccept(
+        final V v)
+        throws E;
 
     protected TASTDShader(
-      final @Nonnull TokenIdentifierLower in_name)
-      throws ConstraintError
+      final TokenIdentifierLower in_name)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShader other = (TASTDShader) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    @Override public final @Nonnull TokenIdentifierLower getName()
+    @Override public final TokenIdentifierLower getName()
     {
       return this.name;
     }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
   }
 
-  public static final class TASTDShaderFragment extends TASTDShader implements
-    TASTFragmentShaderVisitable
+  @EqualityReference public static final class TASTDShaderFragment extends
+    TASTDShader
   {
-    private final @Nonnull List<TASTDShaderFragmentInput>            inputs;
-    private final @Nonnull List<TASTDShaderFragmentLocal>            locals;
-    private final @Nonnull List<TASTDShaderFragmentOutput>           outputs;
-    private final @Nonnull List<TASTDShaderFragmentParameter>        parameters;
-    private final @Nonnull List<TASTDShaderFragmentOutputAssignment> writes;
+    private final List<TASTDShaderFragmentInput>            inputs;
+    private final List<TASTDShaderFragmentLocal>            locals;
+    private final List<TASTDShaderFragmentOutput>           outputs;
+    private final List<TASTDShaderFragmentParameter>        parameters;
+    private final List<TASTDShaderFragmentOutputAssignment> writes;
 
     public TASTDShaderFragment(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<TASTDShaderFragmentInput> in_inputs,
-      final @Nonnull List<TASTDShaderFragmentOutput> in_outputs,
-      final @Nonnull List<TASTDShaderFragmentParameter> in_parameters,
-      final @Nonnull List<TASTDShaderFragmentLocal> in_locals,
-      final @Nonnull List<TASTDShaderFragmentOutputAssignment> in_writes)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final List<TASTDShaderFragmentInput> in_inputs,
+      final List<TASTDShaderFragmentOutput> in_outputs,
+      final List<TASTDShaderFragmentParameter> in_parameters,
+      final List<TASTDShaderFragmentLocal> in_locals,
+      final List<TASTDShaderFragmentOutputAssignment> in_writes)
     {
       super(name);
-      this.inputs = Constraints.constrainNotNull(in_inputs, "Inputs");
-      this.outputs = Constraints.constrainNotNull(in_outputs, "Outputs");
-      this.parameters =
-        Constraints.constrainNotNull(in_parameters, "Parameters");
-      this.locals = Constraints.constrainNotNull(in_locals, "Locals");
-      this.writes = Constraints.constrainNotNull(in_writes, "Writes");
+      this.inputs = NullCheck.notNull(in_inputs, "Inputs");
+      this.outputs = NullCheck.notNull(in_outputs, "Outputs");
+      this.parameters = NullCheck.notNull(in_parameters, "Parameters");
+      this.locals = NullCheck.notNull(in_locals, "Locals");
+      this.writes = NullCheck.notNull(in_writes, "Writes");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderFragment other = (TASTDShaderFragment) obj;
-      if (!this.inputs.equals(other.inputs)) {
-        return false;
-      }
-      if (!this.locals.equals(other.locals)) {
-        return false;
-      }
-      if (!this.outputs.equals(other.outputs)) {
-        return false;
-      }
-      if (!this.parameters.equals(other.parameters)) {
-        return false;
-      }
-      if (!this.writes.equals(other.writes)) {
-        return false;
-      }
-      return true;
-    }
-
-    @Override public
-      <F, PI, PP, PO, L, O, E extends Throwable, V extends TASTFragmentShaderVisitor<F, PI, PP, PO, L, O, E>>
+    public
+      <F, PI, PP, PO, L, O, E extends Throwable, V extends TASTFragmentShaderVisitorType<F, PI, PP, PO, L, O, E>>
       F
       fragmentShaderVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       final List<PI> r_inputs = new ArrayList<PI>();
       for (final TASTDShaderFragmentInput i : this.inputs) {
+        assert i != null;
         final PI ri = v.fragmentShaderVisitInput(i);
         r_inputs.add(ri);
       }
 
       final List<PO> r_outputs = new ArrayList<PO>();
       for (final TASTDShaderFragmentOutput o : this.outputs) {
+        assert o != null;
         final PO ro = v.fragmentShaderVisitOutput(o);
         r_outputs.add(ro);
       }
 
       final List<PP> r_parameters = new ArrayList<PP>();
       for (final TASTDShaderFragmentParameter p : this.parameters) {
+        assert p != null;
         final PP rp = v.fragmentShaderVisitParameter(p);
         r_parameters.add(rp);
       }
 
-      final TASTFragmentShaderLocalVisitor<L, E> lv =
+      final List<L> r_locals = new ArrayList<L>();
+      final TASTFragmentShaderLocalVisitorType<L, E> lv =
         v.fragmentShaderVisitLocalsPre();
-
-      final ArrayList<L> r_locals = new ArrayList<L>();
-      for (final TASTDShaderFragmentLocal l : this.locals) {
-        final L rl = l.fragmentShaderLocalVisitableAccept(lv);
-        r_locals.add(rl);
+      if (lv != null) {
+        for (final TASTDShaderFragmentLocal l : this.locals) {
+          final L rl = l.fragmentShaderLocalVisitableAccept(lv);
+          r_locals.add(rl);
+        }
       }
 
-      final ArrayList<O> r_assigns = new ArrayList<O>();
+      final List<O> r_assigns = new ArrayList<O>();
       for (final TASTDShaderFragmentOutputAssignment w : this.writes) {
+        assert w != null;
         final O rw = v.fragmentShaderVisitOutputAssignment(w);
         r_assigns.add(rw);
       }
@@ -940,50 +626,37 @@ public abstract class TASTDeclaration
         this);
     }
 
-    public @Nonnull List<TASTDShaderFragmentInput> getInputs()
+    public List<TASTDShaderFragmentInput> getInputs()
     {
       return this.inputs;
     }
 
-    public @Nonnull List<TASTDShaderFragmentLocal> getLocals()
+    public List<TASTDShaderFragmentLocal> getLocals()
     {
       return this.locals;
     }
 
-    public @Nonnull List<TASTDShaderFragmentOutput> getOutputs()
+    public List<TASTDShaderFragmentOutput> getOutputs()
     {
       return this.outputs;
     }
 
-    public @Nonnull List<TASTDShaderFragmentParameter> getParameters()
+    public List<TASTDShaderFragmentParameter> getParameters()
     {
       return this.parameters;
     }
 
-    public @Nonnull List<TASTDShaderFragmentOutputAssignment> getWrites()
+    public List<TASTDShaderFragmentOutputAssignment> getWrites()
     {
       return this.writes;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.inputs.hashCode();
-      result = (prime * result) + this.locals.hashCode();
-      result = (prime * result) + this.outputs.hashCode();
-      result = (prime * result) + this.parameters.hashCode();
-      result = (prime * result) + this.writes.hashCode();
-      return result;
-    }
-
     @Override public
-      <T, E extends Throwable, V extends TASTShaderVisitor<T, E>>
+      <T, E extends Throwable, V extends TASTShaderVisitorType<T, E>>
       T
       shaderVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitFragmentShader(this);
     }
@@ -1002,54 +675,28 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.writes);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TASTDShaderFragmentInput extends
+  @EqualityReference public static final class TASTDShaderFragmentInput extends
     TASTDShaderFragmentParameters
   {
-    private final @Nonnull TASTTermNameLocal name;
+    private final TASTTermNameLocal name;
 
     public TASTDShaderFragmentInput(
-      final @Nonnull TASTTermNameLocal in_name,
-      final @Nonnull TValueType type)
-      throws ConstraintError
+      final TASTTermNameLocal in_name,
+      final TValueType type)
     {
       super(type);
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderFragmentInput other = (TASTDShaderFragmentInput) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TASTTermNameLocal getName()
+    public TASTTermNameLocal getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -1058,83 +705,55 @@ public abstract class TASTDeclaration
       builder.append("[TASTDShaderFragmentInput ");
       builder.append(this.name.show());
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static abstract class TASTDShaderFragmentLocal extends
-    TASTDeclarationShaderLevel implements TASTFragmentShaderLocalVisitable
+  @EqualityReference public static abstract class TASTDShaderFragmentLocal extends
+    TASTDeclarationShaderLevel
   {
-    // Nothing
+    public abstract
+      <L, E extends Throwable, V extends TASTFragmentShaderLocalVisitorType<L, E>>
+      L
+      fragmentShaderLocalVisitableAccept(
+        final V v)
+        throws E;
   }
 
-  public static final class TASTDShaderFragmentLocalDiscard extends
+  @EqualityReference public static final class TASTDShaderFragmentLocalDiscard extends
     TASTDShaderFragmentLocal
   {
-    private final @Nonnull TokenDiscard   discard;
-    private final @Nonnull TASTExpression expression;
+    private final TokenDiscard   discard;
+    private final TASTExpression expression;
 
     public TASTDShaderFragmentLocalDiscard(
       final TokenDiscard in_discard,
       final TASTExpression in_expression)
-      throws ConstraintError
     {
-      this.discard = Constraints.constrainNotNull(in_discard, "Discard");
-      this.expression =
-        Constraints.constrainNotNull(in_expression, "Expression");
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderFragmentLocalDiscard other =
-        (TASTDShaderFragmentLocalDiscard) obj;
-      if (!this.discard.equals(other.discard)) {
-        return false;
-      }
-      if (!this.expression.equals(other.expression)) {
-        return false;
-      }
-      return true;
+      this.discard = NullCheck.notNull(in_discard, "Discard");
+      this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
     @Override public
-      <L, E extends Throwable, V extends TASTFragmentShaderLocalVisitor<L, E>>
+      <L, E extends Throwable, V extends TASTFragmentShaderLocalVisitorType<L, E>>
       L
       fragmentShaderLocalVisitableAccept(
         final V v)
-        throws E,
-          ConstraintError
+        throws E
     {
       return v.fragmentShaderVisitLocalDiscard(this);
     }
 
-    public @Nonnull TokenDiscard getDiscard()
+    public TokenDiscard getDiscard()
     {
       return this.discard;
     }
 
-    public @Nonnull TASTExpression getExpression()
+    public TASTExpression getExpression()
     {
       return this.expression;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.discard.hashCode();
-      result = (prime * result) + this.expression.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -1143,64 +762,36 @@ public abstract class TASTDeclaration
       builder.append("[TASTDShaderFragmentLocalDiscard ");
       builder.append(this.expression);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TASTDShaderFragmentLocalValue extends
+  @EqualityReference public static final class TASTDShaderFragmentLocalValue extends
     TASTDShaderFragmentLocal
   {
-    private final @Nonnull TASTDValueLocal value;
+    private final TASTDValueLocal value;
 
     public TASTDShaderFragmentLocalValue(
-      final @Nonnull TASTDValueLocal in_value)
-      throws ConstraintError
+      final TASTDValueLocal in_value)
     {
-      this.value = Constraints.constrainNotNull(in_value, "Value");
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderFragmentLocalValue other =
-        (TASTDShaderFragmentLocalValue) obj;
-      if (!this.value.equals(other.value)) {
-        return false;
-      }
-      return true;
+      this.value = NullCheck.notNull(in_value, "Value");
     }
 
     @Override public
-      <L, E extends Throwable, V extends TASTFragmentShaderLocalVisitor<L, E>>
+      <L, E extends Throwable, V extends TASTFragmentShaderLocalVisitorType<L, E>>
       L
       fragmentShaderLocalVisitableAccept(
         final V v)
-        throws E,
-          ConstraintError
+        throws E
     {
       return v.fragmentShaderVisitLocalValue(this);
     }
 
-    public @Nonnull TASTDValueLocal getValue()
+    public TASTDValueLocal getValue()
     {
       return this.value;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.value.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -1209,122 +800,60 @@ public abstract class TASTDeclaration
       builder.append("[TASTDShaderFragmentLocalValue ");
       builder.append(this.value);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static abstract class TASTDShaderFragmentOutput extends
-    TASTDShaderFragmentParameters implements
-    TASTFragmentShaderOutputVisitable
+  @EqualityReference public static abstract class TASTDShaderFragmentOutput extends
+    TASTDShaderFragmentParameters
   {
-    private final @Nonnull TokenIdentifierLower name;
+    public abstract
+      <O, E extends Throwable, V extends TASTFragmentShaderOutputVisitorType<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final V v)
+        throws E;
+
+    private final TokenIdentifierLower name;
 
     public TASTDShaderFragmentOutput(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull TValueType type)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final TValueType type)
     {
       super(type);
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderFragmentOutput other = (TASTDShaderFragmentOutput) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TokenIdentifierLower getName()
+    public final TokenIdentifierLower getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[TASTDShaderFragmentOutput ");
-      builder.append(this.name.getActual());
-      builder.append("]");
-      return builder.toString();
     }
   }
 
-  public static final class TASTDShaderFragmentOutputAssignment extends
+  @EqualityReference public static final class TASTDShaderFragmentOutputAssignment extends
     TASTDeclarationShaderLevel
   {
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull TASTEVariable        variable;
+    private final TokenIdentifierLower name;
+    private final TASTEVariable        variable;
 
     public TASTDShaderFragmentOutputAssignment(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull TASTEVariable in_variable)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final TASTEVariable in_variable)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.variable = Constraints.constrainNotNull(in_variable, "Variable");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.variable = NullCheck.notNull(in_variable, "Variable");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderFragmentOutputAssignment other =
-        (TASTDShaderFragmentOutputAssignment) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.variable.equals(other.variable)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull TASTEVariable getVariable()
+    public TASTEVariable getVariable()
     {
       return this.variable;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.variable.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -1335,52 +864,32 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.variable);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TASTDShaderFragmentOutputData extends
+  @EqualityReference public static final class TASTDShaderFragmentOutputData extends
     TASTDShaderFragmentOutput
   {
     private final int index;
 
     public TASTDShaderFragmentOutputData(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TValueType type,
+      final TokenIdentifierLower name,
+      final TValueType type,
       final int in_index)
-      throws ConstraintError
     {
       super(name, type);
       this.index = in_index;
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderFragmentOutputData other =
-        (TASTDShaderFragmentOutputData) obj;
-      if (this.index != other.index) {
-        return false;
-      }
-      return true;
-    }
-
     @Override public
-      <O, E extends Throwable, V extends TASTFragmentShaderOutputVisitor<O, E>>
+      <O, E extends Throwable, V extends TASTFragmentShaderOutputVisitorType<O, E>>
       O
       fragmentShaderOutputVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.fragmentShaderVisitOutputData(this);
     }
@@ -1390,91 +899,54 @@ public abstract class TASTDeclaration
       return this.index;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.index;
-      return result;
-    }
-
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[TASTDShaderFragmentOutputData index=");
       builder.append(this.index);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TASTDShaderFragmentOutputDepth extends
+  @EqualityReference public static final class TASTDShaderFragmentOutputDepth extends
     TASTDShaderFragmentOutput
   {
     public TASTDShaderFragmentOutputDepth(
-      final @Nonnull TokenIdentifierLower name)
-      throws ConstraintError
+      final TokenIdentifierLower name)
     {
       super(name, TFloat.get());
     }
 
     @Override public
-      <O, E extends Throwable, V extends TASTFragmentShaderOutputVisitor<O, E>>
+      <O, E extends Throwable, V extends TASTFragmentShaderOutputVisitorType<O, E>>
       O
       fragmentShaderOutputVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.fragmentShaderVisitOutputDepth(this);
     }
   }
 
-  public static final class TASTDShaderFragmentParameter extends
+  @EqualityReference public static final class TASTDShaderFragmentParameter extends
     TASTDShaderFragmentParameters
   {
-    private final @Nonnull TASTTermNameLocal name;
+    private final TASTTermNameLocal name;
 
     public TASTDShaderFragmentParameter(
-      final @Nonnull TASTTermNameLocal in_name,
-      final @Nonnull TValueType type)
-      throws ConstraintError
+      final TASTTermNameLocal in_name,
+      final TValueType type)
     {
       super(type);
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderFragmentParameter other =
-        (TASTDShaderFragmentParameter) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TASTTermNameLocal getName()
+    public TASTTermNameLocal getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -1483,132 +955,73 @@ public abstract class TASTDeclaration
       builder.append("[TASTDShaderFragmentParameter ");
       builder.append(this.name.show());
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static abstract class TASTDShaderFragmentParameters extends
+  @EqualityReference public static abstract class TASTDShaderFragmentParameters extends
     TASTDShaderParameters
   {
     TASTDShaderFragmentParameters(
-      final @Nonnull TValueType type)
-      throws ConstraintError
+      final TValueType type)
     {
       super(type);
     }
   }
 
-  public static abstract class TASTDShaderParameters extends
+  @EqualityReference public static abstract class TASTDShaderParameters extends
     TASTDeclarationShaderLevel
   {
-    private final @Nonnull TValueType type;
+    private final TValueType type;
 
     TASTDShaderParameters(
-      final @Nonnull TValueType in_type)
-      throws ConstraintError
+      final TValueType in_type)
     {
-      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderParameters other = (TASTDShaderParameters) obj;
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
-
-    public final @Nonnull TValueType getType()
+    public final TValueType getType()
     {
       return this.type;
     }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.type.hashCode();
-      return result;
-    }
   }
 
-  public static final class TASTDShaderProgram extends TASTDShader
+  @EqualityReference public static final class TASTDShaderProgram extends
+    TASTDShader
   {
-    private final @Nonnull TASTShaderName fragment_shader;
-    private final @Nonnull TASTShaderName vertex_shader;
+    private final TASTShaderName fragment_shader;
+    private final TASTShaderName vertex_shader;
 
     public TASTDShaderProgram(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TASTShaderName in_vertex_shader,
-      final @Nonnull TASTShaderName in_fragment_shader)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final TASTShaderName in_vertex_shader,
+      final TASTShaderName in_fragment_shader)
     {
       super(name);
       this.vertex_shader =
-        Constraints.constrainNotNull(in_vertex_shader, "Vertex shader");
+        NullCheck.notNull(in_vertex_shader, "Vertex shader");
       this.fragment_shader =
-        Constraints.constrainNotNull(in_fragment_shader, "Fragment shader");
+        NullCheck.notNull(in_fragment_shader, "Fragment shader");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderProgram other = (TASTDShaderProgram) obj;
-      if (!this.fragment_shader.equals(other.fragment_shader)) {
-        return false;
-      }
-      if (!this.vertex_shader.equals(other.vertex_shader)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TASTShaderName getFragmentShader()
+    public TASTShaderName getFragmentShader()
     {
       return this.fragment_shader;
     }
 
-    public @Nonnull TASTShaderName getVertexShader()
+    public TASTShaderName getVertexShader()
     {
       return this.vertex_shader;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.fragment_shader.hashCode();
-      result = (prime * result) + this.vertex_shader.hashCode();
-      return result;
-    }
-
     @Override public
-      <T, E extends Throwable, V extends TASTShaderVisitor<T, E>>
+      <T, E extends Throwable, V extends TASTShaderVisitorType<T, E>>
       T
       shaderVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitProgramShader(this);
     }
@@ -1621,112 +1034,68 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.vertex_shader.show());
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TASTDShaderVertex extends TASTDShader implements
-    TASTVertexShaderVisitable
+  @EqualityReference public static final class TASTDShaderVertex extends
+    TASTDShader
   {
-    private final @Nonnull List<TASTDShaderVertexInput>            inputs;
-    private final @Nonnull List<TASTDShaderVertexOutput>           outputs;
-    private final @Nonnull List<TASTDShaderVertexParameter>        parameters;
-    private final @Nonnull List<TASTDShaderVertexLocalValue>       values;
-    private final @Nonnull List<TASTDShaderVertexOutputAssignment> writes;
+    private final List<TASTDShaderVertexInput>            inputs;
+    private final List<TASTDShaderVertexOutput>           outputs;
+    private final List<TASTDShaderVertexParameter>        parameters;
+    private final List<TASTDShaderVertexLocalValue>       values;
+    private final List<TASTDShaderVertexOutputAssignment> writes;
 
     public TASTDShaderVertex(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<TASTDShaderVertexInput> in_inputs,
-      final @Nonnull List<TASTDShaderVertexOutput> in_outputs,
-      final @Nonnull List<TASTDShaderVertexParameter> in_parameters,
-      final @Nonnull List<TASTDShaderVertexLocalValue> in_values,
-      final @Nonnull List<TASTDShaderVertexOutputAssignment> in_writes)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final List<TASTDShaderVertexInput> in_inputs,
+      final List<TASTDShaderVertexOutput> in_outputs,
+      final List<TASTDShaderVertexParameter> in_parameters,
+      final List<TASTDShaderVertexLocalValue> in_values,
+      final List<TASTDShaderVertexOutputAssignment> in_writes)
     {
       super(name);
-      this.inputs = Constraints.constrainNotNull(in_inputs, "Inputs");
-      this.outputs = Constraints.constrainNotNull(in_outputs, "Outputs");
-      this.parameters =
-        Constraints.constrainNotNull(in_parameters, "Parameters");
-      this.values = Constraints.constrainNotNull(in_values, "Values");
-      this.writes = Constraints.constrainNotNull(in_writes, "Writes");
+      this.inputs = NullCheck.notNull(in_inputs, "Inputs");
+      this.outputs = NullCheck.notNull(in_outputs, "Outputs");
+      this.parameters = NullCheck.notNull(in_parameters, "Parameters");
+      this.values = NullCheck.notNull(in_values, "Values");
+      this.writes = NullCheck.notNull(in_writes, "Writes");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderVertex other = (TASTDShaderVertex) obj;
-      if (!this.inputs.equals(other.inputs)) {
-        return false;
-      }
-      if (!this.outputs.equals(other.outputs)) {
-        return false;
-      }
-      if (!this.parameters.equals(other.parameters)) {
-        return false;
-      }
-      if (!this.values.equals(other.values)) {
-        return false;
-      }
-      if (!this.writes.equals(other.writes)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull List<TASTDShaderVertexInput> getInputs()
+    public List<TASTDShaderVertexInput> getInputs()
     {
       return this.inputs;
     }
 
-    public @Nonnull List<TASTDShaderVertexOutput> getOutputs()
+    public List<TASTDShaderVertexOutput> getOutputs()
     {
       return this.outputs;
     }
 
-    public @Nonnull List<TASTDShaderVertexParameter> getParameters()
+    public List<TASTDShaderVertexParameter> getParameters()
     {
       return this.parameters;
     }
 
-    public @Nonnull List<TASTDShaderVertexLocalValue> getValues()
+    public List<TASTDShaderVertexLocalValue> getValues()
     {
       return this.values;
     }
 
-    public @Nonnull List<TASTDShaderVertexOutputAssignment> getWrites()
+    public List<TASTDShaderVertexOutputAssignment> getWrites()
     {
       return this.writes;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.inputs.hashCode();
-      result = (prime * result) + this.outputs.hashCode();
-      result = (prime * result) + this.parameters.hashCode();
-      result = (prime * result) + this.values.hashCode();
-      result = (prime * result) + this.writes.hashCode();
-      return result;
-    }
-
     @Override public
-      <T, E extends Throwable, V extends TASTShaderVisitor<T, E>>
+      <T, E extends Throwable, V extends TASTShaderVisitorType<T, E>>
       T
       shaderVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitVertexShader(this);
     }
@@ -1745,46 +1114,54 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.writes);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
 
-    @Override public
-      <VS, PI, PP, PO, L, O, E extends Throwable, V extends TASTVertexShaderVisitor<VS, PI, PP, PO, L, O, E>>
+    public
+      <VS, PI, PP, PO, L, O, E extends Throwable, V extends TASTVertexShaderVisitorType<VS, PI, PP, PO, L, O, E>>
       VS
       vertexShaderVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       final List<PI> r_inputs = new ArrayList<PI>();
       for (final TASTDShaderVertexInput i : this.inputs) {
+        assert i != null;
         final PI ri = v.vertexShaderVisitInput(i);
         r_inputs.add(ri);
       }
 
       final List<PO> r_outputs = new ArrayList<PO>();
       for (final TASTDShaderVertexOutput o : this.outputs) {
+        assert o != null;
         final PO ro = v.vertexShaderVisitOutput(o);
         r_outputs.add(ro);
       }
 
       final List<PP> r_parameters = new ArrayList<PP>();
       for (final TASTDShaderVertexParameter p : this.parameters) {
+        assert p != null;
         final PP rp = v.vertexShaderVisitParameter(p);
         r_parameters.add(rp);
       }
 
-      final TASTVertexShaderLocalVisitor<L, E> lv =
+      final TASTVertexShaderLocalVisitorType<L, E> lv =
         v.vertexShaderVisitLocalsPre();
 
-      final ArrayList<L> r_locals = new ArrayList<L>();
-      for (final TASTDShaderVertexLocalValue l : this.values) {
-        final L rl = lv.vertexShaderVisitLocalValue(l);
-        r_locals.add(rl);
+      final List<L> r_locals = new ArrayList<L>();
+      if (lv != null) {
+        for (final TASTDShaderVertexLocalValue l : this.values) {
+          assert l != null;
+          final L rl = lv.vertexShaderVisitLocalValue(l);
+          r_locals.add(rl);
+        }
       }
 
-      final ArrayList<O> r_assigns = new ArrayList<O>();
+      final List<O> r_assigns = new ArrayList<O>();
       for (final TASTDShaderVertexOutputAssignment w : this.writes) {
+        assert w != null;
         final O rw = v.vertexShaderVisitOutputAssignment(w);
         r_assigns.add(rw);
       }
@@ -1799,50 +1176,22 @@ public abstract class TASTDeclaration
     }
   }
 
-  public static final class TASTDShaderVertexInput extends
+  @EqualityReference public static final class TASTDShaderVertexInput extends
     TASTDShaderVertexParameters
   {
-    private final @Nonnull TASTTermNameLocal name;
+    private final TASTTermNameLocal name;
 
     public TASTDShaderVertexInput(
-      final @Nonnull TASTTermNameLocal in_name,
-      final @Nonnull TValueType type)
-      throws ConstraintError
+      final TASTTermNameLocal in_name,
+      final TValueType type)
     {
       super(type);
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderVertexInput other = (TASTDShaderVertexInput) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TASTTermNameLocal getName()
+    public TASTTermNameLocal getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -1851,53 +1200,26 @@ public abstract class TASTDeclaration
       builder.append("[TASTDShaderVertexInput ");
       builder.append(this.name.show());
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TASTDShaderVertexLocalValue extends
+  @EqualityReference public static final class TASTDShaderVertexLocalValue extends
     TASTDeclarationShaderLevel
   {
-    private final @Nonnull TASTDValueLocal value;
+    private final TASTDValueLocal value;
 
     public TASTDShaderVertexLocalValue(
-      final @Nonnull TASTDValueLocal in_value)
-      throws ConstraintError
+      final TASTDValueLocal in_value)
     {
-      this.value = Constraints.constrainNotNull(in_value, "Value");
+      this.value = NullCheck.notNull(in_value, "Value");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderVertexLocalValue other =
-        (TASTDShaderVertexLocalValue) obj;
-      if (!this.value.equals(other.value)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TASTDValueLocal getValue()
+    public TASTDValueLocal getValue()
     {
       return this.value;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.value.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -1906,61 +1228,31 @@ public abstract class TASTDeclaration
       builder.append("[TASTDShaderVertexLocalValue ");
       builder.append(this.value);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TASTDShaderVertexOutput extends
+  @EqualityReference public static final class TASTDShaderVertexOutput extends
     TASTDShaderVertexParameters
   {
-    private final boolean                       main;
-    private final @Nonnull TokenIdentifierLower name;
+    private final boolean              main;
+    private final TokenIdentifierLower name;
 
     public TASTDShaderVertexOutput(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull TValueType type,
+      final TokenIdentifierLower in_name,
+      final TValueType type,
       final boolean in_main)
-      throws ConstraintError
     {
       super(type);
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
       this.main = in_main;
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderVertexOutput other = (TASTDShaderVertexOutput) obj;
-      if (this.main != other.main) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + (this.main ? 1231 : 1237);
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     public boolean isMain()
@@ -1976,65 +1268,34 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.main);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TASTDShaderVertexOutputAssignment extends
+  @EqualityReference public static final class TASTDShaderVertexOutputAssignment extends
     TASTDeclarationShaderLevel
   {
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull TASTEVariable        variable;
+    private final TokenIdentifierLower name;
+    private final TASTEVariable        variable;
 
     public TASTDShaderVertexOutputAssignment(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull TASTEVariable in_variable)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final TASTEVariable in_variable)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.variable = Constraints.constrainNotNull(in_variable, "Variable");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.variable = NullCheck.notNull(in_variable, "Variable");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderVertexOutputAssignment other =
-        (TASTDShaderVertexOutputAssignment) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.variable.equals(other.variable)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull TASTEVariable getVariable()
+    public TASTEVariable getVariable()
     {
       return this.variable;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.variable.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -2045,55 +1306,28 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.variable);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TASTDShaderVertexParameter extends
+  @EqualityReference public static final class TASTDShaderVertexParameter extends
     TASTDShaderVertexParameters
   {
-    private final @Nonnull TASTTermNameLocal name;
+    private final TASTTermNameLocal name;
 
     public TASTDShaderVertexParameter(
-      final @Nonnull TASTTermNameLocal in_name,
-      final @Nonnull TValueType type)
-      throws ConstraintError
+      final TASTTermNameLocal in_name,
+      final TValueType type)
     {
       super(type);
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDShaderVertexParameter other =
-        (TASTDShaderVertexParameter) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TASTTermNameLocal getName()
+    public TASTTermNameLocal getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -2102,16 +1336,17 @@ public abstract class TASTDeclaration
       builder.append("[TASTDShaderVertexParameter ");
       builder.append(this.name.show());
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static abstract class TASTDShaderVertexParameters extends
+  @EqualityReference public static abstract class TASTDShaderVertexParameters extends
     TASTDShaderParameters
   {
     TASTDShaderVertexParameters(
-      final @Nonnull TValueType type)
-      throws ConstraintError
+      final TValueType type)
     {
       super(type);
     }
@@ -2121,17 +1356,24 @@ public abstract class TASTDeclaration
    * The type of term declarations.
    */
 
-  public static abstract class TASTDTerm extends TASTDeclarationModuleLevel implements
-    TASTTermVisitable
+  @EqualityReference public static abstract class TASTDTerm extends
+    TASTDeclarationModuleLevel
   {
-    public abstract @Nonnull TType getType();
+    public abstract TType getType();
+
+    public abstract
+      <T, E extends Throwable, V extends TASTTermVisitorType<T, E>>
+      T
+      termVisitableAccept(
+        final V v)
+        throws E;
   }
 
   /**
    * The type of local term declarations.
    */
 
-  public static abstract class TASTDTermLocal extends
+  @EqualityReference public static abstract class TASTDTermLocal extends
     TASTDeclarationLocalLevel
   {
     // Nothing
@@ -2141,81 +1383,53 @@ public abstract class TASTDeclaration
    * The type of type declarations.
    */
 
-  public static abstract class TASTDType extends TASTDeclarationModuleLevel implements
-    TASTTypeVisitable
+  @EqualityReference public static abstract class TASTDType extends
+    TASTDeclarationModuleLevel
   {
-    public abstract @Nonnull TType getType();
+    public abstract TType getType();
+
+    public abstract
+      <T, E extends Throwable, V extends TASTTypeVisitorType<T, E>>
+      T
+      typeVisitableAccept(
+        final V v)
+        throws E;
   }
 
   /**
    * Record declarations.
    */
 
-  public static final class TASTDTypeRecord extends TASTDType
+  @EqualityReference public static final class TASTDTypeRecord extends
+    TASTDType
   {
-    private final @Nonnull List<TASTDTypeRecordField> fields;
-    private final @Nonnull TokenIdentifierLower       name;
-    private final @Nonnull TRecord                    type;
+    private final List<TASTDTypeRecordField> fields;
+    private final TokenIdentifierLower       name;
+    private final TRecord                    type;
 
     public TASTDTypeRecord(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull List<TASTDTypeRecordField> in_fields,
-      final @Nonnull TRecord in_type)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final List<TASTDTypeRecordField> in_fields,
+      final TRecord in_type)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
-      this.fields = Constraints.constrainNotNull(in_fields, "Fields");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.fields = NullCheck.notNull(in_fields, "Fields");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDTypeRecord other = (TASTDTypeRecord) obj;
-      if (!this.fields.equals(other.fields)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull List<TASTDTypeRecordField> getFields()
+    public List<TASTDTypeRecordField> getFields()
     {
       return this.fields;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    @Override public @Nonnull TRecord getType()
+    @Override public TRecord getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.fields.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -2226,74 +1440,43 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.fields);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
 
     @Override public
-      <T, E extends Throwable, V extends TASTTypeVisitor<T, E>>
+      <T, E extends Throwable, V extends TASTTypeVisitorType<T, E>>
       T
       typeVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.typeVisitTypeRecord(this);
     }
   }
 
-  public static final class TASTDTypeRecordField
+  @EqualityReference public static final class TASTDTypeRecordField
   {
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull TManifestType        type;
+    private final TokenIdentifierLower name;
+    private final TManifestType        type;
 
     public TASTDTypeRecordField(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull TManifestType in_type)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final TManifestType in_type)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDTypeRecordField other = (TASTDTypeRecordField) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull TManifestType getType()
+    public TManifestType getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -2304,7 +1487,9 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.type.getName());
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -2312,54 +1497,32 @@ public abstract class TASTDeclaration
    * Value declarations.
    */
 
-  public static abstract class TASTDValue extends TASTDTerm
+  @EqualityReference public static abstract class TASTDValue extends
+    TASTDTerm
   {
     // Nothing
   }
 
-  public static final class TASTDValueDefined extends TASTDValue
+  @EqualityReference public static final class TASTDValueDefined extends
+    TASTDValue
   {
-    private final @Nonnull TASTExpression       expression;
-    private final @Nonnull TokenIdentifierLower name;
+    private final TASTExpression       expression;
+    private final TokenIdentifierLower name;
 
     public TASTDValueDefined(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull TASTExpression in_expression)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final TASTExpression in_expression)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.expression =
-        Constraints.constrainNotNull(in_expression, "Expression");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDValueDefined other = (TASTDValueDefined) obj;
-      if (!this.expression.equals(other.expression)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TASTExpression getExpression()
+    public TASTExpression getExpression()
     {
       return this.expression;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
@@ -2369,22 +1532,12 @@ public abstract class TASTDeclaration
       return this.expression.getType();
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.expression.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
-
     @Override public
-      <T, E extends Throwable, V extends TASTTermVisitor<T, E>>
+      <T, E extends Throwable, V extends TASTTermVisitorType<T, E>>
       T
       termVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.termVisitValueDefined(this);
     }
@@ -2397,7 +1550,9 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.expression);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -2405,52 +1560,30 @@ public abstract class TASTDeclaration
    * External value declarations.
    */
 
-  public static final class TASTDValueExternal extends TASTDValue
+  @EqualityReference public static final class TASTDValueExternal extends
+    TASTDValue
   {
-    private final @Nonnull TASTDExternal        external;
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull TValueType           type;
+    private final TASTDExternal        external;
+    private final TokenIdentifierLower name;
+    private final TValueType           type;
 
     public TASTDValueExternal(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull TValueType in_type,
-      final @Nonnull TASTDExternal in_external)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final TValueType in_type,
+      final TASTDExternal in_external)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
-      this.external = Constraints.constrainNotNull(in_external, "External");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.external = NullCheck.notNull(in_external, "External");
       assert this.external.getEmulation().isNone();
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDValueExternal other = (TASTDValueExternal) obj;
-      if (!this.external.equals(other.external)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TASTDExternal getExternal()
+    public TASTDExternal getExternal()
     {
       return this.external;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
@@ -2460,22 +1593,12 @@ public abstract class TASTDeclaration
       return this.type;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.external.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
-
     @Override public
-      <T, E extends Throwable, V extends TASTTermVisitor<T, E>>
+      <T, E extends Throwable, V extends TASTTermVisitorType<T, E>>
       T
       termVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.termVisitValueExternal(this);
     }
@@ -2488,7 +1611,9 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.name);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -2496,60 +1621,28 @@ public abstract class TASTDeclaration
    * Local value declarations (let).
    */
 
-  public static final class TASTDValueLocal extends TASTDTermLocal
+  @EqualityReference public static final class TASTDValueLocal extends
+    TASTDTermLocal
   {
-    private final @Nonnull TASTExpression    expression;
-    private final @Nonnull TASTTermNameLocal name;
+    private final TASTExpression    expression;
+    private final TASTTermNameLocal name;
 
     public TASTDValueLocal(
-      final @Nonnull TASTTermNameLocal in_name,
-      final @Nonnull TASTExpression in_expression)
-      throws ConstraintError
+      final TASTTermNameLocal in_name,
+      final TASTExpression in_expression)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.expression =
-        Constraints.constrainNotNull(in_expression, "Expression");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TASTDValueLocal other = (TASTDValueLocal) obj;
-      if (!this.expression.equals(other.expression)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull TASTExpression getExpression()
+    public TASTExpression getExpression()
     {
       return this.expression;
     }
 
-    public @Nonnull TASTTermNameLocal getName()
+    public TASTTermNameLocal getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.expression.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -2560,7 +1653,9 @@ public abstract class TASTDeclaration
       builder.append(" ");
       builder.append(this.expression);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 }

@@ -19,44 +19,67 @@ package com.io7m.jparasol.glsl;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.Nonnull;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jparasol.NameShowType;
 
-import com.io7m.jlog.Log;
-import com.io7m.jparasol.NameShow;
+/**
+ * A name context.
+ * 
+ * @param <T>
+ *          The type of initial names
+ * @param <U>
+ *          The type of fresh names
+ */
 
-public final class GNameContext<T extends NameShow, U>
+@EqualityReference public final class GNameContext<T extends NameShowType, U>
 {
-  public static @Nonnull
-    <T extends NameShow, U>
-    GNameContext<T, U>
-    newContext(
-      final @Nonnull Log log,
-      final @Nonnull GNameConstructor<U> constructor)
+  /**
+   * Construct a new name context.
+   * 
+   * @param log
+   *          A log interface
+   * @param constructor
+   *          A name constructor
+   * @return A new name context
+   */
+
+  public static <T extends NameShowType, U> GNameContext<T, U> newContext(
+    final LogUsableType log,
+    final GNameConstructorType<U> constructor)
   {
     return new GNameContext<T, U>(log, constructor);
   }
 
-  private final @Nonnull GNameConstructor<U> constructor;
-  private final @Nonnull Map<T, U>           existing;
-  private final @Nonnull Log                 log;
-  private final @Nonnull AtomicInteger       prime;
-  private final @Nonnull HashSet<String>     used;
+  private final GNameConstructorType<U> constructor;
+  private final Map<T, U>               existing;
+  private final LogUsableType           log;
+  private final AtomicInteger           prime;
+  private final Set<String>             used;
 
   private GNameContext(
-    final @Nonnull Log in_log,
-    final @Nonnull GNameConstructor<U> in_constructor)
+    final LogUsableType in_log,
+    final GNameConstructorType<U> in_constructor)
   {
-    this.log = new Log(in_log, "names");
+    this.log = NullCheck.notNull(in_log, "Log").with("names");
     this.constructor = in_constructor;
     this.prime = new AtomicInteger(0);
     this.used = new HashSet<String>();
     this.existing = new HashMap<T, U>();
   }
 
-  public @Nonnull U freshName(
-    final @Nonnull T name)
+  /**
+   * @param name
+   *          The initial name
+   * @return A fresh name based on <code>name</code>
+   */
+
+  public U freshName(
+    final T name)
   {
     final String base = name.show().replace('.', '_');
     final StringBuilder s = new StringBuilder();
@@ -80,8 +103,14 @@ public final class GNameContext<T extends NameShow, U>
     return actual;
   }
 
-  public @Nonnull U getName(
-    final @Nonnull T name)
+  /**
+   * @param name
+   *          The name
+   * @return The name associated with the given name.
+   */
+
+  public U getName(
+    final T name)
   {
     if (this.existing.containsKey(name)) {
       return this.existing.get(name);

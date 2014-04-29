@@ -23,22 +23,29 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 
-public final class GVersionsSupported
+/**
+ * Supported GLSL versions.
+ */
+
+@EqualityStructural public final class GVersionsSupported
 {
-  public static @Nonnull GVersionsSupported all()
+  /**
+   * @return A value indicating all possible GLSL versions
+   */
+
+  public static GVersionsSupported all()
   {
     return new GVersionsSupported();
   }
 
-  private final @Nonnull Map<GVersionES, List<GVersionCheckExclusionReason>>   exclusions_es;
-  private final @Nonnull Map<GVersionFull, List<GVersionCheckExclusionReason>> exclusions_full;
+  private final Map<GVersionES, List<GVersionCheckExclusionReason>>   exclusions_es;
+  private final Map<GVersionFull, List<GVersionCheckExclusionReason>> exclusions_full;
 
   private GVersionsSupported()
   {
@@ -49,7 +56,7 @@ public final class GVersionsSupported
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -70,9 +77,18 @@ public final class GVersionsSupported
     return true;
   }
 
+  /**
+   * Exclude a specific version of GLSL ES for the given reason.
+   * 
+   * @param version
+   *          The version
+   * @param reason
+   *          The reason
+   */
+
   public void excludeES(
-    final @Nonnull GVersionES version,
-    final @Nonnull GVersionCheckExclusionReason reason)
+    final GVersionES version,
+    final GVersionCheckExclusionReason reason)
   {
     final List<GVersionCheckExclusionReason> reasons;
     if (this.exclusions_es.containsKey(version)) {
@@ -85,9 +101,18 @@ public final class GVersionsSupported
     this.exclusions_es.put(version, reasons);
   }
 
+  /**
+   * Exclude a specific version of GLSL for the given reason.
+   * 
+   * @param version
+   *          The version
+   * @param reason
+   *          The reason
+   */
+
   public void excludeFull(
-    final @Nonnull GVersionFull version,
-    final @Nonnull GVersionCheckExclusionReason reason)
+    final GVersionFull version,
+    final GVersionCheckExclusionReason reason)
   {
     final List<GVersionCheckExclusionReason> reasons;
     if (this.exclusions_full.containsKey(version)) {
@@ -100,7 +125,11 @@ public final class GVersionsSupported
     this.exclusions_full.put(version, reasons);
   }
 
-  public @Nonnull SortedSet<GVersionES> getESVersions()
+  /**
+   * @return The set of supported GLSL ES versions
+   */
+
+  public SortedSet<GVersionES> getESVersions()
   {
     final SortedSet<GVersionES> all = new TreeSet<GVersionES>();
     all.addAll(GVersionES.ALL);
@@ -110,27 +139,43 @@ public final class GVersionsSupported
     return all;
   }
 
-  public @Nonnull List<GVersionCheckExclusionReason> getExclusionReasonsES(
-    final @Nonnull GVersionES v)
-    throws ConstraintError
+  /**
+   * @return The set of reasons that versions of GLSL ES are not supported
+   */
+
+  public List<GVersionCheckExclusionReason> getExclusionReasonsES(
+    final GVersionES v)
   {
-    Constraints.constrainArbitrary(
-      this.exclusions_es.containsKey(v),
-      "Version is excluded");
-    return this.exclusions_es.get(v);
+    NullCheck.notNull(v, "Version");
+    if (this.exclusions_es.containsKey(v) == false) {
+      throw new IllegalStateException("Version is not excluded");
+    }
+    final List<GVersionCheckExclusionReason> r = this.exclusions_es.get(v);
+    assert r != null;
+    return r;
   }
 
-  public @Nonnull List<GVersionCheckExclusionReason> getExclusionReasonsFull(
-    final @Nonnull GVersionFull v)
-    throws ConstraintError
+  /**
+   * @return The set of reasons that versions of GLSL are not supported
+   */
+
+  public List<GVersionCheckExclusionReason> getExclusionReasonsFull(
+    final GVersionFull v)
   {
-    Constraints.constrainArbitrary(
-      this.exclusions_full.containsKey(v),
-      "Version is excluded");
-    return this.exclusions_full.get(v);
+    NullCheck.notNull(v, "Version");
+    if (this.exclusions_full.containsKey(v) == false) {
+      throw new IllegalStateException("Version is not excluded");
+    }
+    final List<GVersionCheckExclusionReason> r = this.exclusions_full.get(v);
+    assert r != null;
+    return r;
   }
 
-  public @Nonnull SortedSet<GVersionFull> getFullVersions()
+  /**
+   * @return The set of supported GLSL versions
+   */
+
+  public SortedSet<GVersionFull> getFullVersions()
   {
     final SortedSet<GVersionFull> all = new TreeSet<GVersionFull>();
     all.addAll(GVersionFull.ALL);
@@ -157,6 +202,8 @@ public final class GVersionsSupported
     builder.append(" ");
     builder.append(this.exclusions_full);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

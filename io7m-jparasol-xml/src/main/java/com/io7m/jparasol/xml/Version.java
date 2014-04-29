@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,40 +16,46 @@
 
 package com.io7m.jparasol.xml;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 
 /**
  * A GLSL version for a specific API.
  */
 
-@Immutable public final class Version implements Comparable<Version>
+@EqualityStructural public final class Version implements Comparable<Version>
 {
-  public static @Nonnull Version newVersion(
+  /**
+   * Construct a new version.
+   * 
+   * @param version
+   *          The version number
+   * @param api
+   *          The API
+   * @return A new version
+   */
+
+  public static Version newVersion(
     final int version,
-    final @Nonnull API api)
-    throws ConstraintError
+    final API api)
   {
     return new Version(version, api);
   }
 
-  private final @Nonnull API api;
-  private final int          version;
+  private final API api;
+  private final int version;
 
   Version(
     final int in_version,
-    final @Nonnull API in_api)
-    throws ConstraintError
+    final API in_api)
   {
     this.version = in_version;
-    this.api = Constraints.constrainNotNull(in_api, "API");
+    this.api = NullCheck.notNull(in_api, "API");
   }
 
   @Override public int compareTo(
-    final @Nonnull Version o)
+    final Version o)
   {
     final Integer x = Integer.valueOf(this.version);
     final Integer y = Integer.valueOf(o.version);
@@ -57,7 +63,7 @@ import com.io7m.jaux.Constraints.ConstraintError;
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -78,10 +84,18 @@ import com.io7m.jaux.Constraints.ConstraintError;
     return true;
   }
 
-  public @Nonnull API getAPI()
+  /**
+   * @return The API
+   */
+
+  public API getAPI()
   {
     return this.api;
   }
+
+  /**
+   * @return The version number
+   */
 
   public int getVersion()
   {
@@ -105,6 +119,8 @@ import com.io7m.jaux.Constraints.ConstraintError;
     builder.append(" api=");
     builder.append(this.api);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

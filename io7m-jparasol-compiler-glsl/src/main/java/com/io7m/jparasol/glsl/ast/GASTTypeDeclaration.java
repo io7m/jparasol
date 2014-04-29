@@ -18,77 +18,88 @@ package com.io7m.jparasol.glsl.ast;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Pair;
+import com.io7m.jnull.NullCheck;
 
-import com.io7m.jaux.functional.Pair;
+/**
+ * The type of type declarations.
+ */
 
-public abstract class GASTTypeDeclaration implements
-  GASTTypeDeclarationVisitable
+@EqualityReference public abstract class GASTTypeDeclaration
 {
-  public static final class GASTTypeRecord extends GASTTypeDeclaration
+  /**
+   * A record declaration type.
+   */
+
+  @EqualityReference public static final class GASTTypeRecord extends
+    GASTTypeDeclaration
   {
-    private final @Nonnull List<Pair<GFieldName, GTypeName>> fields;
-    private final @Nonnull GTypeName                         name;
+    private final List<Pair<GFieldName, GTypeName>> fields;
+    private final GTypeName                         name;
+
+    /**
+     * Construct a record type.
+     * 
+     * @param in_name
+     *          The name of the type
+     * @param in_fields
+     *          The record fields, in declaration order
+     */
 
     public GASTTypeRecord(
-      final @Nonnull GTypeName in_name,
-      final @Nonnull List<Pair<GFieldName, GTypeName>> in_fields)
+      final GTypeName in_name,
+      final List<Pair<GFieldName, GTypeName>> in_fields)
     {
-      this.name = in_name;
-      this.fields = in_fields;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.fields = NullCheck.notNull(in_fields, "Fields");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTTypeRecord other = (GASTTypeRecord) obj;
-      if (!this.fields.equals(other.fields)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The list of fields, in declaration order
+     */
 
-    public @Nonnull List<Pair<GFieldName, GTypeName>> getFields()
+    public List<Pair<GFieldName, GTypeName>> getFields()
     {
       return this.fields;
     }
 
-    @Override public @Nonnull GTypeName getName()
+    @Override public GTypeName getName()
     {
       return this.name;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.fields.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
-    }
-
     @Override public
-      <A, E extends Throwable, V extends GASTTypeDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTTypeDeclarationVisitorType<A, E>>
       A
       typeDeclarationVisitableAccept(
-        final @Nonnull V v)
+        final V v)
         throws E
     {
       return v.typeVisitRecord(this);
     }
   }
 
-  public abstract @Nonnull GTypeName getName();
+  /**
+   * @return The name of the type
+   */
+
+  public abstract GTypeName getName();
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return The value returned by the visitor
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends GASTTypeDeclarationVisitorType<A, E>>
+    A
+    typeDeclarationVisitableAccept(
+      final V v)
+      throws E;
 }

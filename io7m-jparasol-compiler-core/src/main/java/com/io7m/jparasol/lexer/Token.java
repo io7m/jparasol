@@ -20,19 +20,23 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import javax.annotation.Nonnull;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+/**
+ * The type of tokens.
+ */
 
-public abstract class Token
+// CHECKSTYLE_JAVADOC:OFF
+
+@SuppressWarnings("synthetic-access") @EqualityReference public abstract class Token
 {
-  public static final class TokenAs extends Token
+  @EqualityReference public static final class TokenAs extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenAs(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenAs(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_AS, file, position);
     }
@@ -41,16 +45,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenAs []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenColon extends Token
+  @EqualityReference public static final class TokenColon extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenColon(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenColon(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_COLON, file, position);
     }
@@ -59,16 +65,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenColon []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenComma extends Token
+  @EqualityReference public static final class TokenComma extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenComma(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenComma(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_COMMA, file, position);
     }
@@ -77,16 +85,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenComma []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenCurlyLeft extends Token
+  @EqualityReference public static final class TokenCurlyLeft extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenCurlyLeft(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenCurlyLeft(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_CURLY_LEFT, file, position);
     }
@@ -95,16 +105,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenCurlyLeft []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenCurlyRight extends Token
+  @EqualityReference public static final class TokenCurlyRight extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenCurlyRight(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenCurlyRight(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_CURLY_RIGHT, file, position);
     }
@@ -113,16 +125,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenCurlyRight []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenDiscard extends Token
+  @EqualityReference public static final class TokenDiscard extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenDiscard(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenDiscard(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_DISCARD, file, position);
     }
@@ -131,16 +145,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenDiscard []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenDepth extends Token
+  @EqualityReference public static final class TokenDepth extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenDepth(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenDepth(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_DEPTH, file, position);
     }
@@ -149,16 +165,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenDepth []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenDot extends Token
+  @EqualityReference public static final class TokenDot extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenDot(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenDot(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_DOT, file, position);
     }
@@ -167,16 +185,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenDot []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenElse extends Token
+  @EqualityReference public static final class TokenElse extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenElse(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenElse(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_ELSE, file, position);
     }
@@ -185,16 +205,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenElse []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenEnd extends Token
+  @EqualityReference public static final class TokenEnd extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenEnd(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenEnd(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_END, file, position);
     }
@@ -203,16 +225,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenEnd []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenEOF extends Token
+  @EqualityReference public static final class TokenEOF extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenEOF(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenEOF(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_EOF, file, position);
     }
@@ -221,16 +245,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenEOF []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenEquals extends Token
+  @EqualityReference public static final class TokenEquals extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenEquals(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenEquals(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_EQUALS, file, position);
     }
@@ -239,16 +265,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenEquals []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenExternal extends Token
+  @EqualityReference public static final class TokenExternal extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenExternal(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenExternal(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_EXTERNAL, file, position);
     }
@@ -257,16 +285,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenExternal []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenFragment extends Token
+  @EqualityReference public static final class TokenFragment extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenFragment(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenFragment(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_FRAGMENT, file, position);
     }
@@ -275,16 +305,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenFragment []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenFunction extends Token
+  @EqualityReference public static final class TokenFunction extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenFunction(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenFunction(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_FUNCTION, file, position);
     }
@@ -293,68 +325,45 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenFunction []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static abstract class TokenIdentifier extends Token
+  @EqualityReference public static abstract class TokenIdentifier extends
+    Token
   {
-    @SuppressWarnings("synthetic-access") protected TokenIdentifier(
-      final @Nonnull Type type,
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    protected TokenIdentifier(
+      final Type type,
+      final File file,
+      final Position position)
+
     {
       super(type, file, position);
     }
 
-    public abstract @Nonnull String getActual();
+    public abstract String getActual();
   }
 
-  public static final class TokenIdentifierLower extends TokenIdentifier
+  @EqualityReference public static final class TokenIdentifierLower extends
+    TokenIdentifier
   {
-    private final @Nonnull String text;
+    private final String text;
 
     public TokenIdentifierLower(
-      final @Nonnull File file,
-      final @Nonnull Position position,
-      final @Nonnull String in_text)
-      throws ConstraintError
+      final File file,
+      final Position position,
+      final String in_text)
+
     {
       super(Type.TOKEN_IDENTIFIER_LOWER, file, position);
-      this.text = Constraints.constrainNotNull(in_text, "Text");
+      this.text = NullCheck.notNull(in_text, "Text");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TokenIdentifierLower other = (TokenIdentifierLower) obj;
-      if (!this.text.equals(other.text)) {
-        return false;
-      }
-      return true;
-    }
-
-    @Override public @Nonnull String getActual()
+    @Override public String getActual()
     {
       return this.text;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.text.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -363,54 +372,30 @@ public abstract class Token
       builder.append("TokenIdentifierLower [text=");
       builder.append(this.text);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenIdentifierUpper extends TokenIdentifier
+  @EqualityReference public static final class TokenIdentifierUpper extends
+    TokenIdentifier
   {
-    private final @Nonnull String text;
+    private final String text;
 
     public TokenIdentifierUpper(
-      final @Nonnull File file,
-      final @Nonnull Position position,
-      final @Nonnull String in_text)
-      throws ConstraintError
+      final File file,
+      final Position position,
+      final String in_text)
+
     {
       super(Type.TOKEN_IDENTIFIER_UPPER, file, position);
-      this.text = Constraints.constrainNotNull(in_text, "Text");
+      this.text = NullCheck.notNull(in_text, "Text");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TokenIdentifierUpper other = (TokenIdentifierUpper) obj;
-      if (!this.text.equals(other.text)) {
-        return false;
-      }
-      return true;
-    }
-
-    @Override public @Nonnull String getActual()
+    @Override public String getActual()
     {
       return this.text;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.text.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -419,16 +404,18 @@ public abstract class Token
       builder.append("TokenIdentifierUpper [text=");
       builder.append(this.text);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenIf extends Token
+  @EqualityReference public static final class TokenIf extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenIf(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenIf(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_IF, file, position);
     }
@@ -437,16 +424,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenIf []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenImport extends Token
+  @EqualityReference public static final class TokenImport extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenImport(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenImport(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_IMPORT, file, position);
     }
@@ -455,16 +444,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenImport []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenIn extends Token
+  @EqualityReference public static final class TokenIn extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenIn(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenIn(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_IN, file, position);
     }
@@ -473,16 +464,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenIn []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenIs extends Token
+  @EqualityReference public static final class TokenIs extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenIs(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenIs(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_IS, file, position);
     }
@@ -491,16 +484,18 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenIs []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenLet extends Token
+  @EqualityReference public static final class TokenLet extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenLet(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenLet(
+      final File file,
+      final Position position)
+
     {
       super(Type.TOKEN_LET, file, position);
     }
@@ -509,54 +504,30 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenLet []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenLiteralBoolean extends Token
+  @EqualityReference public static final class TokenLiteralBoolean extends
+    Token
   {
     private final boolean value;
 
-    @SuppressWarnings("synthetic-access") public TokenLiteralBoolean(
-      final @Nonnull File file,
-      final @Nonnull Position position,
+    public TokenLiteralBoolean(
+      final File file,
+      final Position position,
       final boolean in_value)
-      throws ConstraintError
+
     {
       super(Type.TOKEN_LITERAL_BOOLEAN, file, position);
       this.value = in_value;
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TokenLiteralBoolean other = (TokenLiteralBoolean) obj;
-      if (this.value != other.value) {
-        return false;
-      }
-      return true;
-    }
-
     public boolean getValue()
     {
       return this.value;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + (this.value ? 1231 : 1237);
-      return result;
     }
 
     @Override public String toString()
@@ -565,73 +536,46 @@ public abstract class Token
       builder.append("TokenLiteralBoolean [value=");
       builder.append(this.value);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public interface TokenLiteralInteger
+  public interface TokenLiteralIntegerType
   {
-    public @Nonnull BigInteger getValue();
+    BigInteger getValue();
   }
 
-  public static final class TokenLiteralIntegerDecimal extends Token implements
-    TokenLiteralInteger
+  @EqualityReference public static final class TokenLiteralIntegerDecimal extends
+    Token implements TokenLiteralIntegerType
   {
-    public static @Nonnull TokenLiteralIntegerDecimal newIntegerDecimal(
-      final @Nonnull File file,
-      final @Nonnull Position position,
-      final @Nonnull String text)
-      throws ConstraintError
+    public static TokenLiteralIntegerDecimal newIntegerDecimal(
+      final File file,
+      final Position position,
+      final String text)
+
     {
-      Constraints.constrainNotNull(text, "Text");
+      NullCheck.notNull(text, "Text");
       return new TokenLiteralIntegerDecimal(file, position, new BigInteger(
         text));
     }
 
-    private final @Nonnull BigInteger value;
+    private final BigInteger value;
 
-    @SuppressWarnings("synthetic-access") private TokenLiteralIntegerDecimal(
-      final @Nonnull File file,
-      final @Nonnull Position position,
-      final @Nonnull BigInteger in_value)
-      throws ConstraintError
+    private TokenLiteralIntegerDecimal(
+      final File file,
+      final Position position,
+      final BigInteger in_value)
+
     {
       super(Type.TOKEN_LITERAL_INTEGER_DECIMAL, file, position);
       this.value = in_value;
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TokenLiteralIntegerDecimal other =
-        (TokenLiteralIntegerDecimal) obj;
-      if (!this.value.equals(other.value)) {
-        return false;
-      }
-      return true;
-    }
-
-    @Override public @Nonnull BigInteger getValue()
+    @Override public BigInteger getValue()
     {
       return this.value;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result =
-        (prime * result) + ((this.value == null) ? 0 : this.value.hashCode());
-      return result;
     }
 
     @Override public String toString()
@@ -640,64 +584,38 @@ public abstract class Token
       builder.append("TokenLiteralIntegerDecimal [value=");
       builder.append(this.value);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenLiteralReal extends Token
+  @EqualityReference public static final class TokenLiteralReal extends Token
   {
-    public static @Nonnull TokenLiteralReal newReal(
-      final @Nonnull File file,
-      final @Nonnull Position position,
-      final @Nonnull String text)
-      throws ConstraintError
+    public static TokenLiteralReal newReal(
+      final File file,
+      final Position position,
+      final String text)
+
     {
-      Constraints.constrainNotNull(text, "Text");
+      NullCheck.notNull(text, "Text");
       return new TokenLiteralReal(file, position, new BigDecimal(text));
     }
 
-    private final @Nonnull BigDecimal value;
+    private final BigDecimal value;
 
-    @SuppressWarnings("synthetic-access") private TokenLiteralReal(
-      final @Nonnull File file,
-      final @Nonnull Position position,
-      final @Nonnull BigDecimal in_value)
-      throws ConstraintError
+    private TokenLiteralReal(
+      final File file,
+      final Position position,
+      final BigDecimal in_value)
     {
       super(Type.TOKEN_LITERAL_REAL, file, position);
-      this.value = Constraints.constrainNotNull(in_value, "Value");
+      this.value = NullCheck.notNull(in_value, "Value");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj)) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TokenLiteralReal other = (TokenLiteralReal) obj;
-      if (!this.value.equals(other.value)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull BigDecimal getValue()
+    public BigDecimal getValue()
     {
       return this.value;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = (prime * result) + this.value.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -706,16 +624,17 @@ public abstract class Token
       builder.append("TokenLiteralReal [value=");
       builder.append(this.value);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenModule extends Token
+  @EqualityReference public static final class TokenModule extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenModule(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenModule(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_MODULE, file, position);
     }
@@ -724,16 +643,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenModule []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenNew extends Token
+  @EqualityReference public static final class TokenNew extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenNew(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenNew(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_NEW, file, position);
     }
@@ -742,16 +662,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenNew []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenOut extends Token
+  @EqualityReference public static final class TokenOut extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenOut(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenOut(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_OUT, file, position);
     }
@@ -760,16 +681,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenOut []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenPackage extends Token
+  @EqualityReference public static final class TokenPackage extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenPackage(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenPackage(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_PACKAGE, file, position);
     }
@@ -778,16 +700,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenPackage []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenParameter extends Token
+  @EqualityReference public static final class TokenParameter extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenParameter(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenParameter(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_PARAMETER, file, position);
     }
@@ -796,16 +719,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenParameter []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenProgram extends Token
+  @EqualityReference public static final class TokenProgram extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenProgram(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenProgram(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_PROGRAM, file, position);
     }
@@ -814,16 +738,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenProgram []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenRecord extends Token
+  @EqualityReference public static final class TokenRecord extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenRecord(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenRecord(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_RECORD, file, position);
     }
@@ -832,16 +757,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenRecord []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenRoundLeft extends Token
+  @EqualityReference public static final class TokenRoundLeft extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenRoundLeft(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenRoundLeft(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_ROUND_LEFT, file, position);
     }
@@ -850,16 +776,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenRoundLeft []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenRoundRight extends Token
+  @EqualityReference public static final class TokenRoundRight extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenRoundRight(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenRoundRight(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_ROUND_RIGHT, file, position);
     }
@@ -868,16 +795,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenRoundRight []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenSemicolon extends Token
+  @EqualityReference public static final class TokenSemicolon extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenSemicolon(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenSemicolon(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_SEMICOLON, file, position);
     }
@@ -886,16 +814,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenSemicolon []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenShader extends Token
+  @EqualityReference public static final class TokenShader extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenShader(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenShader(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_SHADER, file, position);
     }
@@ -904,16 +833,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenShader []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenSquareLeft extends Token
+  @EqualityReference public static final class TokenSquareLeft extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenSquareLeft(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenSquareLeft(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_SQUARE_LEFT, file, position);
     }
@@ -922,16 +852,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenSquareLeft []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenSquareRight extends Token
+  @EqualityReference public static final class TokenSquareRight extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenSquareRight(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenSquareRight(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_SQUARE_RIGHT, file, position);
     }
@@ -940,16 +871,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenSquareRight []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenThen extends Token
+  @EqualityReference public static final class TokenThen extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenThen(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenThen(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_THEN, file, position);
     }
@@ -958,16 +890,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenThen []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenType extends Token
+  @EqualityReference public static final class TokenType extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenType(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenType(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_TYPE, file, position);
     }
@@ -976,16 +909,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenType []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenValue extends Token
+  @EqualityReference public static final class TokenValue extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenValue(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenValue(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_VALUE, file, position);
     }
@@ -994,16 +928,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenValue []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenVertex extends Token
+  @EqualityReference public static final class TokenVertex extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenVertex(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenVertex(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_VERTEX, file, position);
     }
@@ -1012,16 +947,17 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenVertex []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class TokenWith extends Token
+  @EqualityReference public static final class TokenWith extends Token
   {
-    @SuppressWarnings("synthetic-access") public TokenWith(
-      final @Nonnull File file,
-      final @Nonnull Position position)
-      throws ConstraintError
+    public TokenWith(
+      final File file,
+      final Position position)
     {
       super(Type.TOKEN_WITH, file, position);
     }
@@ -1030,7 +966,9 @@ public abstract class Token
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenWith []");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -1078,86 +1016,48 @@ public abstract class Token
     TOKEN_TYPE("keyword 'type'"),
     TOKEN_VALUE("keyword 'value'"),
     TOKEN_VERTEX("keyword 'vertex'"),
-    TOKEN_WITH("keyword 'with'"),
+    TOKEN_WITH("keyword 'with'");
 
-    ;
-
-    private final @Nonnull String description;
+    private final String description;
 
     private Type(
-      final @Nonnull String in_description)
+      final String in_description)
     {
       this.description = in_description;
     }
 
-    public @Nonnull String getDescription()
+    public String getDescription()
     {
       return this.description;
     }
   }
 
-  private final @Nonnull File     file;
-  private final @Nonnull Position position;
-  private final @Nonnull Type     type;
+  private final File     file;
+  private final Position position;
+  private final Type     type;
 
   private Token(
-    final @Nonnull Type in_type,
-    final @Nonnull File in_file,
-    final @Nonnull Position in_position)
-    throws ConstraintError
+    final Type in_type,
+    final File in_file,
+    final Position in_position)
   {
-    this.file = Constraints.constrainNotNull(in_file, "File");
-    this.position = Constraints.constrainNotNull(in_position, "Position");
-    this.type = Constraints.constrainNotNull(in_type, "Type");
+    this.file = NullCheck.notNull(in_file, "File");
+    this.position = NullCheck.notNull(in_position, "Position");
+    this.type = NullCheck.notNull(in_type, "Type");
   }
 
-  @Override public boolean equals(
-    final Object obj)
-  {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
-    final Token other = (Token) obj;
-    if (!this.file.equals(other.file)) {
-      return false;
-    }
-    if (!this.position.equals(other.position)) {
-      return false;
-    }
-    if (this.type != other.type) {
-      return false;
-    }
-    return true;
-  }
-
-  public @Nonnull final File getFile()
+  public final File getFile()
   {
     return this.file;
   }
 
-  public @Nonnull final Position getPosition()
+  public final Position getPosition()
   {
     return this.position;
   }
 
-  public @Nonnull final Type getType()
+  public final Type getType()
   {
     return this.type;
-  }
-
-  @Override public int hashCode()
-  {
-    final int prime = 31;
-    int result = 1;
-    result = (prime * result) + this.file.hashCode();
-    result = (prime * result) + this.position.hashCode();
-    result = (prime * result) + this.type.hashCode();
-    return result;
   }
 }

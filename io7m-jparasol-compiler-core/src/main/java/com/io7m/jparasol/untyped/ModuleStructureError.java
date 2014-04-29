@@ -19,11 +19,8 @@ package com.io7m.jparasol.untyped;
 import java.io.File;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Option;
+import com.io7m.jfunctional.Some;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
@@ -46,43 +43,178 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueExterna
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
 
+/**
+ * Errors raised during the module structure checking phase.
+ * 
+ * @see ModuleStructure
+ */
+
 public final class ModuleStructureError extends CompilerError
 {
-  static enum Code
+  /**
+   * Error codes for module structure checking.
+   */
+
+  public static enum Code
   {
+    /**
+     * Duplicate function argument.
+     */
+
     MODULE_STRUCTURE_FUNCTION_ARGUMENT_DUPLICATE,
+
+    /**
+     * Duplicate module import.
+     */
+
     MODULE_STRUCTURE_IMPORT_DUPLICATE,
+
+    /**
+     * Duplicate module import.
+     */
+
     MODULE_STRUCTURE_IMPORT_IMPORT_CONFLICT,
+
+    /**
+     * Redunant module import.
+     */
+
     MODULE_STRUCTURE_IMPORT_REDUNDANT,
+
+    /**
+     * Duplicate import/rename conflict.
+     */
+
     MODULE_STRUCTURE_IMPORT_RENAME_CONFLICT,
+
+    /**
+     * Module imports itself.
+     */
+
     MODULE_STRUCTURE_IMPORTS_SELF,
+
+    /**
+     * Duplicate record field.
+     */
+
     MODULE_STRUCTURE_RECORD_FIELD_DUPLICATE,
+
+    /**
+     * Module rename/import conflict.
+     */
+
     MODULE_STRUCTURE_RENAME_IMPORT_CONFLICT,
+
+    /**
+     * Module rename/rename conflict.
+     */
+
     MODULE_STRUCTURE_RENAME_RENAME_CONFLICT,
+
+    /**
+     * Module contains a restricted name.
+     */
+
     MODULE_STRUCTURE_RESTRICTED_NAME,
+
+    /**
+     * Duplicate shader.
+     */
+
     MODULE_STRUCTURE_SHADER_CONFLICT,
+
+    /**
+     * Duplicate shader output assignment.
+     */
+
     MODULE_STRUCTURE_SHADER_OUTPUT_ASSIGNMENT_CONFLICT,
+
+    /**
+     * Missing shader output assignment.
+     */
+
     MODULE_STRUCTURE_SHADER_OUTPUT_ASSIGNMENT_MISSING,
+
+    /**
+     * Duplicate shader depth output.
+     */
+
     MODULE_STRUCTURE_SHADER_OUTPUT_DEPTH_DUPLICATE,
+
+    /**
+     * Duplicate shader output index.
+     */
+
     MODULE_STRUCTURE_SHADER_OUTPUT_INDEX_DUPLICATE,
+
+    /**
+     * Invalid shader output index.
+     */
+
     MODULE_STRUCTURE_SHADER_OUTPUT_INDEX_INVALID,
+
+    /**
+     * Missing shader output index.
+     */
+
     MODULE_STRUCTURE_SHADER_OUTPUT_INDEX_MISSING,
+
+    /**
+     * Missing main shader output.
+     */
+
     MODULE_STRUCTURE_SHADER_OUTPUT_MISSING_MAIN,
+
+    /**
+     * Multiple main shader outputs.
+     */
+
     MODULE_STRUCTURE_SHADER_OUTPUT_MULTIPLE_MAIN,
+
+    /**
+     * Duplicate shader parameters.
+     */
+
     MODULE_STRUCTURE_SHADER_PARAMETER_CONFLICT,
+
+    /**
+     * Duplicate term.
+     */
+
     MODULE_STRUCTURE_TERM_CONFLICT,
+
+    /**
+     * Duplicate type.
+     */
+
     MODULE_STRUCTURE_TYPE_CONFLICT,
+
+    /**
+     * Expression provided for external.
+     */
+
     MODULE_STRUCTURE_VALUE_EXTERNAL_HAS_EXPRESSION,
+
+    /**
+     * Type ascription missing for external.
+     */
+
     MODULE_STRUCTURE_VALUE_EXTERNAL_LACKS_ASCRIPTION,
   }
 
   private static final long serialVersionUID = 8998482912668461862L;
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleFunctionArgumentDuplicate(
-    final @Nonnull UASTIDFunctionArgument current,
-    final @Nonnull UASTIDFunctionArgument original)
-    throws ConstraintError
+    final UASTIDFunctionArgument current,
+    final UASTIDFunctionArgument original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final TokenIdentifierLower orig_name = original.getName();
     final StringBuilder m = new StringBuilder();
     m.append("Duplicate function argument ");
@@ -98,11 +230,17 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
-  public static @Nonnull ModuleStructureError moduleImportDuplicate(
-    final @Nonnull UASTCDImport current,
-    final @Nonnull UASTCDImport original)
-    throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleImportDuplicate(
+    final UASTCDImport current,
+    final UASTCDImport original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final ModulePath curr_path = current.getPath();
     final ModulePath orig_path = original.getPath();
     final ModulePathFlat curr_flat = ModulePathFlat.fromModulePath(curr_path);
@@ -125,11 +263,17 @@ public final class ModuleStructureError extends CompilerError
 
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleImportImportConflict(
-    final @Nonnull UASTCDImport current,
-    final @Nonnull UASTCDImport original)
-    throws ConstraintError
+    final UASTCDImport current,
+    final UASTCDImport original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final ModulePath curr_path = current.getPath();
     final ModulePath orig_path = original.getPath();
     final ModulePathFlat curr_flat = ModulePathFlat.fromModulePath(curr_path);
@@ -152,10 +296,15 @@ public final class ModuleStructureError extends CompilerError
       curr_token.getPosition());
   }
 
-  public static @Nonnull ModuleStructureError moduleImportRedundantRename(
-    final @Nonnull UASTCDImport i)
-    throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleImportRedundantRename(
+    final UASTCDImport i)
   {
+    NullCheck.notNull(i, "Import");
+
     final TokenIdentifierUpper token = i.getPath().getName();
     final StringBuilder m = new StringBuilder();
     m.append("Renaming the imported module ");
@@ -168,11 +317,17 @@ public final class ModuleStructureError extends CompilerError
       token.getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleImportRenameConflict(
-    final @Nonnull UASTCDImport current,
-    final @Nonnull UASTCDImport original)
-    throws ConstraintError
+    final UASTCDImport current,
+    final UASTCDImport original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final ModulePath curr_path = current.getPath();
     final ModulePath orig_path = original.getPath();
     final ModulePathFlat curr_flat = ModulePathFlat.fromModulePath(curr_path);
@@ -195,10 +350,15 @@ public final class ModuleStructureError extends CompilerError
       curr_token.getPosition());
   }
 
-  public static @Nonnull ModuleStructureError moduleImportsSelf(
-    final @Nonnull UASTCDImport i)
-    throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleImportsSelf(
+    final UASTCDImport i)
   {
+    NullCheck.notNull(i, "Import");
+
     final TokenIdentifierUpper token = i.getPath().getName();
     final StringBuilder m = new StringBuilder();
     m.append("Module ");
@@ -211,11 +371,17 @@ public final class ModuleStructureError extends CompilerError
       token.getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleRecordExpressionFieldDuplicate(
-    final @Nonnull UASTIRecordFieldAssignment current,
-    final @Nonnull UASTIRecordFieldAssignment original)
-    throws ConstraintError
+    final UASTIRecordFieldAssignment current,
+    final UASTIRecordFieldAssignment original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final TokenIdentifierLower orig_name = original.getName();
     final StringBuilder m = new StringBuilder();
     m.append("Duplicate record field ");
@@ -231,11 +397,17 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleRecordFieldDuplicate(
-    final @Nonnull UASTIDTypeRecordField current,
-    final @Nonnull UASTIDTypeRecordField original)
-    throws ConstraintError
+    final UASTIDTypeRecordField current,
+    final UASTIDTypeRecordField original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final TokenIdentifierLower orig_name = original.getName();
     final StringBuilder m = new StringBuilder();
     m.append("Duplicate record field ");
@@ -251,11 +423,17 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleRenameImportConflict(
-    final @Nonnull UASTCDImport current,
-    final @Nonnull UASTCDImport original)
-    throws ConstraintError
+    final UASTCDImport current,
+    final UASTCDImport original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final ModulePath curr_path = current.getPath();
     final ModulePath orig_path = original.getPath();
     final ModulePathFlat curr_flat = ModulePathFlat.fromModulePath(curr_path);
@@ -267,8 +445,11 @@ public final class ModuleStructureError extends CompilerError
     m.append("Rename of module ");
     m.append(curr_flat.getActual());
     m.append(" to ");
-    m.append(((Option.Some<TokenIdentifierUpper>) current.getRename()).value
-      .getActual());
+
+    final Some<TokenIdentifierUpper> some =
+      (Some<TokenIdentifierUpper>) current.getRename();
+
+    m.append(some.get().getActual());
     m.append(" conflicts with the import at ");
     m.append(orig_file);
     m.append(":");
@@ -281,11 +462,17 @@ public final class ModuleStructureError extends CompilerError
       curr_token.getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleRenameRenameConflict(
-    final @Nonnull UASTCDImport current,
-    final @Nonnull UASTCDImport original)
-    throws ConstraintError
+    final UASTCDImport current,
+    final UASTCDImport original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final ModulePath curr_path = current.getPath();
     final ModulePath orig_path = original.getPath();
     final ModulePathFlat curr_flat = ModulePathFlat.fromModulePath(curr_path);
@@ -297,8 +484,9 @@ public final class ModuleStructureError extends CompilerError
     m.append("Rename of module ");
     m.append(curr_flat.getActual());
     m.append(" to ");
-    m.append(((Option.Some<TokenIdentifierUpper>) current.getRename()).value
-      .getActual());
+    final Some<TokenIdentifierUpper> some =
+      (Some<TokenIdentifierUpper>) current.getRename();
+    m.append(some.get().getActual());
     m.append(" conflicts with the rename at ");
     m.append(orig_file);
     m.append(":");
@@ -311,11 +499,17 @@ public final class ModuleStructureError extends CompilerError
       curr_token.getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleShaderConflict(
-    final @Nonnull UASTCDShader shader,
-    final @Nonnull UASTCDShader original)
-    throws ConstraintError
+    final UASTCDShader shader,
+    final UASTCDShader original)
   {
+    NullCheck.notNull(shader, "Shader");
+    NullCheck.notNull(original, "Original");
+
     final TokenIdentifierLower orig_name = original.getName();
     final StringBuilder m = new StringBuilder();
     m.append("The declaration of shader ");
@@ -331,13 +525,19 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static
     ModuleStructureError
     moduleShaderFragmentOutputDepthDuplicate(
-      final @Nonnull UASTIDShaderFragmentOutputDepth existing,
-      final @Nonnull UASTIDShaderFragmentOutputDepth current)
-      throws ConstraintError
+      final UASTIDShaderFragmentOutputDepth existing,
+      final UASTIDShaderFragmentOutputDepth current)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(existing, "Existing");
+
     final TokenIdentifierLower name = current.getName();
     final StringBuilder m = new StringBuilder();
     m
@@ -350,11 +550,17 @@ public final class ModuleStructureError extends CompilerError
       name.getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleShaderLocalConflict(
-    final @Nonnull UASTIDValueLocal current,
-    final @Nonnull UASTIDValueLocal original)
-    throws ConstraintError
+    final UASTIDValueLocal current,
+    final UASTIDValueLocal original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final TokenIdentifierLower orig_name = original.getName();
     final StringBuilder m = new StringBuilder();
     m.append("The declaration of term ");
@@ -370,11 +576,17 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleShaderOutputAssignmentDuplicate(
-    final @Nonnull TokenIdentifierLower current,
-    final @Nonnull TokenIdentifierLower original)
-    throws ConstraintError
+    final TokenIdentifierLower current,
+    final TokenIdentifierLower original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final StringBuilder m = new StringBuilder();
     m.append("The output ");
     m.append(current.getActual());
@@ -389,10 +601,15 @@ public final class ModuleStructureError extends CompilerError
       original.getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleShaderOutputAssignmentMissing(
     final TokenIdentifierLower name)
-    throws ConstraintError
   {
+    NullCheck.notNull(name, "Name");
+
     final StringBuilder m = new StringBuilder();
     m.append("The shader output ");
     m.append(name.getActual());
@@ -404,13 +621,17 @@ public final class ModuleStructureError extends CompilerError
       name.getPosition());
   }
 
-  public static @Nonnull
-    ModuleStructureError
-    moduleShaderOutputIndexDuplicate(
-      final @Nonnull UASTIDShaderFragmentOutputData current,
-      final @Nonnull UASTIDShaderFragmentOutputData original)
-      throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleShaderOutputIndexDuplicate(
+    final UASTIDShaderFragmentOutputData current,
+    final UASTIDShaderFragmentOutputData original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final TokenIdentifierLower orig_name = original.getName();
     final StringBuilder m = new StringBuilder();
     m.append("The output index ");
@@ -426,10 +647,15 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
-  public static @Nonnull ModuleStructureError moduleShaderOutputIndexInvalid(
-    final @Nonnull UASTIDShaderFragmentOutputData o)
-    throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleShaderOutputIndexInvalid(
+    final UASTIDShaderFragmentOutputData o)
   {
+    NullCheck.notNull(o, "Output");
+
     final StringBuilder m = new StringBuilder();
     m.append("Shader output index ");
     m.append(o.getIndex());
@@ -443,12 +669,18 @@ public final class ModuleStructureError extends CompilerError
       o.getName().getPosition());
   }
 
-  public static @Nonnull ModuleStructureError moduleShaderOutputIndexMissing(
-    final @Nonnull UASTIDShaderFragment shader,
-    final @Nonnull Map<Integer, UASTIDShaderFragmentOutputData> outputs,
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleShaderOutputIndexMissing(
+    final UASTIDShaderFragment shader,
+    final Map<Integer, UASTIDShaderFragmentOutputData> outputs,
     final int index)
-    throws ConstraintError
   {
+    NullCheck.notNull(shader, "Shader");
+    NullCheck.notNull(outputs, "Outputs");
+
     final TokenIdentifierLower orig_name = shader.getName();
     final StringBuilder m = new StringBuilder();
     m.append("Shader outputs are discontinuous. Index ");
@@ -462,11 +694,17 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
-  public static @Nonnull ModuleStructureError moduleShaderParameterDuplicate(
-    final @Nonnull UASTIDShaderParameters current,
-    final @Nonnull UASTIDShaderParameters original)
-    throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleShaderParameterDuplicate(
+    final UASTIDShaderParameters current,
+    final UASTIDShaderParameters original)
   {
+    NullCheck.notNull(current, "Current");
+    NullCheck.notNull(original, "Original");
+
     final TokenIdentifierLower orig_name = original.getName();
     final StringBuilder m = new StringBuilder();
     m.append("The declaration of shader parameter ");
@@ -482,12 +720,15 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
-  public static @Nonnull
-    ModuleStructureError
-    moduleShaderVertexOutputMissingMain(
-      final @Nonnull TokenIdentifierLower name)
-      throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleShaderVertexOutputMissingMain(
+    final TokenIdentifierLower name)
   {
+    NullCheck.notNull(name, "Name");
+
     final StringBuilder m = new StringBuilder();
     m.append("The vertex shader ");
     m.append(name.getActual());
@@ -500,13 +741,17 @@ public final class ModuleStructureError extends CompilerError
       name.getPosition());
   }
 
-  public static @Nonnull
-    ModuleStructureError
-    moduleShaderVertexOutputMultipleMains(
-      final @Nonnull UASTIDShaderVertexOutput main,
-      final @Nonnull UASTIDShaderVertexOutput o)
-      throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleShaderVertexOutputMultipleMains(
+    final UASTIDShaderVertexOutput main,
+    final UASTIDShaderVertexOutput o)
   {
+    NullCheck.notNull(main, "Main");
+    NullCheck.notNull(o, "Output");
+
     final StringBuilder m = new StringBuilder();
     m
       .append("Multiple vertex shader outputs are marked as the main vertex output\n");
@@ -533,11 +778,17 @@ public final class ModuleStructureError extends CompilerError
       o.getName().getPosition());
   }
 
+  /**
+   * @return A module structure error
+   */
+
   public static ModuleStructureError moduleTermConflict(
-    final @Nonnull UASTCDTerm term,
-    final @Nonnull UASTCDTerm original)
-    throws ConstraintError
+    final UASTCDTerm term,
+    final UASTCDTerm original)
   {
+    NullCheck.notNull(term, "Current");
+    NullCheck.notNull(original, "Original");
+
     final TokenIdentifierLower orig_name = original.getName();
     final StringBuilder m = new StringBuilder();
     m.append("The declaration of term ");
@@ -553,11 +804,17 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
-  public static @Nonnull ModuleStructureError moduleTypeConflict(
-    final @Nonnull UASTCDType type,
-    final @Nonnull UASTCDType original)
-    throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleTypeConflict(
+    final UASTCDType type,
+    final UASTCDType original)
   {
+    NullCheck.notNull(type, "Current");
+    NullCheck.notNull(original, "Original");
+
     final TokenIdentifierLower orig_name = original.getName();
     final StringBuilder m = new StringBuilder();
     m.append("The declaration of type ");
@@ -573,12 +830,15 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
-  public static @Nonnull
-    ModuleStructureError
-    moduleValueExternalHasExpression(
-      final @Nonnull UASTIDValueExternal v)
-      throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleValueExternalHasExpression(
+    final UASTIDValueExternal v)
   {
+    NullCheck.notNull(v, "Value");
+
     final TokenIdentifierLower orig_name = v.getName();
     final StringBuilder m = new StringBuilder();
     m.append("The declaration of external value ");
@@ -591,12 +851,15 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
-  public static @Nonnull
-    ModuleStructureError
-    moduleValueExternalLacksAscription(
-      final @Nonnull UASTIDValueExternal v)
-      throws ConstraintError
+  /**
+   * @return A module structure error
+   */
+
+  public static ModuleStructureError moduleValueExternalLacksAscription(
+    final UASTIDValueExternal v)
   {
+    NullCheck.notNull(v, "Value");
+
     final TokenIdentifierLower orig_name = v.getName();
     final StringBuilder m = new StringBuilder();
     m.append("The declaration of external value ");
@@ -609,22 +872,28 @@ public final class ModuleStructureError extends CompilerError
       orig_name.getPosition());
   }
 
-  private final @Nonnull Code code;
+  private final Code code;
+
+  /**
+   * Construct a module structure error
+   */
 
   public ModuleStructureError(
-    final @Nonnull Code in_code,
-    final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
+    final Code in_code,
+    final String message,
+    final File file,
+    final Position position)
   {
     super(message, file, position);
-    this.code = Constraints.constrainNotNull(in_code, "Code");
+    this.code = NullCheck.notNull(in_code, "Code");
   }
+
+  /**
+   * Construct a module structure error
+   */
 
   public ModuleStructureError(
     final NameRestrictionsException e)
-    throws ConstraintError
   {
     super(e, e.getToken().getFile(), e.getToken().getPosition());
     this.code = Code.MODULE_STRUCTURE_RESTRICTED_NAME;
@@ -635,7 +904,11 @@ public final class ModuleStructureError extends CompilerError
     return "module-structure";
   }
 
-  public final @Nonnull Code getCode()
+  /**
+   * @return The error code
+   */
+
+  public Code getCode()
   {
     return this.code;
   }

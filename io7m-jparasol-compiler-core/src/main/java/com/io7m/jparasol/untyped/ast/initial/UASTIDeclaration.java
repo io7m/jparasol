@@ -19,11 +19,9 @@ package com.io7m.jparasol.untyped.ast.initial;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Option;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.lexer.Token.TokenDiscard;
@@ -31,33 +29,35 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 
-public abstract class UASTIDeclaration
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public abstract class UASTIDeclaration
 {
   /**
    * The type of local declarations.
    */
 
-  public static abstract class UASTIDeclarationLocalLevel extends
-    UASTIDeclaration implements UASTILocalLevelVisitable
+  @EqualityReference public static abstract class UASTIDeclarationLocalLevel extends
+    UASTIDeclaration implements UASTILocalLevelVisitableType
   {
-    public abstract @Nonnull TokenIdentifierLower getName();
+    public abstract TokenIdentifierLower getName();
   }
 
   /**
    * The type of module-level declarations.
    */
 
-  public static abstract class UASTIDeclarationModuleLevel extends
-    UASTIDeclaration implements UASTIModuleLevelDeclarationVisitable
+  @EqualityReference public static abstract class UASTIDeclarationModuleLevel extends
+    UASTIDeclaration implements UASTIModuleLevelDeclarationVisitableType
   {
-    public abstract @Nonnull TokenIdentifierLower getName();
+    public abstract TokenIdentifierLower getName();
   }
 
   /**
    * The type of shader-level declarations.
    */
 
-  public static abstract class UASTIDeclarationShaderLevel extends
+  @EqualityReference public static abstract class UASTIDeclarationShaderLevel extends
     UASTIDeclaration
   {
     // Nothing
@@ -67,39 +67,37 @@ public abstract class UASTIDeclaration
    * The type of unit-level declarations.
    */
 
-  public static abstract class UASTIDeclarationUnitLevel extends
-    UASTIDeclaration implements UASTIUnitLevelVisitable
+  @EqualityReference public static abstract class UASTIDeclarationUnitLevel extends
+    UASTIDeclaration implements UASTIUnitLevelVisitableType
   {
     // Nothing
   }
 
-  public static final class UASTIDExternal
+  @EqualityReference public static final class UASTIDExternal
   {
-    private final @Nonnull Option<UASTIExpression> emulation;
-    private final boolean                          fragment_shader_allowed;
-    private final @Nonnull TokenIdentifierLower    name;
-    private final boolean                          vertex_shader_allowed;
+    private final OptionType<UASTIExpression> emulation;
+    private final boolean                     fragment_shader_allowed;
+    private final TokenIdentifierLower        name;
+    private final boolean                     vertex_shader_allowed;
 
     public UASTIDExternal(
-      final @Nonnull TokenIdentifierLower in_name,
+      final TokenIdentifierLower in_name,
       final boolean in_vertex_shader_allowed,
       final boolean in_fragment_shader_allowed,
-      final @Nonnull Option<UASTIExpression> in_emulation)
-      throws ConstraintError
+      final OptionType<UASTIExpression> in_emulation)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
       this.vertex_shader_allowed = in_vertex_shader_allowed;
       this.fragment_shader_allowed = in_fragment_shader_allowed;
-      this.emulation =
-        Constraints.constrainNotNull(in_emulation, "Emulation");
+      this.emulation = NullCheck.notNull(in_emulation, "Emulation");
     }
 
-    public @Nonnull Option<UASTIExpression> getEmulation()
+    public OptionType<UASTIExpression> getEmulation()
     {
       return this.emulation;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
@@ -119,32 +117,31 @@ public abstract class UASTIDeclaration
    * The type of function declarations.
    */
 
-  public static abstract class UASTIDFunction extends UASTIDTerm implements
-    UASTIFunctionVisitable
+  @EqualityReference public static abstract class UASTIDFunction extends
+    UASTIDTerm implements UASTIFunctionVisitableType
   {
     // Nothing
   }
 
-  public static final class UASTIDFunctionArgument
+  @EqualityReference public static final class UASTIDFunctionArgument
   {
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull UASTITypePath        type;
+    private final TokenIdentifierLower name;
+    private final UASTITypePath        type;
 
     public UASTIDFunctionArgument(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull UASTITypePath in_type)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final UASTITypePath in_type)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull UASTITypePath getType()
+    public UASTITypePath getType()
     {
       return this.type;
     }
@@ -154,35 +151,32 @@ public abstract class UASTIDeclaration
    * Fully defined functions.
    */
 
-  public static final class UASTIDFunctionDefined extends UASTIDFunction
+  @EqualityReference public static final class UASTIDFunctionDefined extends
+    UASTIDFunction
   {
-    private final @Nonnull List<UASTIDFunctionArgument> arguments;
-    private final @Nonnull UASTIExpression              body;
-    private final @Nonnull TokenIdentifierLower         name;
-    private final @Nonnull UASTITypePath                return_type;
+    private final List<UASTIDFunctionArgument> arguments;
+    private final UASTIExpression              body;
+    private final TokenIdentifierLower         name;
+    private final UASTITypePath                return_type;
 
     public UASTIDFunctionDefined(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull List<UASTIDFunctionArgument> in_arguments,
-      final @Nonnull UASTITypePath in_return_type,
-      final @Nonnull UASTIExpression in_body)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final List<UASTIDFunctionArgument> in_arguments,
+      final UASTITypePath in_return_type,
+      final UASTIExpression in_body)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.arguments =
-        Constraints.constrainNotNull(in_arguments, "Arguments");
-      this.return_type =
-        Constraints.constrainNotNull(in_return_type, "Return type");
-      this.body = Constraints.constrainNotNull(in_body, "Body");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
+      this.return_type = NullCheck.notNull(in_return_type, "Return type");
+      this.body = NullCheck.notNull(in_body, "Body");
     }
 
     @Override public
-      <A, B, E extends Throwable, V extends UASTIFunctionVisitor<A, B, E>>
+      <A, B, E extends Throwable, V extends UASTIFunctionVisitorType<A, B, E>>
       A
       functionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       v.functionVisitDefinedPre(this);
       final List<B> args = new ArrayList<B>();
@@ -193,33 +187,32 @@ public abstract class UASTIDeclaration
       return v.functionVisitDefined(args, this);
     }
 
-    public @Nonnull List<UASTIDFunctionArgument> getArguments()
+    public List<UASTIDFunctionArgument> getArguments()
     {
       return this.arguments;
     }
 
-    public @Nonnull UASTIExpression getBody()
+    public UASTIExpression getBody()
     {
       return this.body;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull UASTITypePath getReturnType()
+    public UASTITypePath getReturnType()
     {
       return this.return_type;
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitorType<A, E>>
       A
       moduleLevelVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitFunctionDefined(this);
     }
@@ -229,35 +222,32 @@ public abstract class UASTIDeclaration
    * Functions with external declarations (private FFI).
    */
 
-  public static final class UASTIDFunctionExternal extends UASTIDFunction
+  @EqualityReference public static final class UASTIDFunctionExternal extends
+    UASTIDFunction
   {
-    private final @Nonnull List<UASTIDFunctionArgument> arguments;
-    private final @Nonnull UASTIDExternal               external;
-    private final @Nonnull TokenIdentifierLower         name;
-    private final @Nonnull UASTITypePath                return_type;
+    private final List<UASTIDFunctionArgument> arguments;
+    private final UASTIDExternal               external;
+    private final TokenIdentifierLower         name;
+    private final UASTITypePath                return_type;
 
     public UASTIDFunctionExternal(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull List<UASTIDFunctionArgument> in_arguments,
-      final @Nonnull UASTITypePath in_return_type,
-      final @Nonnull UASTIDExternal in_external)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final List<UASTIDFunctionArgument> in_arguments,
+      final UASTITypePath in_return_type,
+      final UASTIDExternal in_external)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.arguments =
-        Constraints.constrainNotNull(in_arguments, "Arguments");
-      this.return_type =
-        Constraints.constrainNotNull(in_return_type, "Return type");
-      this.external = Constraints.constrainNotNull(in_external, "External");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
+      this.return_type = NullCheck.notNull(in_return_type, "Return type");
+      this.external = NullCheck.notNull(in_external, "External");
     }
 
     @Override public
-      <A, B, E extends Throwable, V extends UASTIFunctionVisitor<A, B, E>>
+      <A, B, E extends Throwable, V extends UASTIFunctionVisitorType<A, B, E>>
       A
       functionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       v.functionVisitExternalPre(this);
       final List<B> args = new ArrayList<B>();
@@ -268,33 +258,32 @@ public abstract class UASTIDeclaration
       return v.functionVisitExternal(args, this);
     }
 
-    public @Nonnull List<UASTIDFunctionArgument> getArguments()
+    public List<UASTIDFunctionArgument> getArguments()
     {
       return this.arguments;
     }
 
-    public @Nonnull UASTIDExternal getExternal()
+    public UASTIDExternal getExternal()
     {
       return this.external;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull UASTITypePath getReturnType()
+    public UASTITypePath getReturnType()
     {
       return this.return_type;
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitorType<A, E>>
       A
       moduleLevelVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitFunctionExternal(this);
     }
@@ -304,59 +293,28 @@ public abstract class UASTIDeclaration
    * Import declarations.
    */
 
-  public static final class UASTIDImport extends UASTIDeclaration
+  @EqualityReference public static final class UASTIDImport extends
+    UASTIDeclaration
   {
-    private final @Nonnull ModulePath                   path;
-    private final @Nonnull Option<TokenIdentifierUpper> rename;
+    private final ModulePath                       path;
+    private final OptionType<TokenIdentifierUpper> rename;
 
     public UASTIDImport(
-      final @Nonnull ModulePath in_path,
-      final @Nonnull Option<TokenIdentifierUpper> in_rename)
-      throws ConstraintError
+      final ModulePath in_path,
+      final OptionType<TokenIdentifierUpper> in_rename)
     {
-      this.path = Constraints.constrainNotNull(in_path, "Path");
-      this.rename = Constraints.constrainNotNull(in_rename, "Rename");
+      this.path = NullCheck.notNull(in_path, "Path");
+      this.rename = NullCheck.notNull(in_rename, "Rename");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final UASTIDImport other = (UASTIDImport) obj;
-      if (!this.path.equals(other.path)) {
-        return false;
-      }
-      if (!this.rename.equals(other.rename)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull ModulePath getPath()
+    public ModulePath getPath()
     {
       return this.path;
     }
 
-    public @Nonnull Option<TokenIdentifierUpper> getRename()
+    public OptionType<TokenIdentifierUpper> getRename()
     {
       return this.rename;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.path.hashCode();
-      result = (prime * result) + this.rename.hashCode();
-      return result;
     }
   }
 
@@ -364,58 +322,55 @@ public abstract class UASTIDeclaration
    * Module declarations.
    */
 
-  public static final class UASTIDModule extends UASTIDeclarationUnitLevel implements
-    UASTIModuleVisitable
+  @EqualityReference public static final class UASTIDModule extends
+    UASTIDeclarationUnitLevel implements UASTIModuleVisitableType
   {
-    private final @Nonnull List<UASTIDeclarationModuleLevel> declarations;
-    private final @Nonnull List<UASTIDImport>                imports;
-    private final @Nonnull ModulePath                        path;
+    private final List<UASTIDeclarationModuleLevel> declarations;
+    private final List<UASTIDImport>                imports;
+    private final ModulePath                        path;
 
     public UASTIDModule(
-      final @Nonnull ModulePath in_path,
-      final @Nonnull List<UASTIDImport> in_imports,
-      final @Nonnull List<UASTIDeclarationModuleLevel> in_declarations)
-      throws ConstraintError
+      final ModulePath in_path,
+      final List<UASTIDImport> in_imports,
+      final List<UASTIDeclarationModuleLevel> in_declarations)
     {
-      this.path = Constraints.constrainNotNull(in_path, "Name");
-      this.imports = Constraints.constrainNotNull(in_imports, "Imports");
-      this.declarations =
-        Constraints.constrainNotNull(in_declarations, "Declarations");
+      this.path = NullCheck.notNull(in_path, "Name");
+      this.imports = NullCheck.notNull(in_imports, "Imports");
+      this.declarations = NullCheck.notNull(in_declarations, "Declarations");
     }
 
-    public @Nonnull List<UASTIDeclarationModuleLevel> getDeclarations()
+    public List<UASTIDeclarationModuleLevel> getDeclarations()
     {
       return this.declarations;
     }
 
-    public @Nonnull List<UASTIDImport> getImports()
+    public List<UASTIDImport> getImports()
     {
       return this.imports;
     }
 
-    public @Nonnull ModulePath getPath()
+    public ModulePath getPath()
     {
       return this.path;
     }
 
     @Override public
-      <M, I, D, E extends Throwable, V extends UASTIModuleVisitor<M, I, D, E>>
+      <M, I, D, E extends Throwable, V extends UASTIModuleVisitorType<M, I, D, E>>
       M
       moduleVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
-      final UASTIModuleLevelDeclarationVisitor<D, E> dv =
+      final UASTIModuleLevelDeclarationVisitorType<D, E> dv =
         v.moduleVisitPre(this);
 
-      final ArrayList<I> r_imports = new ArrayList<I>();
+      final List<I> r_imports = new ArrayList<I>();
       for (final UASTIDImport i : this.imports) {
         final I ri = v.moduleVisitImport(i);
         r_imports.add(ri);
       }
 
-      final ArrayList<D> r_declarations = new ArrayList<D>();
+      final List<D> r_declarations = new ArrayList<D>();
       for (final UASTIDeclarationModuleLevel d : this.declarations) {
         final D rd = d.moduleLevelVisitableAccept(dv);
         r_declarations.add(rd);
@@ -425,12 +380,11 @@ public abstract class UASTIDeclaration
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIUnitLevelVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIUnitLevelVisitorType<A, E>>
       A
       unitVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.unitVisitModule(this);
     }
@@ -440,29 +394,28 @@ public abstract class UASTIDeclaration
    * Package declarations.
    */
 
-  public static final class UASTIDPackage extends UASTIDeclarationUnitLevel
+  @EqualityReference public static final class UASTIDPackage extends
+    UASTIDeclarationUnitLevel
   {
-    private final @Nonnull PackagePath path;
+    private final PackagePath path;
 
     public UASTIDPackage(
-      final @Nonnull PackagePath in_path)
-      throws ConstraintError
+      final PackagePath in_path)
     {
-      this.path = Constraints.constrainNotNull(in_path, "Path");
+      this.path = NullCheck.notNull(in_path, "Path");
     }
 
-    public @Nonnull PackagePath getPath()
+    public PackagePath getPath()
     {
       return this.path;
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIUnitLevelVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIUnitLevelVisitorType<A, E>>
       A
       unitVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.unitVisitPackage(this);
     }
@@ -472,58 +425,54 @@ public abstract class UASTIDeclaration
    * The type of shader declarations.
    */
 
-  public static abstract class UASTIDShader extends
+  @EqualityReference public static abstract class UASTIDShader extends
     UASTIDeclarationModuleLevel
   {
-    private final @Nonnull TokenIdentifierLower name;
+    private final TokenIdentifierLower name;
 
     protected UASTIDShader(
-      final @Nonnull TokenIdentifierLower in_name)
-      throws ConstraintError
+      final TokenIdentifierLower in_name)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
-    @Override public final @Nonnull TokenIdentifierLower getName()
+    @Override public final TokenIdentifierLower getName()
     {
       return this.name;
     }
   }
 
-  public static final class UASTIDShaderFragment extends UASTIDShader implements
-    UASTIFragmentShaderVisitable
+  @EqualityReference public static final class UASTIDShaderFragment extends
+    UASTIDShader implements UASTIFragmentShaderVisitableType
   {
-    private final @Nonnull List<UASTIDShaderFragmentInput>            inputs;
-    private final @Nonnull List<UASTIDShaderFragmentLocal>            locals;
-    private final @Nonnull List<UASTIDShaderFragmentOutput>           outputs;
-    private final @Nonnull List<UASTIDShaderFragmentParameter>        parameters;
-    private final @Nonnull List<UASTIDShaderFragmentOutputAssignment> writes;
+    private final List<UASTIDShaderFragmentInput>            inputs;
+    private final List<UASTIDShaderFragmentLocal>            locals;
+    private final List<UASTIDShaderFragmentOutput>           outputs;
+    private final List<UASTIDShaderFragmentParameter>        parameters;
+    private final List<UASTIDShaderFragmentOutputAssignment> writes;
 
     public UASTIDShaderFragment(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<UASTIDShaderFragmentInput> in_inputs,
-      final @Nonnull List<UASTIDShaderFragmentOutput> in_outputs,
-      final @Nonnull List<UASTIDShaderFragmentParameter> in_parameters,
-      final @Nonnull List<UASTIDShaderFragmentLocal> in_locals,
-      final @Nonnull List<UASTIDShaderFragmentOutputAssignment> in_writes)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final List<UASTIDShaderFragmentInput> in_inputs,
+      final List<UASTIDShaderFragmentOutput> in_outputs,
+      final List<UASTIDShaderFragmentParameter> in_parameters,
+      final List<UASTIDShaderFragmentLocal> in_locals,
+      final List<UASTIDShaderFragmentOutputAssignment> in_writes)
     {
       super(name);
-      this.inputs = Constraints.constrainNotNull(in_inputs, "Inputs");
-      this.outputs = Constraints.constrainNotNull(in_outputs, "Outputs");
-      this.parameters =
-        Constraints.constrainNotNull(in_parameters, "Parameters");
-      this.locals = Constraints.constrainNotNull(in_locals, "Locals");
-      this.writes = Constraints.constrainNotNull(in_writes, "Writes");
+      this.inputs = NullCheck.notNull(in_inputs, "Inputs");
+      this.outputs = NullCheck.notNull(in_outputs, "Outputs");
+      this.parameters = NullCheck.notNull(in_parameters, "Parameters");
+      this.locals = NullCheck.notNull(in_locals, "Locals");
+      this.writes = NullCheck.notNull(in_writes, "Writes");
     }
 
     @Override public
-      <F, PI, PP, PO, L, O, E extends Throwable, V extends UASTIFragmentShaderVisitor<F, PI, PP, PO, L, O, E>>
+      <F, PI, PP, PO, L, O, E extends Throwable, V extends UASTIFragmentShaderVisitorType<F, PI, PP, PO, L, O, E>>
       F
       fragmentShaderVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       final List<PI> r_inputs = new ArrayList<PI>();
       for (final UASTIDShaderFragmentInput i : this.inputs) {
@@ -531,7 +480,7 @@ public abstract class UASTIDeclaration
         r_inputs.add(ri);
       }
 
-      final UASTIFragmentShaderOutputVisitor<PO, E> ov =
+      final UASTIFragmentShaderOutputVisitorType<PO, E> ov =
         v.fragmentShaderVisitOutputsPre();
 
       final List<PO> r_outputs = new ArrayList<PO>();
@@ -546,16 +495,16 @@ public abstract class UASTIDeclaration
         r_parameters.add(rp);
       }
 
-      final UASTIFragmentShaderLocalVisitor<L, E> lv =
+      final UASTIFragmentShaderLocalVisitorType<L, E> lv =
         v.fragmentShaderVisitLocalsPre();
 
-      final ArrayList<L> r_locals = new ArrayList<L>();
+      final List<L> r_locals = new ArrayList<L>();
       for (final UASTIDShaderFragmentLocal l : this.locals) {
         final L rl = l.fragmentShaderLocalVisitableAccept(lv);
         r_locals.add(rl);
       }
 
-      final ArrayList<O> r_assigns = new ArrayList<O>();
+      final List<O> r_assigns = new ArrayList<O>();
       for (final UASTIDShaderFragmentOutputAssignment w : this.writes) {
         final O rw = v.fragmentShaderVisitOutputAssignment(w);
         r_assigns.add(rw);
@@ -570,189 +519,179 @@ public abstract class UASTIDeclaration
         this);
     }
 
-    public @Nonnull List<UASTIDShaderFragmentInput> getInputs()
+    public List<UASTIDShaderFragmentInput> getInputs()
     {
       return this.inputs;
     }
 
-    public @Nonnull List<UASTIDShaderFragmentLocal> getLocals()
+    public List<UASTIDShaderFragmentLocal> getLocals()
     {
       return this.locals;
     }
 
-    public @Nonnull List<UASTIDShaderFragmentOutput> getOutputs()
+    public List<UASTIDShaderFragmentOutput> getOutputs()
     {
       return this.outputs;
     }
 
-    public @Nonnull List<UASTIDShaderFragmentParameter> getParameters()
+    public List<UASTIDShaderFragmentParameter> getParameters()
     {
       return this.parameters;
     }
 
-    public @Nonnull List<UASTIDShaderFragmentOutputAssignment> getWrites()
+    public List<UASTIDShaderFragmentOutputAssignment> getWrites()
     {
       return this.writes;
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitorType<A, E>>
       A
       moduleLevelVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitFragmentShader(this);
     }
   }
 
-  public static final class UASTIDShaderFragmentInput extends
+  @EqualityReference public static final class UASTIDShaderFragmentInput extends
     UASTIDShaderFragmentParameters
   {
     public UASTIDShaderFragmentInput(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final UASTITypePath type)
     {
       super(name, type);
     }
   }
 
-  public static abstract class UASTIDShaderFragmentLocal extends
-    UASTIDeclarationShaderLevel implements UASTIFragmentShaderLocalVisitable
+  @EqualityReference public static abstract class UASTIDShaderFragmentLocal extends
+    UASTIDeclarationShaderLevel implements
+    UASTIFragmentShaderLocalVisitableType
   {
     // Nothing
   }
 
-  public static final class UASTIDShaderFragmentLocalDiscard extends
+  @EqualityReference public static final class UASTIDShaderFragmentLocalDiscard extends
     UASTIDShaderFragmentLocal
   {
-    private final @Nonnull TokenDiscard    discard;
-    private final @Nonnull UASTIExpression expression;
+    private final TokenDiscard    discard;
+    private final UASTIExpression expression;
 
     public UASTIDShaderFragmentLocalDiscard(
       final TokenDiscard in_discard,
       final UASTIExpression in_expression)
-      throws ConstraintError
     {
-      this.discard = Constraints.constrainNotNull(in_discard, "Discard");
-      this.expression =
-        Constraints.constrainNotNull(in_expression, "Expression");
+      this.discard = NullCheck.notNull(in_discard, "Discard");
+      this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
     @Override public
-      <L, E extends Throwable, V extends UASTIFragmentShaderLocalVisitor<L, E>>
+      <L, E extends Throwable, V extends UASTIFragmentShaderLocalVisitorType<L, E>>
       L
       fragmentShaderLocalVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.fragmentShaderVisitLocalDiscard(this);
     }
 
-    public @Nonnull TokenDiscard getDiscard()
+    public TokenDiscard getDiscard()
     {
       return this.discard;
     }
 
-    public @Nonnull UASTIExpression getExpression()
+    public UASTIExpression getExpression()
     {
       return this.expression;
     }
   }
 
-  public static final class UASTIDShaderFragmentLocalValue extends
+  @EqualityReference public static final class UASTIDShaderFragmentLocalValue extends
     UASTIDShaderFragmentLocal
   {
-    private final @Nonnull UASTIDValueLocal value;
+    private final UASTIDValueLocal value;
 
     public UASTIDShaderFragmentLocalValue(
-      final @Nonnull UASTIDValueLocal in_value)
-      throws ConstraintError
+      final UASTIDValueLocal in_value)
     {
-      this.value = Constraints.constrainNotNull(in_value, "Value");
+      this.value = NullCheck.notNull(in_value, "Value");
     }
 
     @Override public
-      <L, E extends Throwable, V extends UASTIFragmentShaderLocalVisitor<L, E>>
+      <L, E extends Throwable, V extends UASTIFragmentShaderLocalVisitorType<L, E>>
       L
       fragmentShaderLocalVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.fragmentShaderVisitLocalValue(this);
     }
 
-    public @Nonnull UASTIDValueLocal getValue()
+    public UASTIDValueLocal getValue()
     {
       return this.value;
     }
   }
 
-  public static final class UASTIDShaderFragmentOutputAssignment extends
+  @EqualityReference public static final class UASTIDShaderFragmentOutputAssignment extends
     UASTIDeclarationShaderLevel
   {
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull UASTIEVariable       variable;
+    private final TokenIdentifierLower name;
+    private final UASTIEVariable       variable;
 
     public UASTIDShaderFragmentOutputAssignment(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull UASTIEVariable in_variable)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final UASTIEVariable in_variable)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.variable = Constraints.constrainNotNull(in_variable, "Variable");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.variable = NullCheck.notNull(in_variable, "Variable");
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull UASTIEVariable getVariable()
+    public UASTIEVariable getVariable()
     {
       return this.variable;
     }
   }
 
-  public static abstract class UASTIDShaderFragmentOutput extends
+  @EqualityReference public static abstract class UASTIDShaderFragmentOutput extends
     UASTIDShaderFragmentParameters implements
-    UASTIFragmentShaderOutputVisitable
+    UASTIFragmentShaderOutputVisitableType
   {
     public UASTIDShaderFragmentOutput(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final UASTITypePath type)
     {
       super(name, type);
     }
   }
 
-  public static final class UASTIDShaderFragmentOutputData extends
+  @EqualityReference public static final class UASTIDShaderFragmentOutputData extends
     UASTIDShaderFragmentOutput
   {
     private final int index;
 
     public UASTIDShaderFragmentOutputData(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type,
+      final TokenIdentifierLower name,
+      final UASTITypePath type,
       final int in_index)
-      throws ConstraintError
     {
       super(name, type);
       this.index = in_index;
     }
 
     @Override public
-      <O, E extends Throwable, V extends UASTIFragmentShaderOutputVisitor<O, E>>
+      <O, E extends Throwable, V extends UASTIFragmentShaderOutputVisitorType<O, E>>
       O
       fragmentShaderOutputVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.fragmentShaderVisitOutputData(this);
     }
@@ -763,189 +702,179 @@ public abstract class UASTIDeclaration
     }
   }
 
-  public static final class UASTIDShaderFragmentOutputDepth extends
+  @EqualityReference public static final class UASTIDShaderFragmentOutputDepth extends
     UASTIDShaderFragmentOutput
   {
     public UASTIDShaderFragmentOutputDepth(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final UASTITypePath type)
     {
       super(name, type);
     }
 
     @Override public
-      <O, E extends Throwable, V extends UASTIFragmentShaderOutputVisitor<O, E>>
+      <O, E extends Throwable, V extends UASTIFragmentShaderOutputVisitorType<O, E>>
       O
       fragmentShaderOutputVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.fragmentShaderVisitOutputDepth(this);
     }
   }
 
-  public static final class UASTIDShaderFragmentParameter extends
+  @EqualityReference public static final class UASTIDShaderFragmentParameter extends
     UASTIDShaderFragmentParameters
   {
     public UASTIDShaderFragmentParameter(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final UASTITypePath type)
     {
       super(name, type);
     }
   }
 
-  public static abstract class UASTIDShaderFragmentParameters extends
+  @EqualityReference public static abstract class UASTIDShaderFragmentParameters extends
     UASTIDShaderParameters
   {
     UASTIDShaderFragmentParameters(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final UASTITypePath type)
     {
       super(name, type);
     }
   }
 
-  public static abstract class UASTIDShaderParameters extends
+  @EqualityReference public static abstract class UASTIDShaderParameters extends
     UASTIDeclarationShaderLevel
   {
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull UASTITypePath        type;
+    private final TokenIdentifierLower name;
+    private final UASTITypePath        type;
 
     UASTIDShaderParameters(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull UASTITypePath in_type)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final UASTITypePath in_type)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    public final @Nonnull TokenIdentifierLower getName()
+    public final TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public final @Nonnull UASTITypePath getType()
+    public final UASTITypePath getType()
     {
       return this.type;
     }
   }
 
-  public static final class UASTIDShaderProgram extends UASTIDShader
+  @EqualityReference public static final class UASTIDShaderProgram extends
+    UASTIDShader
   {
-    private final @Nonnull UASTIShaderPath fragment_shader;
-    private final @Nonnull UASTIShaderPath vertex_shader;
+    private final UASTIShaderPath fragment_shader;
+    private final UASTIShaderPath vertex_shader;
 
     public UASTIDShaderProgram(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTIShaderPath in_vertex_shader,
-      final @Nonnull UASTIShaderPath in_fragment_shader)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final UASTIShaderPath in_vertex_shader,
+      final UASTIShaderPath in_fragment_shader)
     {
       super(name);
       this.vertex_shader =
-        Constraints.constrainNotNull(in_vertex_shader, "Vertex shader");
+        NullCheck.notNull(in_vertex_shader, "Vertex shader");
       this.fragment_shader =
-        Constraints.constrainNotNull(in_fragment_shader, "Fragment shader");
+        NullCheck.notNull(in_fragment_shader, "Fragment shader");
     }
 
-    public @Nonnull UASTIShaderPath getFragmentShader()
+    public UASTIShaderPath getFragmentShader()
     {
       return this.fragment_shader;
     }
 
-    public @Nonnull UASTIShaderPath getVertexShader()
+    public UASTIShaderPath getVertexShader()
     {
       return this.vertex_shader;
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitorType<A, E>>
       A
       moduleLevelVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitProgramShader(this);
     }
   }
 
-  public static final class UASTIDShaderVertex extends UASTIDShader implements
-    UASTIVertexShaderVisitable
+  @EqualityReference public static final class UASTIDShaderVertex extends
+    UASTIDShader implements UASTIVertexShaderVisitableType
   {
-    private final @Nonnull List<UASTIDShaderVertexInput>            inputs;
-    private final @Nonnull List<UASTIDShaderVertexLocalValue>       locals;
-    private final @Nonnull List<UASTIDShaderVertexOutput>           outputs;
-    private final @Nonnull List<UASTIDShaderVertexParameter>        parameters;
-    private final @Nonnull List<UASTIDShaderVertexOutputAssignment> writes;
+    private final List<UASTIDShaderVertexInput>            inputs;
+    private final List<UASTIDShaderVertexLocalValue>       locals;
+    private final List<UASTIDShaderVertexOutput>           outputs;
+    private final List<UASTIDShaderVertexParameter>        parameters;
+    private final List<UASTIDShaderVertexOutputAssignment> writes;
 
     public UASTIDShaderVertex(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull List<UASTIDShaderVertexInput> in_inputs,
-      final @Nonnull List<UASTIDShaderVertexOutput> in_outputs,
-      final @Nonnull List<UASTIDShaderVertexParameter> in_parameters,
-      final @Nonnull List<UASTIDShaderVertexLocalValue> in_locals,
-      final @Nonnull List<UASTIDShaderVertexOutputAssignment> in_writes)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final List<UASTIDShaderVertexInput> in_inputs,
+      final List<UASTIDShaderVertexOutput> in_outputs,
+      final List<UASTIDShaderVertexParameter> in_parameters,
+      final List<UASTIDShaderVertexLocalValue> in_locals,
+      final List<UASTIDShaderVertexOutputAssignment> in_writes)
     {
       super(name);
-      this.inputs = Constraints.constrainNotNull(in_inputs, "Inputs");
-      this.outputs = Constraints.constrainNotNull(in_outputs, "Outputs");
-      this.parameters =
-        Constraints.constrainNotNull(in_parameters, "Parameters");
-      this.locals = Constraints.constrainNotNull(in_locals, "Values");
-      this.writes = Constraints.constrainNotNull(in_writes, "Writes");
+      this.inputs = NullCheck.notNull(in_inputs, "Inputs");
+      this.outputs = NullCheck.notNull(in_outputs, "Outputs");
+      this.parameters = NullCheck.notNull(in_parameters, "Parameters");
+      this.locals = NullCheck.notNull(in_locals, "Values");
+      this.writes = NullCheck.notNull(in_writes, "Writes");
     }
 
-    public @Nonnull List<UASTIDShaderVertexInput> getInputs()
+    public List<UASTIDShaderVertexInput> getInputs()
     {
       return this.inputs;
     }
 
-    public @Nonnull List<UASTIDShaderVertexLocalValue> getLocals()
+    public List<UASTIDShaderVertexLocalValue> getLocals()
     {
       return this.locals;
     }
 
-    public @Nonnull List<UASTIDShaderVertexOutput> getOutputs()
+    public List<UASTIDShaderVertexOutput> getOutputs()
     {
       return this.outputs;
     }
 
-    public @Nonnull List<UASTIDShaderVertexParameter> getParameters()
+    public List<UASTIDShaderVertexParameter> getParameters()
     {
       return this.parameters;
     }
 
-    public @Nonnull List<UASTIDShaderVertexOutputAssignment> getWrites()
+    public List<UASTIDShaderVertexOutputAssignment> getWrites()
     {
       return this.writes;
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitorType<A, E>>
       A
       moduleLevelVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitVertexShader(this);
     }
 
     @Override public
-      <VS, PI, PP, PO, L, O, E extends Throwable, V extends UASTIVertexShaderVisitor<VS, PI, PP, PO, L, O, E>>
+      <VS, PI, PP, PO, L, O, E extends Throwable, V extends UASTIVertexShaderVisitorType<VS, PI, PP, PO, L, O, E>>
       VS
       vertexShaderVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       final List<PI> r_inputs = new ArrayList<PI>();
       for (final UASTIDShaderVertexInput i : this.inputs) {
@@ -965,16 +894,16 @@ public abstract class UASTIDeclaration
         r_parameters.add(rp);
       }
 
-      final UASTIVertexShaderLocalVisitor<L, E> lv =
+      final UASTIVertexShaderLocalVisitorType<L, E> lv =
         v.vertexShaderVisitLocalsPre();
 
-      final ArrayList<L> r_locals = new ArrayList<L>();
+      final List<L> r_locals = new ArrayList<L>();
       for (final UASTIDShaderVertexLocalValue l : this.locals) {
         final L rl = lv.vertexShaderVisitLocalValue(l);
         r_locals.add(rl);
       }
 
-      final ArrayList<O> r_assigns = new ArrayList<O>();
+      final List<O> r_assigns = new ArrayList<O>();
       for (final UASTIDShaderVertexOutputAssignment w : this.writes) {
         final O rw = v.vertexShaderVisitOutputAssignment(w);
         r_assigns.add(rw);
@@ -990,46 +919,43 @@ public abstract class UASTIDeclaration
     }
   }
 
-  public static final class UASTIDShaderVertexInput extends
+  @EqualityReference public static final class UASTIDShaderVertexInput extends
     UASTIDShaderVertexParameters
   {
     public UASTIDShaderVertexInput(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final UASTITypePath type)
     {
       super(name, type);
     }
   }
 
-  public static final class UASTIDShaderVertexLocalValue extends
+  @EqualityReference public static final class UASTIDShaderVertexLocalValue extends
     UASTIDeclarationShaderLevel
   {
-    private final @Nonnull UASTIDValueLocal value;
+    private final UASTIDValueLocal value;
 
     public UASTIDShaderVertexLocalValue(
-      final @Nonnull UASTIDValueLocal in_value)
-      throws ConstraintError
+      final UASTIDValueLocal in_value)
     {
-      this.value = Constraints.constrainNotNull(in_value, "Value");
+      this.value = NullCheck.notNull(in_value, "Value");
     }
 
-    public @Nonnull UASTIDValueLocal getValue()
+    public UASTIDValueLocal getValue()
     {
       return this.value;
     }
   }
 
-  public static final class UASTIDShaderVertexOutput extends
+  @EqualityReference public static final class UASTIDShaderVertexOutput extends
     UASTIDShaderVertexParameters
   {
     private final boolean main;
 
     public UASTIDShaderVertexOutput(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type,
+      final TokenIdentifierLower name,
+      final UASTITypePath type,
       final boolean in_main)
-      throws ConstraintError
     {
       super(name, type);
       this.main = in_main;
@@ -1041,51 +967,48 @@ public abstract class UASTIDeclaration
     }
   }
 
-  public static final class UASTIDShaderVertexOutputAssignment extends
+  @EqualityReference public static final class UASTIDShaderVertexOutputAssignment extends
     UASTIDeclarationShaderLevel
   {
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull UASTIEVariable       variable;
+    private final TokenIdentifierLower name;
+    private final UASTIEVariable       variable;
 
     public UASTIDShaderVertexOutputAssignment(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull UASTIEVariable in_variable)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final UASTIEVariable in_variable)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.variable = Constraints.constrainNotNull(in_variable, "Variable");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.variable = NullCheck.notNull(in_variable, "Variable");
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull UASTIEVariable getVariable()
+    public UASTIEVariable getVariable()
     {
       return this.variable;
     }
   }
 
-  public static final class UASTIDShaderVertexParameter extends
+  @EqualityReference public static final class UASTIDShaderVertexParameter extends
     UASTIDShaderVertexParameters
   {
     public UASTIDShaderVertexParameter(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final UASTITypePath type)
     {
       super(name, type);
     }
   }
 
-  public static abstract class UASTIDShaderVertexParameters extends
+  @EqualityReference public static abstract class UASTIDShaderVertexParameters extends
     UASTIDShaderParameters
   {
     UASTIDShaderVertexParameters(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull UASTITypePath type)
-      throws ConstraintError
+      final TokenIdentifierLower name,
+      final UASTITypePath type)
     {
       super(name, type);
     }
@@ -1095,7 +1018,8 @@ public abstract class UASTIDeclaration
    * The type of term declarations.
    */
 
-  public static abstract class UASTIDTerm extends UASTIDeclarationModuleLevel
+  @EqualityReference public static abstract class UASTIDTerm extends
+    UASTIDeclarationModuleLevel
   {
     // Nothing
   }
@@ -1104,7 +1028,7 @@ public abstract class UASTIDeclaration
    * The type of local term declarations.
    */
 
-  public static abstract class UASTIDTermLocal extends
+  @EqualityReference public static abstract class UASTIDTermLocal extends
     UASTIDeclarationLocalLevel
   {
     // Nothing
@@ -1114,7 +1038,8 @@ public abstract class UASTIDeclaration
    * The type of type declarations.
    */
 
-  public static abstract class UASTIDType extends UASTIDeclarationModuleLevel
+  @EqualityReference public static abstract class UASTIDType extends
+    UASTIDeclarationModuleLevel
   {
     // Nothing
   }
@@ -1123,49 +1048,46 @@ public abstract class UASTIDeclaration
    * Record declarations.
    */
 
-  public static final class UASTIDTypeRecord extends UASTIDType implements
-    UASTIDRecordVisitable
+  @EqualityReference public static final class UASTIDTypeRecord extends
+    UASTIDType implements UASTIDRecordVisitableType
   {
-    private final @Nonnull List<UASTIDTypeRecordField> fields;
-    private final @Nonnull TokenIdentifierLower        name;
+    private final List<UASTIDTypeRecordField> fields;
+    private final TokenIdentifierLower        name;
 
     public UASTIDTypeRecord(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull List<UASTIDTypeRecordField> in_fields)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final List<UASTIDTypeRecordField> in_fields)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.fields = Constraints.constrainNotNull(in_fields, "Fields");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.fields = NullCheck.notNull(in_fields, "Fields");
     }
 
-    public @Nonnull List<UASTIDTypeRecordField> getFields()
+    public List<UASTIDTypeRecordField> getFields()
     {
       return this.fields;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitorType<A, E>>
       A
       moduleLevelVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitTypeRecord(this);
     }
 
     @Override public
-      <A, B, E extends Throwable, V extends UASTIDRecordVisitor<A, B, E>>
+      <A, B, E extends Throwable, V extends UASTIDRecordVisitorType<A, B, E>>
       A
       recordTypeVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       v.recordTypeVisitPre(this);
 
@@ -1179,26 +1101,25 @@ public abstract class UASTIDeclaration
     }
   }
 
-  public static final class UASTIDTypeRecordField
+  @EqualityReference public static final class UASTIDTypeRecordField
   {
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull UASTITypePath        type;
+    private final TokenIdentifierLower name;
+    private final UASTITypePath        type;
 
     public UASTIDTypeRecordField(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull UASTITypePath in_type)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final UASTITypePath in_type)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull UASTITypePath getType()
+    public UASTITypePath getType()
     {
       return this.type;
     }
@@ -1208,64 +1129,60 @@ public abstract class UASTIDeclaration
    * Value declarations.
    */
 
-  public static abstract class UASTIDValue extends UASTIDTerm implements
-    UASTIValueVisitable
+  @EqualityReference public static abstract class UASTIDValue extends
+    UASTIDTerm implements UASTIValueVisitableType
   {
     // Nothing
   }
 
-  public static final class UASTIDValueDefined extends UASTIDValue
+  @EqualityReference public static final class UASTIDValueDefined extends
+    UASTIDValue
   {
-    private final @Nonnull Option<UASTITypePath> ascription;
-    private final @Nonnull UASTIExpression       expression;
-    private final @Nonnull TokenIdentifierLower  name;
+    private final OptionType<UASTITypePath> ascription;
+    private final UASTIExpression           expression;
+    private final TokenIdentifierLower      name;
 
     public UASTIDValueDefined(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull Option<UASTITypePath> in_ascription,
-      final @Nonnull UASTIExpression in_expression)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final OptionType<UASTITypePath> in_ascription,
+      final UASTIExpression in_expression)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.ascription =
-        Constraints.constrainNotNull(in_ascription, "Ascription");
-      this.expression =
-        Constraints.constrainNotNull(in_expression, "Expression");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.ascription = NullCheck.notNull(in_ascription, "Ascription");
+      this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
-    public @Nonnull Option<UASTITypePath> getAscription()
+    public OptionType<UASTITypePath> getAscription()
     {
       return this.ascription;
     }
 
-    public @Nonnull UASTIExpression getExpression()
+    public UASTIExpression getExpression()
     {
       return this.expression;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitorType<A, E>>
       A
       moduleLevelVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitValue(this);
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIValueVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIValueVisitorType<A, E>>
       A
       valueVisitableAccept(
         final V v)
-        throws E,
-          ConstraintError
+        throws E
     {
       return v.valueVisitDefined(this);
     }
@@ -1275,57 +1192,54 @@ public abstract class UASTIDeclaration
    * External value declarations.
    */
 
-  public static final class UASTIDValueExternal extends UASTIDValue
+  @EqualityReference public static final class UASTIDValueExternal extends
+    UASTIDValue
   {
-    private final @Nonnull Option<UASTITypePath> ascription;
-    private final @Nonnull UASTIDExternal        external;
-    private final @Nonnull TokenIdentifierLower  name;
+    private final OptionType<UASTITypePath> ascription;
+    private final UASTIDExternal            external;
+    private final TokenIdentifierLower      name;
 
     public UASTIDValueExternal(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull Option<UASTITypePath> in_ascription,
-      final @Nonnull UASTIDExternal in_external)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final OptionType<UASTITypePath> in_ascription,
+      final UASTIDExternal in_external)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.ascription =
-        Constraints.constrainNotNull(in_ascription, "Ascription");
-      this.external = Constraints.constrainNotNull(in_external, "External");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.ascription = NullCheck.notNull(in_ascription, "Ascription");
+      this.external = NullCheck.notNull(in_external, "External");
     }
 
-    public @Nonnull Option<UASTITypePath> getAscription()
+    public OptionType<UASTITypePath> getAscription()
     {
       return this.ascription;
     }
 
-    public @Nonnull UASTIDExternal getExternal()
+    public UASTIDExternal getExternal()
     {
       return this.external;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIModuleLevelDeclarationVisitorType<A, E>>
       A
       moduleLevelVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.moduleVisitValueExternal(this);
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTIValueVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTIValueVisitorType<A, E>>
       A
       valueVisitableAccept(
         final V v)
-        throws E,
-          ConstraintError
+        throws E
     {
       return v.valueVisitExternal(this);
     }
@@ -1335,47 +1249,44 @@ public abstract class UASTIDeclaration
    * Local value declarations (let).
    */
 
-  public static final class UASTIDValueLocal extends UASTIDTermLocal
+  @EqualityReference public static final class UASTIDValueLocal extends
+    UASTIDTermLocal
   {
-    private final @Nonnull Option<UASTITypePath> ascription;
-    private final @Nonnull UASTIExpression       expression;
-    private final @Nonnull TokenIdentifierLower  name;
+    private final OptionType<UASTITypePath> ascription;
+    private final UASTIExpression           expression;
+    private final TokenIdentifierLower      name;
 
     public UASTIDValueLocal(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull Option<UASTITypePath> in_ascription,
-      final @Nonnull UASTIExpression in_expression)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final OptionType<UASTITypePath> in_ascription,
+      final UASTIExpression in_expression)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.ascription =
-        Constraints.constrainNotNull(in_ascription, "Ascription");
-      this.expression =
-        Constraints.constrainNotNull(in_expression, "Expression");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.ascription = NullCheck.notNull(in_ascription, "Ascription");
+      this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
-    public @Nonnull Option<UASTITypePath> getAscription()
+    public OptionType<UASTITypePath> getAscription()
     {
       return this.ascription;
     }
 
-    public @Nonnull UASTIExpression getExpression()
+    public UASTIExpression getExpression()
     {
       return this.expression;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTILocalLevelVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTILocalLevelVisitorType<A, E>>
       A
       localVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.localVisitValueLocal(this);
     }

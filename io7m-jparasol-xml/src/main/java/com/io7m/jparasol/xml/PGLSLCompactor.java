@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -35,12 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
-import java.util.Properties;
+import java.util.NavigableSet;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.annotation.Nonnull;
 import javax.xml.parsers.ParserConfigurationException;
 
 import nu.xom.Document;
@@ -50,19 +50,24 @@ import nu.xom.ValidityException;
 
 import org.xml.sax.SAXException;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jlog.Log;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
 
-public final class PGLSLCompactor
+/**
+ * <p>
+ * A compactor that eliminates duplicate GLSL shader files.
+ * </p>
+ */
+
+@EqualityReference public final class PGLSLCompactor
 {
-  private static final class Source
+  @EqualityReference private static final class Source
   {
-    @SuppressWarnings("boxing") public static @Nonnull Source newSource(
-      final @Nonnull List<String> lines,
-      final @Nonnull Log log)
-      throws NoSuchAlgorithmException,
-        ConstraintError
+    @SuppressWarnings("boxing") public static Source newSource(
+      final List<String> lines,
+      final LogUsableType log)
+      throws NoSuchAlgorithmException
     {
       log.debug(lines.size() + " lines");
 
@@ -80,34 +85,32 @@ public final class PGLSLCompactor
       return new Source(lines, hash.toString());
     }
 
-    private final @Nonnull String       hash;
-    private final @Nonnull List<String> lines;
+    private final String       hash;
+    private final List<String> lines;
 
     Source(
-      final @Nonnull List<String> in_lines,
-      final @Nonnull String in_hash)
-      throws ConstraintError
+      final List<String> in_lines,
+      final String in_hash)
     {
-      this.lines = Constraints.constrainNotNull(in_lines, "Lines");
-      this.hash = Constraints.constrainNotNull(in_hash, "Hash");
+      this.lines = NullCheck.notNull(in_lines, "Lines");
+      this.hash = NullCheck.notNull(in_hash, "Hash");
     }
 
-    public @Nonnull String getHash()
+    public String getHash()
     {
       return this.hash;
     }
 
-    public @Nonnull List<String> getLines()
+    public List<String> getLines()
     {
       return Collections.unmodifiableList(this.lines);
     }
   }
 
-  private static @Nonnull PGLSLMetaXML getMeta(
-    final @Nonnull File directory,
-    final @Nonnull Log log)
+  private static PGLSLMetaXML getMeta(
+    final File directory,
+    final LogUsableType log)
     throws ValidityException,
-      ConstraintError,
       ParsingException,
       IOException,
       SAXException,
@@ -123,18 +126,17 @@ public final class PGLSLCompactor
   }
 
   private static void loadSources(
-    final @Nonnull Log log,
-    final @Nonnull SortedSet<Integer> supports,
-    final @Nonnull String name_prefix,
-    final @Nonnull File directory,
-    final @Nonnull NavigableMap<Integer, Source> vertex_sources_by_version,
-    final @Nonnull NavigableMap<Integer, Source> fragment_sources_by_version,
-    final @Nonnull Map<String, Source> sources_by_hash)
+    final LogUsableType log,
+    final SortedSet<Integer> supports,
+    final String name_prefix,
+    final File directory,
+    final NavigableMap<Integer, Source> vertex_sources_by_version,
+    final NavigableMap<Integer, Source> fragment_sources_by_version,
+    final Map<String, Source> sources_by_hash)
     throws IOException,
-      NoSuchAlgorithmException,
-      ConstraintError
+      NoSuchAlgorithmException
   {
-    final TreeSet<Integer> supported = new TreeSet<Integer>(supports);
+    final NavigableSet<Integer> supported = new TreeSet<Integer>(supports);
     final Iterator<Integer> iter = supported.descendingIterator();
 
     while (iter.hasNext()) {
@@ -176,36 +178,37 @@ public final class PGLSLCompactor
     }
   }
 
-  public static void main(
-    final String args[])
+  /**
+   * Construct a new compactor.
+   * 
+   * @param directory
+   *          The directory
+   * @param output_directory
+   *          The output directory
+   * @param log
+   *          The log
+   * @return A new compactor
+   * @throws ValidityException
+   *           On XML parser errors
+   * @throws ParsingException
+   *           On XML parser errors
+   * @throws IOException
+   *           On I/O errors
+   * @throws NoSuchAlgorithmException
+   *           On JVMs that don't support the required hashing algorithms
+   * @throws SAXException
+   *           On XML parser errors
+   * @throws ParserConfigurationException
+   *           On XML parser errors
+   */
+
+  public static PGLSLCompactor newCompactor(
+    final File directory,
+    final File output_directory,
+    final LogUsableType log)
     throws ValidityException,
       ParsingException,
       IOException,
-      ConstraintError,
-      NoSuchAlgorithmException,
-      SAXException,
-      ParserConfigurationException
-  {
-    if (args.length != 2) {
-      throw new IllegalArgumentException("usage: input output");
-    }
-
-    final File input = new File(args[0]);
-    final File output = new File(args[1]);
-    final Properties props = new Properties();
-    final Log log =
-      new Log(props, "com.io7m.parasol.xml.xml.xml", "compactor");
-    PGLSLCompactor.newCompactor(input, output, log);
-  }
-
-  public static @Nonnull PGLSLCompactor newCompactor(
-    final @Nonnull File directory,
-    final @Nonnull File output_directory,
-    final @Nonnull Log log)
-    throws ValidityException,
-      ParsingException,
-      IOException,
-      ConstraintError,
       NoSuchAlgorithmException,
       SAXException,
       ParserConfigurationException
@@ -213,13 +216,13 @@ public final class PGLSLCompactor
     return new PGLSLCompactor(directory, output_directory, log);
   }
 
-  private static @Nonnull List<String> readLines(
-    final @Nonnull File file)
+  private static List<String> readLines(
+    final File file)
     throws IOException
   {
     final BufferedReader br = new BufferedReader(new FileReader(file));
     try {
-      final ArrayList<String> lines = new ArrayList<String>();
+      final List<String> lines = new ArrayList<String>();
 
       for (;;) {
         final String line = br.readLine();
@@ -236,8 +239,8 @@ public final class PGLSLCompactor
   }
 
   private static void stripVersion(
-    final @Nonnull File file,
-    final @Nonnull List<String> lines)
+    final File file,
+    final List<String> lines)
     throws IOException
   {
     if (lines.get(0).startsWith("#version ") == false) {
@@ -246,39 +249,37 @@ public final class PGLSLCompactor
     lines.remove(0);
   }
 
-  private final @Nonnull File                               directory;
-  private final @Nonnull NavigableMap<Integer, Source>      es_fragment_sources_by_version;
-  private final @Nonnull NavigableMap<Integer, Source>      es_vertex_sources_by_version;
-  private final @Nonnull NavigableMap<Integer, Source>      full_fragment_sources_by_version;
-  private final @Nonnull NavigableMap<Integer, Source>      full_vertex_sources_by_version;
-  private final @Nonnull Log                                log;
-  private final @Nonnull PGLSLMetaXML                       meta;
-  private final @Nonnull File                               output_directory;
-  private final @Nonnull Map<String, Source>                sources_by_hash;
-  private final @Nonnull TreeMap<Version, CompactedShaders> mappings;
+  private final File                                 directory;
+  private final NavigableMap<Integer, Source>        es_fragment_sources_by_version;
+  private final NavigableMap<Integer, Source>        es_vertex_sources_by_version;
+  private final NavigableMap<Integer, Source>        full_fragment_sources_by_version;
+  private final NavigableMap<Integer, Source>        full_vertex_sources_by_version;
+  private final LogUsableType                        log;
+  private final PGLSLMetaXML                         meta;
+  private final File                                 output_directory;
+  private final Map<String, Source>                  sources_by_hash;
+  private final SortedMap<Version, CompactedShaders> mappings;
 
   private PGLSLCompactor(
-    final @Nonnull File in_directory,
-    final @Nonnull File in_output_directory,
-    final @Nonnull Log in_log)
-    throws ConstraintError,
-      ValidityException,
+    final File in_directory,
+    final File in_output_directory,
+    final LogUsableType in_log)
+    throws ValidityException,
       ParsingException,
       IOException,
       NoSuchAlgorithmException,
       SAXException,
       ParserConfigurationException
   {
-    this.log =
-      new Log(Constraints.constrainNotNull(in_log, "Log"), "compactor");
-    this.directory = Constraints.constrainNotNull(in_directory, "Directory");
+    this.log = NullCheck.notNull(in_log, "Log").with("compactor");
+    this.directory = NullCheck.notNull(in_directory, "Directory");
     this.output_directory =
-      Constraints.constrainNotNull(in_output_directory, "Output directory");
+      NullCheck.notNull(in_output_directory, "Output directory");
 
     this.meta = PGLSLCompactor.getMeta(in_directory, in_log);
-    Constraints.constrainArbitrary(
-      this.meta.isCompacted() == false,
-      "Not already compacted");
+    if (this.meta.isCompacted()) {
+      throw new IllegalArgumentException("Program is already compacted");
+    }
 
     this.es_vertex_sources_by_version = new TreeMap<Integer, Source>();
     this.es_fragment_sources_by_version = new TreeMap<Integer, Source>();
@@ -325,10 +326,9 @@ public final class PGLSLCompactor
   }
 
   private void makeMappingsForAPI(
-    final @Nonnull NavigableMap<Integer, Source> fragment_sources,
-    final @Nonnull NavigableMap<Integer, Source> vertex_sources,
-    final @Nonnull API api)
-    throws ConstraintError
+    final NavigableMap<Integer, Source> fragment_sources,
+    final NavigableMap<Integer, Source> vertex_sources,
+    final API api)
   {
     for (final Integer v : fragment_sources.keySet()) {
       assert vertex_sources.containsKey(v);
@@ -342,8 +342,7 @@ public final class PGLSLCompactor
   }
 
   private void compact()
-    throws IOException,
-      ConstraintError
+    throws IOException
   {
     this.log.debug("creating " + this.output_directory);
 
@@ -376,8 +375,8 @@ public final class PGLSLCompactor
   }
 
   private static void writeSource(
-    final @Nonnull File file,
-    final @Nonnull Source value)
+    final File file,
+    final Source value)
     throws IOException
   {
     final PrintWriter b =

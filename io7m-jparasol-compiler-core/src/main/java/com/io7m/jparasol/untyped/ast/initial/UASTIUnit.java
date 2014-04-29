@@ -19,10 +19,8 @@ package com.io7m.jparasol.untyped.ast.initial;
 import java.io.File;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
 
@@ -30,35 +28,35 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDPackage;
  * A compilation unit.
  */
 
-public final class UASTIUnit
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public final class UASTIUnit
 {
-  private final @Nonnull File               file;
-  private final @Nonnull List<UASTIDModule> modules;
-  private final @Nonnull UASTIDPackage      package_name;
+  private final File               file;
+  private final List<UASTIDModule> modules;
+  private final UASTIDPackage      package_name;
 
   public UASTIUnit(
-    final @Nonnull File in_file,
-    final @Nonnull UASTIDPackage in_package_name,
-    final @Nonnull List<UASTIDModule> in_modules)
-    throws ConstraintError
+    final File in_file,
+    final UASTIDPackage in_package_name,
+    final List<UASTIDModule> in_modules)
   {
-    this.file = Constraints.constrainNotNull(in_file, "File");
-    this.package_name =
-      Constraints.constrainNotNull(in_package_name, "Package");
-    this.modules = Constraints.constrainNotNull(in_modules, "Modules");
+    this.file = NullCheck.notNull(in_file, "File");
+    this.package_name = NullCheck.notNull(in_package_name, "Package");
+    this.modules = NullCheck.notNull(in_modules, "Modules");
   }
 
-  public @Nonnull File getFile()
+  public File getFile()
   {
     return this.file;
   }
 
-  public @Nonnull List<UASTIDModule> getModules()
+  public List<UASTIDModule> getModules()
   {
     return this.modules;
   }
 
-  public @Nonnull UASTIDPackage getPackageName()
+  public UASTIDPackage getPackageName()
   {
     return this.package_name;
   }

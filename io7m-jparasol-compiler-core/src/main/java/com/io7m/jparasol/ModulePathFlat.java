@@ -16,12 +16,32 @@
 
 package com.io7m.jparasol;
 
-import javax.annotation.Nonnull;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.Nullable;
 
-public final class ModulePathFlat implements NameShow
+/**
+ * <p>
+ * Flattened module paths.
+ * </p>
+ * <p>
+ * "Flattened" in this case is synonymous with "lacks lexical information".
+ * </p>
+ * 
+ * @see ModulePath
+ */
+
+@EqualityStructural public final class ModulePathFlat implements NameShowType
 {
-  public static @Nonnull ModulePathFlat fromModulePath(
-    final @Nonnull ModulePath path)
+  /**
+   * Construct a flattened path from an existing module path.
+   * 
+   * @param path
+   *          The path
+   * @return A flattened path
+   */
+
+  public static ModulePathFlat fromModulePath(
+    final ModulePath path)
   {
     final StringBuilder s = new StringBuilder();
     final String p =
@@ -32,19 +52,28 @@ public final class ModulePathFlat implements NameShow
       s.append(".");
     }
     s.append(path.getName().getActual());
-    return new ModulePathFlat(s.toString());
+    final String r = s.toString();
+    assert r != null;
+    return new ModulePathFlat(r);
   }
 
-  private final @Nonnull String actual;
+  private final String actual;
+
+  /**
+   * Construct a flattened path from a string.
+   * 
+   * @param in_actual
+   *          The string
+   */
 
   public ModulePathFlat(
-    final @Nonnull String in_actual)
+    final String in_actual)
   {
     this.actual = in_actual;
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -62,7 +91,11 @@ public final class ModulePathFlat implements NameShow
     return true;
   }
 
-  public @Nonnull String getActual()
+  /**
+   * @return The path as a string
+   */
+
+  public String getActual()
   {
     return this.actual;
   }
@@ -75,17 +108,19 @@ public final class ModulePathFlat implements NameShow
     return result;
   }
 
+  @Override public String show()
+  {
+    return this.actual;
+  }
+
   @Override public String toString()
   {
     final StringBuilder builder = new StringBuilder();
     builder.append("[ModulePathFlat ");
     builder.append(this.actual);
     builder.append("]");
-    return builder.toString();
-  }
-
-  @Override public String show()
-  {
-    return this.actual;
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

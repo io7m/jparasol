@@ -18,29 +18,34 @@ package com.io7m.jparasol.untyped;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.NameRestrictions.NameRestrictionsException;
 import com.io7m.jparasol.lexer.Position;
+
+/**
+ * Errors raised during the unique binding phase.
+ * 
+ * @see UniqueBinders
+ */
 
 public final class UniqueBindersError extends CompilerError
 {
   private static final long serialVersionUID = 5359160308099372566L;
 
   private UniqueBindersError(
-    final @Nonnull File file,
-    final @Nonnull Position position,
-    final @Nonnull String message)
-    throws ConstraintError
+    final File file,
+    final Position position,
+    final String message)
   {
     super(message, file, position);
   }
 
+  /**
+   * Construct a unique binder error
+   */
+
   public UniqueBindersError(
-    final @Nonnull NameRestrictionsException x)
-    throws ConstraintError
+    final NameRestrictionsException x)
   {
     super(x, x.getMessage(), x.getFile(), x.getPosition());
   }

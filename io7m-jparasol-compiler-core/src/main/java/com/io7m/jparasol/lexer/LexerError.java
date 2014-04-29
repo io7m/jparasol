@@ -18,12 +18,14 @@ package com.io7m.jparasol.lexer;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jparasol.CompilerError;
 
-public final class LexerError extends CompilerError
+/**
+ * The type of lexical errors.
+ */
+
+@EqualityReference public final class LexerError extends CompilerError
 {
   private static final long serialVersionUID;
 
@@ -31,30 +33,62 @@ public final class LexerError extends CompilerError
     serialVersionUID = 260713896414675714L;
   }
 
+  /**
+   * Construct a new lexical error.
+   * 
+   * @param cause
+   *          The cause
+   * @param file
+   *          The file
+   * @param position
+   *          The position in the file
+   */
+
   public LexerError(
-    final @Nonnull Exception cause,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
+    final Exception cause,
+    final File file,
+    final Position position)
   {
     super(cause, file, position);
   }
 
+  /**
+   * Construct a new lexical error.
+   * 
+   * @param cause
+   *          The cause
+   * @param message
+   *          The message
+   * @param file
+   *          The file
+   * @param position
+   *          The position in the file
+   */
+
   public LexerError(
-    final @Nonnull Exception cause,
-    final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
+    final Exception cause,
+    final String message,
+    final File file,
+    final Position position)
   {
     super(cause, message, file, position);
   }
 
+  /**
+   * Construct a new lexical error.
+   * 
+   * @param message
+   *          The message
+   * @param file
+   *          The file
+   * @param position
+   *          The position in the file
+   */
+
   public LexerError(
-    final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
+    final String message,
+    final File file,
+    final Position position)
   {
     super(message, file, position);
   }

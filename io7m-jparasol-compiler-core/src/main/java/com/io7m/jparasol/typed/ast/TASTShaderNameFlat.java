@@ -18,84 +18,125 @@ package com.io7m.jparasol.typed.ast;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Pair;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jfunctional.Pair;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePathFlat;
-import com.io7m.jparasol.NameFlat;
+import com.io7m.jparasol.NameFlatType;
 import com.io7m.jparasol.PackagePath;
-import com.io7m.jparasol.PackagePath.Builder;
+import com.io7m.jparasol.PackagePath.BuilderType;
 import com.io7m.jparasol.PackagePathFlat;
 import com.io7m.jparasol.UIError;
 import com.io7m.jparasol.lexer.Position;
+import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-public final class TASTShaderNameFlat implements NameFlat
+/**
+ * The type of flattened shader names.
+ */
+
+@EqualityStructural public final class TASTShaderNameFlat implements
+  NameFlatType,
+  TASTNameTypeShaderFlatType,
+  TASTNameTermShaderFlatType
 {
-  public static @Nonnull TASTShaderNameFlat fromShaderName(
-    final @Nonnull TASTShaderName name)
-    throws ConstraintError
+  /**
+   * Flatten a shader name.
+   * 
+   * @param name
+   *          The name
+   * @return A flattened name
+   */
+
+  public static TASTShaderNameFlat fromShaderName(
+    final TASTShaderName name)
   {
-    return new TASTShaderNameFlat(name.getFlat(), name.getName().getActual());
+    NullCheck.notNull(name, "Name");
+    final TokenIdentifierLower n = name.getName();
+    final String text = n.getActual();
+    assert text != null;
+    return new TASTShaderNameFlat(name.getFlat(), text);
   }
 
-  public static @Nonnull TASTShaderNameFlat parse(
-    final @Nonnull String name,
-    final @Nonnull Pair<File, Position> meta)
-    throws UIError,
-      ConstraintError
+  /**
+   * Parse a flattened shader name from a string, with associated metadata.
+   * 
+   * @param name
+   *          The string
+   * @param meta
+   *          The metadata
+   * @return A flattened shader name
+   * @throws UIError
+   *           If the shader name cannot be parsed
+   */
+
+  public static TASTShaderNameFlat parse(
+    final String name,
+    final Pair<File, Position> meta)
+    throws UIError
   {
-    try {
-      final String[] segments = name.split("\\.");
-      if (segments.length < 3) {
-        throw UIError.shaderNameUnparseable(name, meta, null);
-      }
-
-      final Builder pp = PackagePath.newBuilder();
-      for (int index = 0; index < (segments.length - 2); ++index) {
-        pp.addFakeComponent(segments[index]);
-      }
-
-      final String module_name = segments[segments.length - 2];
-      Constraints.constrainArbitrary(
-        module_name.isEmpty() == false,
-        "Module name is non-empty");
-      Constraints.constrainArbitrary(
-        Character.isUpperCase(module_name.charAt(0)),
-        "Module name is uppercase");
-
-      final String shader_name = segments[segments.length - 1];
-      Constraints.constrainArbitrary(
-        shader_name.isEmpty() == false,
-        "Shader name is non-empty");
-      Constraints.constrainArbitrary(
-        Character.isLowerCase(shader_name.charAt(0)),
-        "Shader name is lowercase");
-
-      final PackagePathFlat ppf = PackagePathFlat.fromPackagePath(pp.build());
-      final ModulePathFlat mpf =
-        new ModulePathFlat(ppf.getActual() + "." + module_name);
-      return new TASTShaderNameFlat(mpf, shader_name);
-    } catch (final ConstraintError x) {
-      throw UIError.shaderNameUnparseable(name, meta, x.getMessage());
+    final String[] segments = name.split("\\.");
+    if (segments.length < 3) {
+      throw UIError.shaderNameUnparseable(name, meta, null);
     }
+
+    final BuilderType pp = PackagePath.newBuilder();
+    for (int index = 0; index < (segments.length - 2); ++index) {
+      final String s = segments[index];
+      assert s != null;
+      pp.addFakeComponent(s);
+    }
+
+    final String module_name = segments[segments.length - 2];
+    if (module_name.isEmpty()) {
+      throw UIError.shaderNameUnparseable(name, meta, "Module name is empty");
+    }
+    if (Character.isUpperCase(module_name.charAt(0)) == false) {
+      throw UIError.shaderNameUnparseable(
+        name,
+        meta,
+        "Module name is not uppercase");
+    }
+
+    final String shader_name = segments[segments.length - 1];
+    if (shader_name.isEmpty()) {
+      throw UIError.shaderNameUnparseable(name, meta, "Shader name is empty");
+    }
+    if (Character.isLowerCase(shader_name.charAt(0)) == false) {
+      throw UIError.shaderNameUnparseable(
+        name,
+        meta,
+        "Shader name is not lowercase");
+    }
+
+    final PackagePathFlat ppf = PackagePathFlat.fromPackagePath(pp.build());
+    final ModulePathFlat mpf =
+      new ModulePathFlat(ppf.getActual() + "." + module_name);
+    return new TASTShaderNameFlat(mpf, shader_name);
   }
 
-  private final @Nonnull String         name;
-  private final @Nonnull ModulePathFlat path;
+  private final String         name;
+  private final ModulePathFlat path;
+
+  /**
+   * Construct a flattened shader name.
+   * 
+   * @param in_path
+   *          The flattened module path
+   * @param in_name
+   *          The name
+   */
 
   public TASTShaderNameFlat(
-    final @Nonnull ModulePathFlat in_path,
-    final @Nonnull String in_name)
-    throws ConstraintError
+    final ModulePathFlat in_path,
+    final String in_name)
   {
-    this.path = Constraints.constrainNotNull(in_path, "Path");
-    this.name = Constraints.constrainNotNull(in_name, "Name");
+    this.path = NullCheck.notNull(in_path, "Path");
+    this.name = NullCheck.notNull(in_name, "Name");
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -121,7 +162,7 @@ public final class TASTShaderNameFlat implements NameFlat
     return this.path;
   }
 
-  @Override public @Nonnull String getName()
+  @Override public String getName()
   {
     return this.name;
   }
@@ -135,13 +176,35 @@ public final class TASTShaderNameFlat implements NameFlat
     return result;
   }
 
-  @Override public @Nonnull String show()
+  @Override public
+    <A, E extends Throwable, V extends TASTNameTermShaderFlatVisitorType<A, E>>
+    A
+    nameTermShaderVisitableAccept(
+      final V v)
+      throws E
+  {
+    return v.nameTypeShaderVisitShader(this);
+  }
+
+  @Override public
+    <A, E extends Throwable, V extends TASTNameTypeShaderFlatVisitorType<A, E>>
+    A
+    nameTypeShaderVisitableAccept(
+      final V v)
+      throws E
+  {
+    return v.nameTypeShaderVisitShader(this);
+  }
+
+  @Override public String show()
   {
     final StringBuilder builder = new StringBuilder();
     builder.append(this.path.getActual());
     builder.append(".");
     builder.append(this.name);
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 
   @Override public String toString()
@@ -152,6 +215,8 @@ public final class TASTShaderNameFlat implements NameFlat
     builder.append(" ");
     builder.append(this.name);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

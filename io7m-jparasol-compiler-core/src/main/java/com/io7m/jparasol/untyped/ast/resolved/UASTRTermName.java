@@ -18,51 +18,52 @@ package com.io7m.jparasol.untyped.ast.resolved;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-public abstract class UASTRTermName implements UASTRTermNameVisitable
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public abstract class UASTRTermName implements
+  UASTRTermNameVisitableType
 {
   /**
    * A fully qualified name.
    */
 
-  public static final class UASTRTermNameGlobal extends UASTRTermName
+  @EqualityReference public static final class UASTRTermNameGlobal extends
+    UASTRTermName
   {
-    private final @Nonnull ModulePathFlat       flat;
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull ModulePath           path;
+    private final ModulePathFlat       flat;
+    private final TokenIdentifierLower name;
+    private final ModulePath           path;
 
     public UASTRTermNameGlobal(
-      final @Nonnull ModulePath in_path,
-      final @Nonnull TokenIdentifierLower actual)
-      throws ConstraintError
+      final ModulePath in_path,
+      final TokenIdentifierLower actual)
     {
-      super(
-        Constraints.constrainNotNull(actual, "Actual").getFile(),
-        Constraints.constrainNotNull(actual, "Actual").getPosition());
-      this.path = Constraints.constrainNotNull(in_path, "Path");
+      super(NullCheck.notNull(actual, "Actual").getFile(), NullCheck.notNull(
+        actual,
+        "Actual").getPosition());
+      this.path = NullCheck.notNull(in_path, "Path");
       this.flat = ModulePathFlat.fromModulePath(in_path);
       this.name = actual;
     }
 
-    public @Nonnull ModulePathFlat getFlat()
+    public ModulePathFlat getFlat()
     {
       return this.flat;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull ModulePath getPath()
+    public ModulePath getPath()
     {
       return this.path;
     }
@@ -78,12 +79,11 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTRTermNameVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTRTermNameVisitorType<A, E>>
       A
       termNameVisitableAccept(
-        final @Nonnull V v)
-        throws ConstraintError,
-          E
+        final V v)
+        throws E
     {
       return v.termNameVisitGlobal(this);
     }
@@ -104,24 +104,24 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
    * A name that refers to a local variable.
    */
 
-  public static final class UASTRTermNameLocal extends UASTRTermName
+  @EqualityReference public static final class UASTRTermNameLocal extends
+    UASTRTermName
   {
-    private final @Nonnull String               current;
-    private final @Nonnull TokenIdentifierLower original;
+    private final String               current;
+    private final TokenIdentifierLower original;
 
     public UASTRTermNameLocal(
-      final @Nonnull TokenIdentifierLower in_original,
-      final @Nonnull String in_current)
-      throws ConstraintError
+      final TokenIdentifierLower in_original,
+      final String in_current)
     {
-      super(
-        Constraints.constrainNotNull(in_original, "Original").getFile(),
-        Constraints.constrainNotNull(in_original, "Original").getPosition());
+      super(NullCheck.notNull(in_original, "Original").getFile(), NullCheck
+        .notNull(in_original, "Original")
+        .getPosition());
       this.original = in_original;
-      this.current = Constraints.constrainNotNull(in_current, "Current");
+      this.current = NullCheck.notNull(in_current, "Current");
     }
 
-    public @Nonnull String getCurrent()
+    public String getCurrent()
     {
       return this.current;
     }
@@ -131,7 +131,7 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
       return this.original;
     }
 
-    public @Nonnull TokenIdentifierLower getOriginal()
+    public TokenIdentifierLower getOriginal()
     {
       return this.original;
     }
@@ -145,12 +145,11 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTRTermNameVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTRTermNameVisitorType<A, E>>
       A
       termNameVisitableAccept(
-        final @Nonnull V v)
-        throws ConstraintError,
-          E
+        final V v)
+        throws E
     {
       return v.termNameVisitLocal(this);
     }
@@ -167,29 +166,28 @@ public abstract class UASTRTermName implements UASTRTermNameVisitable
     }
   }
 
-  private final @Nonnull File     file;
-  private final @Nonnull Position position;
+  private final File     file;
+  private final Position position;
 
   protected UASTRTermName(
-    final @Nonnull File in_file,
-    final @Nonnull Position in_position)
-    throws ConstraintError
+    final File in_file,
+    final Position in_position)
   {
-    this.file = Constraints.constrainNotNull(in_file, "File");
-    this.position = Constraints.constrainNotNull(in_position, "Position");
+    this.file = NullCheck.notNull(in_file, "File");
+    this.position = NullCheck.notNull(in_position, "Position");
   }
 
-  public final @Nonnull File getFile()
+  public final File getFile()
   {
     return this.file;
   }
 
-  public abstract @Nonnull TokenIdentifierLower getName();
+  public abstract TokenIdentifierLower getName();
 
-  public final @Nonnull Position getPosition()
+  public final Position getPosition()
   {
     return this.position;
   }
 
-  public abstract @Nonnull String show();
+  public abstract String show();
 }

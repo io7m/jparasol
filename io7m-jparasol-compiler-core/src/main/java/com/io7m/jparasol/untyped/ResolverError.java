@@ -17,12 +17,8 @@
 package com.io7m.jparasol.untyped;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Position;
@@ -32,32 +28,109 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDImpor
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDModule;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShader;
 
+/**
+ * Errors raised during the name resolution phase.
+ * 
+ * @see ResolverError
+ */
+
 public final class ResolverError extends CompilerError
 {
+  /**
+   * Name resolution error codes.
+   */
+
   public static enum Code
   {
+    /**
+     * A cyclic import was detected.
+     */
+
     RESOLVER_IMPORT_CYCLIC,
+
+    /**
+     * Attempted to import an unknown module.
+     */
+
     RESOLVER_IMPORT_UNKNOWN,
+
+    /**
+     * Attempted to reference an unknown module.
+     */
+
     RESOLVER_MODULE_REFERENCE_UNKNOWN,
+
+    /**
+     * Attempted to reference a nonexistent shader.
+     */
+
     RESOLVER_SHADER_NONEXISTENT,
+
+    /**
+     * Attempted to reference a nonexistent shader output.
+     */
+
     RESOLVER_SHADER_OUTPUT_NONEXISTENT,
+
+    /**
+     * Attempted to write a locally recursive shader.
+     */
+
     RESOLVER_SHADER_RECURSIVE_LOCAL,
+
+    /**
+     * Attempted to write mutually-recursive shader.
+     */
+
     RESOLVER_SHADER_RECURSIVE_MUTUAL,
+
+    /**
+     * Attempted to reference a nonexistent term.
+     */
+
     RESOLVER_TERM_NONEXISTENT,
+
+    /**
+     * Attempted to write a locally recursive term.
+     */
+
     RESOLVER_TERM_RECURSIVE_LOCAL,
+
+    /**
+     * Attempted to write mutually-recursive term.
+     */
+
     RESOLVER_TERM_RECURSIVE_MUTUAL,
+
+    /**
+     * Attempted to reference a nonexistent type.
+     */
+
     RESOLVER_TYPE_NONEXISTENT,
+
+    /**
+     * Attempted to write a locally recursive type.
+     */
+
     RESOLVER_TYPE_RECURSIVE_LOCAL,
+
+    /**
+     * Attempted to write a mutually recursive type.
+     */
+
     RESOLVER_TYPE_RECURSIVE_MUTUAL,
   }
 
   private static final long serialVersionUID = 2073538624493476012L;
 
-  public static @Nonnull ResolverError moduleImportCyclic(
-    final @Nonnull UASTUDImport first,
-    final @Nonnull ModulePathFlat target,
-    final @Nonnull ArrayList<UASTUDImport> imports_)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError moduleImportCyclic(
+    final UASTUDImport first,
+    final ModulePathFlat target,
+    final List<UASTUDImport> imports_)
   {
     final StringBuilder m = new StringBuilder();
     m.append("Cyclic import of module ");
@@ -74,7 +147,7 @@ public final class ResolverError extends CompilerError
     m.append("\n");
 
     for (final UASTUDImport i : imports_) {
-      m.append("  -> Import of ");
+      m.append("  → Import of ");
       m.append(ModulePathFlat.fromModulePath(i.getPath()).getActual());
       m.append(" at ");
       m.append(i.getPath().getName().getFile());
@@ -91,10 +164,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError moduleImportUnknown(
-    final @Nonnull UASTUDImport i,
-    final @Nonnull ModulePathFlat target)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError moduleImportUnknown(
+    final UASTUDImport i,
+    final ModulePathFlat target)
   {
     final StringBuilder m = new StringBuilder();
     m.append("Nonexistent module ");
@@ -108,9 +184,12 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError moduleReferenceUnknown(
-    final @Nonnull TokenIdentifierUpper name)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError moduleReferenceUnknown(
+    final TokenIdentifierUpper name)
   {
     final StringBuilder m = new StringBuilder();
     m.append("There is no module imported with the name ");
@@ -123,10 +202,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError shaderNonexistent(
-    final @Nonnull UASTUDModule module,
-    final @Nonnull TokenIdentifierLower name)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError shaderNonexistent(
+    final UASTUDModule module,
+    final TokenIdentifierLower name)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The module ");
@@ -141,10 +223,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError shaderOutputNonexistent(
-    final @Nonnull UASTUDShader shader,
-    final @Nonnull TokenIdentifierLower name)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError shaderOutputNonexistent(
+    final UASTUDShader shader,
+    final TokenIdentifierLower name)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The shader ");
@@ -159,10 +244,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError shaderRecursiveLocal(
-    final @Nonnull TokenIdentifierLower source_name,
-    final @Nonnull TokenIdentifierLower target_name)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError shaderRecursiveLocal(
+    final TokenIdentifierLower source_name,
+    final TokenIdentifierLower target_name)
   {
     final StringBuilder m = new StringBuilder();
     m.append("Referring to the shader ");
@@ -179,10 +267,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError shaderRecursiveMutual(
-    final @Nonnull TokenIdentifierLower name,
-    final @Nonnull List<TokenIdentifierLower> tokens)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError shaderRecursiveMutual(
+    final TokenIdentifierLower name,
+    final List<TokenIdentifierLower> tokens)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The reference to ");
@@ -199,7 +290,7 @@ public final class ResolverError extends CompilerError
     m.append("\n");
 
     for (final TokenIdentifierLower t : tokens) {
-      m.append("  -> Shader ");
+      m.append("  → Shader ");
       m.append(t.getActual());
       m.append(" at ");
       m.append(t.getFile());
@@ -215,10 +306,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError termNonexistent(
-    final @Nonnull UASTUDModule module,
-    final @Nonnull TokenIdentifierLower name)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError termNonexistent(
+    final UASTUDModule module,
+    final TokenIdentifierLower name)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The module ");
@@ -233,10 +327,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError termRecursiveLocal(
-    final @Nonnull TokenIdentifierLower source_name,
-    final @Nonnull TokenIdentifierLower target_name)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError termRecursiveLocal(
+    final TokenIdentifierLower source_name,
+    final TokenIdentifierLower target_name)
   {
     final StringBuilder m = new StringBuilder();
     m.append("Referring to the term ");
@@ -253,10 +350,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError termRecursiveMutual(
-    final @Nonnull TokenIdentifierLower name,
-    final @Nonnull List<TokenIdentifierLower> tokens)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError termRecursiveMutual(
+    final TokenIdentifierLower name,
+    final List<TokenIdentifierLower> tokens)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The reference to ");
@@ -273,7 +373,7 @@ public final class ResolverError extends CompilerError
     m.append("\n");
 
     for (final TokenIdentifierLower t : tokens) {
-      m.append("  -> Term ");
+      m.append("  → Term ");
       m.append(t.getActual());
       m.append(" at ");
       m.append(t.getFile());
@@ -289,10 +389,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError typeNonexistent(
-    final @Nonnull UASTUDModule module,
-    final @Nonnull TokenIdentifierLower name)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError typeNonexistent(
+    final UASTUDModule module,
+    final TokenIdentifierLower name)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The module ");
@@ -307,10 +410,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError typeRecursiveLocal(
-    final @Nonnull TokenIdentifierLower source_name,
-    final @Nonnull TokenIdentifierLower target_name)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError typeRecursiveLocal(
+    final TokenIdentifierLower source_name,
+    final TokenIdentifierLower target_name)
   {
     final StringBuilder m = new StringBuilder();
     m.append("Referring to the type ");
@@ -327,10 +433,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  public static @Nonnull ResolverError typeRecursiveMutual(
-    final @Nonnull TokenIdentifierLower name,
-    final @Nonnull List<TokenIdentifierLower> tokens)
-    throws ConstraintError
+  /**
+   * @return A name resolution error
+   */
+
+  public static ResolverError typeRecursiveMutual(
+    final TokenIdentifierLower name,
+    final List<TokenIdentifierLower> tokens)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The reference to ");
@@ -347,7 +456,7 @@ public final class ResolverError extends CompilerError
     m.append("\n");
 
     for (final TokenIdentifierLower t : tokens) {
-      m.append("  -> Type ");
+      m.append("  → Type ");
       m.append(t.getActual());
       m.append(" at ");
       m.append(t.getFile());
@@ -363,14 +472,13 @@ public final class ResolverError extends CompilerError
       m.toString());
   }
 
-  private final @Nonnull Code code;
+  private final Code code;
 
   private ResolverError(
-    final @Nonnull Code in_code,
-    final @Nonnull File file,
-    final @Nonnull Position position,
-    final @Nonnull String message)
-    throws ConstraintError
+    final Code in_code,
+    final File file,
+    final Position position,
+    final String message)
   {
     super(message, file, position);
     this.code = in_code;
@@ -381,7 +489,11 @@ public final class ResolverError extends CompilerError
     return "name-resolution";
   }
 
-  public @Nonnull Code getCode()
+  /**
+   * @return The error code
+   */
+
+  public Code getCode()
   {
     return this.code;
   }

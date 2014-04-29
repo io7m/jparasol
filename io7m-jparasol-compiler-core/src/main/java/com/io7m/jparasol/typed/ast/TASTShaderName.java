@@ -16,32 +16,44 @@
 
 package com.io7m.jparasol.typed.ast;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.NameShowType;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-public final class TASTShaderName
+/**
+ * The type of shader names.
+ */
+
+@EqualityStructural public final class TASTShaderName implements NameShowType
 {
-  private final @Nonnull ModulePathFlat       flat;
-  private final @Nonnull TokenIdentifierLower name;
-  private final @Nonnull ModulePath           path;
+  private final ModulePathFlat       flat;
+  private final TokenIdentifierLower name;
+  private final ModulePath           path;
+
+  /**
+   * Construct a shader name.
+   * 
+   * @param in_path
+   *          The module path
+   * @param in_name
+   *          The name
+   */
 
   public TASTShaderName(
-    final @Nonnull ModulePath in_path,
-    final @Nonnull TokenIdentifierLower in_name)
-    throws ConstraintError
+    final ModulePath in_path,
+    final TokenIdentifierLower in_name)
   {
-    this.path = Constraints.constrainNotNull(in_path, "Path");
+    this.path = NullCheck.notNull(in_path, "Path");
     this.flat = ModulePathFlat.fromModulePath(in_path);
-    this.name = Constraints.constrainNotNull(in_name, "Name");
+    this.name = NullCheck.notNull(in_name, "Name");
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -65,17 +77,29 @@ public final class TASTShaderName
     return true;
   }
 
-  public @Nonnull ModulePathFlat getFlat()
+  /**
+   * @return The flattened module path
+   */
+
+  public ModulePathFlat getFlat()
   {
     return this.flat;
   }
 
-  public @Nonnull TokenIdentifierLower getName()
+  /**
+   * @return The name of the shader
+   */
+
+  public TokenIdentifierLower getName()
   {
     return this.name;
   }
 
-  public @Nonnull ModulePath getPath()
+  /**
+   * @return The module path
+   */
+
+  public ModulePath getPath()
   {
     return this.path;
   }
@@ -90,12 +114,14 @@ public final class TASTShaderName
     return result;
   }
 
-  public @Nonnull String show()
+  @Override public String show()
   {
     final StringBuilder s = new StringBuilder();
     s.append(this.flat.getActual());
     s.append(".");
     s.append(this.name.getActual());
-    return s.toString();
+    final String r = s.toString();
+    assert r != null;
+    return r;
   }
 }

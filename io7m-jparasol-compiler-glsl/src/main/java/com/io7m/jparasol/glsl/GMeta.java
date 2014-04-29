@@ -18,16 +18,14 @@ package com.io7m.jparasol.glsl;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Pair;
-import com.io7m.jaux.functional.Unit;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Pair;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
@@ -41,18 +39,122 @@ import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertexParameter;
 import com.io7m.jparasol.typed.TType;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jparasol.xml.PGLSLMetaXML;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class GMeta
+/**
+ * Metadata about a generated GLSL program.
+ */
+
+@EqualityReference public final class GMeta
 {
-  public static @Nonnull
-    Document
-    make(
-      final @Nonnull TASTShaderNameFlat shader,
-      final @Nonnull Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> asts)
-      throws ConstraintError
+  private static void declaredFragmentInputs(
+    final Pair<GASTShaderVertex, GASTShaderFragment> program,
+    final String uri,
+    final Element efi)
   {
-    Constraints.constrainNotNull(shader, "Shader");
-    Constraints.constrainNotNull(asts, "ASTs");
+    for (final GASTShaderFragmentInput i : program.getRight().getInputs()) {
+      final Element e = new Element("g:input", uri);
+      e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
+      e.addAttribute(new Attribute("g:type", uri, i.getTypeName().show()));
+      efi.appendChild(e);
+    }
+  }
+
+  private static void declaredFragmentOutputs(
+    final Pair<GASTShaderVertex, GASTShaderFragment> program,
+    final String uri,
+    final Element efo)
+  {
+    for (final GASTShaderFragmentOutput i : program.getRight().getOutputs()) {
+      final Element e = new Element("g:fragment-output", uri);
+      e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
+      e.addAttribute(new Attribute("g:index", uri, Integer.toString(i
+        .getIndex())));
+      e.addAttribute(new Attribute("g:type", uri, i.getType().show()));
+      efo.appendChild(e);
+    }
+  }
+
+  private static void declaredFragmentParameters(
+    final Pair<GASTShaderVertex, GASTShaderFragment> program,
+    final String uri,
+    final Element efp)
+  {
+    for (final GASTShaderFragmentParameter p : program
+      .getRight()
+      .getParameters()) {
+      for (final Pair<String, TType> x : p.getExpanded()) {
+        final Element e = new Element("g:parameter", uri);
+        e.addAttribute(new Attribute("g:name", uri, x.getLeft()));
+        e.addAttribute(new Attribute("g:type", uri, GLSLTypeNames
+          .getTypeName(x.getRight())
+          .show()));
+        efp.appendChild(e);
+      }
+    }
+  }
+
+  private static void declaredVertexInputs(
+    final Pair<GASTShaderVertex, GASTShaderFragment> program,
+    final String uri,
+    final Element evi)
+  {
+    for (final GASTShaderVertexInput i : program.getLeft().getInputs()) {
+      final Element e = new Element("g:input", uri);
+      e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
+      e.addAttribute(new Attribute("g:type", uri, i.getType().show()));
+      evi.appendChild(e);
+    }
+  }
+
+  private static void declaredVertexOutputs(
+    final Pair<GASTShaderVertex, GASTShaderFragment> program,
+    final String uri,
+    final Element evo)
+  {
+    for (final GASTShaderVertexOutput i : program.getLeft().getOutputs()) {
+      final Element e = new Element("g:output", uri);
+      e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
+      e.addAttribute(new Attribute("g:type", uri, i.getTypeName().show()));
+      evo.appendChild(e);
+    }
+  }
+
+  private static void declaredVertexParameters(
+    final Pair<GASTShaderVertex, GASTShaderFragment> program,
+    final String uri,
+    final Element evp)
+  {
+    for (final GASTShaderVertexParameter p : program
+      .getLeft()
+      .getParameters()) {
+      for (final Pair<String, TType> x : p.getExpanded()) {
+        final Element e = new Element("g:parameter", uri);
+        e.addAttribute(new Attribute("g:name", uri, x.getLeft()));
+        e.addAttribute(new Attribute("g:type", uri, GLSLTypeNames
+          .getTypeName(x.getRight())
+          .show()));
+        evp.appendChild(e);
+      }
+    }
+  }
+
+  /**
+   * Construct a file of metadata about the given program.
+   * 
+   * @param shader
+   *          The original shader name
+   * @param asts
+   *          The generated GLSL shaders
+   * @return Metadata
+   */
+
+  public static Document make(
+    final TASTShaderNameFlat shader,
+    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> asts)
+  {
+    NullCheck.notNull(shader, "Shader");
+    NullCheck.notNull(asts, "ASTs");
 
     final Pair<GASTShaderVertex, GASTShaderFragment> program =
       asts.entrySet().iterator().next().getValue();
@@ -74,88 +176,19 @@ public final class GMeta
     ep.appendChild(shader.show());
 
     final Element es = new Element("g:supports", uri);
-    for (final GVersion v : asts.keySet()) {
-      final Element e = new Element("g:version", uri);
-      es.appendChild(e);
-
-      final String is = Integer.toString(v.getNumber());
-      e.addAttribute(new Attribute("g:number", uri, is));
-      v.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
-        @Override public Unit versionVisitES(
-          final @Nonnull GVersionES version)
-          throws ConstraintError
-        {
-          e.addAttribute(new Attribute("g:api", uri, "glsl-es"));
-          return Unit.unit();
-        }
-
-        @Override public Unit versionVisitFull(
-          final @Nonnull GVersionFull version)
-          throws ConstraintError
-        {
-          e.addAttribute(new Attribute("g:api", uri, "glsl"));
-          return Unit.unit();
-        }
-      });
-    }
-
+    GMeta.supportedVersions(asts, uri, es);
     final Element evp = new Element("g:declared-vertex-parameters", uri);
-    for (final GASTShaderVertexParameter p : program.first.getParameters()) {
-      for (final Pair<String, TType> x : p.getExpanded()) {
-        final Element e = new Element("g:parameter", uri);
-        e.addAttribute(new Attribute("g:name", uri, x.first));
-        e.addAttribute(new Attribute("g:type", uri, GLSLTypeNames
-          .getTypeName(x.second)
-          .show()));
-        evp.appendChild(e);
-      }
-    }
-
+    GMeta.declaredVertexParameters(program, uri, evp);
     final Element efp = new Element("g:declared-fragment-parameters", uri);
-    for (final GASTShaderFragmentParameter p : program.second.getParameters()) {
-      for (final Pair<String, TType> x : p.getExpanded()) {
-        final Element e = new Element("g:parameter", uri);
-        e.addAttribute(new Attribute("g:name", uri, x.first));
-        e.addAttribute(new Attribute("g:type", uri, GLSLTypeNames
-          .getTypeName(x.second)
-          .show()));
-        efp.appendChild(e);
-      }
-    }
-
+    GMeta.declaredFragmentParameters(program, uri, efp);
     final Element evi = new Element("g:declared-vertex-inputs", uri);
-    for (final GASTShaderVertexInput i : program.first.getInputs()) {
-      final Element e = new Element("g:input", uri);
-      e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
-      e.addAttribute(new Attribute("g:type", uri, i.getType().show()));
-      evi.appendChild(e);
-    }
-
+    GMeta.declaredVertexInputs(program, uri, evi);
     final Element efi = new Element("g:declared-fragment-inputs", uri);
-    for (final GASTShaderFragmentInput i : program.second.getInputs()) {
-      final Element e = new Element("g:input", uri);
-      e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
-      e.addAttribute(new Attribute("g:type", uri, i.getTypeName().show()));
-      efi.appendChild(e);
-    }
-
+    GMeta.declaredFragmentInputs(program, uri, efi);
     final Element evo = new Element("g:declared-vertex-outputs", uri);
-    for (final GASTShaderVertexOutput i : program.first.getOutputs()) {
-      final Element e = new Element("g:output", uri);
-      e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
-      e.addAttribute(new Attribute("g:type", uri, i.getTypeName().show()));
-      evo.appendChild(e);
-    }
-
+    GMeta.declaredVertexOutputs(program, uri, evo);
     final Element efo = new Element("g:declared-fragment-outputs", uri);
-    for (final GASTShaderFragmentOutput i : program.second.getOutputs()) {
-      final Element e = new Element("g:fragment-output", uri);
-      e.addAttribute(new Attribute("g:name", uri, i.getName().show()));
-      e.addAttribute(new Attribute("g:index", uri, Integer.toString(i
-        .getIndex())));
-      e.addAttribute(new Attribute("g:type", uri, i.getType().show()));
-      efo.appendChild(e);
-    }
+    GMeta.declaredFragmentOutputs(program, uri, efo);
 
     r.appendChild(ep);
     r.appendChild(es);
@@ -166,5 +199,40 @@ public final class GMeta
     r.appendChild(evo);
     r.appendChild(efo);
     return new Document(r);
+  }
+
+  private static void supportedVersions(
+    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> asts,
+    final String uri,
+    final Element es)
+  {
+    for (final GVersion v : asts.keySet()) {
+      final Element e = new Element("g:version", uri);
+      es.appendChild(e);
+
+      final String is = Integer.toString(v.getNumber());
+      e.addAttribute(new Attribute("g:number", uri, is));
+      v
+        .versionAccept(new GVersionVisitorType<Unit, UnreachableCodeException>() {
+          @Override public Unit versionVisitES(
+            final GVersionES version)
+          {
+            e.addAttribute(new Attribute("g:api", uri, "glsl-es"));
+            return Unit.unit();
+          }
+
+          @Override public Unit versionVisitFull(
+            final GVersionFull version)
+          {
+            e.addAttribute(new Attribute("g:api", uri, "glsl"));
+            return Unit.unit();
+          }
+        });
+    }
+  }
+
+  private GMeta()
+  {
+    throw new UnreachableCodeException();
   }
 }

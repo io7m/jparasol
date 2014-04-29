@@ -18,9 +18,7 @@ package com.io7m.jparasol.glsl;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jparasol.glsl.GFFIExpression.GFFIExpressionBuiltIn;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
@@ -48,13 +46,25 @@ import com.io7m.jparasol.typed.TType.TVector3I;
 import com.io7m.jparasol.typed.TType.TVector4F;
 import com.io7m.jparasol.typed.TType.TVector4I;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class GFFIExpressionEmitters
+/**
+ * Built-in FFI expression emitters.
+ */
+
+@EqualityReference public final class GFFIExpressionEmitters
 {
-  static @Nonnull GFFIExpression com_io7m_parasol_float_absolute(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  private GFFIExpressionEmitters()
+  {
+    throw new UnreachableCodeException();
+  }
+
+  // CHECKSTYLE:OFF
+
+  static GFFIExpression com_io7m_parasol_float_absolute(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericUnary(
       "abs",
@@ -65,10 +75,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_add(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_add(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlus(
       f,
@@ -77,10 +87,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_arc_cosine(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_arc_cosine(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericUnary(
       "acos",
@@ -91,10 +101,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_arc_sine(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_arc_sine(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericUnary(
       "asin",
@@ -105,10 +115,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_arc_tangent(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_arc_tangent(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericUnary(
       "atan",
@@ -119,10 +129,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_ceiling(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_ceiling(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericUnary(
       "ceil",
@@ -133,10 +143,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_clamp(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_clamp(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericClamp(
       f,
@@ -145,10 +155,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_cosine(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_cosine(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericUnary(
       "cosine",
@@ -159,10 +169,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_divide(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_divide(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericDivide(
       f,
@@ -171,10 +181,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_equals(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_equals(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericEquals(
       f,
@@ -183,10 +193,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_floor(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_floor(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericUnary(
       "floor",
@@ -197,12 +207,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_float_greater(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_greater(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -214,12 +222,10 @@ public final class GFFIExpressionEmitters
       new GASTEBinaryOpGreaterThan(arguments.get(0), arguments.get(1)));
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_float_greater_or_equal(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_greater_or_equal(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -231,10 +237,10 @@ public final class GFFIExpressionEmitters
       new GASTEBinaryOpGreaterThanOrEqual(arguments.get(0), arguments.get(1)));
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_interpolate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_interpolate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericInterpolate(
       f,
@@ -243,17 +249,15 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_is_infinite(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
-    throws ConstraintError
+  static GFFIExpression com_io7m_parasol_float_is_infinite(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return version
-      .versionAccept(new GVersionVisitor<GFFIExpression, ConstraintError>() {
+      .versionAccept(new GVersionVisitorType<GFFIExpression, UnreachableCodeException>() {
         @Override public GFFIExpression versionVisitES(
           final GVersionES v)
-          throws ConstraintError
         {
           return new GFFIExpression.GFFIExpressionDefined();
         }
@@ -262,7 +266,6 @@ public final class GFFIExpressionEmitters
           GFFIExpression
           versionVisitFull(
             final GVersionFull v)
-            throws ConstraintError
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
             return new GFFIExpression.GFFIExpressionDefined();
@@ -278,17 +281,17 @@ public final class GFFIExpressionEmitters
       });
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_is_nan(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
-    throws ConstraintError
+  static GFFIExpression com_io7m_parasol_float_is_nan(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+    throws UnreachableCodeException
   {
     return version
-      .versionAccept(new GVersionVisitor<GFFIExpression, ConstraintError>() {
+      .versionAccept(new GVersionVisitorType<GFFIExpression, UnreachableCodeException>() {
         @Override public GFFIExpression versionVisitES(
           final GVersionES v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           return new GFFIExpression.GFFIExpressionDefined();
         }
@@ -297,7 +300,7 @@ public final class GFFIExpressionEmitters
           GFFIExpression
           versionVisitFull(
             final GVersionFull v)
-            throws ConstraintError
+            throws UnreachableCodeException
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
             return new GFFIExpression.GFFIExpressionDefined();
@@ -313,12 +316,10 @@ public final class GFFIExpressionEmitters
       });
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_float_lesser(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_lesser(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -330,12 +331,10 @@ public final class GFFIExpressionEmitters
       new GASTEBinaryOpLesserThan(arguments.get(0), arguments.get(1)));
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_float_lesser_or_equal(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_lesser_or_equal(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -347,12 +346,10 @@ public final class GFFIExpressionEmitters
       new GASTEBinaryOpLesserThanOrEqual(arguments.get(0), arguments.get(1)));
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_float_maximum(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_maximum(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -368,12 +365,10 @@ public final class GFFIExpressionEmitters
         arguments));
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_float_minimum(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_minimum(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -389,12 +384,10 @@ public final class GFFIExpressionEmitters
         arguments));
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_float_modulo(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_modulo(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -410,10 +403,10 @@ public final class GFFIExpressionEmitters
         arguments));
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_multiply(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_multiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiply(
       f,
@@ -422,12 +415,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_float_power(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_power(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -448,19 +439,19 @@ public final class GFFIExpressionEmitters
    * "floor" occasionally.
    */
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_round(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
-    throws ConstraintError
+  static GFFIExpression com_io7m_parasol_float_round(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+    throws UnreachableCodeException
   {
     return version
-      .versionAccept(new GVersionVisitor<GFFIExpression, ConstraintError>() {
+      .versionAccept(new GVersionVisitorType<GFFIExpression, UnreachableCodeException>() {
         @SuppressWarnings("synthetic-access") @Override public
           GFFIExpression
           versionVisitES(
             final GVersionES v)
-            throws ConstraintError
+            throws UnreachableCodeException
         {
           return GFFIExpressionEmitters.genericUnary(
             "floor",
@@ -475,7 +466,7 @@ public final class GFFIExpressionEmitters
           GFFIExpression
           versionVisitFull(
             final GVersionFull v)
-            throws ConstraintError
+            throws UnreachableCodeException
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
             return GFFIExpressionEmitters.genericUnary(
@@ -498,17 +489,17 @@ public final class GFFIExpressionEmitters
       });
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_sign(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
-    throws ConstraintError
+  static GFFIExpression com_io7m_parasol_float_sign(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+    throws UnreachableCodeException
   {
     return version
-      .versionAccept(new GVersionVisitor<GFFIExpression, ConstraintError>() {
+      .versionAccept(new GVersionVisitorType<GFFIExpression, UnreachableCodeException>() {
         @Override public GFFIExpression versionVisitES(
           final GVersionES v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           return new GFFIExpression.GFFIExpressionDefined();
         }
@@ -517,7 +508,7 @@ public final class GFFIExpressionEmitters
           GFFIExpression
           versionVisitFull(
             final GVersionFull v)
-            throws ConstraintError
+            throws UnreachableCodeException
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
             return new GFFIExpression.GFFIExpressionDefined();
@@ -533,10 +524,10 @@ public final class GFFIExpressionEmitters
       });
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_sine(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_sine(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericUnary(
       "sin",
@@ -547,10 +538,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_square_root(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_square_root(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericUnary(
       "sqrt",
@@ -561,10 +552,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_subtract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_subtract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericSubtract(
       f,
@@ -573,10 +564,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_tangent(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_float_tangent(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericUnary(
       "tan",
@@ -587,17 +578,17 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_float_truncate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
-    throws ConstraintError
+  static GFFIExpression com_io7m_parasol_float_truncate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+    throws UnreachableCodeException
   {
     return version
-      .versionAccept(new GVersionVisitor<GFFIExpression, ConstraintError>() {
+      .versionAccept(new GVersionVisitorType<GFFIExpression, UnreachableCodeException>() {
         @Override public GFFIExpression versionVisitES(
           final GVersionES v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           return new GFFIExpression.GFFIExpressionDefined();
         }
@@ -606,7 +597,7 @@ public final class GFFIExpressionEmitters
           GFFIExpression
           versionVisitFull(
             final GVersionFull v)
-            throws ConstraintError
+            throws UnreachableCodeException
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
             return new GFFIExpression.GFFIExpressionDefined();
@@ -622,10 +613,10 @@ public final class GFFIExpressionEmitters
       });
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_integer_add(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_integer_add(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlus(
       f,
@@ -634,10 +625,10 @@ public final class GFFIExpressionEmitters
       TInteger.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_integer_divide(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_integer_divide(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericDivide(
       f,
@@ -646,10 +637,10 @@ public final class GFFIExpressionEmitters
       TInteger.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_integer_multiply(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_integer_multiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiply(
       f,
@@ -658,10 +649,10 @@ public final class GFFIExpressionEmitters
       TInteger.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_integer_subtract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_integer_subtract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericSubtract(
       f,
@@ -670,10 +661,10 @@ public final class GFFIExpressionEmitters
       TInteger.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_matrix3x3f_multiply(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_matrix3x3f_multiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiply(
       f,
@@ -682,12 +673,10 @@ public final class GFFIExpressionEmitters
       TMatrix3x3F.get());
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_matrix3x3f_multiply_vector(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_matrix3x3f_multiply_vector(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     final TFunction ft = f.getType();
 
@@ -703,10 +692,10 @@ public final class GFFIExpressionEmitters
         arguments.get(1)));
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_matrix4x4f_multiply(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_matrix4x4f_multiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiply(
       f,
@@ -715,12 +704,10 @@ public final class GFFIExpressionEmitters
       TMatrix4x4F.get());
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_matrix4x4f_multiply_vector(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_matrix4x4f_multiply_vector(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     final TFunction ft = f.getType();
     final List<TFunctionArgument> fta = ft.getArguments();
@@ -737,11 +724,11 @@ public final class GFFIExpressionEmitters
         arguments.get(1)));
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_sampler_cube_texture(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
-    throws ConstraintError
+  static GFFIExpression com_io7m_parasol_sampler_cube_texture(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+    throws UnreachableCodeException
   {
     final TFunction ft = f.getType();
     final List<TFunctionArgument> fta = ft.getArguments();
@@ -754,10 +741,10 @@ public final class GFFIExpressionEmitters
 
     final TValueType type = ft.getReturnType();
     return version
-      .versionAccept(new GVersionVisitor<GFFIExpression, ConstraintError>() {
+      .versionAccept(new GVersionVisitorType<GFFIExpression, UnreachableCodeException>() {
         @Override public GFFIExpression versionVisitES(
           final GVersionES v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
             final GTermNameExternal name =
@@ -775,7 +762,7 @@ public final class GFFIExpressionEmitters
 
         @Override public GFFIExpression versionVisitFull(
           final GVersionFull v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
             final GTermNameExternal name =
@@ -793,11 +780,11 @@ public final class GFFIExpressionEmitters
       });
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_sampler2d_texture(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
-    throws ConstraintError
+  static GFFIExpression com_io7m_parasol_sampler2d_texture(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+    throws UnreachableCodeException
   {
     final TFunction ft = f.getType();
     final List<TFunctionArgument> fta = ft.getArguments();
@@ -810,10 +797,10 @@ public final class GFFIExpressionEmitters
 
     final TValueType type = ft.getReturnType();
     return version
-      .versionAccept(new GVersionVisitor<GFFIExpression, ConstraintError>() {
+      .versionAccept(new GVersionVisitorType<GFFIExpression, UnreachableCodeException>() {
         @Override public GFFIExpression versionVisitES(
           final GVersionES v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
             final GTermNameExternal name = new GTermNameExternal("texture2D");
@@ -830,7 +817,7 @@ public final class GFFIExpressionEmitters
 
         @Override public GFFIExpression versionVisitFull(
           final GVersionFull v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
             final GTermNameExternal name = new GTermNameExternal("texture2D");
@@ -847,13 +834,11 @@ public final class GFFIExpressionEmitters
       });
   }
 
-  static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_sampler2d_texture_projective_3f(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
-      throws ConstraintError
+  static GFFIExpression com_io7m_parasol_sampler2d_texture_projective_3f(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+    throws UnreachableCodeException
   {
     final TFunction ft = f.getType();
     final List<TFunctionArgument> fta = ft.getArguments();
@@ -866,10 +851,10 @@ public final class GFFIExpressionEmitters
 
     final TValueType type = ft.getReturnType();
     return version
-      .versionAccept(new GVersionVisitor<GFFIExpression, ConstraintError>() {
+      .versionAccept(new GVersionVisitorType<GFFIExpression, UnreachableCodeException>() {
         @Override public GFFIExpression versionVisitES(
           final GVersionES v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
             final GTermNameExternal name =
@@ -887,7 +872,7 @@ public final class GFFIExpressionEmitters
 
         @Override public GFFIExpression versionVisitFull(
           final GVersionFull v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
             final GTermNameExternal name =
@@ -905,13 +890,11 @@ public final class GFFIExpressionEmitters
       });
   }
 
-  static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_sampler2d_texture_projective_4f(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
-      throws ConstraintError
+  static GFFIExpression com_io7m_parasol_sampler2d_texture_projective_4f(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+    throws UnreachableCodeException
   {
     final TFunction ft = f.getType();
     final List<TFunctionArgument> fta = ft.getArguments();
@@ -924,10 +907,10 @@ public final class GFFIExpressionEmitters
 
     final TValueType type = ft.getReturnType();
     return version
-      .versionAccept(new GVersionVisitor<GFFIExpression, ConstraintError>() {
+      .versionAccept(new GVersionVisitorType<GFFIExpression, UnreachableCodeException>() {
         @Override public GFFIExpression versionVisitES(
           final GVersionES v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
             final GTermNameExternal name =
@@ -945,7 +928,7 @@ public final class GFFIExpressionEmitters
 
         @Override public GFFIExpression versionVisitFull(
           final GVersionFull v)
-          throws ConstraintError
+          throws UnreachableCodeException
         {
           if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
             final GTermNameExternal name =
@@ -963,10 +946,10 @@ public final class GFFIExpressionEmitters
       });
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_add(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_add(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlus(
       f,
@@ -975,10 +958,10 @@ public final class GFFIExpressionEmitters
       TVector2F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_add_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_add_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlusScalar(
       f,
@@ -988,10 +971,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_dot(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_dot(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericDot(
       f,
@@ -1000,10 +983,10 @@ public final class GFFIExpressionEmitters
       TVector2F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_interpolate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_interpolate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericInterpolate(
       f,
@@ -1012,10 +995,10 @@ public final class GFFIExpressionEmitters
       TVector2F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_magnitude(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_magnitude(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMagnitude(
       f,
@@ -1024,10 +1007,10 @@ public final class GFFIExpressionEmitters
       TVector2F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_multiply(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_multiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiply(
       f,
@@ -1036,10 +1019,10 @@ public final class GFFIExpressionEmitters
       TVector2F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_multiply_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_multiply_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiplyScalar(
       f,
@@ -1049,10 +1032,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_negate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_negate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNegate(
       f,
@@ -1061,10 +1044,10 @@ public final class GFFIExpressionEmitters
       TVector2F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_normalize(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_normalize(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNormalize(
       f,
@@ -1073,10 +1056,10 @@ public final class GFFIExpressionEmitters
       TVector2F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_reflect(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_reflect(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericReflect(
       f,
@@ -1085,10 +1068,10 @@ public final class GFFIExpressionEmitters
       TVector2F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_refract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_refract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericRefract(
       f,
@@ -1097,10 +1080,10 @@ public final class GFFIExpressionEmitters
       TVector2F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2f_subtract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2f_subtract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericSubtract(
       f,
@@ -1109,10 +1092,10 @@ public final class GFFIExpressionEmitters
       TVector2F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_add(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_add(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlus(
       f,
@@ -1121,10 +1104,10 @@ public final class GFFIExpressionEmitters
       TVector2I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_add_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_add_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlusScalar(
       f,
@@ -1134,10 +1117,10 @@ public final class GFFIExpressionEmitters
       TInteger.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_dot(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_dot(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericDot(
       f,
@@ -1146,10 +1129,10 @@ public final class GFFIExpressionEmitters
       TVector2I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_interpolate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_interpolate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericInterpolate(
       f,
@@ -1158,10 +1141,10 @@ public final class GFFIExpressionEmitters
       TVector2I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_magnitude(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_magnitude(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMagnitude(
       f,
@@ -1170,10 +1153,10 @@ public final class GFFIExpressionEmitters
       TVector2I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_multiply(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_multiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiply(
       f,
@@ -1182,10 +1165,10 @@ public final class GFFIExpressionEmitters
       TVector2I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_multiply_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_multiply_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiplyScalar(
       f,
@@ -1195,10 +1178,10 @@ public final class GFFIExpressionEmitters
       TInteger.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_negate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_negate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNegate(
       f,
@@ -1207,10 +1190,10 @@ public final class GFFIExpressionEmitters
       TVector2I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_normalize(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_normalize(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNormalize(
       f,
@@ -1219,10 +1202,10 @@ public final class GFFIExpressionEmitters
       TVector2I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_reflect(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_reflect(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericReflect(
       f,
@@ -1231,10 +1214,10 @@ public final class GFFIExpressionEmitters
       TVector2I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_refract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_refract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericRefract(
       f,
@@ -1243,10 +1226,10 @@ public final class GFFIExpressionEmitters
       TVector2I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector2i_subtract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector2i_subtract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericSubtract(
       f,
@@ -1255,10 +1238,10 @@ public final class GFFIExpressionEmitters
       TVector2I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_add(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_add(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlus(
       f,
@@ -1267,10 +1250,10 @@ public final class GFFIExpressionEmitters
       TVector3F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_add_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_add_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlusScalar(
       f,
@@ -1280,12 +1263,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  @SuppressWarnings("unused") static @Nonnull
-    GFFIExpression
-    com_io7m_parasol_vector3f_cross(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_cross(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     final TFunction ft = f.getType();
 
@@ -1303,10 +1284,10 @@ public final class GFFIExpressionEmitters
         arguments));
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_dot(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_dot(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericDot(
       f,
@@ -1315,10 +1296,10 @@ public final class GFFIExpressionEmitters
       TVector3F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_interpolate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_interpolate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericInterpolate(
       f,
@@ -1327,10 +1308,10 @@ public final class GFFIExpressionEmitters
       TVector3F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_magnitude(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_magnitude(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMagnitude(
       f,
@@ -1339,10 +1320,10 @@ public final class GFFIExpressionEmitters
       TVector3F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_multiply(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_multiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiply(
       f,
@@ -1351,10 +1332,10 @@ public final class GFFIExpressionEmitters
       TVector3F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_multiply_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_multiply_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiplyScalar(
       f,
@@ -1364,10 +1345,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_negate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_negate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNegate(
       f,
@@ -1376,10 +1357,10 @@ public final class GFFIExpressionEmitters
       TVector3F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_normalize(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_normalize(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNormalize(
       f,
@@ -1388,10 +1369,10 @@ public final class GFFIExpressionEmitters
       TVector3F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_reflect(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_reflect(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericReflect(
       f,
@@ -1400,10 +1381,10 @@ public final class GFFIExpressionEmitters
       TVector3F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_refract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_refract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericRefract(
       f,
@@ -1412,10 +1393,10 @@ public final class GFFIExpressionEmitters
       TVector3F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3f_subtract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3f_subtract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericSubtract(
       f,
@@ -1424,10 +1405,10 @@ public final class GFFIExpressionEmitters
       TVector3F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_add(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_add(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlus(
       f,
@@ -1436,10 +1417,10 @@ public final class GFFIExpressionEmitters
       TVector3I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_add_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_add_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlusScalar(
       f,
@@ -1449,10 +1430,10 @@ public final class GFFIExpressionEmitters
       TInteger.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_dot(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_dot(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericDot(
       f,
@@ -1461,10 +1442,10 @@ public final class GFFIExpressionEmitters
       TVector3I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_interpolate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_interpolate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericInterpolate(
       f,
@@ -1473,10 +1454,10 @@ public final class GFFIExpressionEmitters
       TVector3I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_magnitude(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_magnitude(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMagnitude(
       f,
@@ -1485,10 +1466,10 @@ public final class GFFIExpressionEmitters
       TVector3I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_multiply(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_multiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiply(
       f,
@@ -1497,10 +1478,10 @@ public final class GFFIExpressionEmitters
       TVector3I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_multiply_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_multiply_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiplyScalar(
       f,
@@ -1510,10 +1491,10 @@ public final class GFFIExpressionEmitters
       TInteger.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_negate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_negate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNegate(
       f,
@@ -1522,10 +1503,10 @@ public final class GFFIExpressionEmitters
       TVector3I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_normalize(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_normalize(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNormalize(
       f,
@@ -1534,10 +1515,10 @@ public final class GFFIExpressionEmitters
       TVector3I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_reflect(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_reflect(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericReflect(
       f,
@@ -1546,10 +1527,10 @@ public final class GFFIExpressionEmitters
       TVector3I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_refract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_refract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericRefract(
       f,
@@ -1558,10 +1539,10 @@ public final class GFFIExpressionEmitters
       TVector3I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector3i_subtract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector3i_subtract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericSubtract(
       f,
@@ -1570,10 +1551,10 @@ public final class GFFIExpressionEmitters
       TVector3I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_add(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_add(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlus(
       f,
@@ -1582,10 +1563,10 @@ public final class GFFIExpressionEmitters
       TVector4F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_add_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_add_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlusScalar(
       f,
@@ -1595,10 +1576,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_dot(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_dot(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericDot(
       f,
@@ -1607,10 +1588,10 @@ public final class GFFIExpressionEmitters
       TVector4F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_interpolate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_interpolate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericInterpolate(
       f,
@@ -1619,10 +1600,10 @@ public final class GFFIExpressionEmitters
       TVector4F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_magnitude(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_magnitude(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMagnitude(
       f,
@@ -1631,10 +1612,10 @@ public final class GFFIExpressionEmitters
       TVector4F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_multiply(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_multiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiply(
       f,
@@ -1643,10 +1624,10 @@ public final class GFFIExpressionEmitters
       TVector4F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_multiply_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_multiply_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiplyScalar(
       f,
@@ -1656,10 +1637,10 @@ public final class GFFIExpressionEmitters
       TFloat.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_negate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_negate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNegate(
       f,
@@ -1668,10 +1649,10 @@ public final class GFFIExpressionEmitters
       TVector4F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_normalize(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_normalize(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNormalize(
       f,
@@ -1680,10 +1661,10 @@ public final class GFFIExpressionEmitters
       TVector4F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_reflect(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_reflect(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericReflect(
       f,
@@ -1692,10 +1673,10 @@ public final class GFFIExpressionEmitters
       TVector4F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_refract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_refract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericRefract(
       f,
@@ -1704,10 +1685,10 @@ public final class GFFIExpressionEmitters
       TVector4F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4f_subtract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4f_subtract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericSubtract(
       f,
@@ -1716,10 +1697,10 @@ public final class GFFIExpressionEmitters
       TVector4F.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_add(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_add(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlus(
       f,
@@ -1728,10 +1709,10 @@ public final class GFFIExpressionEmitters
       TVector4I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_add_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_add_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlusScalar(
       f,
@@ -1741,10 +1722,10 @@ public final class GFFIExpressionEmitters
       TInteger.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_dot(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_dot(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericDot(
       f,
@@ -1753,10 +1734,10 @@ public final class GFFIExpressionEmitters
       TVector4I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_interpolate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_interpolate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericInterpolate(
       f,
@@ -1765,10 +1746,10 @@ public final class GFFIExpressionEmitters
       TVector4I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_magnitude(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_magnitude(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMagnitude(
       f,
@@ -1777,10 +1758,10 @@ public final class GFFIExpressionEmitters
       TVector4I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_multiply(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_multiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiply(
       f,
@@ -1789,10 +1770,10 @@ public final class GFFIExpressionEmitters
       TVector4I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_multiply_scalar(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_multiply_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericMultiplyScalar(
       f,
@@ -1802,10 +1783,10 @@ public final class GFFIExpressionEmitters
       TInteger.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_negate(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_negate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNegate(
       f,
@@ -1814,10 +1795,10 @@ public final class GFFIExpressionEmitters
       TVector4I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_normalize(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_normalize(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericNormalize(
       f,
@@ -1826,10 +1807,10 @@ public final class GFFIExpressionEmitters
       TVector4I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_reflect(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_reflect(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericReflect(
       f,
@@ -1838,10 +1819,10 @@ public final class GFFIExpressionEmitters
       TVector4I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_refract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_refract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericRefract(
       f,
@@ -1850,10 +1831,10 @@ public final class GFFIExpressionEmitters
       TVector4I.get());
   }
 
-  static @Nonnull GFFIExpression com_io7m_parasol_vector4i_subtract(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
+  static GFFIExpression com_io7m_parasol_vector4i_subtract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
   {
     return GFFIExpressionEmitters.genericSubtract(
       f,
@@ -1862,13 +1843,11 @@ public final class GFFIExpressionEmitters
       TVector4I.get());
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericClamp(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericClamp(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 3;
     assert f.getType().getArguments().size() == 3;
@@ -1882,13 +1861,11 @@ public final class GFFIExpressionEmitters
       new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericNormalize(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericNormalize(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 1;
     assert f.getType().getArguments().size() == 1;
@@ -1900,13 +1877,11 @@ public final class GFFIExpressionEmitters
       new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericReflect(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericReflect(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -1919,13 +1894,11 @@ public final class GFFIExpressionEmitters
       new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericRefract(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericRefract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 3;
     assert f.getType().getArguments().size() == 3;
@@ -1939,13 +1912,11 @@ public final class GFFIExpressionEmitters
       new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericInterpolate(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericInterpolate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     final TFunction ft = f.getType();
     final List<TFunctionArgument> fta = ft.getArguments();
@@ -1962,13 +1933,11 @@ public final class GFFIExpressionEmitters
       new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericDot(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericDot(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -1984,15 +1953,13 @@ public final class GFFIExpressionEmitters
         arguments));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericUnary(
-      final @Nonnull String name,
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType from,
-      final @Nonnull TValueType to)
+  private static GFFIExpressionBuiltIn genericUnary(
+    final String name,
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType from,
+    final TValueType to)
   {
     assert arguments.size() == 1;
     assert f.getType().getArguments().size() == 1;
@@ -2004,13 +1971,11 @@ public final class GFFIExpressionEmitters
       new GASTExpression.GASTEApplicationExternal(tname, to, arguments));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericEquals(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericEquals(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -2023,13 +1988,11 @@ public final class GFFIExpressionEmitters
       arguments.get(1)));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericPlus(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericPlus(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -2043,13 +2006,11 @@ public final class GFFIExpressionEmitters
         arguments.get(1)));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericSubtract(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericSubtract(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -2063,14 +2024,12 @@ public final class GFFIExpressionEmitters
         arguments.get(1)));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericPlusScalar(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType v_type,
-      final @Nonnull TValueType s_type)
+  private static GFFIExpressionBuiltIn genericPlusScalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType v_type,
+    final TValueType s_type)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -2084,14 +2043,12 @@ public final class GFFIExpressionEmitters
         arguments.get(1)));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericMultiplyScalar(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType v_type,
-      final @Nonnull TValueType s_type)
+  private static GFFIExpressionBuiltIn genericMultiplyScalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType v_type,
+    final TValueType s_type)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -2105,13 +2062,11 @@ public final class GFFIExpressionEmitters
         arguments.get(1)));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericMultiply(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericMultiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -2125,13 +2080,11 @@ public final class GFFIExpressionEmitters
         arguments.get(1)));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericMagnitude(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericMagnitude(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 1;
     assert f.getType().getArguments().size() == 1;
@@ -2143,13 +2096,11 @@ public final class GFFIExpressionEmitters
       new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericDivide(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericDivide(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 2;
     assert f.getType().getArguments().size() == 2;
@@ -2163,13 +2114,11 @@ public final class GFFIExpressionEmitters
         arguments.get(1)));
   }
 
-  @SuppressWarnings("unused") private static @Nonnull
-    GFFIExpressionBuiltIn
-    genericNegate(
-      final @Nonnull TASTDFunctionExternal f,
-      final @Nonnull List<GASTExpression> arguments,
-      final @Nonnull GVersion version,
-      final @Nonnull TValueType type)
+  private static GFFIExpressionBuiltIn genericNegate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
   {
     assert arguments.size() == 1;
     assert f.getType().getArguments().size() == 1;

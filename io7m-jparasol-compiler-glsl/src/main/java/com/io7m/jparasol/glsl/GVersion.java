@@ -20,18 +20,51 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.Nonnull;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.Nullable;
 
-public abstract class GVersion implements GVersionVisitable
+/**
+ * The type of GLSL versions.
+ */
+
+@SuppressWarnings("synthetic-access") @EqualityStructural public abstract class GVersion
 {
-  public static final class GVersionES extends GVersion implements
+  /**
+   * The type of GLSL ES versions.
+   */
+
+  @EqualityStructural public static final class GVersionES extends GVersion implements
     Comparable<GVersionES>
   {
-    public static final @Nonnull SortedSet<GVersionES> ALL;
-    public static final @Nonnull GVersionES            GLSL_ES_100;
-    public static final @Nonnull GVersionES            GLSL_ES_300;
-    public static final @Nonnull GVersionES            GLSL_ES_LOWER;
-    public static final @Nonnull GVersionES            GLSL_ES_UPPER;
+    /**
+     * All possible GLSL ES versions.
+     */
+
+    public static final SortedSet<GVersionES> ALL;
+
+    /**
+     * GLSL ES 1.00
+     */
+
+    public static final GVersionES            GLSL_ES_100;
+
+    /**
+     * GLSL ES 3.00
+     */
+
+    public static final GVersionES            GLSL_ES_300;
+
+    /**
+     * The lowest GLSL ES version.
+     */
+
+    public static final GVersionES            GLSL_ES_LOWER;
+
+    /**
+     * The highest GLSL ES version.
+     */
+
+    public static final GVersionES            GLSL_ES_UPPER;
 
     static {
       GLSL_ES_100 = new GVersionES(100);
@@ -41,15 +74,24 @@ public abstract class GVersion implements GVersionVisitable
       ALL = GVersionES.makeES();
     }
 
-    private static @Nonnull SortedSet<GVersionES> makeES()
+    private static SortedSet<GVersionES> makeES()
     {
-      final TreeSet<GVersionES> s = new TreeSet<GVersionES>();
+      final SortedSet<GVersionES> s = new TreeSet<GVersionES>();
       s.add(GVersionES.GLSL_ES_100);
       s.add(GVersionES.GLSL_ES_300);
-      return Collections.unmodifiableSortedSet(s);
+      final SortedSet<GVersionES> r = Collections.unmodifiableSortedSet(s);
+      assert r != null;
+      return r;
     }
 
     private final int number;
+
+    /**
+     * Construct a GLSL ES version number.
+     * 
+     * @param in_number
+     *          The number
+     */
 
     public GVersionES(
       final int in_number)
@@ -63,8 +105,8 @@ public abstract class GVersion implements GVersionVisitable
       return Integer.compare(this.number, o.number);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public boolean equals(
-      final Object obj)
+    @Override public boolean equals(
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -106,37 +148,96 @@ public abstract class GVersion implements GVersionVisitable
       builder.append("[GVersionES ");
       builder.append(this.number);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
 
     @Override public
-      <A, E extends Throwable, V extends GVersionVisitor<A, E>>
+      <A, E extends Throwable, V extends GVersionVisitorType<A, E>>
       A
       versionAccept(
-        final @Nonnull V v)
+        final V v)
         throws E
     {
       return v.versionVisitES(this);
     }
   }
 
-  public static final class GVersionFull extends GVersion implements
+  /**
+   * The type of GLSL versions.
+   */
+
+  @EqualityStructural public static final class GVersionFull extends GVersion implements
     Comparable<GVersionFull>
   {
-    public static final @Nonnull SortedSet<GVersionFull> ALL;
-    public static final @Nonnull GVersionFull            GLSL_110;
-    public static final @Nonnull GVersionFull            GLSL_120;
-    public static final @Nonnull GVersionFull            GLSL_130;
-    public static final @Nonnull GVersionFull            GLSL_140;
-    public static final @Nonnull GVersionFull            GLSL_150;
-    public static final @Nonnull GVersionFull            GLSL_330;
-    public static final @Nonnull GVersionFull            GLSL_400;
-    public static final @Nonnull GVersionFull            GLSL_410;
-    public static final @Nonnull GVersionFull            GLSL_420;
-    public static final @Nonnull GVersionFull            GLSL_430;
-    public static final @Nonnull GVersionFull            GLSL_440;
-    public static final @Nonnull GVersionFull            GLSL_LOWER;
-    public static final @Nonnull GVersionFull            GLSL_UPPER;
+    /**
+     * All possible GLSL versions.
+     */
+
+    public static final SortedSet<GVersionFull> ALL;
+
+    /**
+     * GLSL 1.10
+     */
+
+    public static final GVersionFull            GLSL_110;
+
+    /**
+     * GLSL 1.20
+     */
+
+    public static final GVersionFull            GLSL_120;
+
+    /**
+     * GLSL 1.30
+     */
+    public static final GVersionFull            GLSL_130;
+
+    /**
+     * GLSL 1.40
+     */
+    public static final GVersionFull            GLSL_140;
+
+    /**
+     * GLSL 1.50
+     */
+    public static final GVersionFull            GLSL_150;
+
+    /**
+     * GLSL 3.30
+     */
+    public static final GVersionFull            GLSL_330;
+
+    /**
+     * GLSL 4.00
+     */
+    public static final GVersionFull            GLSL_400;
+
+    /**
+     * GLSL 4.10
+     */
+    public static final GVersionFull            GLSL_410;
+    /**
+     * GLSL 4.20
+     */
+    public static final GVersionFull            GLSL_420;
+    /**
+     * GLSL 4.30
+     */
+    public static final GVersionFull            GLSL_430;
+    /**
+     * GLSL 4.40
+     */
+    public static final GVersionFull            GLSL_440;
+    /**
+     * The lowest GLSL version.
+     */
+    public static final GVersionFull            GLSL_LOWER;
+    /**
+     * The highest GLSL version.
+     */
+    public static final GVersionFull            GLSL_UPPER;
 
     static {
       GLSL_110 = new GVersionFull(110);
@@ -155,9 +256,9 @@ public abstract class GVersion implements GVersionVisitable
       ALL = GVersionFull.makeFull();
     }
 
-    private static @Nonnull SortedSet<GVersionFull> makeFull()
+    private static SortedSet<GVersionFull> makeFull()
     {
-      final TreeSet<GVersionFull> s = new TreeSet<GVersionFull>();
+      final SortedSet<GVersionFull> s = new TreeSet<GVersionFull>();
       s.add(GVersionFull.GLSL_110);
       s.add(GVersionFull.GLSL_120);
       s.add(GVersionFull.GLSL_130);
@@ -169,10 +270,19 @@ public abstract class GVersion implements GVersionVisitable
       s.add(GVersionFull.GLSL_420);
       s.add(GVersionFull.GLSL_430);
       s.add(GVersionFull.GLSL_440);
-      return Collections.unmodifiableSortedSet(s);
+      final SortedSet<GVersionFull> r = Collections.unmodifiableSortedSet(s);
+      assert r != null;
+      return r;
     }
 
     private final int number;
+
+    /**
+     * Construct a GLSL version.
+     * 
+     * @param in_number
+     *          The version number
+     */
 
     public GVersionFull(
       final int in_number)
@@ -187,7 +297,7 @@ public abstract class GVersion implements GVersionVisitable
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -229,21 +339,53 @@ public abstract class GVersion implements GVersionVisitable
       builder.append("[GVersionFull ");
       builder.append(this.number);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
 
     @Override public
-      <A, E extends Throwable, V extends GVersionVisitor<A, E>>
+      <A, E extends Throwable, V extends GVersionVisitorType<A, E>>
       A
       versionAccept(
-        final @Nonnull V v)
+        final V v)
         throws E
     {
       return v.versionVisitFull(this);
     }
   }
 
-  public abstract @Nonnull String getLongName();
+  @Override public abstract boolean equals(
+    @Nullable Object obj);
+
+  /**
+   * @return The humanly-readable long form of the version number.
+   */
+
+  public abstract String getLongName();
+
+  /**
+   * @return The version number.
+   */
 
   public abstract int getNumber();
+
+  @Override public abstract int hashCode();
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return A value of <code>A</code>
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends GVersionVisitorType<A, E>>
+    A
+    versionAccept(
+      final V v)
+      throws E;
 }

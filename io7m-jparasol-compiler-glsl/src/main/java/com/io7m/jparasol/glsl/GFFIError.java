@@ -18,13 +18,14 @@ package com.io7m.jparasol.glsl;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDExternal;
+
+/**
+ * The type of FFI errors.
+ */
 
 public final class GFFIError extends CompilerError
 {
@@ -34,9 +35,16 @@ public final class GFFIError extends CompilerError
     serialVersionUID = 6577036815422441152L;
   }
 
-  public static @Nonnull GFFIError unknownExternal(
-    final @Nonnull TASTDExternal external)
-    throws ConstraintError
+  /**
+   * An unknown external was encountered.
+   * 
+   * @param external
+   *          The external
+   * @return An error
+   */
+
+  public static GFFIError unknownExternal(
+    final TASTDExternal external)
   {
     final TokenIdentifierLower name = external.getName();
     final StringBuilder b = new StringBuilder();
@@ -46,10 +54,9 @@ public final class GFFIError extends CompilerError
   }
 
   private GFFIError(
-    final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
+    final String message,
+    final File file,
+    final Position position)
   {
     super(message, file, position);
   }

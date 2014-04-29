@@ -18,15 +18,37 @@ package com.io7m.jparasol;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-public final class PackagePathFlat
+/**
+ * <p>
+ * Flattened package paths.
+ * </p>
+ * <p>
+ * "Flattened" in this case is synonymous with "lacks lexical information".
+ * </p>
+ * 
+ * @see PackagePath
+ */
+
+@EqualityStructural public final class PackagePathFlat
 {
-  public static @Nonnull PackagePathFlat fromPackagePath(
-    final @Nonnull PackagePath path)
+  /**
+   * Construct a flattened path from an existing package path.
+   * 
+   * @param path
+   *          The path
+   * @return A flattened path
+   */
+
+  public static PackagePathFlat fromPackagePath(
+    final PackagePath path)
   {
+    NullCheck.notNull(path, "Path");
+
     final List<TokenIdentifierLower> c = path.getComponents();
     final StringBuilder s = new StringBuilder();
     for (int index = 0; index < c.size(); ++index) {
@@ -35,19 +57,21 @@ public final class PackagePathFlat
         s.append(".");
       }
     }
-    return new PackagePathFlat(s.toString());
+    final String r = s.toString();
+    assert r != null;
+    return new PackagePathFlat(r);
   }
 
-  private final @Nonnull String actual;
+  private final String actual;
 
   private PackagePathFlat(
-    final @Nonnull String in_actual)
+    final String in_actual)
   {
     this.actual = in_actual;
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -65,7 +89,11 @@ public final class PackagePathFlat
     return true;
   }
 
-  public @Nonnull String getActual()
+  /**
+   * @return The path as a string
+   */
+
+  public String getActual()
   {
     return this.actual;
   }
@@ -84,6 +112,8 @@ public final class PackagePathFlat
     builder.append("[PackagePathFlat ");
     builder.append(this.actual);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

@@ -21,15 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jaux.functional.Function;
-import com.io7m.jaux.functional.Option.Some;
-import com.io7m.jlog.Level;
-import com.io7m.jlog.Log;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.FunctionType;
+import com.io7m.jfunctional.Some;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.glsl.ast.GASTExpression;
@@ -43,11 +41,16 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
 import com.io7m.jparasol.typed.ast.TASTExpression;
 import com.io7m.jparasol.typed.ast.TASTTermName;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class GFFI
+/**
+ * An FFI.
+ */
+
+@EqualityReference public final class GFFI
 {
-  private static final class GLSL_ES_orLessThanGLSL120 implements
-    Function<GVersion, Boolean>
+  @EqualityReference private static final class GLSL_ES_orLessThanGLSL120 implements
+    FunctionType<GVersion, Boolean>
   {
     public GLSL_ES_orLessThanGLSL120()
     {
@@ -57,42 +60,39 @@ public final class GFFI
     @Override public Boolean call(
       final GVersion x)
     {
-      try {
-        return x
-          .versionAccept(new GVersionVisitor<Boolean, ConstraintError>() {
-            @Override public Boolean versionVisitES(
-              final GVersionES v)
-              throws ConstraintError
-            {
+      return x
+        .versionAccept(new GVersionVisitorType<Boolean, UnreachableCodeException>() {
+          @Override public Boolean versionVisitES(
+            final GVersionES v)
+
+          {
+            return Boolean.TRUE;
+          }
+
+          @Override public Boolean versionVisitFull(
+            final GVersionFull v)
+
+          {
+            if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
               return Boolean.TRUE;
             }
-
-            @Override public Boolean versionVisitFull(
-              final GVersionFull v)
-              throws ConstraintError
-            {
-              if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
-                return Boolean.TRUE;
-              }
-              return Boolean.FALSE;
-            }
-          });
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
+            return Boolean.FALSE;
+          }
+        });
     }
   }
 
-  private static final @Nonnull Map<String, Function<GVersion, Boolean>>                  DECLARATION_FUNCTION_REQUIRED;
-  private static final @Nonnull Map<String, Function<TASTDValueExternal, TASTExpression>> DECLARATION_VALUE_EXPRESSIONS;
-  private static final @Nonnull Map<String, GFFIExpressionEmitter>                        EXPRESSION_EMITTERS;
-  private static final @Nonnull Function<GVersion, Boolean>                               GLSL_ES_OR_LT_GLSL120;
+  private static final Map<String, FunctionType<GVersion, Boolean>>                  DECLARATION_FUNCTION_REQUIRED;
+  private static final Map<String, FunctionType<TASTDValueExternal, TASTExpression>> DECLARATION_VALUE_EXPRESSIONS;
+  private static final Map<String, GFFIExpressionEmitterType>                        EXPRESSION_EMITTERS;
+  private static final FunctionType<GVersion, Boolean>                               GLSL_ES_OR_LT_GLSL120;
 
+  // CHECKSTYLE:OFF
   static {
     GLSL_ES_OR_LT_GLSL120 = new GLSL_ES_orLessThanGLSL120();
 
     DECLARATION_FUNCTION_REQUIRED =
-      new HashMap<String, Function<GVersion, Boolean>>();
+      new HashMap<String, FunctionType<GVersion, Boolean>>();
     GFFI.DECLARATION_FUNCTION_REQUIRED.put(
       "com_io7m_parasol_float_is_nan",
       GFFI.GLSL_ES_OR_LT_GLSL120);
@@ -107,27 +107,23 @@ public final class GFFI
       GFFI.GLSL_ES_OR_LT_GLSL120);
 
     DECLARATION_VALUE_EXPRESSIONS =
-      new HashMap<String, Function<TASTDValueExternal, TASTExpression>>();
+      new HashMap<String, FunctionType<TASTDValueExternal, TASTExpression>>();
     GFFI.DECLARATION_VALUE_EXPRESSIONS.put(
       "com_io7m_parasol_fragment_coordinate",
-      new Function<TASTDeclaration.TASTDValueExternal, TASTExpression>() {
+      new FunctionType<TASTDeclaration.TASTDValueExternal, TASTExpression>() {
         @Override public TASTExpression call(
           final TASTDValueExternal x)
         {
-          try {
-            final File file = new File("<generated>");
-            final TokenIdentifierLower original =
-              new TokenIdentifierLower(file, Position.ZERO, "gl_FragCoord");
-            final TASTTermName name =
-              new TASTTermName.TASTTermNameExternal(original, "gl_FragCoord");
-            return new TASTExpression.TASTEVariable(x.getType(), name);
-          } catch (final ConstraintError e) {
-            throw new UnreachableCodeException(e);
-          }
+          final File file = new File("<generated>");
+          final TokenIdentifierLower original =
+            new TokenIdentifierLower(file, Position.ZERO, "gl_FragCoord");
+          final TASTTermName name =
+            new TASTTermName.TASTTermNameExternal(original, "gl_FragCoord");
+          return new TASTExpression.TASTEVariable(x.getType(), name);
         }
       });
 
-    EXPRESSION_EMITTERS = new HashMap<String, GFFIExpressionEmitter>();
+    EXPRESSION_EMITTERS = new HashMap<String, GFFIExpressionEmitterType>();
 
     /**
      * Automatically generated by ffi-values.sh, do not edit.
@@ -135,12 +131,12 @@ public final class GFFI
 
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_absolute",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_absolute(
             f,
@@ -150,12 +146,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_add",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_add(
             f,
@@ -165,12 +161,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_arc_cosine",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_arc_cosine(
             f,
@@ -180,12 +176,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_arc_sine",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_arc_sine(
             f,
@@ -195,12 +191,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_arc_tangent",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_arc_tangent(
             f,
@@ -210,12 +206,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_ceiling",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_ceiling(
             f,
@@ -225,12 +221,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_clamp",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_clamp(
             f,
@@ -240,12 +236,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_cosine",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_cosine(
             f,
@@ -255,12 +251,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_divide",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_divide(
             f,
@@ -270,12 +266,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_equals",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_equals(
             f,
@@ -285,12 +281,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_floor",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_floor(
             f,
@@ -300,12 +296,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_greater",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_greater(
             f,
@@ -315,12 +311,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_greater_or_equal",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_float_greater_or_equal(f, arguments, version);
@@ -328,12 +324,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_interpolate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_interpolate(
             f,
@@ -343,12 +339,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_is_infinite",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_is_infinite(
             f,
@@ -358,12 +354,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_is_nan",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_is_nan(
             f,
@@ -373,12 +369,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_lesser",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_lesser(
             f,
@@ -388,12 +384,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_lesser_or_equal",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_float_lesser_or_equal(f, arguments, version);
@@ -401,12 +397,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_maximum",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_maximum(
             f,
@@ -416,12 +412,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_minimum",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_minimum(
             f,
@@ -431,12 +427,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_modulo",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_modulo(
             f,
@@ -446,12 +442,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_multiply",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_multiply(
             f,
@@ -461,12 +457,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_power",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_power(
             f,
@@ -476,12 +472,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_round",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_round(
             f,
@@ -491,12 +487,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_sign",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_sign(
             f,
@@ -506,12 +502,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_sine",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_sine(
             f,
@@ -521,12 +517,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_square_root",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_square_root(
             f,
@@ -536,12 +532,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_subtract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_subtract(
             f,
@@ -551,12 +547,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_tangent",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_tangent(
             f,
@@ -566,12 +562,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_truncate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_float_truncate(
             f,
@@ -581,12 +577,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_integer_add",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_integer_add(
             f,
@@ -596,12 +592,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_integer_divide",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_integer_divide(
             f,
@@ -611,12 +607,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_integer_multiply",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_integer_multiply(
             f,
@@ -626,12 +622,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_integer_subtract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_integer_subtract(
             f,
@@ -641,12 +637,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_matrix3x3f_multiply",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_matrix3x3f_multiply(
             f,
@@ -656,12 +652,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_matrix3x3f_multiply_vector",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_matrix3x3f_multiply_vector(
@@ -672,12 +668,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_matrix4x4f_multiply",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_matrix4x4f_multiply(
             f,
@@ -687,12 +683,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_matrix4x4f_multiply_vector",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_matrix4x4f_multiply_vector(
@@ -703,12 +699,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_sampler2d_texture",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_sampler2d_texture(
             f,
@@ -718,12 +714,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_sampler2d_texture_projective_3f",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_sampler2d_texture_projective_3f(
@@ -734,12 +730,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_sampler2d_texture_projective_4f",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_sampler2d_texture_projective_4f(
@@ -750,12 +746,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_sampler_cube_texture",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_sampler_cube_texture(f, arguments, version);
@@ -763,12 +759,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_add",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_add(
             f,
@@ -778,12 +774,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_add_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_add_scalar(
             f,
@@ -793,12 +789,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_dot",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_dot(
             f,
@@ -808,12 +804,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_interpolate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector2f_interpolate(f, arguments, version);
@@ -821,12 +817,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_magnitude",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_magnitude(
             f,
@@ -836,12 +832,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_multiply",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_multiply(
             f,
@@ -851,12 +847,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_multiply_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector2f_multiply_scalar(f, arguments, version);
@@ -864,12 +860,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_negate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_negate(
             f,
@@ -879,12 +875,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_normalize",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_normalize(
             f,
@@ -894,12 +890,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_reflect",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_reflect(
             f,
@@ -909,12 +905,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_refract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_refract(
             f,
@@ -924,12 +920,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_subtract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_subtract(
             f,
@@ -939,12 +935,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_add",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_add(
             f,
@@ -954,12 +950,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_add_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_add_scalar(
             f,
@@ -969,12 +965,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_dot",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_dot(
             f,
@@ -984,12 +980,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_interpolate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector2i_interpolate(f, arguments, version);
@@ -997,12 +993,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_magnitude",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_magnitude(
             f,
@@ -1012,12 +1008,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_multiply",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_multiply(
             f,
@@ -1027,12 +1023,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_multiply_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector2i_multiply_scalar(f, arguments, version);
@@ -1040,12 +1036,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_negate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_negate(
             f,
@@ -1055,12 +1051,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_normalize",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_normalize(
             f,
@@ -1070,12 +1066,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_reflect",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_reflect(
             f,
@@ -1085,12 +1081,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_refract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_refract(
             f,
@@ -1100,12 +1096,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2i_subtract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_subtract(
             f,
@@ -1115,12 +1111,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_add",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_add(
             f,
@@ -1130,12 +1126,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_add_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_add_scalar(
             f,
@@ -1145,12 +1141,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_cross",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_cross(
             f,
@@ -1160,12 +1156,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_dot",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_dot(
             f,
@@ -1175,12 +1171,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_interpolate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector3f_interpolate(f, arguments, version);
@@ -1188,12 +1184,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_magnitude",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_magnitude(
             f,
@@ -1203,12 +1199,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_multiply",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_multiply(
             f,
@@ -1218,12 +1214,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_multiply_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector3f_multiply_scalar(f, arguments, version);
@@ -1231,12 +1227,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_negate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_negate(
             f,
@@ -1246,12 +1242,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_normalize",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_normalize(
             f,
@@ -1261,12 +1257,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_reflect",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_reflect(
             f,
@@ -1276,12 +1272,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_refract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_refract(
             f,
@@ -1291,12 +1287,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3f_subtract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_subtract(
             f,
@@ -1306,12 +1302,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_add",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_add(
             f,
@@ -1321,12 +1317,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_add_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_add_scalar(
             f,
@@ -1336,12 +1332,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_dot",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_dot(
             f,
@@ -1351,12 +1347,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_interpolate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector3i_interpolate(f, arguments, version);
@@ -1364,12 +1360,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_magnitude",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_magnitude(
             f,
@@ -1379,12 +1375,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_multiply",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_multiply(
             f,
@@ -1394,12 +1390,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_multiply_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector3i_multiply_scalar(f, arguments, version);
@@ -1407,12 +1403,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_negate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_negate(
             f,
@@ -1422,12 +1418,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_normalize",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_normalize(
             f,
@@ -1437,12 +1433,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_reflect",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_reflect(
             f,
@@ -1452,12 +1448,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_refract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_refract(
             f,
@@ -1467,12 +1463,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector3i_subtract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_subtract(
             f,
@@ -1482,12 +1478,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_add",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_add(
             f,
@@ -1497,12 +1493,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_add_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_add_scalar(
             f,
@@ -1512,12 +1508,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_dot",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_dot(
             f,
@@ -1527,12 +1523,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_interpolate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector4f_interpolate(f, arguments, version);
@@ -1540,12 +1536,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_magnitude",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_magnitude(
             f,
@@ -1555,12 +1551,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_multiply",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_multiply(
             f,
@@ -1570,12 +1566,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_multiply_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector4f_multiply_scalar(f, arguments, version);
@@ -1583,12 +1579,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_negate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_negate(
             f,
@@ -1598,12 +1594,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_normalize",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_normalize(
             f,
@@ -1613,12 +1609,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_reflect",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_reflect(
             f,
@@ -1628,12 +1624,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_refract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_refract(
             f,
@@ -1643,12 +1639,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4f_subtract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_subtract(
             f,
@@ -1658,12 +1654,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_add",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_add(
             f,
@@ -1673,12 +1669,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_add_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_add_scalar(
             f,
@@ -1688,12 +1684,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_dot",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_dot(
             f,
@@ -1703,12 +1699,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_interpolate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector4i_interpolate(f, arguments, version);
@@ -1716,12 +1712,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_magnitude",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_magnitude(
             f,
@@ -1731,12 +1727,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_multiply",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_multiply(
             f,
@@ -1746,12 +1742,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_multiply_scalar",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector4i_multiply_scalar(f, arguments, version);
@@ -1759,12 +1755,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_negate",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_negate(
             f,
@@ -1774,12 +1770,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_normalize",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_normalize(
             f,
@@ -1789,12 +1785,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_reflect",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_reflect(
             f,
@@ -1804,12 +1800,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_refract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_refract(
             f,
@@ -1819,12 +1815,12 @@ public final class GFFI
       });
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_subtract",
-      new GFFIExpressionEmitter() {
-        @Override public @Nonnull GFFIExpression emitExpression(
-          final @Nonnull TASTDFunctionExternal f,
-          final @Nonnull List<GASTExpression> arguments,
-          final @Nonnull GVersion version)
-          throws ConstraintError
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_subtract(
             f,
@@ -1832,35 +1828,57 @@ public final class GFFI
             version);
         }
       });
-
   }
 
-  public static @Nonnull GFFI newFFI(
-    final @Nonnull Log log)
+  // CHECKSTYLE:ON
+
+  /**
+   * Construct a new FFI.
+   * 
+   * @param log
+   *          The log
+   * @return A new FFI
+   */
+
+  public static GFFI newFFI(
+    final LogUsableType log)
   {
     return new GFFI(log);
   }
 
-  private final @Nonnull Log log;
+  private final LogUsableType log;
 
   private GFFI(
-    final @Nonnull Log in_log)
+    final LogUsableType in_log)
   {
-    this.log = new Log(in_log, "ffi");
+    this.log = NullCheck.notNull(in_log, "Log").with("ffi");
   }
 
-  public @Nonnull GFFIExpression getExpression(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull List<GASTExpression> arguments,
-    final @Nonnull GVersion version)
-    throws ConstraintError,
-      GFFIError
+  /**
+   * Get an FFI expression for the given function application.
+   * 
+   * @param f
+   *          The function
+   * @param arguments
+   *          The arguments
+   * @param version
+   *          The GLSL version
+   * @return An expression
+   * @throws GFFIError
+   *           If an FFI error occurs
+   */
+
+  public GFFIExpression getExpression(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+    throws GFFIError
   {
     final TASTDExternal ext = f.getExternal();
     final TokenIdentifierLower ename = ext.getName();
     final String name = ename.getActual();
 
-    if (this.log.enabled(Level.LOG_DEBUG)) {
+    if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
       this.log.debug(String.format(
         "expression for %s at %s:%s",
         name,
@@ -1869,22 +1887,31 @@ public final class GFFI
     }
 
     if (GFFI.EXPRESSION_EMITTERS.containsKey(name)) {
-      final GFFIExpressionEmitter e = GFFI.EXPRESSION_EMITTERS.get(name);
+      final GFFIExpressionEmitterType e = GFFI.EXPRESSION_EMITTERS.get(name);
       return e.emitExpression(f, arguments, version);
     }
     throw GFFIError.unknownExternal(ext);
   }
 
-  public @CheckForNull TASTDFunctionDefined getFunctionDefinition(
-    final @Nonnull TASTDFunctionExternal f,
-    final @Nonnull GVersion version)
-    throws ConstraintError
+  /**
+   * Get a function declaration for the given function, if one is required.
+   * 
+   * @param f
+   *          The function
+   * @param version
+   *          The GLSL version
+   * @return A function declaration
+   */
+
+  public @Nullable TASTDFunctionDefined getFunctionDefinition(
+    final TASTDFunctionExternal f,
+    final GVersion version)
   {
     final TASTDExternal ext = f.getExternal();
     final TokenIdentifierLower ename = ext.getName();
     final String name = ename.getActual();
 
-    if (this.log.enabled(Level.LOG_DEBUG)) {
+    if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
       this.log.debug(String.format(
         "definition for %s at %s:%s",
         name,
@@ -1892,12 +1919,12 @@ public final class GFFI
         ename.getPosition()));
     }
 
-    final Function<GVersion, Boolean> require_check =
+    final FunctionType<GVersion, Boolean> require_check =
       GFFI.DECLARATION_FUNCTION_REQUIRED.get(name);
     if (require_check != null) {
       final boolean required = require_check.call(version).booleanValue();
       if (required) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
           this.log.debug(String.format(
             "fallback required for %s at %s:%s",
             name,
@@ -1911,12 +1938,12 @@ public final class GFFI
         return new TASTDFunctionDefined(
           f.getName(),
           f.getArguments(),
-          emu.value,
+          emu.get(),
           f.getType());
       }
     }
 
-    if (this.log.enabled(Level.LOG_DEBUG)) {
+    if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
       this.log.debug(String.format(
         "no fallback required for %s at %s:%s",
         name,
@@ -1927,17 +1954,28 @@ public final class GFFI
     return null;
   }
 
-  public @CheckForNull TASTDValueDefined getValueDefinition(
-    final @Nonnull TASTDValueExternal v,
-    final @Nonnull GVersion version)
-    throws GFFIError,
-      ConstraintError
+  /**
+   * Get a value declaration for the given value, if one is required.
+   * 
+   * @param v
+   *          The value
+   * @param version
+   *          The GLSL version
+   * @return A value declaration
+   * @throws GFFIError
+   *           If an FFI error occurs
+   */
+
+  public @Nullable TASTDValueDefined getValueDefinition(
+    final TASTDValueExternal v,
+    final GVersion version)
+    throws GFFIError
   {
     final TASTDExternal ext = v.getExternal();
     final TokenIdentifierLower ename = ext.getName();
     final String name = ename.getActual();
 
-    if (this.log.enabled(Level.LOG_DEBUG)) {
+    if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
       this.log.debug(String.format(
         "definition for %s at %s:%s",
         name,
@@ -1949,7 +1987,7 @@ public final class GFFI
       throw GFFIError.unknownExternal(ext);
     }
 
-    final Function<TASTDValueExternal, TASTExpression> emitter =
+    final FunctionType<TASTDValueExternal, TASTExpression> emitter =
       GFFI.DECLARATION_VALUE_EXPRESSIONS.get(name);
 
     final TASTExpression exp = emitter.call(v);

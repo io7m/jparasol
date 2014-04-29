@@ -23,54 +23,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.typed.TTypeName.TTypeNameBuiltIn;
 import com.io7m.jparasol.typed.TTypeName.TTypeNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTExpression;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public abstract class TType implements TTypeVisitable
+/**
+ * The type of Parasol types.
+ */
+
+// CHECKSTYLE_SPACE:OFF
+
+@EqualityReference public abstract class TType
 {
   /**
    * The main boolean type.
    */
 
-  public static final class TBoolean extends TManifestType
+  @EqualityReference public static final class TBoolean extends TManifestType
   {
-    private final static @Nonnull TBoolean INSTANCE = new TBoolean();
+    private final static TBoolean INSTANCE = new TBoolean();
 
-    public static @Nonnull TBoolean get()
+    /**
+     * @return The boolean type singleton
+     */
+
+    public static TBoolean get()
     {
       return TBoolean.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TBoolean()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("boolean");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("boolean");
     }
 
     @Override public int getComponentCount()
@@ -78,14 +67,14 @@ public abstract class TType implements TTypeVisitable
       return 1;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
 
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TBoolean.get() }));
       constructors.add(TConstructor.newConstructor(new TValueType[] { TFloat
-        .get() }));
+        .get(), }));
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TInteger.get() }));
 
@@ -97,18 +86,13 @@ public abstract class TType implements TTypeVisitable
       return this.name;
     }
 
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
-    }
-
     @Override public String toString()
     {
       return "[TBoolean]";
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -122,40 +106,36 @@ public abstract class TType implements TTypeVisitable
    * A constructor.
    */
 
-  public static final class TConstructor
+  @EqualityReference public static final class TConstructor
   {
-    static @Nonnull TConstructor newConstructor(
+    /**
+     * Construct a new constructor.
+     * 
+     * @param parameters
+     *          The types of the parameters
+     * @return A constructor
+     */
+
+    public static TConstructor newConstructor(
       final TValueType[] parameters)
     {
-      return new TConstructor(Arrays.asList(parameters));
+      NullCheck.notNull(parameters, "Parameters");
+      final List<TValueType> r = Arrays.asList(parameters);
+      assert r != null;
+      return new TConstructor(r);
     }
 
-    private final @Nonnull List<TValueType> parameters;
+    private final List<TValueType> parameters;
 
     private TConstructor(
-      final @Nonnull List<TValueType> in_parameters)
+      final List<TValueType> in_parameters)
     {
       this.parameters = in_parameters;
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TConstructor other = (TConstructor) obj;
-      if (!this.parameters.equals(other.parameters)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The number of parameters in the constructor
+     */
 
     public int getComponentCount()
     {
@@ -168,20 +148,20 @@ public abstract class TType implements TTypeVisitable
       return sum;
     }
 
-    public @Nonnull List<TValueType> getParameters()
+    /**
+     * @return A list of parameter types
+     */
+
+    public List<TValueType> getParameters()
     {
       return this.parameters;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.parameters.hashCode();
-      return result;
-    }
+    /**
+     * @return A humanly readable image of the constructor
+     */
 
-    public @Nonnull String show()
+    public String show()
     {
       final StringBuilder sb = new StringBuilder();
 
@@ -197,7 +177,9 @@ public abstract class TType implements TTypeVisitable
         }
       }
 
-      return sb.toString();
+      final String r = sb.toString();
+      assert r != null;
+      return r;
     }
 
     @Override public String toString()
@@ -206,7 +188,9 @@ public abstract class TType implements TTypeVisitable
       builder.append("[TConstructor ");
       builder.append(this.parameters);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -214,39 +198,24 @@ public abstract class TType implements TTypeVisitable
    * The main floating point type.
    */
 
-  public static final class TFloat extends TManifestType
+  @EqualityReference public static final class TFloat extends TManifestType
   {
-    private final static @Nonnull TFloat INSTANCE = new TFloat();
+    private final static TFloat INSTANCE = new TFloat();
 
-    public static @Nonnull TFloat get()
+    /**
+     * @return The float type singleton
+     */
+
+    public static TFloat get()
     {
       return TFloat.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TFloat()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("float");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("float");
     }
 
     @Override public int getComponentCount()
@@ -254,12 +223,12 @@ public abstract class TType implements TTypeVisitable
       return 1;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
 
       constructors.add(TConstructor.newConstructor(new TValueType[] { TFloat
-        .get() }));
+        .get(), }));
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TInteger.get() }));
       constructors.add(TConstructor
@@ -273,18 +242,13 @@ public abstract class TType implements TTypeVisitable
       return this.name;
     }
 
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
-    }
-
     @Override public String toString()
     {
       return "[TFloat]";
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -298,30 +262,42 @@ public abstract class TType implements TTypeVisitable
    * Function type.
    */
 
-  public static final class TFunction extends TType
+  @EqualityReference public static final class TFunction extends TType
   {
-    private final @Nonnull List<TFunctionArgument> arguments;
-    private final @Nonnull TTypeNameBuiltIn        name;
-    private final @Nonnull TValueType              return_type;
+    private final List<TFunctionArgument> arguments;
+    private final TTypeNameBuiltIn        name;
+    private final TValueType              return_type;
+
+    /**
+     * Construct a function type.
+     * 
+     * @param in_arguments
+     *          The list of argument types
+     * @param in_return_type
+     *          The return type
+     */
 
     public TFunction(
-      final @Nonnull List<TFunctionArgument> in_arguments,
-      final @Nonnull TValueType in_return_type)
-      throws ConstraintError
+      final List<TFunctionArgument> in_arguments,
+      final TValueType in_return_type)
     {
-      this.arguments =
-        Constraints.constrainNotNull(in_arguments, "Arguments");
-      this.return_type =
-        Constraints.constrainNotNull(in_return_type, "Return type");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
+      this.return_type = NullCheck.notNull(in_return_type, "Return type");
 
       final StringBuilder m = new StringBuilder();
       m.append(TType.formatFunctionArguments(this.arguments));
       m.append(" → ");
       m.append(this.return_type.getShowName());
-      this.name = new TTypeNameBuiltIn(m.toString());
+      final String r = m.toString();
+      assert r != null;
+      this.name = new TTypeNameBuiltIn(r);
     }
 
-    public @Nonnull List<TFunctionArgument> getArguments()
+    /**
+     * @return The list of argument types
+     */
+
+    public List<TFunctionArgument> getArguments()
     {
       return this.arguments;
     }
@@ -341,7 +317,11 @@ public abstract class TType implements TTypeVisitable
       return this.name;
     }
 
-    public @Nonnull TValueType getReturnType()
+    /**
+     * @return The return type
+     */
+
+    public TValueType getReturnType()
     {
       return this.return_type;
     }
@@ -354,11 +334,13 @@ public abstract class TType implements TTypeVisitable
       builder.append(" ");
       builder.append(this.return_type);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -368,59 +350,48 @@ public abstract class TType implements TTypeVisitable
     }
   }
 
-  public static final class TFunctionArgument
+  /**
+   * Function argument type.
+   */
+
+  @EqualityReference public static final class TFunctionArgument
   {
-    private final @Nonnull String     name;
-    private final @Nonnull TValueType type;
+    private final String     name;
+    private final TValueType type;
+
+    /**
+     * Construct a function argument.
+     * 
+     * @param in_name
+     *          The name
+     * @param in_type
+     *          The type
+     */
 
     public TFunctionArgument(
-      final @Nonnull String in_name,
-      final @Nonnull TValueType in_type)
-      throws ConstraintError
+      final String in_name,
+      final TValueType in_type)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TFunctionArgument other = (TFunctionArgument) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The name
+     */
 
-    public @Nonnull String getName()
+    public String getName()
     {
       return this.name;
     }
 
-    public @Nonnull TValueType getType()
+    /**
+     * @return The argument type
+     */
+
+    public TType getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
   }
 
@@ -428,39 +399,24 @@ public abstract class TType implements TTypeVisitable
    * The main integer type.
    */
 
-  public static final class TInteger extends TManifestType
+  @EqualityReference public static final class TInteger extends TManifestType
   {
-    private final static @Nonnull TInteger INSTANCE = new TInteger();
+    private final static TInteger INSTANCE = new TInteger();
 
-    public static @Nonnull TInteger get()
+    /**
+     * @return The integer type singleton
+     */
+
+    public static TInteger get()
     {
       return TInteger.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TInteger()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("integer");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("integer");
     }
 
     @Override public int getComponentCount()
@@ -468,28 +424,23 @@ public abstract class TType implements TTypeVisitable
       return 1;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
 
       constructors.add(TConstructor
-        .newConstructor(new TValueType[] { TInteger.get() }));
+        .newConstructor(new TValueType[] { TInteger.get(), }));
       constructors.add(TConstructor.newConstructor(new TValueType[] { TFloat
-        .get() }));
+        .get(), }));
       constructors.add(TConstructor
-        .newConstructor(new TValueType[] { TBoolean.get() }));
+        .newConstructor(new TValueType[] { TBoolean.get(), }));
 
       return constructors;
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -498,7 +449,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -514,7 +465,8 @@ public abstract class TType implements TTypeVisitable
    * Notably, texture samplers are not manifest types.
    */
 
-  public static abstract class TManifestType extends TValueType
+  @EqualityReference public static abstract class TManifestType extends
+    TValueType
   {
     // Nothing
   }
@@ -523,39 +475,25 @@ public abstract class TType implements TTypeVisitable
    * 3x3 matrix type.
    */
 
-  public static final class TMatrix3x3F extends TMatrixType
+  @EqualityReference public static final class TMatrix3x3F extends
+    TMatrixType
   {
-    private final static @Nonnull TMatrix3x3F INSTANCE = new TMatrix3x3F();
+    private final static TMatrix3x3F INSTANCE = new TMatrix3x3F();
 
-    public static @Nonnull TMatrix3x3F get()
+    /**
+     * @return The 3x3 matrix type singleton
+     */
+
+    public static TMatrix3x3F get()
     {
       return TMatrix3x3F.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TMatrix3x3F()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("matrix_3x3f");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("matrix_3x3f");
     }
 
     @Override public int getComponentCount()
@@ -563,24 +501,19 @@ public abstract class TType implements TTypeVisitable
       return 3 * 3;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TVector3F.get(),
         TVector3F.get(),
-        TVector3F.get() }));
+        TVector3F.get(), }));
       return constructors;
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -589,7 +522,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -603,39 +536,25 @@ public abstract class TType implements TTypeVisitable
    * 4x4 matrix type.
    */
 
-  public static final class TMatrix4x4F extends TMatrixType
+  @EqualityReference public static final class TMatrix4x4F extends
+    TMatrixType
   {
-    private final static @Nonnull TMatrix4x4F INSTANCE = new TMatrix4x4F();
+    private final static TMatrix4x4F INSTANCE = new TMatrix4x4F();
 
-    public static @Nonnull TMatrix4x4F get()
+    /**
+     * @return The 4x4 matrix type singleton
+     */
+
+    public static TMatrix4x4F get()
     {
       return TMatrix4x4F.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TMatrix4x4F()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("matrix_4x4f");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("matrix_4x4f");
     }
 
     @Override public int getComponentCount()
@@ -643,25 +562,20 @@ public abstract class TType implements TTypeVisitable
       return 4 * 4;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TVector4F.get(),
         TVector4F.get(),
         TVector4F.get(),
-        TVector4F.get() }));
+        TVector4F.get(), }));
       return constructors;
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -670,7 +584,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -684,7 +598,8 @@ public abstract class TType implements TTypeVisitable
    * Matrix types.
    */
 
-  public static abstract class TMatrixType extends TManifestType
+  @EqualityReference public static abstract class TMatrixType extends
+    TManifestType
   {
     // Nothing
   }
@@ -693,37 +608,26 @@ public abstract class TType implements TTypeVisitable
    * The record type.
    */
 
-  public static final class TRecord extends TManifestType
+  @EqualityReference public static final class TRecord extends TManifestType
   {
-    private final @Nonnull List<TRecordField> fields;
-    private final @Nonnull TTypeNameGlobal    name;
+    private final List<TRecordField> fields;
+    private final TTypeNameGlobal    name;
+
+    /**
+     * Construct a record type.
+     * 
+     * @param in_name
+     *          The name of the type
+     * @param in_fields
+     *          The record fields
+     */
 
     public TRecord(
-      final @Nonnull TTypeNameGlobal in_name,
-      final @Nonnull List<TRecordField> in_fields)
-      throws ConstraintError
+      final TTypeNameGlobal in_name,
+      final List<TRecordField> in_fields)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.fields = Constraints.constrainNotNull(in_fields, "Fields");
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TRecord other = (TRecord) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.fields = NullCheck.notNull(in_fields, "Fields");
     }
 
     @Override public int getComponentCount()
@@ -736,22 +640,18 @@ public abstract class TType implements TTypeVisitable
       return new ArrayList<TType.TConstructor>();
     }
 
-    public @Nonnull List<TRecordField> getFields()
+    /**
+     * @return The list of record fields in declaration order
+     */
+
+    public List<TRecordField> getFields()
     {
       return this.fields;
     }
 
-    @Override public @Nonnull TTypeNameGlobal getName()
+    @Override public TTypeNameGlobal getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -762,11 +662,13 @@ public abstract class TType implements TTypeVisitable
       builder.append(" ");
       builder.append(this.fields);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -776,59 +678,48 @@ public abstract class TType implements TTypeVisitable
     }
   }
 
-  public static final class TRecordField
+  /**
+   * The type of record fields.
+   */
+
+  @EqualityReference public static final class TRecordField
   {
-    private final @Nonnull String        name;
-    private final @Nonnull TManifestType type;
+    private final String        name;
+    private final TManifestType type;
+
+    /**
+     * Construct a record field.
+     * 
+     * @param in_name
+     *          The field name
+     * @param in_type
+     *          The field type
+     */
 
     public TRecordField(
-      final @Nonnull String in_name,
-      final @Nonnull TManifestType in_type)
-      throws ConstraintError
+      final String in_name,
+      final TManifestType in_type)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.type = Constraints.constrainNotNull(in_type, "Type");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TRecordField other = (TRecordField) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The name of the record field
+     */
 
-    public @Nonnull String getName()
+    public String getName()
     {
       return this.name;
     }
 
-    public @Nonnull TManifestType getType()
+    /**
+     * @return The type of the record field
+     */
+
+    public TManifestType getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -839,7 +730,9 @@ public abstract class TType implements TTypeVisitable
       builder.append(" ");
       builder.append(this.type);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -847,39 +740,24 @@ public abstract class TType implements TTypeVisitable
    * 2D texture sampler type.
    */
 
-  public static final class TSampler2D extends TValueType
+  @EqualityReference public static final class TSampler2D extends TValueType
   {
-    private final static @Nonnull TSampler2D INSTANCE = new TSampler2D();
+    private final static TSampler2D INSTANCE = new TSampler2D();
 
-    public static @Nonnull TSampler2D get()
+    /**
+     * @return The sampler type singleton
+     */
+
+    public static TSampler2D get()
     {
       return TSampler2D.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TSampler2D()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("sampler_2d");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("sampler_2d");
     }
 
     @Override public int getComponentCount()
@@ -887,19 +765,14 @@ public abstract class TType implements TTypeVisitable
       return 1;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       return new ArrayList<TConstructor>();
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -908,7 +781,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -922,39 +795,25 @@ public abstract class TType implements TTypeVisitable
    * Cube texture sampler type.
    */
 
-  public static final class TSamplerCube extends TValueType
+  @EqualityReference public static final class TSamplerCube extends
+    TValueType
   {
-    private final static @Nonnull TSamplerCube INSTANCE = new TSamplerCube();
+    private final static TSamplerCube INSTANCE = new TSamplerCube();
 
-    public static @Nonnull TSamplerCube get()
+    /**
+     * @return The sampler type singleton
+     */
+
+    public static TSamplerCube get()
     {
       return TSamplerCube.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TSamplerCube()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("sampler_cube");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("sampler_cube");
     }
 
     @Override public int getComponentCount()
@@ -962,19 +821,14 @@ public abstract class TType implements TTypeVisitable
       return 1;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       return new ArrayList<TConstructor>();
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -983,7 +837,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -1000,7 +854,7 @@ public abstract class TType implements TTypeVisitable
    * Notably, values of function types are not values.
    */
 
-  public static abstract class TValueType extends TType
+  @EqualityReference public static abstract class TValueType extends TType
   {
     // Nothing
   }
@@ -1009,39 +863,24 @@ public abstract class TType implements TTypeVisitable
    * 2D floating point vector type.
    */
 
-  public static final class TVector2F extends TVectorFType
+  @EqualityReference public static final class TVector2F extends TVectorFType
   {
-    private final static @Nonnull TVector2F INSTANCE = new TVector2F();
+    private final static TVector2F INSTANCE = new TVector2F();
 
-    public static @Nonnull TVector2F get()
+    /**
+     * @return The vector type singleton
+     */
+
+    public static TVector2F get()
     {
       return TVector2F.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TVector2F()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("vector_2f");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("vector_2f");
     }
 
     @Override public int getComponentCount()
@@ -1056,25 +895,20 @@ public abstract class TType implements TTypeVisitable
       return TType.VECTOR_2_COMPONENT_NAMES;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TFloat.get(),
-        TFloat.get() }));
+        TFloat.get(), }));
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TVector2F.get() }));
       return constructors;
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -1083,7 +917,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -1097,39 +931,24 @@ public abstract class TType implements TTypeVisitable
    * 2D integer vector type.
    */
 
-  public static final class TVector2I extends TVectorIType
+  @EqualityReference public static final class TVector2I extends TVectorIType
   {
-    private final static @Nonnull TVector2I INSTANCE = new TVector2I();
+    private final static TVector2I INSTANCE = new TVector2I();
 
-    public static @Nonnull TVector2I get()
+    /**
+     * @return The vector type singleton
+     */
+
+    public static TVector2I get()
     {
       return TVector2I.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TVector2I()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("vector_2i");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("vector_2i");
     }
 
     @Override public int getComponentCount()
@@ -1144,25 +963,20 @@ public abstract class TType implements TTypeVisitable
       return TType.VECTOR_2_COMPONENT_NAMES;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TInteger.get(),
-        TInteger.get() }));
+        TInteger.get(), }));
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TVector2I.get() }));
       return constructors;
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -1171,7 +985,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -1185,39 +999,24 @@ public abstract class TType implements TTypeVisitable
    * 3D floating point vector type.
    */
 
-  public static final class TVector3F extends TVectorFType
+  @EqualityReference public static final class TVector3F extends TVectorFType
   {
-    private final static @Nonnull TVector3F INSTANCE = new TVector3F();
+    private final static TVector3F INSTANCE = new TVector3F();
 
-    public static @Nonnull TVector3F get()
+    /**
+     * @return The vector type singleton
+     */
+
+    public static TVector3F get()
     {
       return TVector3F.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TVector3F()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("vector_3f");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("vector_3f");
     }
 
     @Override public int getComponentCount()
@@ -1232,22 +1031,22 @@ public abstract class TType implements TTypeVisitable
       return TType.VECTOR_3_COMPONENT_NAMES;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TFloat.get(),
         TFloat.get(),
-        TFloat.get() }));
+        TFloat.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TVector2F.get(),
-        TFloat.get() }));
+        TFloat.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TFloat.get(),
-        TVector2F.get() }));
+        TVector2F.get(), }));
 
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TVector3F.get() }));
@@ -1255,14 +1054,9 @@ public abstract class TType implements TTypeVisitable
       return constructors;
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -1271,7 +1065,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -1285,39 +1079,24 @@ public abstract class TType implements TTypeVisitable
    * 3D integer vector type.
    */
 
-  public static final class TVector3I extends TVectorIType
+  @EqualityReference public static final class TVector3I extends TVectorIType
   {
-    private final static @Nonnull TVector3I INSTANCE = new TVector3I();
+    private final static TVector3I INSTANCE = new TVector3I();
 
-    public static @Nonnull TVector3I get()
+    /**
+     * @return The vector type singleton
+     */
+
+    public static TVector3I get()
     {
       return TVector3I.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TVector3I()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("vector_3i");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("vector_3i");
     }
 
     @Override public int getComponentCount()
@@ -1332,22 +1111,22 @@ public abstract class TType implements TTypeVisitable
       return TType.VECTOR_3_COMPONENT_NAMES;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TInteger.get(),
         TInteger.get(),
-        TInteger.get() }));
+        TInteger.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TVector2I.get(),
-        TInteger.get() }));
+        TInteger.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TInteger.get(),
-        TVector2I.get() }));
+        TVector2I.get(), }));
 
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TVector3I.get() }));
@@ -1355,14 +1134,9 @@ public abstract class TType implements TTypeVisitable
       return constructors;
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -1371,7 +1145,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -1385,39 +1159,24 @@ public abstract class TType implements TTypeVisitable
    * 4D floating point vector type.
    */
 
-  public static final class TVector4F extends TVectorFType
+  @EqualityReference public static final class TVector4F extends TVectorFType
   {
-    private final static @Nonnull TVector4F INSTANCE = new TVector4F();
+    private final static TVector4F INSTANCE = new TVector4F();
 
-    public static @Nonnull TVector4F get()
+    /**
+     * @return The vector type singleton
+     */
+
+    public static TVector4F get()
     {
       return TVector4F.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TVector4F()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("vector_4f");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("vector_4f");
     }
 
     @Override public int getComponentCount()
@@ -1432,7 +1191,7 @@ public abstract class TType implements TTypeVisitable
       return TType.VECTOR_4_COMPONENT_NAMES;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
 
@@ -1440,34 +1199,34 @@ public abstract class TType implements TTypeVisitable
         TFloat.get(),
         TFloat.get(),
         TFloat.get(),
-        TFloat.get() }));
+        TFloat.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TVector2F.get(),
         TFloat.get(),
-        TFloat.get() }));
+        TFloat.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TFloat.get(),
         TFloat.get(),
-        TVector2F.get() }));
+        TVector2F.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TFloat.get(),
         TVector2F.get(),
-        TFloat.get() }));
+        TFloat.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TVector2F.get(),
-        TVector2F.get() }));
+        TVector2F.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TVector3F.get(),
-        TFloat.get() }));
+        TFloat.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TFloat.get(),
-        TVector3F.get() }));
+        TVector3F.get(), }));
 
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TVector4F.get() }));
@@ -1475,14 +1234,9 @@ public abstract class TType implements TTypeVisitable
       return constructors;
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -1491,7 +1245,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -1505,39 +1259,24 @@ public abstract class TType implements TTypeVisitable
    * 4D integer vector type.
    */
 
-  public static final class TVector4I extends TVectorIType
+  @EqualityReference public static final class TVector4I extends TVectorIType
   {
-    private final static @Nonnull TVector4I INSTANCE = new TVector4I();
+    private final static TVector4I INSTANCE = new TVector4I();
 
-    public static @Nonnull TVector4I get()
+    /**
+     * @return The vector type singleton
+     */
+
+    public static TVector4I get()
     {
       return TVector4I.INSTANCE;
     }
 
-    private final @Nonnull TTypeNameBuiltIn name;
+    private final TTypeNameBuiltIn name;
 
     private TVector4I()
     {
-      try {
-        this.name = new TTypeNameBuiltIn("vector_4i");
-      } catch (final ConstraintError e) {
-        throw new UnreachableCodeException(e);
-      }
-    }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      this.name = new TTypeNameBuiltIn("vector_4i");
     }
 
     @Override public int getComponentCount()
@@ -1552,7 +1291,7 @@ public abstract class TType implements TTypeVisitable
       return TType.VECTOR_4_COMPONENT_NAMES;
     }
 
-    @Override public @Nonnull List<TConstructor> getConstructors()
+    @Override public List<TConstructor> getConstructors()
     {
       final List<TConstructor> constructors = new ArrayList<TConstructor>();
 
@@ -1560,34 +1299,34 @@ public abstract class TType implements TTypeVisitable
         TInteger.get(),
         TInteger.get(),
         TInteger.get(),
-        TInteger.get() }));
+        TInteger.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TVector2I.get(),
         TInteger.get(),
-        TInteger.get() }));
+        TInteger.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TInteger.get(),
         TInteger.get(),
-        TVector2I.get() }));
+        TVector2I.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TInteger.get(),
         TVector2I.get(),
-        TInteger.get() }));
+        TInteger.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TVector2I.get(),
-        TVector2I.get() }));
+        TVector2I.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TVector3I.get(),
-        TInteger.get() }));
+        TInteger.get(), }));
 
       constructors.add(TConstructor.newConstructor(new TValueType[] {
         TInteger.get(),
-        TVector3I.get() }));
+        TVector3I.get(), }));
 
       constructors.add(TConstructor
         .newConstructor(new TValueType[] { TVector4I.get() }));
@@ -1595,14 +1334,9 @@ public abstract class TType implements TTypeVisitable
       return constructors;
     }
 
-    @Override public @Nonnull TTypeNameBuiltIn getName()
+    @Override public TTypeNameBuiltIn getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      return this.getName().hashCode();
     }
 
     @Override public String toString()
@@ -1611,7 +1345,7 @@ public abstract class TType implements TTypeVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
       A
       ttypeVisitableAccept(
         final V v)
@@ -1621,14 +1355,19 @@ public abstract class TType implements TTypeVisitable
     }
   }
 
-  public static abstract class TVectorFType extends TVectorType
+  /**
+   * The type of floating point vectors.
+   */
+
+  @EqualityReference public static abstract class TVectorFType extends
+    TVectorType
   {
     @Override public final TValueType getComponentType()
     {
       return TFloat.get();
     }
 
-    @Override public TManifestType getSwizzleType(
+    @Override public final TManifestType getSwizzleType(
       final int size)
     {
       switch (size) {
@@ -1646,14 +1385,19 @@ public abstract class TType implements TTypeVisitable
     }
   }
 
-  public static abstract class TVectorIType extends TVectorType
+  /**
+   * The type of integer vectors.
+   */
+
+  @EqualityReference public static abstract class TVectorIType extends
+    TVectorType
   {
     @Override public final TValueType getComponentType()
     {
       return TInteger.get();
     }
 
-    @Override public TManifestType getSwizzleType(
+    @Override public final TManifestType getSwizzleType(
       final int size)
     {
       switch (size) {
@@ -1675,38 +1419,56 @@ public abstract class TType implements TTypeVisitable
    * Values of a vector type can be used in swizzle expressions.
    */
 
-  public static abstract class TVectorType extends TManifestType
+  @EqualityReference public static abstract class TVectorType extends
+    TManifestType
   {
-    public abstract @Nonnull List<String> getComponentNames();
+    /**
+     * @return The list of names of components
+     */
 
-    public abstract @Nonnull TValueType getComponentType();
+    public abstract List<String> getComponentNames();
 
-    public abstract @Nonnull TManifestType getSwizzleType(
+    /**
+     * @return The type of the components
+     */
+
+    public abstract TValueType getComponentType();
+
+    /**
+     * @return The resulting type when swizzling with the given number of
+     *         fields.
+     * @param size
+     *          The number of fields included in the swizzle
+     */
+
+    public abstract TManifestType getSwizzleType(
       int size);
   }
 
-  private static final @Nonnull List<String> VECTOR_2_COMPONENT_NAMES;
-  private static final @Nonnull List<String> VECTOR_3_COMPONENT_NAMES;
-  private static final @Nonnull List<String> VECTOR_4_COMPONENT_NAMES;
+  private static final List<String> VECTOR_2_COMPONENT_NAMES;
+  private static final List<String> VECTOR_3_COMPONENT_NAMES;
+  private static final List<String> VECTOR_4_COMPONENT_NAMES;
 
   static {
     VECTOR_2_COMPONENT_NAMES =
-      Collections.unmodifiableList(Arrays.asList(new String[] { "x", "y" }));
-
+      NullCheck.notNull(Collections.unmodifiableList(Arrays
+        .asList(new String[] { "x", "y" })));
     VECTOR_3_COMPONENT_NAMES =
-      Collections.unmodifiableList(Arrays
-        .asList(new String[] { "x", "y", "z" }));
-
+      NullCheck.notNull(Collections.unmodifiableList(Arrays
+        .asList(new String[] { "x", "y", "z" })));
     VECTOR_4_COMPONENT_NAMES =
-      Collections.unmodifiableList(Arrays.asList(new String[] {
-    "x",
-    "y",
-    "z",
-    "w" }));
+      NullCheck.notNull(Collections.unmodifiableList(Arrays
+        .asList(new String[] { "x", "y", "z", "w" })));
   }
 
-  public static @Nonnull String formatFunctionArguments(
-    final @Nonnull List<TFunctionArgument> arguments)
+  /**
+   * @param arguments
+   *          A list of function arguments
+   * @return A formatted image of the given list of function arguments
+   */
+
+  public static String formatFunctionArguments(
+    final List<TFunctionArgument> arguments)
   {
     final StringBuilder m = new StringBuilder();
     m.append("(");
@@ -1717,11 +1479,19 @@ public abstract class TType implements TTypeVisitable
       }
     }
     m.append(")");
-    return m.toString();
+    final String r = m.toString();
+    assert r != null;
+    return r;
   }
 
-  public static @Nonnull String formatTypeExpressionList(
-    final @Nonnull List<TASTExpression> es)
+  /**
+   * @param es
+   *          A list of expressions
+   * @return A formatted image of the given list of expressions
+   */
+
+  public static String formatTypeExpressionList(
+    final List<TASTExpression> es)
   {
     final StringBuilder m = new StringBuilder();
     m.append("(");
@@ -1732,11 +1502,19 @@ public abstract class TType implements TTypeVisitable
       }
     }
     m.append(")");
-    return m.toString();
+    final String r = m.toString();
+    assert r != null;
+    return r;
   }
 
-  public static @Nonnull <T extends TType> String formatTypeList(
-    final @Nonnull List<T> list)
+  /**
+   * @param list
+   *          A list of types
+   * @return A formatted image of the given list of types
+   */
+
+  public static <T extends TType> String formatTypeList(
+    final List<T> list)
   {
     final StringBuilder m = new StringBuilder();
     m.append("(");
@@ -1747,12 +1525,18 @@ public abstract class TType implements TTypeVisitable
       }
     }
     m.append(")");
-    return m.toString();
+    final String r = m.toString();
+    assert r != null;
+    return r;
   }
 
-  public static @Nonnull Map<TTypeNameBuiltIn, TType> getBaseTypesByName()
+  /**
+   * @return A map of the built in types, by name.
+   */
+
+  public static Map<TTypeNameBuiltIn, TType> getBaseTypesByName()
   {
-    final HashMap<TTypeNameBuiltIn, TType> m =
+    final Map<TTypeNameBuiltIn, TType> m =
       new HashMap<TTypeNameBuiltIn, TType>();
 
     m.put(TBoolean.get().getName(), TBoolean.get());
@@ -1768,26 +1552,53 @@ public abstract class TType implements TTypeVisitable
     m.put(TVector2I.get().getName(), TVector2I.get());
     m.put(TVector3I.get().getName(), TVector3I.get());
     m.put(TVector4I.get().getName(), TVector4I.get());
-    return Collections.unmodifiableMap(m);
+    final Map<TTypeNameBuiltIn, TType> r = Collections.unmodifiableMap(m);
+    assert r != null;
+    return r;
   }
 
   /**
-   * Return the number of components in the given type.
+   * @return The number of components in the given type.
    */
 
   public abstract int getComponentCount();
 
   /**
-   * Retrieve the list of available constructors for the type. An empty list
-   * means the type is not constructable.
+   * @return The list of available constructors for the type. An empty list
+   *         means the type is not constructable.
    */
 
-  public abstract @Nonnull List<TConstructor> getConstructors();
+  public abstract List<TConstructor> getConstructors();
 
-  public abstract @Nonnull TTypeName getName();
+  /**
+   * @return The name of the type
+   */
 
-  public final @Nonnull String getShowName()
+  public abstract TTypeName getName();
+
+  /**
+   * @return The a humanly-readable image of the type name
+   */
+
+  public final String getShowName()
   {
     return this.getName().show();
   }
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return The value returned by the visitor
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends TTypeVisitorType<A, E>>
+    A
+    ttypeVisitableAccept(
+      final V v)
+      throws E;
 }

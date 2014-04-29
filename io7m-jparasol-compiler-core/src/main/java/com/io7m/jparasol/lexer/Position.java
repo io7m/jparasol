@@ -16,18 +16,37 @@
 
 package com.io7m.jparasol.lexer;
 
-import javax.annotation.Nonnull;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.Nullable;
 
-public final class Position
+/**
+ * The type of positions in source code. Specifically, a line and column
+ * number.
+ */
+
+@EqualityStructural public final class Position
 {
-  public static final @Nonnull Position ZERO;
+  /**
+   * Location <code>(0, 0)</code>.
+   */
+
+  public static final Position ZERO;
 
   static {
     ZERO = new Position(0, 0);
   }
 
-  private final int                     column;
-  private final int                     line;
+  private final int            column;
+  private final int            line;
+
+  /**
+   * Construct a new position.
+   * 
+   * @param in_line
+   *          The line
+   * @param in_column
+   *          The column
+   */
 
   public Position(
     final int in_line,
@@ -38,7 +57,7 @@ public final class Position
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -68,12 +87,14 @@ public final class Position
     return result;
   }
 
-  @Override public @Nonnull String toString()
+  @Override public String toString()
   {
     final StringBuilder builder = new StringBuilder();
     builder.append(this.line);
     builder.append(":");
     builder.append(this.column);
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

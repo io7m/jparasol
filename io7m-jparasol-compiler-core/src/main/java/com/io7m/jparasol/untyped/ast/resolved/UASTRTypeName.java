@@ -16,81 +16,81 @@
 
 package com.io7m.jparasol.untyped.ast.resolved;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-public abstract class UASTRTypeName implements UASTRTypeNameVisitable
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public abstract class UASTRTypeName implements
+  UASTRTypeNameVisitableType
 {
-  public static final class UASTRTypeNameBuiltIn extends UASTRTypeName
+  @EqualityReference public static final class UASTRTypeNameBuiltIn extends
+    UASTRTypeName
   {
-    private final @Nonnull TokenIdentifierLower name;
+    private final TokenIdentifierLower name;
 
     public UASTRTypeNameBuiltIn(
-      final @Nonnull TokenIdentifierLower in_name)
-      throws ConstraintError
+      final TokenIdentifierLower in_name)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    @Override public @Nonnull String show()
+    @Override public String show()
     {
       return this.name.getActual();
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTRTypeNameVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTRTypeNameVisitorType<A, E>>
       A
       typeNameVisitableAccept(
-        final @Nonnull V v)
-        throws ConstraintError,
-          E
+        final V v)
+        throws E
     {
       return v.typeNameVisitBuiltIn(this);
     }
   }
 
-  public static final class UASTRTypeNameGlobal extends UASTRTypeName
+  @EqualityReference public static final class UASTRTypeNameGlobal extends
+    UASTRTypeName
   {
-    private final @Nonnull ModulePathFlat       flat;
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull ModulePath           path;
+    private final ModulePathFlat       flat;
+    private final TokenIdentifierLower name;
+    private final ModulePath           path;
 
     public UASTRTypeNameGlobal(
-      final @Nonnull ModulePath in_path,
-      final @Nonnull TokenIdentifierLower in_name)
-      throws ConstraintError
+      final ModulePath in_path,
+      final TokenIdentifierLower in_name)
     {
-      this.path = Constraints.constrainNotNull(in_path, "Path");
+      this.path = NullCheck.notNull(in_path, "Path");
       this.flat = ModulePathFlat.fromModulePath(in_path);
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
-    public @Nonnull ModulePathFlat getFlat()
+    public ModulePathFlat getFlat()
     {
       return this.flat;
     }
 
-    @Override public @Nonnull TokenIdentifierLower getName()
+    @Override public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull ModulePath getPath()
+    public ModulePath getPath()
     {
       return this.path;
     }
 
-    @Override public @Nonnull String show()
+    @Override public String show()
     {
       final StringBuilder s = new StringBuilder();
       s.append(this.flat.getActual());
@@ -100,18 +100,17 @@ public abstract class UASTRTypeName implements UASTRTypeNameVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends UASTRTypeNameVisitor<A, E>>
+      <A, E extends Throwable, V extends UASTRTypeNameVisitorType<A, E>>
       A
       typeNameVisitableAccept(
-        final @Nonnull V v)
-        throws ConstraintError,
-          E
+        final V v)
+        throws E
     {
       return v.typeNameVisitGlobal(this);
     }
   }
 
-  public abstract @Nonnull TokenIdentifierLower getName();
+  public abstract TokenIdentifierLower getName();
 
-  public abstract @Nonnull String show();
+  public abstract String show();
 }

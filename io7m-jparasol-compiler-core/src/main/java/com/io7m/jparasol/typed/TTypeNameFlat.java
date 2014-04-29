@@ -16,37 +16,66 @@
 
 package com.io7m.jparasol.typed;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePathFlat;
-import com.io7m.jparasol.NameFlat;
+import com.io7m.jparasol.NameFlatType;
 import com.io7m.jparasol.typed.TTypeName.TTypeNameGlobal;
+import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlatType;
+import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlatVisitorType;
+import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlatType;
+import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlatVisitorType;
 
-public final class TTypeNameFlat implements NameFlat
+/**
+ * A flattened type name.
+ */
+
+@EqualityStructural public final class TTypeNameFlat implements
+  NameFlatType,
+  TASTNameTypeTermFlatType,
+  TASTNameTypeShaderFlatType
 {
-  public static @Nonnull TTypeNameFlat fromTypeNameGlobal(
-    final @Nonnull TTypeNameGlobal target)
-    throws ConstraintError
+  /**
+   * Construct a flattened type name from the given global type name.
+   * 
+   * @param target
+   *          The name
+   * @return A flattened type name
+   */
+
+  public static TTypeNameFlat fromTypeNameGlobal(
+    final TTypeNameGlobal target)
   {
-    return new TTypeNameFlat(target.getFlat(), target.getName().getActual());
+    NullCheck.notNull(target, "Target");
+
+    final String r = target.getName().getActual();
+    assert r != null;
+    return new TTypeNameFlat(target.getFlat(), r);
   }
 
-  private final @Nonnull String         name;
-  private final @Nonnull ModulePathFlat path;
+  private final String         name;
+  private final ModulePathFlat path;
+
+  /**
+   * Construct a flattened type name from the given names.
+   * 
+   * @param in_path
+   *          The module path
+   * @param in_name
+   *          The name
+   */
 
   public TTypeNameFlat(
-    final @Nonnull ModulePathFlat in_path,
-    final @Nonnull String in_name)
-    throws ConstraintError
+    final ModulePathFlat in_path,
+    final String in_name)
   {
-    this.path = Constraints.constrainNotNull(in_path, "Path");
-    this.name = Constraints.constrainNotNull(in_name, "Name");
+    this.path = NullCheck.notNull(in_path, "Path");
+    this.name = NullCheck.notNull(in_name, "Name");
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -72,7 +101,7 @@ public final class TTypeNameFlat implements NameFlat
     return this.path;
   }
 
-  @Override public @Nonnull String getName()
+  @Override public String getName()
   {
     return this.name;
   }
@@ -86,13 +115,35 @@ public final class TTypeNameFlat implements NameFlat
     return result;
   }
 
-  @Override public @Nonnull String show()
+  @Override public
+    <A, E extends Throwable, V extends TASTNameTypeShaderFlatVisitorType<A, E>>
+    A
+    nameTypeShaderVisitableAccept(
+      final V v)
+      throws E
+  {
+    return v.nameTypeShaderVisitType(this);
+  }
+
+  @Override public
+    <A, E extends Throwable, V extends TASTNameTypeTermFlatVisitorType<A, E>>
+    A
+    nameTypeTermVisitableAccept(
+      final V v)
+      throws E
+  {
+    return v.nameTypeTermVisitType(this);
+  }
+
+  @Override public String show()
   {
     final StringBuilder builder = new StringBuilder();
     builder.append(this.path.getActual());
     builder.append(".");
     builder.append(this.name);
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 
   @Override public String toString()
@@ -103,6 +154,8 @@ public final class TTypeNameFlat implements NameFlat
     builder.append(" ");
     builder.append(this.name);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

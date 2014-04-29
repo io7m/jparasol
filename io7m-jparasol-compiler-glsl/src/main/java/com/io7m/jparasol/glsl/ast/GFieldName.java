@@ -16,22 +16,34 @@
 
 package com.io7m.jparasol.glsl.ast;
 
-import javax.annotation.Nonnull;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
+import com.io7m.jparasol.NameShowType;
 
-import com.io7m.jparasol.NameShow;
+/**
+ * A GLSL record field name.
+ */
 
-public final class GFieldName implements NameShow
+@EqualityStructural public final class GFieldName implements NameShowType
 {
-  private final @Nonnull String name;
+  private final String name;
+
+  /**
+   * Construct a name from a string.
+   * 
+   * @param in_name
+   *          The name
+   */
 
   public GFieldName(
-    final @Nonnull String in_name)
+    final String in_name)
   {
-    this.name = in_name;
+    this.name = NullCheck.notNull(in_name, "Name");
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -54,7 +66,7 @@ public final class GFieldName implements NameShow
     return result;
   }
 
-  @Override public @Nonnull String show()
+  @Override public String show()
   {
     return this.name;
   }
@@ -65,6 +77,8 @@ public final class GFieldName implements NameShow
     builder.append("[GFieldName ");
     builder.append(this.name);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

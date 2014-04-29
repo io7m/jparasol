@@ -20,17 +20,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jaux.functional.Option;
-import com.io7m.jaux.functional.Option.None;
-import com.io7m.jaux.functional.Option.Some;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Option;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.PackagePath;
-import com.io7m.jparasol.PackagePath.Builder;
+import com.io7m.jparasol.PackagePath.BuilderType;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token;
@@ -40,8 +36,8 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.lexer.Token.TokenIf;
 import com.io7m.jparasol.lexer.Token.TokenLet;
 import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
-import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
 import com.io7m.jparasol.lexer.Token.TokenLiteralIntegerDecimal;
+import com.io7m.jparasol.lexer.Token.TokenLiteralIntegerType;
 import com.io7m.jparasol.lexer.Token.TokenLiteralReal;
 import com.io7m.jparasol.lexer.Token.Type;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDExternal;
@@ -97,50 +93,79 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIShaderPath;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class Parser
+/**
+ * The main parser.
+ */
+
+@EqualityReference public final class Parser
 {
-  public static @Nonnull Parser newInternalParser(
-    final @Nonnull Lexer lexer)
-    throws ConstraintError,
-      IOException,
+  /**
+   * Construct a new parser capable of parsing "internal" (standard library)
+   * units.
+   * 
+   * @param lexer
+   *          The lexer
+   * @return A new parser
+   * @throws IOException
+   *           If an I/O error occurs
+   * @throws LexerError
+   *           If a lexical error occurs
+   */
+
+  public static Parser newInternalParser(
+    final Lexer lexer)
+    throws IOException,
       LexerError
   {
     return new Parser(true, lexer);
   }
 
-  public static @Nonnull Parser newParser(
-    final @Nonnull Lexer lexer)
-    throws ConstraintError,
-      IOException,
+  /**
+   * Construct a new parser capable of parsing ordinary units.
+   * 
+   * @param lexer
+   *          The lexer
+   * @return A new parser
+   * @throws IOException
+   *           If an I/O error occurs
+   * @throws LexerError
+   *           If a lexical error occurs
+   */
+
+  public static Parser newParser(
+    final Lexer lexer)
+    throws IOException,
       LexerError
   {
     return new Parser(false, lexer);
   }
 
-  private final boolean                internal;
-  private final @Nonnull Lexer         lexer;
-  private final @Nonnull StringBuilder message;
-  private @Nonnull Token               token;
+  private final boolean       internal;
+  private final Lexer         lexer;
+  private final StringBuilder message;
+  private Token               token;
 
   private Parser(
     final boolean in_internal,
-    final @Nonnull Lexer in_lexer)
-    throws ConstraintError,
-      IOException,
+    final Lexer in_lexer)
+    throws IOException,
       LexerError
   {
     this.internal = in_internal;
-    this.lexer = Constraints.constrainNotNull(in_lexer, "Lexer");
+    this.lexer = NullCheck.notNull(in_lexer, "Lexer");
     this.message = new StringBuilder();
     this.token = in_lexer.token();
   }
 
-  public @Nonnull UASTIDExternal declarationExternal()
+  // CHECKSTYLE_JAVADOC:OFF
+  // CHECKSTYLE_SPACE:OFF
+
+  public UASTIDExternal declarationExternal()
     throws ParserError,
       LexerError,
-      IOException,
-      ConstraintError
+      IOException
   {
     this.parserConsumeExact(Type.TOKEN_EXTERNAL);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -160,13 +185,13 @@ public final class Parser
     this.parserConsumeExact(Type.TOKEN_LITERAL_BOOLEAN);
     this.parserConsumeExact(Type.TOKEN_SEMICOLON);
 
-    this.parserExpectOneOf(new Type[] { Type.TOKEN_END, Type.TOKEN_WITH });
+    this.parserExpectOneOf(new Type[] { Type.TOKEN_END, Type.TOKEN_WITH, });
 
     switch (this.token.getType()) {
       case TOKEN_END:
       {
         this.parserConsumeExact(Type.TOKEN_END);
-        final Option<UASTIExpression> none = Option.none();
+        final OptionType<UASTIExpression> none = Option.none();
         return new UASTIDExternal(
           name,
           vallow.getValue(),
@@ -178,7 +203,7 @@ public final class Parser
         this.parserConsumeExact(Type.TOKEN_WITH);
         final UASTIExpression e = this.expression();
         this.parserConsumeExact(Type.TOKEN_END);
-        final Some<UASTIExpression> some = Option.some(e);
+        final OptionType<UASTIExpression> some = Option.some(e);
         return new UASTIDExternal(
           name,
           vallow.getValue(),
@@ -192,11 +217,18 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIDShaderFragment declarationFragmentShader()
+  public void statementTerminate()
+    throws ParserError,
+      LexerError,
+      IOException
+  {
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+  }
+
+  public UASTIDShaderFragment declarationFragmentShader()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_FRAGMENT);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -230,7 +262,7 @@ public final class Parser
       }
     }
 
-    this.parserExpectOneOf(new Type[] { Type.TOKEN_WITH, Type.TOKEN_AS });
+    this.parserExpectOneOf(new Type[] { Type.TOKEN_WITH, Type.TOKEN_AS, });
 
     final List<UASTIDShaderFragmentLocal> values;
     switch (this.token.getType()) {
@@ -265,8 +297,7 @@ public final class Parser
   public UASTIDShaderFragmentInput declarationFragmentShaderInput()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_IN);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -276,11 +307,10 @@ public final class Parser
     return new UASTIDShaderFragmentInput(name, this.declarationTypePath());
   }
 
-  public @Nonnull
+  public
     UASTIDShaderFragmentLocalDiscard
     declarationFragmentShaderLocalDiscard()
       throws ParserError,
-        ConstraintError,
         IOException,
         LexerError
   {
@@ -296,10 +326,9 @@ public final class Parser
   public List<UASTIDShaderFragmentLocal> declarationFragmentShaderLocals()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
-    final ArrayList<UASTIDShaderFragmentLocal> locals =
+    final List<UASTIDShaderFragmentLocal> locals =
       new ArrayList<UASTIDShaderFragmentLocal>();
 
     for (;;) {
@@ -323,13 +352,12 @@ public final class Parser
   public UASTIDShaderFragmentOutput declarationFragmentShaderOutput()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_OUT);
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_DEPTH });
+      Type.TOKEN_DEPTH, });
 
     switch (this.token.getType()) {
       case TOKEN_IDENTIFIER_LOWER:
@@ -365,13 +393,12 @@ public final class Parser
     }
   }
 
-  public @Nonnull
+  public
     UASTIDShaderFragmentOutputAssignment
     declarationFragmentShaderOutputAssignment()
       throws ParserError,
         IOException,
-        LexerError,
-        ConstraintError
+        LexerError
   {
     this.parserConsumeExact(Type.TOKEN_OUT);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -383,13 +410,12 @@ public final class Parser
     return new UASTIDShaderFragmentOutputAssignment(name, value);
   }
 
-  public @Nonnull
+  public
     List<UASTIDShaderFragmentOutputAssignment>
     declarationFragmentShaderOutputAssignments()
       throws ParserError,
         IOException,
-        LexerError,
-        ConstraintError
+        LexerError
   {
     final List<UASTIDShaderFragmentOutputAssignment> assigns =
       new ArrayList<UASTIDShaderFragmentOutputAssignment>();
@@ -410,13 +436,10 @@ public final class Parser
     }
   }
 
-  public @Nonnull
-    UASTIDShaderFragmentParameter
-    declarationFragmentShaderParameter()
-      throws ParserError,
-        IOException,
-        LexerError,
-        ConstraintError
+  public UASTIDShaderFragmentParameter declarationFragmentShaderParameter()
+    throws ParserError,
+      IOException,
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_PARAMETER);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -426,18 +449,17 @@ public final class Parser
     return new UASTIDShaderFragmentParameter(name, this.declarationTypePath());
   }
 
-  public @Nonnull
+  public
     UASTIDShaderFragmentParameters
     declarationFragmentShaderParameterDeclaration()
       throws ParserError,
         IOException,
-        LexerError,
-        ConstraintError
+        LexerError
   {
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_IN,
       Type.TOKEN_OUT,
-      Type.TOKEN_PARAMETER });
+      Type.TOKEN_PARAMETER, });
 
     switch (this.token.getType()) {
       case TOKEN_IN:
@@ -452,13 +474,12 @@ public final class Parser
     }
   }
 
-  public @Nonnull
+  public
     List<UASTIDShaderFragmentParameters>
     declarationFragmentShaderParameterDeclarations()
       throws ParserError,
         IOException,
-        LexerError,
-        ConstraintError
+        LexerError
   {
     final List<UASTIDShaderFragmentParameters> declarations =
       new ArrayList<UASTIDShaderFragmentParameters>();
@@ -479,11 +500,10 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIDFunction declarationFunction()
+  public UASTIDFunction declarationFunction()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_FUNCTION);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -522,9 +542,8 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIDFunctionArgument declarationFunctionArgument()
+  public UASTIDFunctionArgument declarationFunctionArgument()
     throws ParserError,
-      ConstraintError,
       IOException,
       LexerError
   {
@@ -535,15 +554,14 @@ public final class Parser
     return new UASTIDFunctionArgument(name, this.declarationTypePath());
   }
 
-  public @Nonnull List<UASTIDFunctionArgument> declarationFunctionArguments()
+  public List<UASTIDFunctionArgument> declarationFunctionArguments()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_ROUND_LEFT);
 
-    final ArrayList<UASTIDFunctionArgument> args =
+    final List<UASTIDFunctionArgument> args =
       new ArrayList<UASTIDFunctionArgument>();
     args.add(this.declarationFunctionArgument());
 
@@ -564,11 +582,10 @@ public final class Parser
     return args;
   }
 
-  public @Nonnull UASTIDImport declarationImport()
+  public UASTIDImport declarationImport()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_IMPORT);
     final PackagePath path = this.declarationPackagePath();
@@ -589,18 +606,17 @@ public final class Parser
       }
       // $CASES-OMITTED$
       default:
-        final None<TokenIdentifierUpper> none = Option.none();
+        final OptionType<TokenIdentifierUpper> none = Option.none();
         return new UASTIDImport(new ModulePath(path, name), none);
     }
   }
 
-  public @Nonnull List<UASTIDImport> declarationImports()
+  public List<UASTIDImport> declarationImports()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
-    final ArrayList<UASTIDImport> imports = new ArrayList<UASTIDImport>();
+    final List<UASTIDImport> imports = new ArrayList<UASTIDImport>();
 
     for (;;) {
       switch (this.token.getType()) {
@@ -615,12 +631,11 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIDModule declarationModule(
-    final @Nonnull PackagePath pack)
+  public UASTIDModule declarationModule(
+    final PackagePath pack)
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_MODULE);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_UPPER);
@@ -636,17 +651,16 @@ public final class Parser
     return new UASTIDModule(new ModulePath(pack, name), imports, declarations);
   }
 
-  public @Nonnull UASTIDeclarationModuleLevel declarationModuleLevel()
+  public UASTIDeclarationModuleLevel declarationModuleLevel()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_VALUE,
       Type.TOKEN_FUNCTION,
       Type.TOKEN_TYPE,
-      Type.TOKEN_SHADER });
+      Type.TOKEN_SHADER, });
 
     switch (this.token.getType()) {
       case TOKEN_VALUE:
@@ -663,13 +677,12 @@ public final class Parser
     }
   }
 
-  public @Nonnull List<UASTIDeclarationModuleLevel> declarationModuleLevels()
+  public List<UASTIDeclarationModuleLevel> declarationModuleLevels()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
-    final ArrayList<UASTIDeclarationModuleLevel> decls =
+    final List<UASTIDeclarationModuleLevel> decls =
       new ArrayList<UASTIDeclarationModuleLevel>();
 
     for (;;) {
@@ -688,12 +701,11 @@ public final class Parser
     }
   }
 
-  public @Nonnull List<UASTIDModule> declarationModules(
-    final @Nonnull PackagePath pack)
+  public List<UASTIDModule> declarationModules(
+    final PackagePath pack)
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     final List<UASTIDModule> modules = new ArrayList<UASTIDModule>();
     for (;;) {
@@ -709,23 +721,21 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIDPackage declarationPackage()
+  public UASTIDPackage declarationPackage()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_PACKAGE);
     return new UASTIDPackage(this.declarationPackagePath());
   }
 
-  public @Nonnull PackagePath declarationPackagePath()
-    throws ConstraintError,
-      ParserError,
+  public PackagePath declarationPackagePath()
+    throws ParserError,
       IOException,
       LexerError
   {
-    final Builder builder = PackagePath.newBuilder();
+    final BuilderType builder = PackagePath.newBuilder();
 
     boolean done = false;
     while (done == false) {
@@ -755,11 +765,10 @@ public final class Parser
     return builder.build();
   }
 
-  public @Nonnull UASTIDShaderProgram declarationProgramShader()
+  public UASTIDShaderProgram declarationProgramShader()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_PROGRAM);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -779,17 +788,16 @@ public final class Parser
     return new UASTIDShaderProgram(name, vertex, fragment);
   }
 
-  public @Nonnull UASTIDShader declarationShader()
+  public UASTIDShader declarationShader()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_SHADER);
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_VERTEX,
       Type.TOKEN_FRAGMENT,
-      Type.TOKEN_PROGRAM });
+      Type.TOKEN_PROGRAM, });
 
     switch (this.token.getType()) {
       case TOKEN_VERTEX:
@@ -804,22 +812,21 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIShaderPath declarationShaderPath()
+  public UASTIShaderPath declarationShaderPath()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_IDENTIFIER_UPPER });
+      Type.TOKEN_IDENTIFIER_UPPER, });
 
     switch (this.token.getType()) {
       case TOKEN_IDENTIFIER_LOWER:
       {
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
         this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-        final None<TokenIdentifierUpper> none = Option.none();
+        final OptionType<TokenIdentifierUpper> none = Option.none();
         return new UASTIShaderPath(none, name);
       }
       case TOKEN_IDENTIFIER_UPPER:
@@ -839,9 +846,8 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIDType declarationType()
-    throws ConstraintError,
-      ParserError,
+  public UASTIDType declarationType()
+    throws ParserError,
       IOException,
       LexerError
   {
@@ -850,7 +856,7 @@ public final class Parser
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
     this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
     this.parserConsumeExact(Type.TOKEN_IS);
-    this.parserExpectOneOf(new Type[] { Type.TOKEN_RECORD });
+    this.parserExpectOneOf(new Type[] { Type.TOKEN_RECORD, });
 
     switch (this.token.getType()) {
       case TOKEN_RECORD:
@@ -865,22 +871,21 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTITypePath declarationTypePath()
+  public UASTITypePath declarationTypePath()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_IDENTIFIER_UPPER });
+      Type.TOKEN_IDENTIFIER_UPPER, });
 
     switch (this.token.getType()) {
       case TOKEN_IDENTIFIER_LOWER:
       {
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
         this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-        final None<TokenIdentifierUpper> none = Option.none();
+        final OptionType<TokenIdentifierUpper> none = Option.none();
         return new UASTITypePath(none, name);
       }
       case TOKEN_IDENTIFIER_UPPER:
@@ -900,9 +905,8 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIDTypeRecordField declarationTypeRecordField()
-    throws ConstraintError,
-      ParserError,
+  public UASTIDTypeRecordField declarationTypeRecordField()
+    throws ParserError,
       IOException,
       LexerError
   {
@@ -914,13 +918,12 @@ public final class Parser
     return new UASTIDTypeRecordField(name, type);
   }
 
-  public @Nonnull List<UASTIDTypeRecordField> declarationTypeRecordFields()
+  public List<UASTIDTypeRecordField> declarationTypeRecordFields()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
-    final ArrayList<UASTIDTypeRecordField> args =
+    final List<UASTIDTypeRecordField> args =
       new ArrayList<UASTIDTypeRecordField>();
     args.add(this.declarationTypeRecordField());
 
@@ -940,20 +943,19 @@ public final class Parser
     return args;
   }
 
-  public @Nonnull UASTIDValue declarationValue()
+  public UASTIDValue declarationValue()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_VALUE);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
     this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
     this
-      .parserExpectOneOf(new Type[] { Type.TOKEN_COLON, Type.TOKEN_EQUALS });
+      .parserExpectOneOf(new Type[] { Type.TOKEN_COLON, Type.TOKEN_EQUALS, });
 
-    final Option<UASTITypePath> ascription;
+    final OptionType<UASTITypePath> ascription;
     if (this.token.getType() == Type.TOKEN_COLON) {
       this.parserConsumeExact(Type.TOKEN_COLON);
       final UASTITypePath path = this.declarationTypePath();
@@ -987,18 +989,17 @@ public final class Parser
     return new UASTIDValueDefined(name, ascription, this.expression());
   }
 
-  public @Nonnull UASTIDValueLocal declarationValueLocal()
+  public UASTIDValueLocal declarationValueLocal()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_VALUE);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
     this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
     this
-      .parserExpectOneOf(new Type[] { Type.TOKEN_COLON, Type.TOKEN_EQUALS });
+      .parserExpectOneOf(new Type[] { Type.TOKEN_COLON, Type.TOKEN_EQUALS, });
 
     switch (this.token.getType()) {
       case TOKEN_COLON:
@@ -1014,7 +1015,7 @@ public final class Parser
       case TOKEN_EQUALS:
       {
         this.parserConsumeExact(Type.TOKEN_EQUALS);
-        final Option<UASTITypePath> none = Option.none();
+        final OptionType<UASTITypePath> none = Option.none();
         return new UASTIDValueLocal(name, none, this.expression());
       }
       // $CASES-OMITTED$
@@ -1023,11 +1024,10 @@ public final class Parser
     }
   }
 
-  public @Nonnull List<UASTIDValueLocal> declarationValueLocals()
+  public List<UASTIDValueLocal> declarationValueLocals()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     final List<UASTIDValueLocal> values = new ArrayList<UASTIDValueLocal>();
     values.add(this.declarationValueLocal());
@@ -1049,22 +1049,21 @@ public final class Parser
     return values;
   }
 
-  public @Nonnull UASTIValuePath declarationValuePath()
+  public UASTIValuePath declarationValuePath()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_IDENTIFIER_UPPER });
+      Type.TOKEN_IDENTIFIER_UPPER, });
 
     switch (this.token.getType()) {
       case TOKEN_IDENTIFIER_LOWER:
       {
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
         this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-        final None<TokenIdentifierUpper> none = Option.none();
+        final OptionType<TokenIdentifierUpper> none = Option.none();
         return new UASTIValuePath(none, name);
       }
       case TOKEN_IDENTIFIER_UPPER:
@@ -1084,11 +1083,10 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIDShaderVertex declarationVertexShader()
+  public UASTIDShaderVertex declarationVertexShader()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_VERTEX);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -1122,7 +1120,7 @@ public final class Parser
       }
     }
 
-    this.parserExpectOneOf(new Type[] { Type.TOKEN_WITH, Type.TOKEN_AS });
+    this.parserExpectOneOf(new Type[] { Type.TOKEN_WITH, Type.TOKEN_AS, });
 
     final List<UASTIDValueLocal> values;
     switch (this.token.getType()) {
@@ -1148,9 +1146,9 @@ public final class Parser
     final List<UASTIDShaderVertexLocalValue> actual_locals =
       new ArrayList<UASTIDShaderVertexLocalValue>(values.size());
     for (int index = 0; index < values.size(); ++index) {
-      actual_locals.add(
-        index,
-        new UASTIDShaderVertexLocalValue(values.get(index)));
+      final UASTIDValueLocal r = values.get(index);
+      assert r != null;
+      actual_locals.add(index, new UASTIDShaderVertexLocalValue(r));
     }
 
     return new UASTIDShaderVertex(
@@ -1165,8 +1163,7 @@ public final class Parser
   public UASTIDShaderVertexInput declarationVertexShaderInput()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_IN);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -1179,13 +1176,12 @@ public final class Parser
   public UASTIDShaderVertexOutput declarationVertexShaderOutput()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_OUT);
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_VERTEX });
+      Type.TOKEN_VERTEX, });
 
     switch (this.token.getType()) {
       case TOKEN_IDENTIFIER_LOWER:
@@ -1216,13 +1212,12 @@ public final class Parser
     }
   }
 
-  public @Nonnull
+  public
     UASTIDShaderVertexOutputAssignment
     declarationVertexShaderOutputAssignment()
       throws ParserError,
         IOException,
-        LexerError,
-        ConstraintError
+        LexerError
   {
     this.parserConsumeExact(Type.TOKEN_OUT);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -1234,13 +1229,12 @@ public final class Parser
     return new UASTIDShaderVertexOutputAssignment(name, value);
   }
 
-  public @Nonnull
+  public
     List<UASTIDShaderVertexOutputAssignment>
     declarationVertexShaderOutputAssignments()
       throws ParserError,
         IOException,
-        LexerError,
-        ConstraintError
+        LexerError
   {
     final List<UASTIDShaderVertexOutputAssignment> assigns =
       new ArrayList<UASTIDShaderVertexOutputAssignment>();
@@ -1261,13 +1255,10 @@ public final class Parser
     }
   }
 
-  public @Nonnull
-    UASTIDShaderVertexParameter
-    declarationVertexShaderParameter()
-      throws ParserError,
-        IOException,
-        LexerError,
-        ConstraintError
+  public UASTIDShaderVertexParameter declarationVertexShaderParameter()
+    throws ParserError,
+      IOException,
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_PARAMETER);
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
@@ -1277,18 +1268,17 @@ public final class Parser
     return new UASTIDShaderVertexParameter(name, this.declarationTypePath());
   }
 
-  public @Nonnull
+  public
     UASTIDShaderVertexParameters
     declarationVertexShaderParameterDeclaration()
       throws ParserError,
         IOException,
-        LexerError,
-        ConstraintError
+        LexerError
   {
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_IN,
       Type.TOKEN_OUT,
-      Type.TOKEN_PARAMETER });
+      Type.TOKEN_PARAMETER, });
 
     switch (this.token.getType()) {
       case TOKEN_IN:
@@ -1303,13 +1293,12 @@ public final class Parser
     }
   }
 
-  public @Nonnull
+  public
     List<UASTIDShaderVertexParameters>
     declarationVertexShaderParameterDeclarations()
       throws ParserError,
         IOException,
-        LexerError,
-        ConstraintError
+        LexerError
   {
     final List<UASTIDShaderVertexParameters> declarations =
       new ArrayList<UASTIDShaderVertexParameters>();
@@ -1330,24 +1319,21 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIExpression expression()
+  public UASTIExpression expression()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     return this.expressionPost(this.expressionPre());
   }
 
-  public @Nonnull List<UASTIExpression> expressionApplicationArguments()
+  public List<UASTIExpression> expressionApplicationArguments()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_ROUND_LEFT);
-    final ArrayList<UASTIExpression> arguments =
-      new ArrayList<UASTIExpression>();
+    final List<UASTIExpression> arguments = new ArrayList<UASTIExpression>();
     arguments.add(this.expression());
 
     boolean done = false;
@@ -1368,9 +1354,8 @@ public final class Parser
     return arguments;
   }
 
-  public @Nonnull UASTIEBoolean expressionBoolean()
-    throws ConstraintError,
-      ParserError,
+  public UASTIEBoolean expressionBoolean()
+    throws ParserError,
       IOException,
       LexerError
   {
@@ -1381,9 +1366,8 @@ public final class Parser
     return t;
   }
 
-  public @Nonnull UASTIEConditional expressionConditional()
+  public UASTIEConditional expressionConditional()
     throws ParserError,
-      ConstraintError,
       IOException,
       LexerError
   {
@@ -1399,22 +1383,20 @@ public final class Parser
     return new UASTIEConditional(tif, econd, eleft, eright);
   }
 
-  public @Nonnull UASTIEInteger expressionInteger()
+  public UASTIEInteger expressionInteger()
     throws ParserError,
-      ConstraintError,
       IOException,
       LexerError
   {
     this.parserExpectExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
     final UASTIEInteger t =
-      new UASTIEInteger((TokenLiteralInteger) this.token);
+      new UASTIEInteger((TokenLiteralIntegerType) this.token);
     this.parserConsumeAny();
     return t;
   }
 
-  public @Nonnull UASTIELet expressionLet()
+  public UASTIELet expressionLet()
     throws ParserError,
-      ConstraintError,
       IOException,
       LexerError
   {
@@ -1428,23 +1410,21 @@ public final class Parser
     return new UASTIELet(let, bindings, body);
   }
 
-  public @Nonnull UASTIENew expressionNew()
+  public UASTIENew expressionNew()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_NEW);
     final UASTITypePath path = this.declarationTypePath();
     return new UASTIENew(path, this.expressionApplicationArguments());
   }
 
-  private @Nonnull UASTIExpression expressionPost(
-    final @Nonnull UASTIExpression e)
+  private UASTIExpression expressionPost(
+    final UASTIExpression e)
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     switch (this.token.getType()) {
       case TOKEN_DOT:
@@ -1457,9 +1437,8 @@ public final class Parser
     }
   }
 
-  private @Nonnull UASTIExpression expressionPre()
+  private UASTIExpression expressionPre()
     throws ParserError,
-      ConstraintError,
       IOException,
       LexerError
   {
@@ -1472,7 +1451,7 @@ public final class Parser
       Type.TOKEN_IF,
       Type.TOKEN_LET,
       Type.TOKEN_NEW,
-      Type.TOKEN_RECORD });
+      Type.TOKEN_RECORD, });
 
     switch (this.token.getType()) {
       case TOKEN_LITERAL_INTEGER_DECIMAL:
@@ -1499,9 +1478,8 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIEReal expressionReal()
+  public UASTIEReal expressionReal()
     throws ParserError,
-      ConstraintError,
       IOException,
       LexerError
   {
@@ -1511,11 +1489,10 @@ public final class Parser
     return t;
   }
 
-  public @Nonnull UASTIERecord expressionRecord()
+  public UASTIERecord expressionRecord()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_RECORD);
     final UASTITypePath path = this.declarationTypePath();
@@ -1529,11 +1506,10 @@ public final class Parser
   }
 
   private void expressionRecordActual(
-    final @Nonnull List<UASTIRecordFieldAssignment> fields)
+    final List<UASTIRecordFieldAssignment> fields)
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     switch (this.token.getType()) {
       case TOKEN_COMMA:
@@ -1547,13 +1523,10 @@ public final class Parser
     }
   }
 
-  public @Nonnull
-    UASTIRecordFieldAssignment
-    expressionRecordFieldAssignment()
-      throws ConstraintError,
-        ParserError,
-        IOException,
-        LexerError
+  public UASTIRecordFieldAssignment expressionRecordFieldAssignment()
+    throws ParserError,
+      IOException,
+      LexerError
   {
     this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
@@ -1562,10 +1535,9 @@ public final class Parser
     return new UASTIRecordFieldAssignment(name, this.expression());
   }
 
-  public @Nonnull UASTIERecordProjection expressionRecordProjection(
-    final @Nonnull UASTIExpression e)
-    throws ConstraintError,
-      ParserError,
+  public UASTIERecordProjection expressionRecordProjection(
+    final UASTIExpression e)
+    throws ParserError,
       IOException,
       LexerError
   {
@@ -1578,15 +1550,14 @@ public final class Parser
   }
 
   public UASTIESwizzle expressionSwizzle(
-    final @Nonnull UASTIExpression e)
+    final UASTIExpression e)
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.parserConsumeExact(Type.TOKEN_SQUARE_LEFT);
 
-    final ArrayList<TokenIdentifierLower> fields =
+    final List<TokenIdentifierLower> fields =
       new ArrayList<TokenIdentifierLower>();
     fields.add(this.expressionSwizzleField());
 
@@ -1606,9 +1577,8 @@ public final class Parser
     return new UASTIESwizzle(e, fields);
   }
 
-  public @Nonnull TokenIdentifierLower expressionSwizzleField()
+  public TokenIdentifierLower expressionSwizzleField()
     throws ParserError,
-      ConstraintError,
       IOException,
       LexerError
   {
@@ -1618,11 +1588,10 @@ public final class Parser
     return name;
   }
 
-  public @Nonnull UASTIExpression expressionVariableOrApplication()
+  public UASTIExpression expressionVariableOrApplication()
     throws ParserError,
       IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     final UASTIValuePath path = this.declarationValuePath();
     switch (this.token.getType()) {
@@ -1638,16 +1607,14 @@ public final class Parser
 
   protected void parserConsumeAny()
     throws IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.token = this.lexer.token();
   }
 
   protected void parserConsumeExact(
-    final @Nonnull Token.Type type)
+    final Token.Type type)
     throws ParserError,
-      ConstraintError,
       IOException,
       LexerError
   {
@@ -1656,9 +1623,8 @@ public final class Parser
   }
 
   protected void parserExpectExact(
-    final @Nonnull Token.Type type)
-    throws ParserError,
-      ConstraintError
+    final Token.Type type)
+    throws ParserError
   {
     if (this.token.getType() != type) {
       this.message.setLength(0);
@@ -1666,17 +1632,15 @@ public final class Parser
       this.message.append(type.getDescription());
       this.message.append(" but got ");
       this.parserShowToken();
-      throw new ParserError(
-        this.message.toString(),
-        this.lexer.getFile(),
-        this.token.getPosition());
+      final String r = this.message.toString();
+      assert r != null;
+      throw new ParserError(r, this.lexer.getFile(), this.token.getPosition());
     }
   }
 
   protected void parserExpectOneOf(
-    final @Nonnull Token.Type types[])
-    throws ParserError,
-      ConstraintError
+    final Token.Type[] types)
+    throws ParserError
   {
     for (final Type want : types) {
       if (this.token.getType() == want) {
@@ -1695,10 +1659,9 @@ public final class Parser
     }
     this.message.append("} but got ");
     this.parserShowToken();
-    throw new ParserError(
-      this.message.toString(),
-      this.lexer.getFile(),
-      this.token.getPosition());
+    final String r = this.message.toString();
+    assert r != null;
+    throw new ParserError(r, this.lexer.getFile(), this.token.getPosition());
   }
 
   private void parserShowToken()
@@ -1729,9 +1692,8 @@ public final class Parser
     }
   }
 
-  public @Nonnull UASTIUnit unit()
-    throws ConstraintError,
-      ParserError,
+  public UASTIUnit unit()
+    throws ParserError,
       IOException,
       LexerError
   {

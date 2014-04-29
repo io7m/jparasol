@@ -20,57 +20,124 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.lexer.Token.TokenIdentifier;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class NameRestrictions
+/**
+ * Restrictions on names.
+ */
+
+@EqualityReference public final class NameRestrictions
 {
+  private NameRestrictions()
+  {
+    throw new UnreachableCodeException();
+  }
+
+  /**
+   * The result of examining a name to determine if it is restricted.
+   */
+
   public static enum NameRestricted
   {
+    /**
+     * The name is allowed.
+     */
+
     NAME_OK,
+
+    /**
+     * The name is restricted; it contains a double underscore.
+     */
+
     NAME_RESTRICTED_CONTAINS_DOUBLE_UNDERSCORE,
+
+    /**
+     * The name is restricted; it ends with an underscore.
+     */
+
     NAME_RESTRICTED_ENDS_WITH_UNDERSCORE,
+
+    /**
+     * The name is restricted; it is a keyword.
+     */
+
     NAME_RESTRICTED_KEYWORD,
+
+    /**
+     * The name is restricted; it begins with "gl_".
+     */
+
     NAME_RESTRICTED_PREFIX_GL_LOWER,
+
+    /**
+     * The name is restricted; it begins with "GL_".
+     */
+
     NAME_RESTRICTED_PREFIX_GL_UPPER
   }
 
-  public static class NameRestrictionsException extends CompilerError
+  /**
+   * The type of name restriction errors.
+   */
+
+  @EqualityReference public static final class NameRestrictionsException extends
+    CompilerError
   {
-    private static final long              serialVersionUID;
+    private static final long     serialVersionUID;
 
     static {
       serialVersionUID = 1510464423712276429L;
     }
 
-    private final @Nonnull NameRestricted  code;
-    private final @Nonnull TokenIdentifier token;
+    private final NameRestricted  code;
+    private final TokenIdentifier token;
+
+    /**
+     * Construct a new error.
+     * 
+     * @param in_code
+     *          The error code
+     * @param in_token
+     *          The token
+     * @param message
+     *          The message
+     */
 
     public NameRestrictionsException(
-      final @Nonnull NameRestricted in_code,
-      final @Nonnull TokenIdentifier in_token,
-      final @Nonnull String message)
-      throws ConstraintError
+      final NameRestricted in_code,
+      final TokenIdentifier in_token,
+      final String message)
     {
-      super(message, Constraints
-        .constrainNotNull(in_token, "Token")
-        .getFile(), in_token.getPosition());
-      this.code = Constraints.constrainNotNull(in_code, "Code");
+      super(message, NullCheck.notNull(in_token, "Token").getFile(), in_token
+        .getPosition());
+      this.code = NullCheck.notNull(in_code, "Code");
       this.token = in_token;
     }
 
-    public @Nonnull NameRestricted getCode()
+    /**
+     * @return The error code
+     */
+
+    public NameRestricted getCode()
     {
       return this.code;
     }
 
-    public @Nonnull TokenIdentifier getToken()
+    /**
+     * @return The token
+     */
+
+    public TokenIdentifier getToken()
     {
       return this.token;
     }
+
+    /**
+     * @return The error category
+     */
 
     @Override public String getCategory()
     {
@@ -78,14 +145,26 @@ public final class NameRestrictions
     }
   }
 
-  public static final @Nonnull Set<String> KEYWORDS;
+  /**
+   * The set of words considered to be reserved keywords.
+   */
+
+  public static final Set<String> KEYWORDS;
 
   static {
     KEYWORDS = NameRestrictions.makeKeywords();
   }
 
-  public static @Nonnull NameRestricted checkRestricted(
-    final @Nonnull String name)
+  /**
+   * Check a name to determine if it is restricted.
+   * 
+   * @param name
+   *          The name
+   * @return A value indicating restriction
+   */
+
+  public static NameRestricted checkRestricted(
+    final String name)
   {
     if (name.startsWith("gl")) {
       return NameRestricted.NAME_RESTRICTED_PREFIX_GL_LOWER;
@@ -105,10 +184,19 @@ public final class NameRestrictions
     return NameRestricted.NAME_OK;
   }
 
+  /**
+   * Check a token, raise an exception if the token is restricted.
+   * 
+   * @param token
+   *          The token
+   * @throws NameRestrictionsException
+   *           If the token is restricted.
+   * @see #checkRestricted(String)
+   */
+
   public static void checkRestrictedExceptional(
-    final @Nonnull TokenIdentifier token)
-    throws NameRestrictionsException,
-      ConstraintError
+    final TokenIdentifier token)
+    throws NameRestrictionsException
   {
     final String actual = token.getActual();
     final NameRestricted code = NameRestrictions.checkRestricted(actual);
@@ -125,7 +213,9 @@ public final class NameRestrictions
         m.append(actual);
         m
           .append("' contains '__', which is reserved in GLSL and therefore cannot be used as a name here.");
-        throw new NameRestrictionsException(code, token, m.toString());
+        final String r = m.toString();
+        assert r != null;
+        throw new NameRestrictionsException(code, token, r);
       }
       case NAME_RESTRICTED_ENDS_WITH_UNDERSCORE:
       {
@@ -134,7 +224,9 @@ public final class NameRestrictions
         m.append(actual);
         m
           .append("' ends with '_', which is reserved in GLSL and therefore cannot be used as a name here.");
-        throw new NameRestrictionsException(code, token, m.toString());
+        final String r = m.toString();
+        assert r != null;
+        throw new NameRestrictionsException(code, token, r);
       }
       case NAME_RESTRICTED_KEYWORD:
       {
@@ -143,7 +235,9 @@ public final class NameRestrictions
         m.append(actual);
         m
           .append("' is a keyword in GLSL and therefore cannot be used as a name here.");
-        throw new NameRestrictionsException(code, token, m.toString());
+        final String r = m.toString();
+        assert r != null;
+        throw new NameRestrictionsException(code, token, r);
       }
       case NAME_RESTRICTED_PREFIX_GL_LOWER:
       {
@@ -152,7 +246,9 @@ public final class NameRestrictions
         m.append(actual);
         m
           .append("' begins with 'gl', which is reserved in GLSL and therefore cannot be used as a name here.");
-        throw new NameRestrictionsException(code, token, m.toString());
+        final String r = m.toString();
+        assert r != null;
+        throw new NameRestrictionsException(code, token, r);
       }
       case NAME_RESTRICTED_PREFIX_GL_UPPER:
       {
@@ -161,7 +257,9 @@ public final class NameRestrictions
         m.append(actual);
         m
           .append("' begins with 'GL', which is reserved in GLSL and therefore cannot be used as a name here.");
-        throw new NameRestrictionsException(code, token, m.toString());
+        final String r = m.toString();
+        assert r != null;
+        throw new NameRestrictionsException(code, token, r);
       }
     }
   }
@@ -170,9 +268,9 @@ public final class NameRestrictions
    * The complete set of keywords as of GLSL 4.3.
    */
 
-  private static @Nonnull Set<String> makeKeywords()
+  private static Set<String> makeKeywords()
   {
-    final HashSet<String> s = new HashSet<String>();
+    final Set<String> s = new HashSet<String>();
 
     s.add("active");
     s.add("asm");
@@ -377,6 +475,8 @@ public final class NameRestrictions
     s.add("while");
     s.add("writeonly");
 
-    return Collections.unmodifiableSet(s);
+    final Set<String> r = Collections.unmodifiableSet(s);
+    assert r != null;
+    return r;
   }
 }

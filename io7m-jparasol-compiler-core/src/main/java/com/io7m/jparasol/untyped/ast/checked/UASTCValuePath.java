@@ -16,13 +16,12 @@
 
 package com.io7m.jparasol.untyped.ast.checked;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Function;
-import com.io7m.jaux.functional.Option;
-import com.io7m.jaux.functional.Unit;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jfunctional.FunctionType;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
@@ -31,22 +30,23 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
  * A path to a value.
  */
 
-public final class UASTCValuePath
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityStructural public final class UASTCValuePath
 {
-  private final @Nonnull Option<Token.TokenIdentifierUpper> module;
-  private final @Nonnull Token.TokenIdentifierLower         name;
+  private final OptionType<Token.TokenIdentifierUpper> module;
+  private final Token.TokenIdentifierLower             name;
 
   public UASTCValuePath(
-    final @Nonnull Option<TokenIdentifierUpper> in_module,
-    final @Nonnull TokenIdentifierLower in_name)
-    throws ConstraintError
+    final OptionType<TokenIdentifierUpper> in_module,
+    final TokenIdentifierLower in_name)
   {
-    this.module = Constraints.constrainNotNull(in_module, "Module");
-    this.name = Constraints.constrainNotNull(in_name, "Name");
+    this.module = NullCheck.notNull(in_module, "Module");
+    this.name = NullCheck.notNull(in_name, "Name");
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -67,12 +67,12 @@ public final class UASTCValuePath
     return true;
   }
 
-  public @Nonnull Option<Token.TokenIdentifierUpper> getModule()
+  public OptionType<Token.TokenIdentifierUpper> getModule()
   {
     return this.module;
   }
 
-  public @Nonnull Token.TokenIdentifierLower getName()
+  public Token.TokenIdentifierLower getName()
   {
     return this.name;
   }
@@ -86,10 +86,10 @@ public final class UASTCValuePath
     return result;
   }
 
-  public @Nonnull String show()
+  public String show()
   {
     final StringBuilder s = new StringBuilder();
-    this.module.map(new Function<TokenIdentifierUpper, Unit>() {
+    this.module.map(new FunctionType<TokenIdentifierUpper, Unit>() {
       @Override public Unit call(
         final TokenIdentifierUpper x)
       {
