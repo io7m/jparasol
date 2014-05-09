@@ -19,80 +19,77 @@ package com.io7m.jparasol.glsl.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 
-public abstract class GASTStatement implements GASTStatementVisitable
+/**
+ * The type of GLSL statements.
+ */
+
+@EqualityReference public abstract class GASTStatement
 {
-  public static final class GASTConditional extends GASTStatement
+  /**
+   * A conditional statement.
+   */
+
+  @EqualityReference public static final class GASTConditional extends
+    GASTStatement
   {
-    private final @Nonnull GASTExpression condition;
-    private final @Nonnull GASTStatement  left;
-    private final @Nonnull GASTStatement  right;
+    private final GASTExpression condition;
+    private final GASTStatement  left;
+    private final GASTStatement  right;
+
+    /**
+     * Construct a statement.
+     * 
+     * @param in_condition
+     *          The condition
+     * @param in_left
+     *          The left branch
+     * @param in_right
+     *          The right branch
+     */
 
     public GASTConditional(
-      final @Nonnull GASTExpression in_condition,
-      final @Nonnull GASTStatement in_left,
-      final @Nonnull GASTStatement in_right)
+      final GASTExpression in_condition,
+      final GASTStatement in_left,
+      final GASTStatement in_right)
     {
-      this.condition = in_condition;
-      this.left = in_left;
-      this.right = in_right;
+      this.condition = NullCheck.notNull(in_condition, "Condition");
+      this.left = NullCheck.notNull(in_left, "Left branch");
+      this.right = NullCheck.notNull(in_right, "Right branch");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTConditional other = (GASTConditional) obj;
-      if (!this.condition.equals(other.condition)) {
-        return false;
-      }
-      if (!this.left.equals(other.left)) {
-        return false;
-      }
-      if (!this.right.equals(other.right)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The condition
+     */
 
-    public @Nonnull GASTExpression getCondition()
+    public GASTExpression getCondition()
     {
       return this.condition;
     }
 
-    public @Nonnull GASTStatement getLeft()
+    /**
+     * @return The left branch
+     */
+
+    public GASTStatement getLeft()
     {
       return this.left;
     }
 
-    public @Nonnull GASTStatement getRight()
+    /**
+     * @return The right branch
+     */
+
+    public GASTStatement getRight()
     {
       return this.right;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.condition.hashCode();
-      result = (prime * result) + this.left.hashCode();
-      result = (prime * result) + this.right.hashCode();
-      return result;
-    }
-
     @Override public
-      <A, E extends Throwable, V extends GASTStatementVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTStatementVisitorType<A, E>>
       A
       statementVisitableAccept(
         final V v)
@@ -121,78 +118,73 @@ public abstract class GASTStatement implements GASTStatementVisitable
       builder.append(" ");
       builder.append(this.right);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTLocalVariable extends GASTStatement
+  /**
+   * A local variable.
+   */
+
+  @EqualityReference public static final class GASTLocalVariable extends
+    GASTStatement
   {
-    private final @Nonnull GASTExpression expression;
-    private final @Nonnull GTermNameLocal name;
-    private final @Nonnull GTypeName      type;
+    private final GASTExpression expression;
+    private final GTermNameLocal name;
+    private final GTypeName      type;
+
+    /**
+     * Construct a statement.
+     * 
+     * @param in_name
+     *          The name
+     * @param in_type
+     *          The type name
+     * @param in_expression
+     *          The body
+     */
 
     public GASTLocalVariable(
-      final @Nonnull GTermNameLocal in_name,
-      final @Nonnull GTypeName in_type,
-      final @Nonnull GASTExpression in_expression)
+      final GTermNameLocal in_name,
+      final GTypeName in_type,
+      final GASTExpression in_expression)
     {
-      this.name = in_name;
-      this.type = in_type;
-      this.expression = in_expression;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTLocalVariable other = (GASTLocalVariable) obj;
-      if (!this.expression.equals(other.expression)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The expression
+     */
 
-    public @Nonnull GASTExpression getExpression()
+    public GASTExpression getExpression()
     {
       return this.expression;
     }
 
-    public @Nonnull GTermNameLocal getName()
+    /**
+     * @return The name
+     */
+
+    public GTermNameLocal getName()
     {
       return this.name;
     }
 
-    public @Nonnull GTypeName getType()
+    /**
+     * @return The type
+     */
+
+    public GTypeName getType()
     {
       return this.type;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.expression.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
-    }
-
     @Override public
-      <A, E extends Throwable, V extends GASTStatementVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTStatementVisitorType<A, E>>
       A
       statementVisitableAccept(
         final V v)
@@ -211,55 +203,46 @@ public abstract class GASTStatement implements GASTStatementVisitable
       builder.append(" ");
       builder.append(this.expression);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
 
   }
 
-  public static final class GASTReturn extends GASTStatement
+  /**
+   * A return statement.
+   */
+
+  @EqualityReference public static final class GASTReturn extends
+    GASTStatement
   {
-    private final @Nonnull GASTExpression expression;
+    private final GASTExpression expression;
+
+    /**
+     * Construct a statement.
+     * 
+     * @param in_expression
+     *          The body
+     */
 
     public GASTReturn(
-      final @Nonnull GASTExpression in_expression)
+      final GASTExpression in_expression)
     {
-      this.expression = in_expression;
+      this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTReturn other = (GASTReturn) obj;
-      if (!this.expression.equals(other.expression)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The expression
+     */
 
-    public @Nonnull GASTExpression getExpression()
+    public GASTExpression getExpression()
     {
       return this.expression;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.expression.hashCode();
-      return result;
-    }
-
     @Override public
-      <A, E extends Throwable, V extends GASTStatementVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTStatementVisitorType<A, E>>
       A
       statementVisitableAccept(
         final V v)
@@ -274,54 +257,45 @@ public abstract class GASTStatement implements GASTStatementVisitable
       builder.append("[GASTReturn ");
       builder.append(this.expression);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTScope extends GASTStatement
+  /**
+   * An explicit scope.
+   */
+
+  @EqualityReference public static final class GASTScope extends
+    GASTStatement
   {
-    private final @Nonnull List<GASTStatement> statements;
+    private final List<GASTStatement> statements;
+
+    /**
+     * Construct a scope.
+     * 
+     * @param in_statements
+     *          A list of statements
+     */
 
     public GASTScope(
-      final @Nonnull List<GASTStatement> in_statements)
+      final List<GASTStatement> in_statements)
     {
-      this.statements = in_statements;
+      this.statements = NullCheck.notNull(in_statements, "Statements");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTScope other = (GASTScope) obj;
-      if (!this.statements.equals(other.statements)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return A list of statements
+     */
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.statements.hashCode();
-      return result;
-    }
-
-    public @Nonnull List<GASTStatement> getStatements()
+    public List<GASTStatement> getStatements()
     {
       return this.statements;
     }
 
     @Override public
-      <A, E extends Throwable, V extends GASTStatementVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTStatementVisitorType<A, E>>
       A
       statementVisitableAccept(
         final V v)
@@ -341,66 +315,61 @@ public abstract class GASTStatement implements GASTStatementVisitable
       builder.append("[GASTScope ");
       builder.append(this.statements);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static abstract class GASTVertexShaderStatement
+  /**
+   * A vertex shader statement.
+   */
+
+  @EqualityReference public static abstract class GASTVertexShaderStatement
   {
-    public static final class GASTVertexOutputAssignment extends
+    /**
+     * An output assignment.
+     */
+
+    @EqualityReference public static final class GASTVertexOutputAssignment extends
       GASTVertexShaderStatement
     {
-      private final @Nonnull GShaderOutputName name;
-      private final @Nonnull GTermName         value;
+      private final GShaderOutputName name;
+      private final GTermName         value;
+
+      /**
+       * Construct a statement.
+       * 
+       * @param in_name
+       *          The name
+       * @param in_value
+       *          The value
+       */
 
       public GASTVertexOutputAssignment(
-        final @Nonnull GShaderOutputName in_name,
-        final @Nonnull GTermName in_value)
+        final GShaderOutputName in_name,
+        final GTermName in_value)
       {
-        this.name = in_name;
-        this.value = in_value;
+        this.name = NullCheck.notNull(in_name, "Name");
+        this.value = NullCheck.notNull(in_value, "Value");
       }
 
-      @Override public boolean equals(
-        final Object obj)
-      {
-        if (this == obj) {
-          return true;
-        }
-        if (obj == null) {
-          return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-          return false;
-        }
-        final GASTVertexOutputAssignment other =
-          (GASTVertexOutputAssignment) obj;
-        if (!this.name.equals(other.name)) {
-          return false;
-        }
-        if (!this.value.equals(other.value)) {
-          return false;
-        }
-        return true;
-      }
+      /**
+       * @return The output name
+       */
 
-      public @Nonnull GShaderOutputName getName()
+      public GShaderOutputName getName()
       {
         return this.name;
       }
 
-      public @Nonnull GTermName getValue()
+      /**
+       * @return The value
+       */
+
+      public GTermName getValue()
       {
         return this.value;
-      }
-
-      @Override public int hashCode()
-      {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + this.name.hashCode();
-        result = (prime * result) + this.value.hashCode();
-        return result;
       }
 
       @Override public String toString()
@@ -411,8 +380,27 @@ public abstract class GASTStatement implements GASTStatementVisitable
         builder.append(" ");
         builder.append(this.value);
         builder.append("]");
-        return builder.toString();
+        final String r = builder.toString();
+        assert r != null;
+        return r;
       }
     }
   }
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return The value returned by the visitor
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends GASTStatementVisitorType<A, E>>
+    A
+    statementVisitableAccept(
+      final V v)
+      throws E;
 }

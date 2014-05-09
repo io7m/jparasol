@@ -16,29 +16,39 @@
 
 package com.io7m.jparasol;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
-public final class ModulePath
+/**
+ * Paths to specific modules.
+ */
+
+@EqualityStructural public final class ModulePath
 {
-  private final @Nonnull TokenIdentifierUpper name;
-  private final @Nonnull PackagePath          package_path;
+  private final TokenIdentifierUpper name;
+  private final PackagePath          package_path;
+
+  /**
+   * Construct a module path.
+   * 
+   * @param in_package_path
+   *          The package path
+   * @param in_name
+   *          The module name
+   */
 
   public ModulePath(
-    final @Nonnull PackagePath in_package_path,
-    final @Nonnull TokenIdentifierUpper in_name)
-    throws ConstraintError
+    final PackagePath in_package_path,
+    final TokenIdentifierUpper in_name)
   {
-    this.package_path =
-      Constraints.constrainNotNull(in_package_path, "Package path");
-    this.name = Constraints.constrainNotNull(in_name, "Module name");
+    this.package_path = NullCheck.notNull(in_package_path, "Package path");
+    this.name = NullCheck.notNull(in_name, "Module name");
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -59,12 +69,20 @@ public final class ModulePath
     return true;
   }
 
-  public @Nonnull TokenIdentifierUpper getName()
+  /**
+   * @return The module name
+   */
+
+  public TokenIdentifierUpper getName()
   {
     return this.name;
   }
 
-  public @Nonnull PackagePath getPackagePath()
+  /**
+   * @return The package path
+   */
+
+  public PackagePath getPackagePath()
   {
     return this.package_path;
   }
@@ -86,6 +104,8 @@ public final class ModulePath
     builder.append(" ");
     builder.append(this.name);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

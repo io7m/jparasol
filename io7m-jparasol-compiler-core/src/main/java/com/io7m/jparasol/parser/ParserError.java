@@ -18,11 +18,12 @@ package com.io7m.jparasol.parser;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.lexer.Position;
+
+/**
+ * The type of parser errors.
+ */
 
 public final class ParserError extends CompilerError
 {
@@ -32,11 +33,21 @@ public final class ParserError extends CompilerError
     serialVersionUID = 260713896414675714L;
   }
 
+  /**
+   * Construct a parser error.
+   * 
+   * @param message
+   *          The message
+   * @param file
+   *          The file
+   * @param position
+   *          The position in the file
+   */
+
   public ParserError(
-    final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
+    final String message,
+    final File file,
+    final Position position)
   {
     super(message, file, position);
   }

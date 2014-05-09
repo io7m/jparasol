@@ -18,131 +18,134 @@ package com.io7m.jparasol.glsl.ast;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.functional.Pair;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Pair;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.glsl.GVersion;
 import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainFragment;
 import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainVertex;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.typed.TType;
 
-public abstract class GASTShader
+/**
+ * The type of GLSL shaders.
+ */
+
+@EqualityReference public abstract class GASTShader
 {
-  public static final class GASTShaderFragment extends GASTShader
+  /**
+   * A fragment shader.
+   */
+
+  @EqualityReference public static final class GASTShaderFragment extends
+    GASTShader
   {
-    private final @Nonnull GVersion                                         glsl_version;
-    private final @Nonnull List<GASTShaderFragmentInput>                    inputs;
-    private final @Nonnull GASTShaderMainFragment                           main;
-    private final @Nonnull List<GASTShaderFragmentOutput>                   outputs;
-    private final @Nonnull List<GASTShaderFragmentParameter>                parameter;
-    private final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms;
-    private final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>>       types;
+    private final GVersion                                         glsl_version;
+    private final List<GASTShaderFragmentInput>                    inputs;
+    private final GASTShaderMainFragment                           main;
+    private final List<GASTShaderFragmentOutput>                   outputs;
+    private final List<GASTShaderFragmentParameter>                parameter;
+    private final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms;
+    private final List<Pair<GTypeName, GASTTypeDeclaration>>       types;
+
+    /**
+     * Construct a fragment shader.
+     * 
+     * @param in_inputs
+     *          The inputs
+     * @param in_main
+     *          The main function
+     * @param in_outputs
+     *          The outputs
+     * @param in_parameter
+     *          The parameters
+     * @param in_terms
+     *          The terms
+     * @param in_types
+     *          The types
+     * @param in_glsl_version
+     *          The GLSL version
+     */
 
     public GASTShaderFragment(
-      final @Nonnull List<GASTShaderFragmentInput> in_inputs,
-      final @Nonnull GASTShaderMainFragment in_main,
-      final @Nonnull List<GASTShaderFragmentOutput> in_outputs,
-      final @Nonnull List<GASTShaderFragmentParameter> in_parameter,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_terms,
-      final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> in_types,
-      final @Nonnull GVersion in_glsl_version)
+      final List<GASTShaderFragmentInput> in_inputs,
+      final GASTShaderMainFragment in_main,
+      final List<GASTShaderFragmentOutput> in_outputs,
+      final List<GASTShaderFragmentParameter> in_parameter,
+      final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_terms,
+      final List<Pair<GTypeName, GASTTypeDeclaration>> in_types,
+      final GVersion in_glsl_version)
     {
-      this.inputs = in_inputs;
-      this.main = in_main;
-      this.outputs = in_outputs;
-      this.parameter = in_parameter;
-      this.terms = in_terms;
-      this.types = in_types;
-      this.glsl_version = in_glsl_version;
+      this.inputs = NullCheck.notNullAll(in_inputs, "Inputs");
+      this.main = NullCheck.notNull(in_main, "Main");
+      this.outputs = NullCheck.notNullAll(in_outputs, "Outputs");
+      this.parameter = NullCheck.notNullAll(in_parameter, "Parameters");
+      this.terms = NullCheck.notNullAll(in_terms, "Terms");
+      this.types = NullCheck.notNullAll(in_types, "Types");
+      this.glsl_version = NullCheck.notNull(in_glsl_version, "Version");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTShaderFragment other = (GASTShaderFragment) obj;
-      if (!this.glsl_version.equals(other.glsl_version)) {
-        return false;
-      }
-      if (!this.inputs.equals(other.inputs)) {
-        return false;
-      }
-      if (!this.main.equals(other.main)) {
-        return false;
-      }
-      if (!this.outputs.equals(other.outputs)) {
-        return false;
-      }
-      if (!this.parameter.equals(other.parameter)) {
-        return false;
-      }
-      if (!this.terms.equals(other.terms)) {
-        return false;
-      }
-      if (!this.types.equals(other.types)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The GLSL version
+     */
 
-    public @Nonnull GVersion getGLSLVersion()
+    public GVersion getGLSLVersion()
     {
       return this.glsl_version;
     }
 
-    public @Nonnull List<GASTShaderFragmentInput> getInputs()
+    /**
+     * @return The inputs
+     */
+
+    public List<GASTShaderFragmentInput> getInputs()
     {
       return this.inputs;
     }
 
-    public @Nonnull GASTShaderMainFragment getMain()
+    /**
+     * @return The main function
+     */
+
+    public GASTShaderMainFragment getMain()
     {
       return this.main;
     }
 
-    public @Nonnull List<GASTShaderFragmentOutput> getOutputs()
+    /**
+     * @return The outputs
+     */
+
+    public List<GASTShaderFragmentOutput> getOutputs()
     {
       return this.outputs;
     }
 
-    public @Nonnull List<GASTShaderFragmentParameter> getParameters()
+    /**
+     * @return The parameters
+     */
+
+    public List<GASTShaderFragmentParameter> getParameters()
     {
       return this.parameter;
     }
 
-    public @Nonnull
-      List<Pair<GTermNameGlobal, GASTTermDeclaration>>
-      getTerms()
+    /**
+     * @return The terms
+     */
+
+    public List<Pair<GTermNameGlobal, GASTTermDeclaration>> getTerms()
     {
       return this.terms;
     }
 
-    public @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> getTypes()
+    /**
+     * @return The types
+     */
+
+    public List<Pair<GTypeName, GASTTypeDeclaration>> getTypes()
     {
       return this.types;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.glsl_version.hashCode();
-      result = (prime * result) + this.inputs.hashCode();
-      result = (prime * result) + this.main.hashCode();
-      result = (prime * result) + this.outputs.hashCode();
-      result = (prime * result) + this.parameter.hashCode();
-      result = (prime * result) + this.terms.hashCode();
-      result = (prime * result) + this.types.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -163,74 +166,68 @@ public abstract class GASTShader
       builder.append(" ");
       builder.append(this.glsl_version);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTShaderFragmentInput
+  /**
+   * A fragment shader input.
+   */
+
+  @EqualityReference public static final class GASTShaderFragmentInput
   {
-    private final @Nonnull GShaderInputName name;
-    private final @Nonnull TType            type;
-    private final @Nonnull GTypeName        type_name;
+    private final GShaderInputName name;
+    private final TType            type;
+    private final GTypeName        type_name;
+
+    /**
+     * Construct an input.
+     * 
+     * @param in_name
+     *          The name
+     * @param in_type_name
+     *          The name of the type
+     * @param in_type
+     *          The type
+     */
 
     public GASTShaderFragmentInput(
-      final @Nonnull GShaderInputName in_name,
-      final @Nonnull GTypeName in_type_name,
-      final @Nonnull TType in_type)
+      final GShaderInputName in_name,
+      final GTypeName in_type_name,
+      final TType in_type)
     {
-      this.name = in_name;
-      this.type_name = in_type_name;
-      this.type = in_type;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type_name = NullCheck.notNull(in_type_name, "Type name");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTShaderFragmentInput other = (GASTShaderFragmentInput) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      if (!this.type_name.equals(other.type_name)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The input name
+     */
 
-    public @Nonnull GShaderInputName getName()
+    public GShaderInputName getName()
     {
       return this.name;
     }
 
-    public @Nonnull TType getType()
+    /**
+     * @return The input type
+     */
+
+    public TType getType()
     {
       return this.type;
     }
 
-    public @Nonnull GTypeName getTypeName()
+    /**
+     * @return The input type name
+     */
+
+    public GTypeName getTypeName()
     {
       return this.type_name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      result = (prime * result) + this.type_name.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -241,74 +238,68 @@ public abstract class GASTShader
       builder.append(" ");
       builder.append(this.type_name);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTShaderFragmentOutput
+  /**
+   * A fragment shader output.
+   */
+
+  @EqualityReference public static final class GASTShaderFragmentOutput
   {
-    private final int                        index;
-    private final @Nonnull GShaderOutputName name;
-    private final @Nonnull GTypeName         type;
+    private final int               index;
+    private final GShaderOutputName name;
+    private final GTypeName         type;
+
+    /**
+     * Construct an output.
+     * 
+     * @param in_name
+     *          The name
+     * @param in_index
+     *          The output index
+     * @param in_type
+     *          The type
+     */
 
     public GASTShaderFragmentOutput(
-      final @Nonnull GShaderOutputName in_name,
+      final GShaderOutputName in_name,
       final int in_index,
-      final @Nonnull GTypeName in_type)
+      final GTypeName in_type)
     {
-      this.name = in_name;
+      this.name = NullCheck.notNull(in_name, "Name");
       this.index = in_index;
-      this.type = in_type;
+      this.type = NullCheck.notNull(in_type, "Type name");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTShaderFragmentOutput other = (GASTShaderFragmentOutput) obj;
-      if (this.index != other.index) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The output index
+     */
 
     public int getIndex()
     {
       return this.index;
     }
 
-    public @Nonnull GShaderOutputName getName()
+    /**
+     * @return The output name
+     */
+
+    public GShaderOutputName getName()
     {
       return this.name;
     }
 
-    public @Nonnull GTypeName getType()
+    /**
+     * @return The output type
+     */
+
+    public GTypeName getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.index;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -321,75 +312,69 @@ public abstract class GASTShader
       builder.append(" ");
       builder.append(this.type);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTShaderFragmentParameter
+  /**
+   * A fragment shader parameter.
+   */
+
+  @EqualityReference public static final class GASTShaderFragmentParameter
   {
-    private final @Nonnull List<Pair<String, TType>> expanded;
-    private final @Nonnull GShaderParameterName      name;
-    private final @Nonnull GTypeName                 type;
+    private final List<Pair<String, TType>> expanded;
+    private final GShaderParameterName      name;
+    private final GTypeName                 type;
+
+    /**
+     * Construct a fragment shader parameter.
+     * 
+     * @param in_name
+     *          The name
+     * @param in_type
+     *          The type
+     * @param in_expanded
+     *          The expanded parameters
+     */
 
     public GASTShaderFragmentParameter(
-      final @Nonnull GShaderParameterName in_name,
-      final @Nonnull GTypeName in_type,
-      final @Nonnull List<Pair<String, TType>> in_expanded)
+      final GShaderParameterName in_name,
+      final GTypeName in_type,
+      final List<Pair<String, TType>> in_expanded)
     {
-      this.name = in_name;
-      this.type = in_type;
-      this.expanded = in_expanded;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.expanded =
+        NullCheck.notNullAll(in_expanded, "Expanded parameters");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTShaderFragmentParameter other =
-        (GASTShaderFragmentParameter) obj;
-      if (!this.expanded.equals(other.expanded)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The expanded parameters
+     */
 
-    public @Nonnull List<Pair<String, TType>> getExpanded()
+    public List<Pair<String, TType>> getExpanded()
     {
       return this.expanded;
     }
 
-    public @Nonnull GShaderParameterName getName()
+    /**
+     * @return The parameter name
+     */
+
+    public GShaderParameterName getName()
     {
       return this.name;
     }
 
-    public @Nonnull GTypeName getType()
+    /**
+     * @return The parameter type
+     */
+
+    public GTypeName getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.expanded.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -402,124 +387,125 @@ public abstract class GASTShader
       builder.append(" ");
       builder.append(this.expanded);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTShaderVertex extends GASTShader
+  /**
+   * A vertex shader.
+   */
+
+  @EqualityReference public static final class GASTShaderVertex extends
+    GASTShader
   {
-    private final @Nonnull GVersion                                         glsl_version;
-    private final @Nonnull List<GASTShaderVertexInput>                      inputs;
-    private final @Nonnull GASTShaderMainVertex                             main;
-    private final @Nonnull List<GASTShaderVertexOutput>                     outputs;
-    private final @Nonnull List<GASTShaderVertexParameter>                  parameter;
-    private final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms;
-    private final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>>       types;
+    private final GVersion                                         glsl_version;
+    private final List<GASTShaderVertexInput>                      inputs;
+    private final GASTShaderMainVertex                             main;
+    private final List<GASTShaderVertexOutput>                     outputs;
+    private final List<GASTShaderVertexParameter>                  parameter;
+    private final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms;
+    private final List<Pair<GTypeName, GASTTypeDeclaration>>       types;
+
+    /**
+     * Construct a vertex shader.
+     * 
+     * @param in_inputs
+     *          The inputs
+     * @param in_main
+     *          The main function
+     * @param in_outputs
+     *          The outputs
+     * @param in_parameter
+     *          The parameters
+     * @param in_terms
+     *          The terms
+     * @param in_types
+     *          The types
+     * @param in_glsl_version
+     *          The GLSL version
+     */
 
     public GASTShaderVertex(
-      final @Nonnull List<GASTShaderVertexInput> in_inputs,
-      final @Nonnull GASTShaderMainVertex in_main,
-      final @Nonnull List<GASTShaderVertexOutput> in_outputs,
-      final @Nonnull List<GASTShaderVertexParameter> in_parameter,
-      final @Nonnull List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_terms,
-      final @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> in_types,
-      final @Nonnull GVersion in_glsl_version)
+      final List<GASTShaderVertexInput> in_inputs,
+      final GASTShaderMainVertex in_main,
+      final List<GASTShaderVertexOutput> in_outputs,
+      final List<GASTShaderVertexParameter> in_parameter,
+      final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_terms,
+      final List<Pair<GTypeName, GASTTypeDeclaration>> in_types,
+      final GVersion in_glsl_version)
     {
-      this.inputs = in_inputs;
-      this.main = in_main;
-      this.outputs = in_outputs;
-      this.parameter = in_parameter;
-      this.terms = in_terms;
-      this.types = in_types;
-      this.glsl_version = in_glsl_version;
+      this.inputs = NullCheck.notNullAll(in_inputs, "Inputs");
+      this.main = NullCheck.notNull(in_main, "Main");
+      this.outputs = NullCheck.notNullAll(in_outputs, "Outputs");
+      this.parameter = NullCheck.notNullAll(in_parameter, "Parameters");
+      this.terms = NullCheck.notNullAll(in_terms, "Terms");
+      this.types = NullCheck.notNullAll(in_types, "Types");
+      this.glsl_version = NullCheck.notNull(in_glsl_version, "Version");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTShaderVertex other = (GASTShaderVertex) obj;
-      if (!this.glsl_version.equals(other.glsl_version)) {
-        return false;
-      }
-      if (!this.inputs.equals(other.inputs)) {
-        return false;
-      }
-      if (!this.main.equals(other.main)) {
-        return false;
-      }
-      if (!this.outputs.equals(other.outputs)) {
-        return false;
-      }
-      if (!this.parameter.equals(other.parameter)) {
-        return false;
-      }
-      if (!this.terms.equals(other.terms)) {
-        return false;
-      }
-      if (!this.types.equals(other.types)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The GLSL version
+     */
 
-    public @Nonnull GVersion getGLSLVersion()
+    public GVersion getGLSLVersion()
     {
       return this.glsl_version;
     }
 
-    public @Nonnull List<GASTShaderVertexInput> getInputs()
+    /**
+     * @return The inputs
+     */
+
+    public List<GASTShaderVertexInput> getInputs()
     {
       return this.inputs;
     }
 
-    public @Nonnull GASTShaderMainVertex getMain()
+    /**
+     * @return The main function
+     */
+
+    public GASTShaderMainVertex getMain()
     {
       return this.main;
     }
 
-    public @Nonnull List<GASTShaderVertexOutput> getOutputs()
+    /**
+     * @return The outputs
+     */
+
+    public List<GASTShaderVertexOutput> getOutputs()
     {
       return this.outputs;
     }
 
-    public @Nonnull List<GASTShaderVertexParameter> getParameters()
+    /**
+     * @return The parameters
+     */
+
+    public List<GASTShaderVertexParameter> getParameters()
     {
       return this.parameter;
     }
 
-    public @Nonnull
-      List<Pair<GTermNameGlobal, GASTTermDeclaration>>
-      getTerms()
+    /**
+     * @return The terms
+     */
+
+    public List<Pair<GTermNameGlobal, GASTTermDeclaration>> getTerms()
     {
       return this.terms;
     }
 
-    public @Nonnull List<Pair<GTypeName, GASTTypeDeclaration>> getTypes()
+    /**
+     * @return The types
+     */
+
+    public List<Pair<GTypeName, GASTTypeDeclaration>> getTypes()
     {
       return this.types;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.glsl_version.hashCode();
-      result = (prime * result) + this.inputs.hashCode();
-      result = (prime * result) + this.main.hashCode();
-      result = (prime * result) + this.outputs.hashCode();
-      result = (prime * result) + this.parameter.hashCode();
-      result = (prime * result) + this.terms.hashCode();
-      result = (prime * result) + this.types.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -540,62 +526,54 @@ public abstract class GASTShader
       builder.append(" ");
       builder.append(this.glsl_version);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTShaderVertexInput
+  /**
+   * A vertex shader input.
+   */
+
+  @EqualityReference public static final class GASTShaderVertexInput
   {
-    private final @Nonnull GShaderInputName name;
-    private final @Nonnull GTypeName        type;
+    private final GShaderInputName name;
+    private final GTypeName        type;
+
+    /**
+     * Construct an input.
+     * 
+     * @param in_name
+     *          The name
+     * @param in_type
+     *          The type
+     */
 
     public GASTShaderVertexInput(
-      final @Nonnull GShaderInputName in_name,
-      final @Nonnull GTypeName in_type)
+      final GShaderInputName in_name,
+      final GTypeName in_type)
     {
-      this.name = in_name;
-      this.type = in_type;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTShaderVertexInput other = (GASTShaderVertexInput) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The input name
+     */
 
-    public @Nonnull GShaderInputName getName()
+    public GShaderInputName getName()
     {
       return this.name;
     }
 
-    public @Nonnull GTypeName getType()
+    /**
+     * @return The input type
+     */
+
+    public GTypeName getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -606,74 +584,68 @@ public abstract class GASTShader
       builder.append(" ");
       builder.append(this.type);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTShaderVertexOutput
+  /**
+   * A vertex shader output.
+   */
+
+  @EqualityReference public static final class GASTShaderVertexOutput
   {
-    private final @Nonnull GShaderOutputName name;
-    private final @Nonnull TType             type;
-    private final @Nonnull GTypeName         type_name;
+    private final GShaderOutputName name;
+    private final TType             type;
+    private final GTypeName         type_name;
+
+    /**
+     * Construct an output.
+     * 
+     * @param in_name
+     *          The name
+     * @param in_type_name
+     *          The type name
+     * @param in_type
+     *          The type
+     */
 
     public GASTShaderVertexOutput(
-      final @Nonnull GShaderOutputName in_name,
-      final @Nonnull GTypeName in_type_name,
-      final @Nonnull TType in_type)
+      final GShaderOutputName in_name,
+      final GTypeName in_type_name,
+      final TType in_type)
     {
-      this.name = in_name;
-      this.type_name = in_type_name;
-      this.type = in_type;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type_name = NullCheck.notNull(in_type_name, "Type name");
+      this.type = NullCheck.notNull(in_type, "Type");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTShaderVertexOutput other = (GASTShaderVertexOutput) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      if (!this.type_name.equals(other.type_name)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The output name
+     */
 
-    public @Nonnull GShaderOutputName getName()
+    public GShaderOutputName getName()
     {
       return this.name;
     }
 
-    public @Nonnull TType getType()
+    /**
+     * @return The output type
+     */
+
+    public TType getType()
     {
       return this.type;
     }
 
-    public @Nonnull GTypeName getTypeName()
+    /**
+     * @return The output type name
+     */
+
+    public GTypeName getTypeName()
     {
       return this.type_name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      result = (prime * result) + this.type_name.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -684,74 +656,69 @@ public abstract class GASTShader
       builder.append(" ");
       builder.append(this.type_name);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTShaderVertexParameter
+  /**
+   * A vertex shader parameter.
+   */
+
+  @EqualityReference public static final class GASTShaderVertexParameter
   {
-    private final @Nonnull List<Pair<String, TType>> expanded;
-    private final @Nonnull GShaderParameterName      name;
-    private final @Nonnull GTypeName                 type;
+    private final List<Pair<String, TType>> expanded;
+    private final GShaderParameterName      name;
+    private final GTypeName                 type;
+
+    /**
+     * Construct a parameter.
+     * 
+     * @param in_name
+     *          The name
+     * @param in_type
+     *          The type
+     * @param in_expanded
+     *          The expanded parameters
+     */
 
     public GASTShaderVertexParameter(
-      final @Nonnull GShaderParameterName in_name,
-      final @Nonnull GTypeName in_type,
-      final @Nonnull List<Pair<String, TType>> in_expanded)
+      final GShaderParameterName in_name,
+      final GTypeName in_type,
+      final List<Pair<String, TType>> in_expanded)
     {
-      this.name = in_name;
-      this.type = in_type;
-      this.expanded = in_expanded;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.expanded =
+        NullCheck.notNullAll(in_expanded, "Expanded parameters");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTShaderVertexParameter other = (GASTShaderVertexParameter) obj;
-      if (!this.expanded.equals(other.expanded)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The expanded parameters
+     */
 
-    public @Nonnull List<Pair<String, TType>> getExpanded()
+    public List<Pair<String, TType>> getExpanded()
     {
       return this.expanded;
     }
 
-    public @Nonnull GShaderParameterName getName()
+    /**
+     * @return The parameter name
+     */
+
+    public GShaderParameterName getName()
     {
       return this.name;
     }
 
-    public @Nonnull GTypeName getType()
+    /**
+     * @return The parameter type
+     */
+
+    public GTypeName getType()
     {
       return this.type;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.expanded.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -764,7 +731,9 @@ public abstract class GASTShader
       builder.append(" ");
       builder.append(this.expanded);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 }

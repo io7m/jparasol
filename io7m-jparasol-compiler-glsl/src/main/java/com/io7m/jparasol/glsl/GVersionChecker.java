@@ -21,15 +21,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Unit;
-import com.io7m.jlog.Level;
-import com.io7m.jlog.Log;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
@@ -48,25 +48,16 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentOutputDept
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexInput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexOutput;
-import com.io7m.jparasol.typed.ast.TASTFragmentShaderOutputVisitor;
+import com.io7m.jparasol.typed.ast.TASTFragmentShaderOutputVisitorType;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class GVersionChecker
+/**
+ * A version checker. Checks a GLSL program to see if it can execute on the
+ * given GLSL versions.
+ */
+
+@EqualityReference public final class GVersionChecker
 {
-  private interface Check
-  {
-    public void checkFragmentShader(
-      final @Nonnull GVersionsSupported supported,
-      final @Nonnull TASTDShaderFragment fs)
-      throws ConstraintError;
-
-    public void checkVertexShader(
-      final @Nonnull GVersionsSupported supported,
-      final @Nonnull TASTDShaderVertex vs)
-      throws ConstraintError;
-
-    public @Nonnull String getName();
-  }
-
   /**
    * ES2 specification states:
    * 
@@ -89,10 +80,11 @@ public final class GVersionChecker
    * qualifier flat."
    */
 
-  private static final class CheckAttributeTypes implements Check
+  @EqualityReference private static final class CheckAttributeTypes implements
+    CheckType
   {
-    private static final @Nonnull Set<TValueType> RESTRICTED_TYPES;
-    private static final @Nonnull Set<GVersion>   RESTRICTED_VERSIONS;
+    private static final Set<TValueType> RESTRICTED_TYPES;
+    private static final Set<GVersion>   RESTRICTED_VERSIONS;
 
     static {
       RESTRICTED_TYPES = new HashSet<TValueType>();
@@ -109,17 +101,12 @@ public final class GVersionChecker
       CheckAttributeTypes.RESTRICTED_VERSIONS.add(GVersionFull.GLSL_120);
     }
 
-    public CheckAttributeTypes()
-    {
-      // Nothing
-    }
-
-    static @Nonnull GVersionCheckExclusionReason makeExclusion(
-      final @Nonnull String attribute,
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TValueType type,
-      final @Nonnull GVersion version)
-      throws ConstraintError
+    static GVersionCheckExclusionReason makeExclusion(
+      final String attribute,
+      final TokenIdentifierLower name,
+      final TValueType type,
+      final GVersion version)
+      throws UnreachableCodeException
     {
       final StringBuilder m = new StringBuilder();
       m.append("The ");
@@ -143,46 +130,52 @@ public final class GVersionChecker
         m.toString());
     }
 
+    public CheckAttributeTypes()
+    {
+      // Nothing
+    }
+
     @Override public void checkFragmentShader(
-      final @Nonnull GVersionsSupported supported,
-      final @Nonnull TASTDShaderFragment fs)
-      throws ConstraintError
+      final GVersionsSupported supported,
+      final TASTDShaderFragment fs)
+      throws UnreachableCodeException
     {
       for (final TASTDShaderFragmentInput i : fs.getInputs()) {
         final TValueType type = i.getType();
         if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
           for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
-            v.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
-              @Override public Unit versionVisitES(
-                final @Nonnull GVersionES version)
-                throws ConstraintError
-              {
-                final TokenIdentifierLower name = fs.getName();
-                final GVersionCheckExclusionReason reason =
-                  CheckAttributeTypes.makeExclusion(
-                    "fragment shader input",
-                    name,
-                    type,
-                    v);
-                supported.excludeES(version, reason);
-                return Unit.unit();
-              }
+            v
+              .versionAccept(new GVersionVisitorType<Unit, UnreachableCodeException>() {
+                @Override public Unit versionVisitES(
+                  final GVersionES version)
+                  throws UnreachableCodeException
+                {
+                  final TokenIdentifierLower name = fs.getName();
+                  final GVersionCheckExclusionReason reason =
+                    CheckAttributeTypes.makeExclusion(
+                      "fragment shader input",
+                      name,
+                      type,
+                      v);
+                  supported.excludeES(version, reason);
+                  return Unit.unit();
+                }
 
-              @Override public Unit versionVisitFull(
-                final @Nonnull GVersionFull version)
-                throws ConstraintError
-              {
-                final TokenIdentifierLower name = fs.getName();
-                final GVersionCheckExclusionReason reason =
-                  CheckAttributeTypes.makeExclusion(
-                    "fragment shader input",
-                    name,
-                    type,
-                    v);
-                supported.excludeFull(version, reason);
-                return Unit.unit();
-              }
-            });
+                @Override public Unit versionVisitFull(
+                  final GVersionFull version)
+                  throws UnreachableCodeException
+                {
+                  final TokenIdentifierLower name = fs.getName();
+                  final GVersionCheckExclusionReason reason =
+                    CheckAttributeTypes.makeExclusion(
+                      "fragment shader input",
+                      name,
+                      type,
+                      v);
+                  supported.excludeFull(version, reason);
+                  return Unit.unit();
+                }
+              });
           }
         }
       }
@@ -191,82 +184,84 @@ public final class GVersionChecker
         final TValueType type = o.getType();
         if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
           for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
-            v.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
-              @Override public Unit versionVisitES(
-                final @Nonnull GVersionES version)
-                throws ConstraintError
-              {
-                final TokenIdentifierLower name = fs.getName();
-                final GVersionCheckExclusionReason reason =
-                  CheckAttributeTypes.makeExclusion(
-                    "fragment shader output",
-                    name,
-                    type,
-                    v);
-                supported.excludeES(version, reason);
-                return Unit.unit();
-              }
+            v
+              .versionAccept(new GVersionVisitorType<Unit, UnreachableCodeException>() {
+                @Override public Unit versionVisitES(
+                  final GVersionES version)
+                  throws UnreachableCodeException
+                {
+                  final TokenIdentifierLower name = fs.getName();
+                  final GVersionCheckExclusionReason reason =
+                    CheckAttributeTypes.makeExclusion(
+                      "fragment shader output",
+                      name,
+                      type,
+                      v);
+                  supported.excludeES(version, reason);
+                  return Unit.unit();
+                }
 
-              @Override public Unit versionVisitFull(
-                final @Nonnull GVersionFull version)
-                throws ConstraintError
-              {
-                final TokenIdentifierLower name = fs.getName();
-                final GVersionCheckExclusionReason reason =
-                  CheckAttributeTypes.makeExclusion(
-                    "fragment shader output",
-                    name,
-                    type,
-                    v);
-                supported.excludeFull(version, reason);
-                return Unit.unit();
-              }
-            });
+                @Override public Unit versionVisitFull(
+                  final GVersionFull version)
+                  throws UnreachableCodeException
+                {
+                  final TokenIdentifierLower name = fs.getName();
+                  final GVersionCheckExclusionReason reason =
+                    CheckAttributeTypes.makeExclusion(
+                      "fragment shader output",
+                      name,
+                      type,
+                      v);
+                  supported.excludeFull(version, reason);
+                  return Unit.unit();
+                }
+              });
           }
         }
       }
     }
 
     @Override public void checkVertexShader(
-      final @Nonnull GVersionsSupported supported,
-      final @Nonnull TASTDShaderVertex vs)
-      throws ConstraintError
+      final GVersionsSupported supported,
+      final TASTDShaderVertex vs)
+      throws UnreachableCodeException
     {
       for (final TASTDShaderVertexInput i : vs.getInputs()) {
         final TValueType type = i.getType();
         if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
           for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
-            v.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
-              @Override public Unit versionVisitES(
-                final @Nonnull GVersionES version)
-                throws ConstraintError
-              {
-                final TokenIdentifierLower name = vs.getName();
-                final GVersionCheckExclusionReason reason =
-                  CheckAttributeTypes.makeExclusion(
-                    "vertex shader input",
-                    name,
-                    type,
-                    v);
-                supported.excludeES(version, reason);
-                return Unit.unit();
-              }
+            v
+              .versionAccept(new GVersionVisitorType<Unit, UnreachableCodeException>() {
+                @Override public Unit versionVisitES(
+                  final GVersionES version)
+                  throws UnreachableCodeException
+                {
+                  final TokenIdentifierLower name = vs.getName();
+                  final GVersionCheckExclusionReason reason =
+                    CheckAttributeTypes.makeExclusion(
+                      "vertex shader input",
+                      name,
+                      type,
+                      v);
+                  supported.excludeES(version, reason);
+                  return Unit.unit();
+                }
 
-              @Override public Unit versionVisitFull(
-                final @Nonnull GVersionFull version)
-                throws ConstraintError
-              {
-                final TokenIdentifierLower name = vs.getName();
-                final GVersionCheckExclusionReason reason =
-                  CheckAttributeTypes.makeExclusion(
-                    "vertex shader input",
-                    name,
-                    type,
-                    v);
-                supported.excludeFull(version, reason);
-                return Unit.unit();
-              }
-            });
+                @Override public Unit versionVisitFull(
+                  final GVersionFull version)
+                  throws UnreachableCodeException
+                {
+                  final TokenIdentifierLower name = vs.getName();
+                  final GVersionCheckExclusionReason reason =
+                    CheckAttributeTypes.makeExclusion(
+                      "vertex shader input",
+                      name,
+                      type,
+                      v);
+                  supported.excludeFull(version, reason);
+                  return Unit.unit();
+                }
+              });
           }
         }
       }
@@ -275,37 +270,38 @@ public final class GVersionChecker
         final TValueType type = o.getType();
         if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
           for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
-            v.versionAccept(new GVersionVisitor<Unit, ConstraintError>() {
-              @Override public Unit versionVisitES(
-                final @Nonnull GVersionES version)
-                throws ConstraintError
-              {
-                final TokenIdentifierLower name = vs.getName();
-                final GVersionCheckExclusionReason reason =
-                  CheckAttributeTypes.makeExclusion(
-                    "vertex shader output",
-                    name,
-                    type,
-                    v);
-                supported.excludeES(version, reason);
-                return Unit.unit();
-              }
+            v
+              .versionAccept(new GVersionVisitorType<Unit, UnreachableCodeException>() {
+                @Override public Unit versionVisitES(
+                  final GVersionES version)
+                  throws UnreachableCodeException
+                {
+                  final TokenIdentifierLower name = vs.getName();
+                  final GVersionCheckExclusionReason reason =
+                    CheckAttributeTypes.makeExclusion(
+                      "vertex shader output",
+                      name,
+                      type,
+                      v);
+                  supported.excludeES(version, reason);
+                  return Unit.unit();
+                }
 
-              @Override public Unit versionVisitFull(
-                final @Nonnull GVersionFull version)
-                throws ConstraintError
-              {
-                final TokenIdentifierLower name = vs.getName();
-                final GVersionCheckExclusionReason reason =
-                  CheckAttributeTypes.makeExclusion(
-                    "vertex shader output",
-                    name,
-                    type,
-                    v);
-                supported.excludeFull(version, reason);
-                return Unit.unit();
-              }
-            });
+                @Override public Unit versionVisitFull(
+                  final GVersionFull version)
+                  throws UnreachableCodeException
+                {
+                  final TokenIdentifierLower name = vs.getName();
+                  final GVersionCheckExclusionReason reason =
+                    CheckAttributeTypes.makeExclusion(
+                      "vertex shader output",
+                      name,
+                      type,
+                      v);
+                  supported.excludeFull(version, reason);
+                  return Unit.unit();
+                }
+              });
           }
         }
       }
@@ -317,7 +313,8 @@ public final class GVersionChecker
     }
   }
 
-  private static final class CheckFragmentOutputCount implements Check
+  @EqualityReference private static final class CheckFragmentOutputCount implements
+    CheckType
   {
     public CheckFragmentOutputCount()
     {
@@ -325,18 +322,17 @@ public final class GVersionChecker
     }
 
     @Override public void checkFragmentShader(
-      final @Nonnull GVersionsSupported supported,
-      final @Nonnull TASTDShaderFragment fs)
-      throws ConstraintError
+      final GVersionsSupported supported,
+      final TASTDShaderFragment fs)
+      throws UnreachableCodeException
     {
-      final TASTFragmentShaderOutputVisitor<Boolean, ConstraintError> counter =
-        new TASTFragmentShaderOutputVisitor<Boolean, ConstraintError>() {
-          private int count = 0;
+      final TASTFragmentShaderOutputVisitorType<Boolean, UnreachableCodeException> counter =
+        new TASTFragmentShaderOutputVisitorType<Boolean, UnreachableCodeException>() {
+          private int count;
 
           @Override public Boolean fragmentShaderVisitOutputData(
-            final @Nonnull TASTDShaderFragmentOutputData d)
-            throws ConstraintError,
-              ConstraintError
+            final TASTDShaderFragmentOutputData d)
+            throws UnreachableCodeException
           {
             ++this.count;
 
@@ -355,9 +351,8 @@ public final class GVersionChecker
           }
 
           @Override public Boolean fragmentShaderVisitOutputDepth(
-            final @Nonnull TASTDShaderFragmentOutputDepth v)
-            throws ConstraintError,
-              ConstraintError
+            final TASTDShaderFragmentOutputDepth v)
+            throws UnreachableCodeException
           {
             return Boolean.TRUE;
           }
@@ -372,37 +367,49 @@ public final class GVersionChecker
     }
 
     @Override public void checkVertexShader(
-      final @Nonnull GVersionsSupported supported,
-      final @Nonnull TASTDShaderVertex vs)
+      final GVersionsSupported supported,
+      final TASTDShaderVertex vs)
     {
       // Nothing
     }
 
-    @Override public @Nonnull String getName()
+    @Override public String getName()
     {
       return "fragment-output-count";
     }
   }
 
-  private static final @Nonnull List<Check> CHECKS;
+  private interface CheckType
+  {
+    void checkFragmentShader(
+      final GVersionsSupported supported,
+      final TASTDShaderFragment fs);
+
+    void checkVertexShader(
+      final GVersionsSupported supported,
+      final TASTDShaderVertex vs);
+
+    String getName();
+  }
+
+  private static final List<CheckType> CHECKS;
 
   static {
     CHECKS = GVersionChecker.makeChecks();
   }
 
-  private static @Nonnull GVersionsSupported checkRequired(
-    final @Nonnull GVersionsSupported s,
-    final @Nonnull SortedSet<GVersionFull> required_full,
-    final @Nonnull SortedSet<GVersionES> required_es)
-    throws ConstraintError,
-      GVersionCheckerError
+  private static GVersionsSupported checkRequired(
+    final GVersionsSupported s,
+    final SortedSet<GVersionFull> required_full,
+    final SortedSet<GVersionES> required_es)
+    throws GVersionCheckerError
   {
     final SortedSet<GVersionFull> supported_full = s.getFullVersions();
     final SortedSet<GVersionES> supported_es = s.getESVersions();
 
-    final HashMap<GVersionFull, List<GVersionCheckExclusionReason>> exclusions_full =
+    final Map<GVersionFull, List<GVersionCheckExclusionReason>> exclusions_full =
       new HashMap<GVersionFull, List<GVersionCheckExclusionReason>>();
-    final HashMap<GVersionES, List<GVersionCheckExclusionReason>> exclusions_es =
+    final Map<GVersionES, List<GVersionCheckExclusionReason>> exclusions_es =
       new HashMap<GVersionES, List<GVersionCheckExclusionReason>>();
 
     for (final GVersionFull v : required_full) {
@@ -430,39 +437,65 @@ public final class GVersionChecker
     return s;
   }
 
-  private static @Nonnull List<Check> makeChecks()
+  private static List<CheckType> makeChecks()
   {
-    final ArrayList<Check> checks = new ArrayList<Check>();
+    final List<CheckType> checks = new ArrayList<CheckType>();
     checks.add(new CheckFragmentOutputCount());
     checks.add(new CheckAttributeTypes());
     return Collections.unmodifiableList(checks);
   }
 
-  public static @Nonnull GVersionChecker newVersionChecker(
-    final @Nonnull Log log)
+  /**
+   * Construct a new version checker.
+   * 
+   * @param log
+   *          A log interface
+   * @return A new version checker
+   */
+
+  public static GVersionChecker newVersionChecker(
+    final LogUsableType log)
   {
     return new GVersionChecker(log);
   }
 
-  private final @Nonnull Log log;
+  private final LogUsableType log;
 
   private GVersionChecker(
-    final @Nonnull Log in_log)
+    final LogUsableType in_log)
   {
-    this.log = new Log(in_log, "version-checker");
+    this.log = NullCheck.notNull(in_log, "Log").with("version-checker");
   }
 
-  public @Nonnull GVersionsSupported checkFragmentShader(
-    final @Nonnull TASTDShaderFragment f,
-    final @Nonnull SortedSet<GVersionFull> required_full,
-    final @Nonnull SortedSet<GVersionES> required_es)
-    throws ConstraintError,
-      GVersionCheckerError
+  /**
+   * Check the given fragment shader.
+   * 
+   * @param f
+   *          The shader
+   * @param required_full
+   *          The set of required GLSL versions
+   * @param required_es
+   *          The set of required GLSL ES versions
+   * @return The set of supported versions
+   * 
+   * @throws GVersionCheckerError
+   *           If an error occurs
+   */
+
+  public GVersionsSupported checkFragmentShader(
+    final TASTDShaderFragment f,
+    final SortedSet<GVersionFull> required_full,
+    final SortedSet<GVersionES> required_es)
+    throws GVersionCheckerError
   {
+    NullCheck.notNull(f, "Shader");
+    NullCheck.notNullAll(required_full, "GLSL versions");
+    NullCheck.notNullAll(required_es, "GLSL ES versions");
+
     final StringBuilder m = new StringBuilder();
     final GVersionsSupported s = GVersionsSupported.all();
-    for (final Check c : GVersionChecker.CHECKS) {
-      if (this.log.enabled(Level.LOG_DEBUG)) {
+    for (final CheckType c : GVersionChecker.CHECKS) {
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         m.setLength(0);
         m.append("Running check: ");
         m.append(c.getName());
@@ -474,17 +507,35 @@ public final class GVersionChecker
     return GVersionChecker.checkRequired(s, required_full, required_es);
   }
 
-  public @Nonnull GVersionsSupported checkVertexShader(
-    final @Nonnull TASTDShaderVertex v,
-    final @Nonnull SortedSet<GVersionFull> required_full,
-    final @Nonnull SortedSet<GVersionES> required_es)
-    throws ConstraintError,
-      GVersionCheckerError
+  /**
+   * Check the given vertex shader.
+   * 
+   * @param v
+   *          The shader
+   * @param required_full
+   *          The set of required GLSL versions
+   * @param required_es
+   *          The set of required GLSL ES versions
+   * @return The set of supported versions
+   * 
+   * @throws GVersionCheckerError
+   *           If an error occurs
+   */
+
+  public GVersionsSupported checkVertexShader(
+    final TASTDShaderVertex v,
+    final SortedSet<GVersionFull> required_full,
+    final SortedSet<GVersionES> required_es)
+    throws GVersionCheckerError
   {
+    NullCheck.notNull(v, "Shader");
+    NullCheck.notNullAll(required_full, "GLSL versions");
+    NullCheck.notNullAll(required_es, "GLSL ES versions");
+
     final StringBuilder m = new StringBuilder();
     final GVersionsSupported s = GVersionsSupported.all();
-    for (final Check c : GVersionChecker.CHECKS) {
-      if (this.log.enabled(Level.LOG_DEBUG)) {
+    for (final CheckType c : GVersionChecker.CHECKS) {
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         m.setLength(0);
         m.append("Running check: ");
         m.append(c.getName());

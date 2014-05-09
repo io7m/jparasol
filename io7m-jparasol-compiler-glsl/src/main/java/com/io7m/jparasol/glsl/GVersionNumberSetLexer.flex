@@ -50,7 +50,7 @@ import com.io7m.jparasol.glsl.GVersionNumberSetToken.TokenLiteralIntegerDecimal;
     return new Position(this.yyline + 1, this.yycolumn);
   }
   
-  private final @Nonnull File file = new File("<stdin>");
+  private final  File file = new File("<stdin>");
 
   public File getFile()
   {

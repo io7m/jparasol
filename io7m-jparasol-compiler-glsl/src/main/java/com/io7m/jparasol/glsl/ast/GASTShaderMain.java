@@ -1,73 +1,92 @@
+/*
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * 
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+ * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
 package com.io7m.jparasol.glsl.ast;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.functional.Option;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.OptionType;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputDataAssignment;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputDepthAssignment;
 import com.io7m.jparasol.glsl.ast.GASTStatement.GASTVertexShaderStatement.GASTVertexOutputAssignment;
 
-public abstract class GASTShaderMain
+/**
+ * A shader main function.
+ */
+
+@EqualityReference public abstract class GASTShaderMain
 {
-  public static final class GASTShaderMainFragment extends GASTShaderMain
+  /**
+   * A fragment shader main function.
+   */
+
+  @EqualityReference public static final class GASTShaderMainFragment extends
+    GASTShaderMain
   {
-    private final @Nonnull Option<GASTFragmentOutputDepthAssignment> depth_write;
-    private final @Nonnull List<GASTFragmentShaderStatement>         statements;
-    private final @Nonnull List<GASTFragmentOutputDataAssignment>    writes;
+    private final OptionType<GASTFragmentOutputDepthAssignment> depth_write;
+    private final List<GASTFragmentShaderStatement>             statements;
+    private final List<GASTFragmentOutputDataAssignment>        writes;
+
+    /**
+     * Construct a main function.
+     * 
+     * @param in_statements
+     *          The list of statements
+     * @param in_writes
+     *          The list of output writes
+     * @param in_depth_write
+     *          The depth write, if any
+     */
 
     public GASTShaderMainFragment(
-      final @Nonnull List<GASTFragmentShaderStatement> in_statements,
-      final @Nonnull List<GASTFragmentOutputDataAssignment> in_writes,
-      final @Nonnull Option<GASTFragmentOutputDepthAssignment> in_depth_write)
+      final List<GASTFragmentShaderStatement> in_statements,
+      final List<GASTFragmentOutputDataAssignment> in_writes,
+      final OptionType<GASTFragmentOutputDepthAssignment> in_depth_write)
     {
       this.statements = in_statements;
       this.writes = in_writes;
       this.depth_write = in_depth_write;
     }
 
-    public @Nonnull Option<GASTFragmentOutputDepthAssignment> getDepthWrite()
+    /**
+     * @return The depth write, if any
+     */
+
+    public OptionType<GASTFragmentOutputDepthAssignment> getDepthWrite()
     {
       return this.depth_write;
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTShaderMainFragment other = (GASTShaderMainFragment) obj;
-      return this.depth_write.equals(other.depth_write)
-        && this.statements.equals(other.statements)
-        && this.writes.equals(other.writes);
-    }
+    /**
+     * @return The list of statements
+     */
 
-    public @Nonnull List<GASTFragmentShaderStatement> getStatements()
+    public List<GASTFragmentShaderStatement> getStatements()
     {
       return this.statements;
     }
 
-    public @Nonnull List<GASTFragmentOutputDataAssignment> getWrites()
+    /**
+     * @return The list of writes
+     */
+
+    public List<GASTFragmentOutputDataAssignment> getWrites()
     {
       return this.writes;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.depth_write.hashCode();
-      result = (prime * result) + this.statements.hashCode();
-      result = (prime * result) + this.writes.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -80,62 +99,55 @@ public abstract class GASTShaderMain
       builder.append(" depth_write=");
       builder.append(this.depth_write);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTShaderMainVertex extends GASTShaderMain
+  /**
+   * A vertex shader main function.
+   */
+
+  @EqualityReference public static final class GASTShaderMainVertex extends
+    GASTShaderMain
   {
-    private final @Nonnull List<GASTStatement>              statements;
-    private final @Nonnull List<GASTVertexOutputAssignment> writes;
+    private final List<GASTStatement>              statements;
+    private final List<GASTVertexOutputAssignment> writes;
+
+    /**
+     * Construct a main function.
+     * 
+     * @param in_statements
+     *          The list of statements
+     * @param in_writes
+     *          The list of output writes
+     */
 
     public GASTShaderMainVertex(
-      final @Nonnull List<GASTStatement> in_statements,
-      final @Nonnull List<GASTVertexOutputAssignment> in_writes)
+      final List<GASTStatement> in_statements,
+      final List<GASTVertexOutputAssignment> in_writes)
     {
       this.statements = in_statements;
       this.writes = in_writes;
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTShaderMainVertex other = (GASTShaderMainVertex) obj;
-      if (!this.statements.equals(other.statements)) {
-        return false;
-      }
-      if (!this.writes.equals(other.writes)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The list of statements
+     */
 
-    public @Nonnull List<GASTStatement> getStatements()
+    public List<GASTStatement> getStatements()
     {
       return this.statements;
     }
 
-    public @Nonnull List<GASTVertexOutputAssignment> getWrites()
+    /**
+     * @return The list of statements
+     */
+
+    public List<GASTVertexOutputAssignment> getWrites()
     {
       return this.writes;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.statements.hashCode();
-      result = (prime * result) + this.writes.hashCode();
-      return result;
     }
 
     @Override public String toString()
@@ -146,7 +158,9 @@ public abstract class GASTShaderMain
       builder.append(" ");
       builder.append(this.writes);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 }

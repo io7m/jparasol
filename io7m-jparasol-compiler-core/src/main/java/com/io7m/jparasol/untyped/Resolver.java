@@ -21,23 +21,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph.CycleFoundException;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jaux.functional.Option;
-import com.io7m.jaux.functional.Option.Some;
-import com.io7m.jaux.functional.PartialFunction;
-import com.io7m.jaux.functional.Unit;
-import com.io7m.jlog.Level;
-import com.io7m.jlog.Log;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jfunctional.Option;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.PartialFunctionType;
+import com.io7m.jfunctional.Some;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
@@ -94,13 +93,13 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameGlobal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRTermNameVisitor;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRTermNameVisitorType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName.UASTRTypeNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName.UASTRTypeNameGlobal;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeNameVisitor;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeNameVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDRecordVisitor;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDRecordVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionArgument;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDFunctionDefined;
@@ -141,39 +140,43 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecord
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUESwizzle;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTURecordFieldAssignment;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpressionVisitor;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderLocalVisitor;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderOutputVisitor;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderVisitor;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTULocalLevelVisitor;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUModuleVisitor;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpressionVisitorType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderLocalVisitorType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderOutputVisitorType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderVisitorType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTULocalLevelVisitorType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUModuleVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUShaderPath;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUShaderVisitor;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTermVisitor;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUShaderVisitorType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTermVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTypePath;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTypeVisitor;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUVertexShaderLocalVisitor;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUVertexShaderVisitor;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTypeVisitorType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUVertexShaderLocalVisitorType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUVertexShaderVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameNonLocal;
-import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitor;
+import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
 
-public final class Resolver
+/**
+ * The name resolver.
+ */
+
+@SuppressWarnings("synthetic-access") @EqualityReference public final class Resolver
 {
-  private static final class ExpressionResolver implements
-    UASTUExpressionVisitor<UASTRExpression, UASTRDValueLocal, ResolverError>
+  @EqualityReference private static final class ExpressionResolver implements
+    UASTUExpressionVisitorType<UASTRExpression, UASTRDValueLocal, ResolverError>
   {
-    private final @Nonnull UASTUDModule                      module;
-    private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @CheckForNull UASTUDTerm                   term;
-    private final @CheckForNull TermGraph                    term_graph;
+    private final UASTUDModule                      module;
+    private final Map<ModulePathFlat, UASTUDModule> modules;
+    private final @Nullable UASTUDTerm              term;
+    private final @Nullable TermGraph               term_graph;
 
     public ExpressionResolver(
-      final @CheckForNull UASTUDTerm in_term,
-      final @Nonnull UASTUDModule in_module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
-      final @CheckForNull TermGraph in_term_graph)
+      final @Nullable UASTUDTerm in_term,
+      final UASTUDModule in_module,
+      final Map<ModulePathFlat, UASTUDModule> in_modules,
+      final @Nullable TermGraph in_term_graph)
     {
       this.term = in_term;
       this.module = in_module;
@@ -187,26 +190,24 @@ public final class Resolver
      */
 
     private void checkTermReferenceRecursion(
-      final @Nonnull UASTRTermName name)
-      throws ConstraintError,
-        ResolverError
+      final UASTRTermName name)
+      throws ResolverError
     {
       if (this.term_graph != null) {
         name
-          .termNameVisitableAccept(new UASTRTermNameVisitor<Unit, ResolverError>() {
-            @SuppressWarnings("synthetic-access") @Override public
-              Unit
-              termNameVisitGlobal(
-                final @Nonnull UASTRTermNameGlobal t)
-                throws ConstraintError,
-                  ResolverError
+          .termNameVisitableAccept(new UASTRTermNameVisitorType<Unit, ResolverError>() {
+            @Override public Unit termNameVisitGlobal(
+              final UASTRTermNameGlobal t)
+              throws ResolverError
             {
-              assert ExpressionResolver.this.term_graph != null;
-              assert ExpressionResolver.this.term != null;
+              final TermGraph tg = ExpressionResolver.this.term_graph;
+              final UASTUDTerm tt = ExpressionResolver.this.term;
+              assert tg != null;
+              assert tt != null;
 
-              ExpressionResolver.this.term_graph.addTermReference(
+              tg.addTermReference(
                 ExpressionResolver.this.module.getPath(),
-                ExpressionResolver.this.term.getName(),
+                tt.getName(),
                 t.getPath(),
                 t.getName());
 
@@ -214,9 +215,8 @@ public final class Resolver
             }
 
             @Override public Unit termNameVisitLocal(
-              final @Nonnull UASTRTermNameLocal t)
-              throws ConstraintError,
-                ResolverError
+              final UASTRTermNameLocal t)
+              throws ResolverError
             {
               return Unit.unit();
             }
@@ -225,10 +225,9 @@ public final class Resolver
     }
 
     @Override public UASTREApplication expressionVisitApplication(
-      final @Nonnull List<UASTRExpression> arguments,
-      final @Nonnull UASTUEApplication e)
-      throws ResolverError,
-        ConstraintError
+      final List<UASTRExpression> arguments,
+      final UASTUEApplication e)
+      throws ResolverError
     {
       final UniqueName en = e.getName();
       final UASTRTermName name =
@@ -239,64 +238,57 @@ public final class Resolver
     }
 
     @Override public void expressionVisitApplicationPre(
-      final @Nonnull UASTUEApplication e)
-      throws ResolverError,
-        ConstraintError
+      final UASTUEApplication e)
+      throws ResolverError
     {
       // Nothing
     }
 
     @Override public UASTREBoolean expressionVisitBoolean(
-      final @Nonnull UASTUEBoolean e)
-      throws ResolverError,
-        ConstraintError
+      final UASTUEBoolean e)
+      throws ResolverError
     {
       return new UASTREBoolean(e.getToken());
     }
 
     @Override public UASTREConditional expressionVisitConditional(
-      final @Nonnull UASTRExpression condition,
-      final @Nonnull UASTRExpression left,
-      final @Nonnull UASTRExpression right,
-      final @Nonnull UASTUEConditional e)
-      throws ResolverError,
-        ConstraintError
+      final UASTRExpression condition,
+      final UASTRExpression left,
+      final UASTRExpression right,
+      final UASTUEConditional e)
+      throws ResolverError
     {
       return new UASTREConditional(e.getIf(), condition, left, right);
     }
 
     @Override public void expressionVisitConditionalPre(
-      final @Nonnull UASTUEConditional e)
-      throws ResolverError,
-        ConstraintError
+      final UASTUEConditional e)
+      throws ResolverError
     {
       // Nothing
     }
 
     @Override public UASTREInteger expressionVisitInteger(
-      final @Nonnull UASTUEInteger e)
-      throws ResolverError,
-        ConstraintError
+      final UASTUEInteger e)
+      throws ResolverError
     {
       return new UASTREInteger(e.getToken());
     }
 
     @Override public UASTRELet expressionVisitLet(
-      final @Nonnull List<UASTRDValueLocal> bindings,
-      final @Nonnull UASTRExpression body,
-      final @Nonnull UASTUELet e)
-      throws ResolverError,
-        ConstraintError
+      final List<UASTRDValueLocal> bindings,
+      final UASTRExpression body,
+      final UASTUELet e)
+      throws ResolverError
     {
       return new UASTRELet(e.getToken(), bindings, body);
     }
 
     @Override public
-      UASTULocalLevelVisitor<UASTRDValueLocal, ResolverError>
+      UASTULocalLevelVisitorType<UASTRDValueLocal, ResolverError>
       expressionVisitLetPre(
-        final @Nonnull UASTUELet e)
-        throws ResolverError,
-          ConstraintError
+        final UASTUELet e)
+        throws ResolverError
     {
       return new LocalResolver(
         this.term,
@@ -305,13 +297,10 @@ public final class Resolver
         this.term_graph);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRENew
-      expressionVisitNew(
-        final @Nonnull List<UASTRExpression> arguments,
-        final @Nonnull UASTUENew e)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRENew expressionVisitNew(
+      final List<UASTRExpression> arguments,
+      final UASTUENew e)
+      throws ResolverError
     {
       final UASTUTypePath en = e.getName();
       final UASTRTypeName name =
@@ -325,27 +314,22 @@ public final class Resolver
     }
 
     @Override public void expressionVisitNewPre(
-      final @Nonnull UASTUENew e)
-      throws ResolverError,
-        ConstraintError
+      final UASTUENew e)
+      throws ResolverError
     {
       // Nothing
     }
 
     @Override public UASTREReal expressionVisitReal(
-      final @Nonnull UASTUEReal e)
-      throws ResolverError,
-        ConstraintError
+      final UASTUEReal e)
+      throws ResolverError
     {
       return new UASTREReal(e.getToken());
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRERecord
-      expressionVisitRecord(
-        final @Nonnull UASTUERecord e)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRERecord expressionVisitRecord(
+      final UASTUERecord e)
+      throws ResolverError
     {
       final UASTUTypePath etp = e.getTypePath();
       final UASTRTypeName type_path =
@@ -375,43 +359,38 @@ public final class Resolver
     }
 
     @Override public UASTRERecordProjection expressionVisitRecordProjection(
-      final @Nonnull UASTRExpression body,
-      final @Nonnull UASTUERecordProjection e)
-      throws ResolverError,
-        ConstraintError
+      final UASTRExpression body,
+      final UASTUERecordProjection e)
+      throws ResolverError
     {
       return new UASTRERecordProjection(body, e.getField());
     }
 
     @Override public void expressionVisitRecordProjectionPre(
-      final @Nonnull UASTUERecordProjection e)
-      throws ResolverError,
-        ConstraintError
+      final UASTUERecordProjection e)
+      throws ResolverError
     {
       // Nothing
     }
 
     @Override public UASTRESwizzle expressionVisitSwizzle(
-      final @Nonnull UASTRExpression body,
-      final @Nonnull UASTUESwizzle e)
-      throws ResolverError,
-        ConstraintError
+      final UASTRExpression body,
+      final UASTUESwizzle e)
+      throws ResolverError
     {
       return new UASTRESwizzle(body, e.getFields());
     }
 
     @Override public void expressionVisitSwizzlePre(
-      final @Nonnull UASTUESwizzle e)
-      throws ResolverError,
-        ConstraintError
+      final UASTUESwizzle e)
+      throws ResolverError
     {
       // Nothing
     }
 
     @Override public UASTREVariable expressionVisitVariable(
-      final @Nonnull UASTUEVariable e)
-      throws ResolverError,
-        ConstraintError
+      final UASTUEVariable e)
+      throws ResolverError
     {
       final UniqueName unique = e.getName();
       final UASTRTermName name =
@@ -422,19 +401,19 @@ public final class Resolver
     }
   }
 
-  private static final class FragmentShaderLocalResolver implements
-    UASTUFragmentShaderLocalVisitor<UASTRDShaderFragmentLocal, ResolverError>
+  @EqualityReference private static final class FragmentShaderLocalResolver implements
+    UASTUFragmentShaderLocalVisitorType<UASTRDShaderFragmentLocal, ResolverError>
   {
-    private final @Nonnull Log                               log;
-    private final @Nonnull UASTUDModule                      module;
-    private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @Nonnull UASTUDShaderFragment              shader;
+    private final LogUsableType                     log;
+    private final UASTUDModule                      module;
+    private final Map<ModulePathFlat, UASTUDModule> modules;
+    private final UASTUDShaderFragment              shader;
 
     public FragmentShaderLocalResolver(
-      final @Nonnull Log in_log,
-      final @Nonnull UASTUDModule in_module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
-      final @Nonnull UASTUDShaderFragment in_shader)
+      final LogUsableType in_log,
+      final UASTUDModule in_module,
+      final Map<ModulePathFlat, UASTUDModule> in_modules,
+      final UASTUDShaderFragment in_shader)
     {
       this.module = in_module;
       this.modules = in_modules;
@@ -445,9 +424,8 @@ public final class Resolver
     @Override public
       UASTRDShaderFragmentLocalDiscard
       fragmentShaderVisitLocalDiscard(
-        final @Nonnull UASTUDShaderFragmentLocalDiscard d)
-        throws ResolverError,
-          ConstraintError
+        final UASTUDShaderFragmentLocalDiscard d)
+        throws ResolverError
     {
       final UASTRExpression ex =
         d.getExpression().expressionVisitableAccept(
@@ -459,9 +437,8 @@ public final class Resolver
     @Override public
       UASTRDShaderFragmentLocalValue
       fragmentShaderVisitLocalValue(
-        final @Nonnull UASTUDShaderFragmentLocalValue v)
-        throws ResolverError,
-          ConstraintError
+        final UASTUDShaderFragmentLocalValue v)
+        throws ResolverError
     {
       final UASTUDValueLocal vv = v.getValue();
       final LocalResolver lr =
@@ -471,20 +448,20 @@ public final class Resolver
     }
   }
 
-  private static final class FragmentShaderResolver implements
-    UASTUFragmentShaderVisitor<UASTRDShaderFragment, UASTRDShaderFragmentInput, UASTRDShaderFragmentParameter, UASTRDShaderFragmentOutput, UASTRDShaderFragmentLocal, UASTRDShaderFragmentOutputAssignment, ResolverError>
+  @EqualityReference private static final class FragmentShaderResolver implements
+    UASTUFragmentShaderVisitorType<UASTRDShaderFragment, UASTRDShaderFragmentInput, UASTRDShaderFragmentParameter, UASTRDShaderFragmentOutput, UASTRDShaderFragmentLocal, UASTRDShaderFragmentOutputAssignment, ResolverError>
   {
-    private final @Nonnull Log                               log;
-    private final @Nonnull UASTUDModule                      module;
-    private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @Nonnull Map<String, TokenIdentifierLower> outputs_declared;
-    private final @Nonnull UASTUDShaderFragment              shader;
+    private final LogUsableType                     log;
+    private final UASTUDModule                      module;
+    private final Map<ModulePathFlat, UASTUDModule> modules;
+    private final Map<String, TokenIdentifierLower> outputs_declared;
+    private final UASTUDShaderFragment              shader;
 
     public FragmentShaderResolver(
-      final @Nonnull Log in_log,
-      final @Nonnull UASTUDModule in_module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
-      final @Nonnull UASTUDShaderFragment f)
+      final LogUsableType in_log,
+      final UASTUDModule in_module,
+      final Map<ModulePathFlat, UASTUDModule> in_modules,
+      final UASTUDShaderFragment f)
     {
       this.module = in_module;
       this.modules = in_modules;
@@ -493,17 +470,14 @@ public final class Resolver
       this.outputs_declared = new HashMap<String, TokenIdentifierLower>();
     }
 
-    @Override public
-      UASTRDShaderFragment
-      fragmentShaderVisit(
-        final @Nonnull List<UASTRDShaderFragmentInput> inputs,
-        final @Nonnull List<UASTRDShaderFragmentParameter> parameters,
-        final @Nonnull List<UASTRDShaderFragmentOutput> outputs,
-        final @Nonnull List<UASTRDShaderFragmentLocal> locals,
-        final @Nonnull List<UASTRDShaderFragmentOutputAssignment> output_assignments,
-        final @Nonnull UASTUDShaderFragment f)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDShaderFragment fragmentShaderVisit(
+      final List<UASTRDShaderFragmentInput> inputs,
+      final List<UASTRDShaderFragmentParameter> parameters,
+      final List<UASTRDShaderFragmentOutput> outputs,
+      final List<UASTRDShaderFragmentLocal> locals,
+      final List<UASTRDShaderFragmentOutputAssignment> output_assignments,
+      final UASTUDShaderFragment f)
+      throws ResolverError
     {
       return new UASTRDShaderFragment(
         f.getName(),
@@ -514,12 +488,9 @@ public final class Resolver
         output_assignments);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRDShaderFragmentInput
-      fragmentShaderVisitInput(
-        final @Nonnull UASTUDShaderFragmentInput i)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDShaderFragmentInput fragmentShaderVisitInput(
+      final UASTUDShaderFragmentInput i)
+      throws ResolverError
     {
       final UniqueNameLocal oname = i.getName();
       final UASTRTermNameLocal name =
@@ -536,10 +507,9 @@ public final class Resolver
     }
 
     @Override public
-      UASTUFragmentShaderLocalVisitor<UASTRDShaderFragmentLocal, ResolverError>
+      UASTUFragmentShaderLocalVisitorType<UASTRDShaderFragmentLocal, ResolverError>
       fragmentShaderVisitLocalsPre()
-        throws ResolverError,
-          ConstraintError
+        throws ResolverError
     {
       return new FragmentShaderLocalResolver(
         this.log,
@@ -551,9 +521,8 @@ public final class Resolver
     @Override public
       UASTRDShaderFragmentOutputAssignment
       fragmentShaderVisitOutputAssignment(
-        final @Nonnull UASTUDShaderFragmentOutputAssignment a)
-        throws ResolverError,
-          ConstraintError
+        final UASTUDShaderFragmentOutputAssignment a)
+        throws ResolverError
     {
       final UASTRTermName name =
         Resolver.lookupTerm(this.module, this.modules, a
@@ -568,19 +537,17 @@ public final class Resolver
       return new UASTRDShaderFragmentOutputAssignment(a.getName(), variable);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTUFragmentShaderOutputVisitor<UASTRDShaderFragmentOutput, ResolverError>
+    @Override public
+      UASTUFragmentShaderOutputVisitorType<UASTRDShaderFragmentOutput, ResolverError>
       fragmentShaderVisitOutputsPre()
-        throws ResolverError,
-          ConstraintError
+        throws ResolverError
     {
-      return new UASTUFragmentShaderOutputVisitor<UASTRDShaderFragmentOutput, ResolverError>() {
+      return new UASTUFragmentShaderOutputVisitorType<UASTRDShaderFragmentOutput, ResolverError>() {
         @Override public
           UASTRDShaderFragmentOutput
           fragmentShaderVisitOutputData(
-            final @Nonnull UASTUDShaderFragmentOutputData d)
-            throws ResolverError,
-              ConstraintError
+            final UASTUDShaderFragmentOutputData d)
+            throws ResolverError
         {
           final UniqueNameLocal oname = d.getName();
           final UASTUTypePath otype = d.getType();
@@ -604,9 +571,8 @@ public final class Resolver
         @Override public
           UASTRDShaderFragmentOutput
           fragmentShaderVisitOutputDepth(
-            final @Nonnull UASTUDShaderFragmentOutputDepth d)
-            throws ResolverError,
-              ConstraintError
+            final UASTUDShaderFragmentOutputDepth d)
+            throws ResolverError
         {
           final UniqueNameLocal oname = d.getName();
           final UASTUTypePath otype = d.getType();
@@ -628,12 +594,11 @@ public final class Resolver
       };
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
+    @Override public
       UASTRDShaderFragmentParameter
       fragmentShaderVisitParameter(
-        final @Nonnull UASTUDShaderFragmentParameter p)
-        throws ResolverError,
-          ConstraintError
+        final UASTUDShaderFragmentParameter p)
+        throws ResolverError
     {
       final UniqueNameLocal oname = p.getName();
       final UASTUTypePath otype = p.getType();
@@ -655,18 +620,18 @@ public final class Resolver
    * graph without cycles.
    */
 
-  private static final class ImportResolver
+  @EqualityReference private static final class ImportResolver
   {
-    private static final class Import
+    @EqualityStructural private static final class Import
     {
-      final @Nonnull UASTUDImport   actual;
-      final @Nonnull ModulePathFlat importer;
-      final @Nonnull ModulePathFlat target;
+      private final UASTUDImport   actual;
+      private final ModulePathFlat importer;
+      private final ModulePathFlat target;
 
       public Import(
-        final @Nonnull UASTUDImport in_actual,
-        final @Nonnull ModulePathFlat in_importer,
-        final @Nonnull ModulePathFlat in_target)
+        final UASTUDImport in_actual,
+        final ModulePathFlat in_importer,
+        final ModulePathFlat in_target)
       {
         this.actual = in_actual;
         this.importer = in_importer;
@@ -674,7 +639,7 @@ public final class Resolver
       }
 
       @Override public boolean equals(
-        final Object obj)
+        final @Nullable Object obj)
       {
         if (this == obj) {
           return true;
@@ -686,9 +651,6 @@ public final class Resolver
           return false;
         }
         final Import other = (Import) obj;
-        if (!this.actual.equals(other.actual)) {
-          return false;
-        }
         if (!this.importer.equals(other.importer)) {
           return false;
         }
@@ -715,25 +677,24 @@ public final class Resolver
         builder.append(this.actual);
         builder.append(" ");
         builder.append(this.importer);
-        builder.append(" -> ");
+        builder.append(" → ");
         builder.append(this.target);
         builder.append("]");
         return builder.toString();
       }
     }
 
-    private final @Nonnull UASTUCompilation                           compilation;
-    private final @Nonnull DirectedAcyclicGraph<UASTUDModule, Import> import_graph;
-    private final @Nonnull Log                                        log;
-    private final @Nonnull StringBuilder                              message;
+    private final UASTUCompilation                           compilation;
+    private final DirectedAcyclicGraph<UASTUDModule, Import> import_graph;
+    private final LogUsableType                              log;
+    private final StringBuilder                              message;
 
     public ImportResolver(
-      final @Nonnull UASTUCompilation in_compilation,
-      final @Nonnull Log in_log)
-      throws ResolverError,
-        ConstraintError
+      final UASTUCompilation in_compilation,
+      final LogUsableType in_log)
+      throws ResolverError
     {
-      this.log = new Log(in_log, "imports");
+      this.log = in_log.with("imports");
       this.message = new StringBuilder();
       this.compilation = in_compilation;
 
@@ -745,7 +706,7 @@ public final class Resolver
 
       for (final ModulePathFlat path : modules.keySet()) {
         final UASTUDModule module = modules.get(path);
-        if (this.log.enabled(Level.LOG_DEBUG)) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
           this.message.setLength(0);
           this.message.append("Adding module ");
           this.message.append(path.getActual());
@@ -761,11 +722,11 @@ public final class Resolver
           final ModulePathFlat target =
             ModulePathFlat.fromModulePath(i.getPath());
 
-          if (this.log.enabled(Level.LOG_DEBUG)) {
+          if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
             this.message.setLength(0);
             this.message.append("Adding module import ");
             this.message.append(path.getActual());
-            this.message.append(" -> ");
+            this.message.append(" → ");
             this.message.append(target.getActual());
             this.log.debug(this.message.toString());
           }
@@ -783,8 +744,8 @@ public final class Resolver
           } catch (final CycleFoundException e) {
 
             /**
-             * Because a cycle as occurred on an insertion of edge A -> B,
-             * then there must be some path B -> A already in the graph. Use a
+             * Because a cycle as occurred on an insertion of edge A → B, then
+             * there must be some path B → A already in the graph. Use a
              * shortest path algorithm to determine that path.
              */
 
@@ -797,8 +758,7 @@ public final class Resolver
             final List<Import> imports = dj.getPathEdgeList();
             assert imports != null;
 
-            final ArrayList<UASTUDImport> imports_ =
-              new ArrayList<UASTUDImport>();
+            final List<UASTUDImport> imports_ = new ArrayList<UASTUDImport>();
             for (final Import im : imports) {
               imports_.add(im.actual);
             }
@@ -809,12 +769,12 @@ public final class Resolver
       }
     }
 
-    public @Nonnull List<ModulePathFlat> getTopology()
+    public List<ModulePathFlat> getTopology()
     {
       final TopologicalOrderIterator<UASTUDModule, Import> iter =
         new TopologicalOrderIterator<UASTUDModule, Import>(this.import_graph);
 
-      final ArrayList<ModulePathFlat> ls = new ArrayList<ModulePathFlat>();
+      final List<ModulePathFlat> ls = new ArrayList<ModulePathFlat>();
       while (iter.hasNext()) {
         final UASTUDModule m = iter.next();
         ls.add(ModulePathFlat.fromModulePath(m.getPath()));
@@ -824,19 +784,19 @@ public final class Resolver
     }
   }
 
-  private static final class LocalResolver implements
-    UASTULocalLevelVisitor<UASTRDValueLocal, ResolverError>
+  @EqualityReference private static final class LocalResolver implements
+    UASTULocalLevelVisitorType<UASTRDValueLocal, ResolverError>
   {
-    private final @Nonnull UASTUDModule                      module;
-    private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @CheckForNull UASTUDTerm                   term;
-    private final @CheckForNull TermGraph                    term_graph;
+    private final UASTUDModule                      module;
+    private final Map<ModulePathFlat, UASTUDModule> modules;
+    private final @Nullable UASTUDTerm              term;
+    private final @Nullable TermGraph               term_graph;
 
     public LocalResolver(
-      final @CheckForNull UASTUDTerm in_term,
-      final @Nonnull UASTUDModule in_module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
-      final @CheckForNull TermGraph in_term_graph)
+      final @Nullable UASTUDTerm in_term,
+      final UASTUDModule in_module,
+      final Map<ModulePathFlat, UASTUDModule> in_modules,
+      final @Nullable TermGraph in_term_graph)
     {
       this.term = in_term;
       this.module = in_module;
@@ -845,30 +805,25 @@ public final class Resolver
     }
 
     @Override public UASTRDValueLocal localVisitValueLocal(
-      final @Nonnull UASTUDValueLocal v)
-      throws ResolverError,
-        ConstraintError
+      final UASTUDValueLocal v)
+      throws ResolverError
     {
-      final Option<UASTRTypeName> ascription =
-        v.getAscription().mapPartial(
-          new PartialFunction<UASTUTypePath, UASTRTypeName, ResolverError>() {
-            @SuppressWarnings("synthetic-access") @Override public
-              UASTRTypeName
-              call(
-                final @Nonnull UASTUTypePath t)
+      final OptionType<UASTRTypeName> ascription =
+        v
+          .getAscription()
+          .mapPartial(
+            new PartialFunctionType<UASTUTypePath, UASTRTypeName, ResolverError>() {
+              @Override public UASTRTypeName call(
+                final UASTUTypePath t)
                 throws ResolverError
-            {
-              try {
+              {
                 return Resolver.lookupType(
                   LocalResolver.this.modules,
                   LocalResolver.this.module,
                   t.getModule(),
                   t.getName());
-              } catch (final ConstraintError e) {
-                throw new UnreachableCodeException(e);
               }
-            }
-          });
+            });
 
       final ExpressionResolver exr =
         new ExpressionResolver(
@@ -888,32 +843,32 @@ public final class Resolver
     }
   }
 
-  private static class ModuleResolver implements
-    UASTUModuleVisitor<UASTRDModule, UASTRDImport, UASTRDeclarationModuleLevel, UASTRDTerm, UASTRDType, UASTRDShader, ResolverError>,
-    UASTUTermVisitor<UASTRDTerm, ResolverError>,
-    UASTUTypeVisitor<UASTRDType, ResolverError>,
-    UASTUShaderVisitor<UASTRDShader, ResolverError>
+  @EqualityReference private static class ModuleResolver implements
+    UASTUModuleVisitorType<UASTRDModule, UASTRDImport, UASTRDeclarationModuleLevel, UASTRDTerm, UASTRDType, UASTRDShader, ResolverError>,
+    UASTUTermVisitorType<UASTRDTerm, ResolverError>,
+    UASTUTypeVisitorType<UASTRDType, ResolverError>,
+    UASTUShaderVisitorType<UASTRDShader, ResolverError>
   {
-    private final @Nonnull Log                               log;
-    private final @Nonnull UASTUDModule                      module;
-    private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @Nonnull ShaderGraph                       shader_graph;
-    private final @Nonnull TermGraph                         term_graph;
-    private final @Nonnull TypeGraph                         type_graph;
+    private final LogUsableType                     log;
+    private final UASTUDModule                      module;
+    private final Map<ModulePathFlat, UASTUDModule> modules;
+    private final ShaderGraph                       shader_graph;
+    private final TermGraph                         term_graph;
+    private final TypeGraph                         type_graph;
 
     public ModuleResolver(
-      final @Nonnull UASTUDModule in_module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
-      final @Nonnull Log in_log)
+      final UASTUDModule in_module,
+      final Map<ModulePathFlat, UASTUDModule> in_modules,
+      final LogUsableType in_log)
     {
       this.module = in_module;
       this.modules = in_modules;
       this.term_graph = new TermGraph(in_log);
       this.type_graph = new TypeGraph(in_log);
       this.shader_graph = new ShaderGraph(in_log);
-      this.log = new Log(in_log, "names");
+      this.log = in_log.with("names");
 
-      if (this.log.enabled(Level.LOG_DEBUG)) {
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         final StringBuilder m = new StringBuilder();
         m.append("Resolving ");
         m.append(ModulePathFlat
@@ -924,44 +879,40 @@ public final class Resolver
     }
 
     @Override public
-      UASTUShaderVisitor<UASTRDShader, ResolverError>
+      UASTUShaderVisitorType<UASTRDShader, ResolverError>
       moduleShadersPre(
-        final @Nonnull UASTUDModule m)
-        throws ResolverError,
-          ConstraintError
+        final UASTUDModule m)
+        throws ResolverError
     {
       return this;
     }
 
     @Override public
-      UASTUTermVisitor<UASTRDTerm, ResolverError>
+      UASTUTermVisitorType<UASTRDTerm, ResolverError>
       moduleTermsPre(
-        final @Nonnull UASTUDModule m)
-        throws ResolverError,
-          ConstraintError
+        final UASTUDModule m)
+        throws ResolverError
     {
       return this;
     }
 
     @Override public
-      UASTUTypeVisitor<UASTRDType, ResolverError>
+      UASTUTypeVisitorType<UASTRDType, ResolverError>
       moduleTypesPre(
-        final @Nonnull UASTUDModule m)
-        throws ResolverError,
-          ConstraintError
+        final UASTUDModule m)
+        throws ResolverError
     {
       return this;
     }
 
     @Override public UASTRDModule moduleVisit(
-      final @Nonnull List<UASTRDImport> imports,
-      final @Nonnull List<UASTRDeclarationModuleLevel> declarations,
-      final @Nonnull Map<String, UASTRDTerm> terms,
-      final @Nonnull Map<String, UASTRDType> types,
-      final @Nonnull Map<String, UASTRDShader> shaders,
-      final @Nonnull UASTUDModule m)
-      throws ResolverError,
-        ConstraintError
+      final List<UASTRDImport> imports,
+      final List<UASTRDeclarationModuleLevel> declarations,
+      final Map<String, UASTRDTerm> terms,
+      final Map<String, UASTRDType> types,
+      final Map<String, UASTRDShader> shaders,
+      final UASTUDModule m)
+      throws ResolverError
     {
       final Map<String, UASTUDImport> import_names = m.getImportedNames();
       final Map<String, UASTRDImport> r_import_names =
@@ -1015,10 +966,9 @@ public final class Resolver
         shader_topology);
     }
 
-    @Override public @Nonnull UASTRDShader moduleVisitFragmentShader(
-      final @Nonnull UASTUDShaderFragment f)
-      throws ResolverError,
-        ConstraintError
+    @Override public UASTRDShader moduleVisitFragmentShader(
+      final UASTUDShaderFragment f)
+      throws ResolverError
     {
       final UASTRDShaderFragment fs =
         f.fragmentShaderVisitableAccept(new FragmentShaderResolver(
@@ -1031,20 +981,16 @@ public final class Resolver
       return fs;
     }
 
-    @Override public @Nonnull UASTRDImport moduleVisitImport(
-      final @Nonnull UASTUDImport i)
-      throws ResolverError,
-        ConstraintError
+    @Override public UASTRDImport moduleVisitImport(
+      final UASTUDImport i)
+      throws ResolverError
     {
       return new UASTRDImport(i.getPath(), i.getRename());
     }
 
-    @SuppressWarnings("synthetic-access") @Override public @Nonnull
-      UASTRDShaderProgram
-      moduleVisitProgramShader(
-        final @Nonnull UASTUDShaderProgram p)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDShaderProgram moduleVisitProgramShader(
+      final UASTUDShaderProgram p)
+      throws ResolverError
     {
       final UASTUShaderPath fp = p.getFragmentShader();
       final UASTUShaderPath vp = p.getVertexShader();
@@ -1081,10 +1027,9 @@ public final class Resolver
         fragment_shader);
     }
 
-    @Override public @Nonnull UASTRDShaderVertex moduleVisitVertexShader(
-      final @Nonnull UASTUDShaderVertex v)
-      throws ResolverError,
-        ConstraintError
+    @Override public UASTRDShaderVertex moduleVisitVertexShader(
+      final UASTUDShaderVertex v)
+      throws ResolverError
     {
       final UASTRDShaderVertex vs =
         v.vertexShaderVisitableAccept(new VertexShaderResolver(
@@ -1097,10 +1042,9 @@ public final class Resolver
       return vs;
     }
 
-    @Override public @Nonnull UASTRDTerm termVisitFunctionDefined(
-      final @Nonnull UASTUDFunctionDefined f)
-      throws ResolverError,
-        ConstraintError
+    @Override public UASTRDTerm termVisitFunctionDefined(
+      final UASTUDFunctionDefined f)
+      throws ResolverError
     {
       return f.termVisitableAccept(new TermResolver(
         this.log,
@@ -1110,10 +1054,9 @@ public final class Resolver
         f));
     }
 
-    @Override public @Nonnull UASTRDTerm termVisitFunctionExternal(
-      final @Nonnull UASTUDFunctionExternal f)
-      throws ResolverError,
-        ConstraintError
+    @Override public UASTRDTerm termVisitFunctionExternal(
+      final UASTUDFunctionExternal f)
+      throws ResolverError
     {
       return f.termVisitableAccept(new TermResolver(
         this.log,
@@ -1123,10 +1066,9 @@ public final class Resolver
         f));
     }
 
-    @Override public @Nonnull UASTRDTerm termVisitValueDefined(
-      final @Nonnull UASTUDValueDefined v)
-      throws ResolverError,
-        ConstraintError
+    @Override public UASTRDTerm termVisitValueDefined(
+      final UASTUDValueDefined v)
+      throws ResolverError
     {
       return v.termVisitableAccept(new TermResolver(
         this.log,
@@ -1137,9 +1079,8 @@ public final class Resolver
     }
 
     @Override public UASTRDTerm termVisitValueExternal(
-      final @Nonnull UASTUDValueExternal v)
-      throws ResolverError,
-        ConstraintError
+      final UASTUDValueExternal v)
+      throws ResolverError
     {
       return v.termVisitableAccept(new TermResolver(
         this.log,
@@ -1149,10 +1090,9 @@ public final class Resolver
         v));
     }
 
-    @Override public @Nonnull UASTRDType typeVisitTypeRecord(
-      final @Nonnull UASTUDTypeRecord r)
-      throws ResolverError,
-        ConstraintError
+    @Override public UASTRDType typeVisitTypeRecord(
+      final UASTUDTypeRecord r)
+      throws ResolverError
     {
       return r.recordTypeVisitableAccept(new RecordTypeResolver(
         this.log,
@@ -1163,21 +1103,21 @@ public final class Resolver
     }
   }
 
-  private static final class RecordTypeResolver implements
-    UASTUDRecordVisitor<UASTRDTypeRecord, UASTRDTypeRecordField, ResolverError>
+  @EqualityReference private static final class RecordTypeResolver implements
+    UASTUDRecordVisitorType<UASTRDTypeRecord, UASTRDTypeRecordField, ResolverError>
   {
-    private final @Nonnull Log                               log;
-    private final @Nonnull UASTUDModule                      module;
-    private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @Nonnull UASTUDTypeRecord                  type;
-    private final @Nonnull TypeGraph                         type_graph;
+    private final LogUsableType                     log;
+    private final UASTUDModule                      module;
+    private final Map<ModulePathFlat, UASTUDModule> modules;
+    private final UASTUDTypeRecord                  type;
+    private final TypeGraph                         type_graph;
 
     public RecordTypeResolver(
-      final @Nonnull Log in_log,
-      final @Nonnull UASTUDModule in_module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
-      final @Nonnull TypeGraph in_type_graph,
-      final @Nonnull UASTUDTypeRecord r)
+      final LogUsableType in_log,
+      final UASTUDModule in_module,
+      final Map<ModulePathFlat, UASTUDModule> in_modules,
+      final TypeGraph in_type_graph,
+      final UASTUDTypeRecord r)
     {
       this.log = in_log;
       this.module = in_module;
@@ -1187,21 +1127,17 @@ public final class Resolver
     }
 
     @Override public UASTRDTypeRecord recordTypeVisit(
-      final @Nonnull List<UASTRDTypeRecordField> fields,
-      final @Nonnull UASTUDTypeRecord e)
-      throws ResolverError,
-        ConstraintError
+      final List<UASTRDTypeRecordField> fields,
+      final UASTUDTypeRecord e)
+      throws ResolverError
     {
       this.type_graph.addType(this.module.getPath(), e.getName());
       return new UASTRDTypeRecord(e.getName(), fields);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRDTypeRecordField
-      recordTypeVisitField(
-        final @Nonnull UASTUDTypeRecordField e)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDTypeRecordField recordTypeVisitField(
+      final UASTUDTypeRecordField e)
+      throws ResolverError
     {
       final UASTUTypePath et = e.getType();
       final UASTRTypeName t =
@@ -1212,19 +1148,17 @@ public final class Resolver
           et.getName());
 
       t
-        .typeNameVisitableAccept(new UASTRTypeNameVisitor<Unit, ResolverError>() {
+        .typeNameVisitableAccept(new UASTRTypeNameVisitorType<Unit, ResolverError>() {
           @Override public Unit typeNameVisitBuiltIn(
-            final @Nonnull UASTRTypeNameBuiltIn name)
-            throws ConstraintError,
-              ResolverError
+            final UASTRTypeNameBuiltIn name)
+            throws ResolverError
           {
             return Unit.unit();
           }
 
           @Override public Unit typeNameVisitGlobal(
             final UASTRTypeNameGlobal name)
-            throws ConstraintError,
-              ResolverError
+            throws ResolverError
           {
             RecordTypeResolver.this.type_graph.addTypeReference(
               RecordTypeResolver.this.module.getPath(),
@@ -1240,9 +1174,8 @@ public final class Resolver
     }
 
     @Override public void recordTypeVisitPre(
-      final @Nonnull UASTUDTypeRecord e)
-      throws ResolverError,
-        ConstraintError
+      final UASTUDTypeRecord e)
+      throws ResolverError
     {
       // Nothing
     }
@@ -1252,21 +1185,21 @@ public final class Resolver
    * A shader in the shader graph.
    */
 
-  private static final class Shader
+  @EqualityStructural private static final class Shader
   {
-    private final @Nonnull ModulePathFlat module;
-    private final @Nonnull String         name;
+    private final ModulePathFlat module;
+    private final String         name;
 
     public Shader(
-      final @Nonnull ModulePathFlat in_module,
-      final @Nonnull String in_name)
+      final ModulePathFlat in_module,
+      final String in_name)
     {
       this.module = in_module;
       this.name = in_name;
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -1301,30 +1234,30 @@ public final class Resolver
    * Shader graph.
    */
 
-  private static final class ShaderGraph
+  @EqualityReference private static final class ShaderGraph
   {
-    private final @Nonnull DirectedAcyclicGraph<Shader, ShaderReference> graph;
-    private final @Nonnull Log                                           log;
+    private final DirectedAcyclicGraph<Shader, ShaderReference> graph;
+    private final LogUsableType                                 log;
 
     public ShaderGraph(
-      final @Nonnull Log in_log)
+      final LogUsableType in_log)
     {
       this.graph =
         new DirectedAcyclicGraph<Shader, ShaderReference>(
           ShaderReference.class);
-      this.log = new Log(in_log, "shader-graph");
+      this.log = in_log.with("shader-graph");
     }
 
     public void addShader(
-      final @Nonnull ModulePath source_module,
-      final @Nonnull TokenIdentifierLower source_name)
+      final ModulePath source_module,
+      final TokenIdentifierLower source_name)
     {
       final ModulePathFlat source_module_flat =
         ModulePathFlat.fromModulePath(source_module);
       final Shader source =
         new Shader(source_module_flat, source_name.getActual());
 
-      if (this.log.enabled(Level.LOG_DEBUG)) {
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         this.log.debug(String.format(
           "Adding shader: %s.%s",
           source_module_flat.getActual(),
@@ -1335,12 +1268,11 @@ public final class Resolver
     }
 
     public void addShaderReference(
-      final @Nonnull ModulePath source_module,
-      final @Nonnull TokenIdentifierLower source_name,
-      final @Nonnull ModulePath target_module,
-      final @Nonnull TokenIdentifierLower target_name)
-      throws ResolverError,
-        ConstraintError
+      final ModulePath source_module,
+      final TokenIdentifierLower source_name,
+      final ModulePath target_module,
+      final TokenIdentifierLower target_name)
+      throws ResolverError
     {
       final ModulePathFlat source_module_flat =
         ModulePathFlat.fromModulePath(source_module);
@@ -1364,9 +1296,9 @@ public final class Resolver
         this.addShader(source_module, source_name);
         this.addShader(target_module, target_name);
 
-        if (this.log.enabled(Level.LOG_DEBUG)) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
           this.log.debug(String.format(
-            "Adding shader reference: %s.%s -> %s.%s",
+            "Adding shader reference: %s.%s → %s.%s",
             source_module_flat.getActual(),
             source_name.getActual(),
             target_module_flat.getActual(),
@@ -1379,8 +1311,8 @@ public final class Resolver
       } catch (final CycleFoundException x) {
 
         /**
-         * Because a cycle as occurred on an insertion of edge A -> B, then
-         * there must be some path B -> A already in the graph. Use a shortest
+         * Because a cycle as occurred on an insertion of edge A → B, then
+         * there must be some path B → A already in the graph. Use a shortest
          * path algorithm to determine that path.
          */
 
@@ -1393,7 +1325,7 @@ public final class Resolver
         final List<ShaderReference> terms = dj.getPathEdgeList();
         assert terms != null;
 
-        final ArrayList<TokenIdentifierLower> tokens =
+        final List<TokenIdentifierLower> tokens =
           new ArrayList<TokenIdentifierLower>();
         tokens.add(target_name);
 
@@ -1405,15 +1337,13 @@ public final class Resolver
       }
     }
 
-    @SuppressWarnings("synthetic-access") public @Nonnull
-      List<String>
-      getTopology(
-        final @Nonnull ModulePathFlat current)
+    public List<String> getTopology(
+      final ModulePathFlat current)
     {
       final TopologicalOrderIterator<Shader, ShaderReference> iter =
         new TopologicalOrderIterator<Shader, ShaderReference>(this.graph);
 
-      final ArrayList<String> ls = new ArrayList<String>();
+      final List<String> ls = new ArrayList<String>();
       while (iter.hasNext()) {
         final Shader t = iter.next();
         if (t.module.equals(current)) {
@@ -1430,18 +1360,18 @@ public final class Resolver
    * <code>module</code>, in module <code>from</code>.
    */
 
-  private static final class ShaderReference
+  @EqualityStructural private static final class ShaderReference
   {
-    final @Nonnull ModulePath           source_module;
-    final @Nonnull TokenIdentifierLower source_name;
-    final @Nonnull ModulePath           target_module;
-    final @Nonnull TokenIdentifierLower target_name;
+    private final ModulePath           source_module;
+    private final TokenIdentifierLower source_name;
+    private final ModulePath           target_module;
+    private final TokenIdentifierLower target_name;
 
     public ShaderReference(
-      final @Nonnull ModulePath in_source_module,
-      final @Nonnull TokenIdentifierLower in_source_name,
-      final @Nonnull ModulePath in_target_module,
-      final @Nonnull TokenIdentifierLower in_target_name)
+      final ModulePath in_source_module,
+      final TokenIdentifierLower in_source_name,
+      final ModulePath in_target_module,
+      final TokenIdentifierLower in_target_name)
     {
       this.source_module = in_source_module;
       this.source_name = in_source_name;
@@ -1450,7 +1380,7 @@ public final class Resolver
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -1493,21 +1423,21 @@ public final class Resolver
    * A term in the term graph.
    */
 
-  private static final class Term
+  @EqualityStructural private static final class Term
   {
-    private final @Nonnull ModulePathFlat module;
-    private final @Nonnull String         name;
+    private final ModulePathFlat module;
+    private final String         name;
 
     public Term(
-      final @Nonnull ModulePathFlat in_module,
-      final @Nonnull String in_name)
+      final ModulePathFlat in_module,
+      final String in_name)
     {
       this.module = in_module;
       this.name = in_name;
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -1542,29 +1472,29 @@ public final class Resolver
    * Term graph.
    */
 
-  private static final class TermGraph
+  @EqualityReference private static final class TermGraph
   {
-    private final @Nonnull DirectedAcyclicGraph<Term, TermReference> graph;
-    private final @Nonnull Log                                       log;
+    private final DirectedAcyclicGraph<Term, TermReference> graph;
+    private final LogUsableType                             log;
 
     public TermGraph(
-      final @Nonnull Log in_log)
+      final LogUsableType in_log)
     {
       this.graph =
         new DirectedAcyclicGraph<Term, TermReference>(TermReference.class);
-      this.log = new Log(in_log, "term-graph");
+      this.log = in_log.with("term-graph");
     }
 
     public void addTerm(
-      final @Nonnull ModulePath source_module,
-      final @Nonnull TokenIdentifierLower source_name)
+      final ModulePath source_module,
+      final TokenIdentifierLower source_name)
     {
       final ModulePathFlat source_module_flat =
         ModulePathFlat.fromModulePath(source_module);
       final Term source =
         new Term(source_module_flat, source_name.getActual());
 
-      if (this.log.enabled(Level.LOG_DEBUG)) {
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         this.log.debug(String.format(
           "Adding term: %s.%s",
           source_module_flat.getActual(),
@@ -1575,12 +1505,11 @@ public final class Resolver
     }
 
     public void addTermReference(
-      final @Nonnull ModulePath source_module,
-      final @Nonnull TokenIdentifierLower source_name,
-      final @Nonnull ModulePath target_module,
-      final @Nonnull TokenIdentifierLower target_name)
-      throws ResolverError,
-        ConstraintError
+      final ModulePath source_module,
+      final TokenIdentifierLower source_name,
+      final ModulePath target_module,
+      final TokenIdentifierLower target_name)
+      throws ResolverError
     {
       final ModulePathFlat source_module_flat =
         ModulePathFlat.fromModulePath(source_module);
@@ -1603,9 +1532,9 @@ public final class Resolver
         this.addTerm(source_module, source_name);
         this.addTerm(target_module, target_name);
 
-        if (this.log.enabled(Level.LOG_DEBUG)) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
           this.log.debug(String.format(
-            "Adding term reference: %s.%s -> %s.%s",
+            "Adding term reference: %s.%s → %s.%s",
             source_module_flat.getActual(),
             source_name.getActual(),
             target_module_flat.getActual(),
@@ -1618,8 +1547,8 @@ public final class Resolver
       } catch (final CycleFoundException x) {
 
         /**
-         * Because a cycle as occurred on an insertion of edge A -> B, then
-         * there must be some path B -> A already in the graph. Use a shortest
+         * Because a cycle as occurred on an insertion of edge A → B, then
+         * there must be some path B → A already in the graph. Use a shortest
          * path algorithm to determine that path.
          */
 
@@ -1632,7 +1561,7 @@ public final class Resolver
         final List<TermReference> terms = dj.getPathEdgeList();
         assert terms != null;
 
-        final ArrayList<TokenIdentifierLower> tokens =
+        final List<TokenIdentifierLower> tokens =
           new ArrayList<TokenIdentifierLower>();
         tokens.add(target_name);
 
@@ -1644,15 +1573,13 @@ public final class Resolver
       }
     }
 
-    @SuppressWarnings("synthetic-access") public @Nonnull
-      List<String>
-      getTopology(
-        final @Nonnull ModulePathFlat current)
+    public List<String> getTopology(
+      final ModulePathFlat current)
     {
       final TopologicalOrderIterator<Term, TermReference> iter =
         new TopologicalOrderIterator<Term, TermReference>(this.graph);
 
-      final ArrayList<String> ls = new ArrayList<String>();
+      final List<String> ls = new ArrayList<String>();
       while (iter.hasNext()) {
         final Term t = iter.next();
         if (t.module.equals(current)) {
@@ -1669,80 +1596,41 @@ public final class Resolver
    * <code>module</code>, in module <code>from</code>.
    */
 
-  private static final class TermReference
+  @EqualityReference private static final class TermReference
   {
-    final @Nonnull ModulePath           source_module;
-    final @Nonnull TokenIdentifierLower source_name;
-    final @Nonnull ModulePath           target_module;
-    final @Nonnull TokenIdentifierLower target_name;
+    private final ModulePath           source_module;
+    private final TokenIdentifierLower source_name;
+    private final ModulePath           target_module;
+    private final TokenIdentifierLower target_name;
 
     public TermReference(
-      final @Nonnull ModulePath in_source_module,
-      final @Nonnull TokenIdentifierLower in_source_name,
-      final @Nonnull ModulePath in_target_module,
-      final @Nonnull TokenIdentifierLower in_target_name)
+      final ModulePath in_source_module,
+      final TokenIdentifierLower in_source_name,
+      final ModulePath in_target_module,
+      final TokenIdentifierLower in_target_name)
     {
       this.source_module = in_source_module;
       this.source_name = in_source_name;
       this.target_module = in_target_module;
       this.target_name = in_target_name;
     }
-
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final TermReference other = (TermReference) obj;
-      if (!this.source_name.equals(other.source_name)) {
-        return false;
-      }
-      if (!this.source_module.equals(other.source_module)) {
-        return false;
-      }
-      if (!this.target_module.equals(other.target_module)) {
-        return false;
-      }
-      if (!this.target_name.equals(other.target_name)) {
-        return false;
-      }
-      return true;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.source_name.hashCode();
-      result = (prime * result) + this.source_module.hashCode();
-      result = (prime * result) + this.target_module.hashCode();
-      result = (prime * result) + this.target_name.hashCode();
-      return result;
-    }
   }
 
-  private static final class TermResolver implements
-    UASTUTermVisitor<UASTRDTerm, ResolverError>
+  @EqualityReference private static final class TermResolver implements
+    UASTUTermVisitorType<UASTRDTerm, ResolverError>
   {
-    private final @Nonnull Log                               log;
-    private final @Nonnull UASTUDModule                      module;
-    private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @Nonnull UASTUDTerm                        term;
-    private final @Nonnull TermGraph                         term_graph;
+    private final LogUsableType                     log;
+    private final UASTUDModule                      module;
+    private final Map<ModulePathFlat, UASTUDModule> modules;
+    private final UASTUDTerm                        term;
+    private final TermGraph                         term_graph;
 
     public TermResolver(
-      final @Nonnull Log in_log,
-      final @Nonnull UASTUDModule in_module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
-      final @Nonnull TermGraph in_term_graph,
-      final @Nonnull UASTUDTerm t)
+      final LogUsableType in_log,
+      final UASTUDModule in_module,
+      final Map<ModulePathFlat, UASTUDModule> in_modules,
+      final TermGraph in_term_graph,
+      final UASTUDTerm t)
     {
       this.log = in_log;
       this.module = in_module;
@@ -1751,12 +1639,9 @@ public final class Resolver
       this.term = t;
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRDFunctionDefined
-      termVisitFunctionDefined(
-        final @Nonnull UASTUDFunctionDefined f)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDFunctionDefined termVisitFunctionDefined(
+      final UASTUDFunctionDefined f)
+      throws ResolverError
     {
       final UASTRExpression ex =
         f.getBody().expressionVisitableAccept(
@@ -1798,12 +1683,9 @@ public final class Resolver
         ex);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRDFunctionExternal
-      termVisitFunctionExternal(
-        final @Nonnull UASTUDFunctionExternal f)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDFunctionExternal termVisitFunctionExternal(
+      final UASTUDFunctionExternal f)
+      throws ResolverError
     {
 
       final UASTUTypePath rt = f.getReturnType();
@@ -1834,23 +1716,20 @@ public final class Resolver
       this.term_graph.addTerm(this.module.getPath(), f.getName());
 
       final UASTUDExternal ext = f.getExternal();
-      final Option<UASTUExpression> original_emulation = ext.getEmulation();
-      final Option<UASTRExpression> emulation =
+      final OptionType<UASTUExpression> original_emulation =
+        ext.getEmulation();
+      final OptionType<UASTRExpression> emulation =
         original_emulation
-          .mapPartial(new PartialFunction<UASTUExpression, UASTRExpression, ResolverError>() {
+          .mapPartial(new PartialFunctionType<UASTUExpression, UASTRExpression, ResolverError>() {
             @Override public UASTRExpression call(
-              final @Nonnull UASTUExpression e)
+              final UASTUExpression e)
               throws ResolverError
             {
-              try {
-                return e.expressionVisitableAccept(new ExpressionResolver(
-                  f,
-                  TermResolver.this.module,
-                  TermResolver.this.modules,
-                  TermResolver.this.term_graph));
-              } catch (final ConstraintError x) {
-                throw new UnreachableCodeException(x);
-              }
+              return e.expressionVisitableAccept(new ExpressionResolver(
+                f,
+                TermResolver.this.module,
+                TermResolver.this.modules,
+                TermResolver.this.term_graph));
             }
           });
 
@@ -1866,30 +1745,25 @@ public final class Resolver
     }
 
     @Override public UASTRDValueDefined termVisitValueDefined(
-      final @Nonnull UASTUDValueDefined v)
-      throws ResolverError,
-        ConstraintError
+      final UASTUDValueDefined v)
+      throws ResolverError
     {
-      final Option<UASTRTypeName> ascription =
-        v.getAscription().mapPartial(
-          new PartialFunction<UASTUTypePath, UASTRTypeName, ResolverError>() {
-            @SuppressWarnings("synthetic-access") @Override public
-              UASTRTypeName
-              call(
-                final @Nonnull UASTUTypePath x)
+      final OptionType<UASTRTypeName> ascription =
+        v
+          .getAscription()
+          .mapPartial(
+            new PartialFunctionType<UASTUTypePath, UASTRTypeName, ResolverError>() {
+              @Override public UASTRTypeName call(
+                final UASTUTypePath x)
                 throws ResolverError
-            {
-              try {
+              {
                 return Resolver.lookupType(
                   TermResolver.this.modules,
                   TermResolver.this.module,
                   x.getModule(),
                   x.getName());
-              } catch (final ConstraintError e) {
-                throw new UnreachableCodeException(e);
               }
-            }
-          });
+            });
 
       final UASTRExpression ex =
         v.getExpression().expressionVisitableAccept(
@@ -1903,12 +1777,9 @@ public final class Resolver
       return new UASTRDValueDefined(v.getName(), ascription, ex);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRDTerm
-      termVisitValueExternal(
-        final @Nonnull UASTUDValueExternal v)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDTerm termVisitValueExternal(
+      final UASTUDValueExternal v)
+      throws ResolverError
     {
       final UASTUDExternal original_external = v.getExternal();
 
@@ -1921,7 +1792,7 @@ public final class Resolver
           type_name.getName());
 
       this.term_graph.addTerm(this.module.getPath(), v.getName());
-      final Option<UASTRExpression> none = Option.none();
+      final OptionType<UASTRExpression> none = Option.none();
       final UASTRDExternal external =
         new UASTRDExternal(
           original_external.getName(),
@@ -1936,21 +1807,21 @@ public final class Resolver
    * A type in the type graph.
    */
 
-  private static final class Type
+  @EqualityStructural private static final class Type
   {
-    private final @Nonnull ModulePathFlat module;
-    private final @Nonnull String         name;
+    private final ModulePathFlat module;
+    private final String         name;
 
     public Type(
-      final @Nonnull ModulePathFlat in_module,
-      final @Nonnull String in_name)
+      final ModulePathFlat in_module,
+      final String in_name)
     {
       this.module = in_module;
       this.name = in_name;
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -1985,29 +1856,29 @@ public final class Resolver
    * Type graph.
    */
 
-  private static final class TypeGraph
+  @EqualityReference private static final class TypeGraph
   {
-    private final @Nonnull DirectedAcyclicGraph<Type, TypeReference> graph;
-    private final @Nonnull Log                                       log;
+    private final DirectedAcyclicGraph<Type, TypeReference> graph;
+    private final LogUsableType                             log;
 
     public TypeGraph(
-      final @Nonnull Log in_log)
+      final LogUsableType in_log)
     {
       this.graph =
         new DirectedAcyclicGraph<Type, TypeReference>(TypeReference.class);
-      this.log = new Log(in_log, "type-graph");
+      this.log = in_log.with("type-graph");
     }
 
     public void addType(
-      final @Nonnull ModulePath source_module,
-      final @Nonnull TokenIdentifierLower source_name)
+      final ModulePath source_module,
+      final TokenIdentifierLower source_name)
     {
       final ModulePathFlat source_module_flat =
         ModulePathFlat.fromModulePath(source_module);
       final Type source =
         new Type(source_module_flat, source_name.getActual());
 
-      if (this.log.enabled(Level.LOG_DEBUG)) {
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         this.log.debug(String.format(
           "Adding type: %s.%s",
           source_module_flat.getActual(),
@@ -2018,12 +1889,11 @@ public final class Resolver
     }
 
     public void addTypeReference(
-      final @Nonnull ModulePath source_module,
-      final @Nonnull TokenIdentifierLower source_name,
-      final @Nonnull ModulePath target_module,
-      final @Nonnull TokenIdentifierLower target_name)
-      throws ResolverError,
-        ConstraintError
+      final ModulePath source_module,
+      final TokenIdentifierLower source_name,
+      final ModulePath target_module,
+      final TokenIdentifierLower target_name)
+      throws ResolverError
     {
       final ModulePathFlat source_module_flat =
         ModulePathFlat.fromModulePath(source_module);
@@ -2047,9 +1917,9 @@ public final class Resolver
         this.addType(source_module, source_name);
         this.addType(target_module, target_name);
 
-        if (this.log.enabled(Level.LOG_DEBUG)) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
           this.log.debug(String.format(
-            "Adding type reference: %s.%s -> %s.%s",
+            "Adding type reference: %s.%s → %s.%s",
             source_module_flat.getActual(),
             source_name.getActual(),
             target_module_flat.getActual(),
@@ -2062,8 +1932,8 @@ public final class Resolver
       } catch (final CycleFoundException x) {
 
         /**
-         * Because a cycle as occurred on an insertion of edge A -> B, then
-         * there must be some path B -> A already in the graph. Use a shortest
+         * Because a cycle as occurred on an insertion of edge A → B, then
+         * there must be some path B → A already in the graph. Use a shortest
          * path algorithm to determine that path.
          */
 
@@ -2076,7 +1946,7 @@ public final class Resolver
         final List<TypeReference> terms = dj.getPathEdgeList();
         assert terms != null;
 
-        final ArrayList<TokenIdentifierLower> tokens =
+        final List<TokenIdentifierLower> tokens =
           new ArrayList<TokenIdentifierLower>();
         tokens.add(target_name);
 
@@ -2088,15 +1958,13 @@ public final class Resolver
       }
     }
 
-    @SuppressWarnings("synthetic-access") public @Nonnull
-      List<String>
-      getTopology(
-        final @Nonnull ModulePathFlat current)
+    public List<String> getTopology(
+      final ModulePathFlat current)
     {
       final TopologicalOrderIterator<Type, TypeReference> iter =
         new TopologicalOrderIterator<Type, TypeReference>(this.graph);
 
-      final ArrayList<String> ls = new ArrayList<String>();
+      final List<String> ls = new ArrayList<String>();
       while (iter.hasNext()) {
         final Type t = iter.next();
         if (t.module.equals(current)) {
@@ -2113,18 +1981,18 @@ public final class Resolver
    * <code>module</code>, in module <code>from</code>.
    */
 
-  private static final class TypeReference
+  @EqualityStructural private static final class TypeReference
   {
-    final @Nonnull ModulePath           source_module;
-    final @Nonnull TokenIdentifierLower source_name;
-    final @Nonnull ModulePath           target_module;
-    final @Nonnull TokenIdentifierLower target_name;
+    private final ModulePath           source_module;
+    private final TokenIdentifierLower source_name;
+    private final ModulePath           target_module;
+    private final TokenIdentifierLower target_name;
 
     public TypeReference(
-      final @Nonnull ModulePath in_source_module,
-      final @Nonnull TokenIdentifierLower in_source_name,
-      final @Nonnull ModulePath in_target_module,
-      final @Nonnull TokenIdentifierLower in_target_name)
+      final ModulePath in_source_module,
+      final TokenIdentifierLower in_source_name,
+      final ModulePath in_target_module,
+      final TokenIdentifierLower in_target_name)
     {
       this.source_module = in_source_module;
       this.source_name = in_source_name;
@@ -2133,7 +2001,7 @@ public final class Resolver
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -2172,19 +2040,19 @@ public final class Resolver
     }
   }
 
-  private static final class VertexShaderLocalResolver implements
-    UASTUVertexShaderLocalVisitor<UASTRDShaderVertexLocalValue, ResolverError>
+  @EqualityReference private static final class VertexShaderLocalResolver implements
+    UASTUVertexShaderLocalVisitorType<UASTRDShaderVertexLocalValue, ResolverError>
   {
-    private final @Nonnull Log                               log;
-    private final @Nonnull UASTUDModule                      module;
-    private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @Nonnull UASTUDShaderVertex                shader;
+    private final LogUsableType                     log;
+    private final UASTUDModule                      module;
+    private final Map<ModulePathFlat, UASTUDModule> modules;
+    private final UASTUDShaderVertex                shader;
 
     public VertexShaderLocalResolver(
-      final @Nonnull Log in_log,
-      final @Nonnull UASTUDModule in_module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
-      final @Nonnull UASTUDShaderVertex in_shader)
+      final LogUsableType in_log,
+      final UASTUDModule in_module,
+      final Map<ModulePathFlat, UASTUDModule> in_modules,
+      final UASTUDShaderVertex in_shader)
     {
       this.module = in_module;
       this.modules = in_modules;
@@ -2195,9 +2063,8 @@ public final class Resolver
     @Override public
       UASTRDShaderVertexLocalValue
       vertexShaderVisitLocalValue(
-        final @Nonnull UASTUDShaderVertexLocalValue v)
-        throws ResolverError,
-          ConstraintError
+        final UASTUDShaderVertexLocalValue v)
+        throws ResolverError
     {
       final UASTUDValueLocal vv = v.getValue();
       final LocalResolver lr =
@@ -2207,20 +2074,20 @@ public final class Resolver
     }
   }
 
-  private static final class VertexShaderResolver implements
-    UASTUVertexShaderVisitor<UASTRDShaderVertex, UASTRDShaderVertexInput, UASTRDShaderVertexParameter, UASTRDShaderVertexOutput, UASTRDShaderVertexLocalValue, UASTRDShaderVertexOutputAssignment, ResolverError>
+  @EqualityReference private static final class VertexShaderResolver implements
+    UASTUVertexShaderVisitorType<UASTRDShaderVertex, UASTRDShaderVertexInput, UASTRDShaderVertexParameter, UASTRDShaderVertexOutput, UASTRDShaderVertexLocalValue, UASTRDShaderVertexOutputAssignment, ResolverError>
   {
-    private final @Nonnull Log                               log;
-    private final @Nonnull UASTUDModule                      module;
-    private final @Nonnull Map<ModulePathFlat, UASTUDModule> modules;
-    private final @Nonnull Map<String, TokenIdentifierLower> outputs_declared;
-    private final @Nonnull UASTUDShaderVertex                shader;
+    private final LogUsableType                     log;
+    private final UASTUDModule                      module;
+    private final Map<ModulePathFlat, UASTUDModule> modules;
+    private final Map<String, TokenIdentifierLower> outputs_declared;
+    private final UASTUDShaderVertex                shader;
 
     public VertexShaderResolver(
-      final @Nonnull Log in_log,
-      final @Nonnull UASTUDModule in_module,
-      final @Nonnull Map<ModulePathFlat, UASTUDModule> in_modules,
-      final @Nonnull UASTUDShaderVertex v)
+      final LogUsableType in_log,
+      final UASTUDModule in_module,
+      final Map<ModulePathFlat, UASTUDModule> in_modules,
+      final UASTUDShaderVertex v)
     {
       this.module = in_module;
       this.modules = in_modules;
@@ -2229,17 +2096,14 @@ public final class Resolver
       this.outputs_declared = new HashMap<String, TokenIdentifierLower>();
     }
 
-    @Override public
-      UASTRDShaderVertex
-      vertexShaderVisit(
-        final @Nonnull List<UASTRDShaderVertexInput> inputs,
-        final @Nonnull List<UASTRDShaderVertexParameter> parameters,
-        final @Nonnull List<UASTRDShaderVertexOutput> outputs,
-        final @Nonnull List<UASTRDShaderVertexLocalValue> locals,
-        final @Nonnull List<UASTRDShaderVertexOutputAssignment> output_assignments,
-        final @Nonnull UASTUDShaderVertex v)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDShaderVertex vertexShaderVisit(
+      final List<UASTRDShaderVertexInput> inputs,
+      final List<UASTRDShaderVertexParameter> parameters,
+      final List<UASTRDShaderVertexOutput> outputs,
+      final List<UASTRDShaderVertexLocalValue> locals,
+      final List<UASTRDShaderVertexOutputAssignment> output_assignments,
+      final UASTUDShaderVertex v)
+      throws ResolverError
     {
       return new UASTRDShaderVertex(
         v.getName(),
@@ -2250,12 +2114,9 @@ public final class Resolver
         output_assignments);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRDShaderVertexInput
-      vertexShaderVisitInput(
-        final @Nonnull UASTUDShaderVertexInput i)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDShaderVertexInput vertexShaderVisitInput(
+      final UASTUDShaderVertexInput i)
+      throws ResolverError
     {
       final UniqueNameLocal oname = i.getName();
       final UASTRTermNameLocal name =
@@ -2272,10 +2133,9 @@ public final class Resolver
     }
 
     @Override public
-      UASTUVertexShaderLocalVisitor<UASTRDShaderVertexLocalValue, ResolverError>
+      UASTUVertexShaderLocalVisitorType<UASTRDShaderVertexLocalValue, ResolverError>
       vertexShaderVisitLocalsPre()
-        throws ResolverError,
-          ConstraintError
+        throws ResolverError
     {
       return new VertexShaderLocalResolver(
         this.log,
@@ -2284,12 +2144,9 @@ public final class Resolver
         this.shader);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRDShaderVertexOutput
-      vertexShaderVisitOutput(
-        final @Nonnull UASTUDShaderVertexOutput o)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDShaderVertexOutput vertexShaderVisitOutput(
+      final UASTUDShaderVertexOutput o)
+      throws ResolverError
     {
       final UniqueNameLocal oname = o.getName();
       final UASTUTypePath otype = o.getType();
@@ -2312,9 +2169,8 @@ public final class Resolver
     @Override public
       UASTRDShaderVertexOutputAssignment
       vertexShaderVisitOutputAssignment(
-        final @Nonnull UASTUDShaderVertexOutputAssignment a)
-        throws ResolverError,
-          ConstraintError
+        final UASTUDShaderVertexOutputAssignment a)
+        throws ResolverError
     {
       final UASTRTermName name =
         Resolver.lookupTerm(this.module, this.modules, a
@@ -2330,12 +2186,9 @@ public final class Resolver
       return new UASTRDShaderVertexOutputAssignment(a.getName(), variable);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRDShaderVertexParameter
-      vertexShaderVisitParameter(
-        final @Nonnull UASTUDShaderVertexParameter p)
-        throws ResolverError,
-          ConstraintError
+    @Override public UASTRDShaderVertexParameter vertexShaderVisitParameter(
+      final UASTUDShaderVertexParameter p)
+      throws ResolverError
     {
       final UniqueNameLocal oname = p.getName();
       final UASTUTypePath otype = p.getType();
@@ -2352,12 +2205,11 @@ public final class Resolver
     }
   }
 
-  private static @Nonnull UASTUDModule lookupModuleFromQualification(
-    final @Nonnull UASTUDModule current,
-    final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-    final @Nonnull TokenIdentifierUpper qualification)
-    throws ResolverError,
-      ConstraintError
+  private static UASTUDModule lookupModuleFromQualification(
+    final UASTUDModule current,
+    final Map<ModulePathFlat, UASTUDModule> modules,
+    final TokenIdentifierUpper qualification)
+    throws ResolverError
   {
     if (current.getImportedNames().containsKey(qualification.getActual())) {
       final UASTUDImport path =
@@ -2380,13 +2232,12 @@ public final class Resolver
     throw ResolverError.moduleReferenceUnknown(qualification);
   }
 
-  private static @Nonnull UASTRShaderName lookupShader(
-    final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-    final @Nonnull UASTUDModule current,
-    final @Nonnull Option<TokenIdentifierUpper> qualification,
-    final @Nonnull TokenIdentifierLower name)
-    throws ResolverError,
-      ConstraintError
+  private static UASTRShaderName lookupShader(
+    final Map<ModulePathFlat, UASTUDModule> modules,
+    final UASTUDModule current,
+    final OptionType<TokenIdentifierUpper> qualification,
+    final TokenIdentifierLower name)
+    throws ResolverError
   {
     final UASTUDModule m;
 
@@ -2396,7 +2247,7 @@ public final class Resolver
       final Some<TokenIdentifierUpper> some =
         (Some<TokenIdentifierUpper>) qualification;
       m =
-        Resolver.lookupModuleFromQualification(current, modules, some.value);
+        Resolver.lookupModuleFromQualification(current, modules, some.get());
     }
 
     if (m.getShaders().containsKey(name.getActual()) == false) {
@@ -2406,31 +2257,26 @@ public final class Resolver
     return new UASTRShaderName(m.getPath(), name);
   }
 
-  static @Nonnull UASTRTermName lookupTerm(
-    final @Nonnull UASTUDModule module,
-    final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-    final @Nonnull UniqueName name)
-    throws ResolverError,
-      ConstraintError
+  static UASTRTermName lookupTerm(
+    final UASTUDModule module,
+    final Map<ModulePathFlat, UASTUDModule> modules,
+    final UniqueName name)
+    throws ResolverError
   {
     return name
-      .uniqueNameVisitableAccept(new UniqueNameVisitor<UASTRTermName, ResolverError>() {
-        @Override public @Nonnull UASTRTermName uniqueNameVisitLocal(
+      .uniqueNameVisitableAccept(new UniqueNameVisitorType<UASTRTermName, ResolverError>() {
+        @Override public UASTRTermName uniqueNameVisitLocal(
           final UniqueNameLocal name_actual)
-          throws ResolverError,
-            ConstraintError
+          throws ResolverError
         {
           return new UASTRTermNameLocal(
             name_actual.getOriginal(),
             name_actual.getCurrent());
         }
 
-        @SuppressWarnings("synthetic-access") @Override public @Nonnull
-          UASTRTermName
-          uniqueNameVisitNonLocal(
-            final UniqueNameNonLocal name_actual)
-            throws ResolverError,
-              ConstraintError
+        @Override public UASTRTermName uniqueNameVisitNonLocal(
+          final UniqueNameNonLocal name_actual)
+          throws ResolverError
         {
           final UASTUDModule m;
           if (name_actual.getModule().isNone()) {
@@ -2440,7 +2286,7 @@ public final class Resolver
               Resolver.lookupModuleFromQualification(
                 module,
                 modules,
-                ((Some<TokenIdentifierUpper>) name_actual.getModule()).value);
+                ((Some<TokenIdentifierUpper>) name_actual.getModule()).get());
           }
 
           final Map<String, UASTUDTerm> terms = m.getTerms();
@@ -2453,13 +2299,12 @@ public final class Resolver
       });
   }
 
-  private static @Nonnull UASTRTypeName lookupType(
-    final @Nonnull Map<ModulePathFlat, UASTUDModule> modules,
-    final @Nonnull UASTUDModule current,
-    final @Nonnull Option<TokenIdentifierUpper> qualification,
-    final @Nonnull TokenIdentifierLower name)
-    throws ResolverError,
-      ConstraintError
+  private static UASTRTypeName lookupType(
+    final Map<ModulePathFlat, UASTUDModule> modules,
+    final UASTUDModule current,
+    final OptionType<TokenIdentifierUpper> qualification,
+    final TokenIdentifierLower name)
+    throws ResolverError
   {
     final UASTUDModule m;
 
@@ -2475,7 +2320,7 @@ public final class Resolver
       final Some<TokenIdentifierUpper> some =
         (Some<TokenIdentifierUpper>) qualification;
       m =
-        Resolver.lookupModuleFromQualification(current, modules, some.value);
+        Resolver.lookupModuleFromQualification(current, modules, some.get());
     }
 
     if (m.getTypes().containsKey(name.getActual()) == false) {
@@ -2485,37 +2330,49 @@ public final class Resolver
     return new UASTRTypeNameGlobal(m.getPath(), name);
   }
 
-  public static @Nonnull Resolver newResolver(
-    final @Nonnull UASTUCompilation compilation,
-    final @Nonnull Log log)
-    throws ConstraintError
+  /**
+   * Construct a new name resolver for the given AST.
+   * 
+   * @param compilation
+   *          The AST
+   * @param log
+   *          A log interface
+   * @return A name resolver
+   */
+
+  public static Resolver newResolver(
+    final UASTUCompilation compilation,
+    final LogUsableType log)
   {
     return new Resolver(compilation, log);
   }
 
-  private final @Nonnull UASTUCompilation compilation;
-  private final @Nonnull Log              log;
+  private final UASTUCompilation compilation;
+  private final LogUsableType    log;
 
   private Resolver(
-    final @Nonnull UASTUCompilation in_compilation,
-    final @Nonnull Log in_log)
-    throws ConstraintError
+    final UASTUCompilation in_compilation,
+    final LogUsableType in_log)
   {
-    this.compilation =
-      Constraints.constrainNotNull(in_compilation, "Compilation");
-    this.log = new Log(in_log, "resolver");
+    this.compilation = NullCheck.notNull(in_compilation, "Compilation");
+    this.log = NullCheck.notNull(in_log, "Log").with("resolver");
   }
 
-  public final @Nonnull UASTRCompilation run()
-    throws ResolverError,
-      ConstraintError
+  /**
+   * @return A resolved AST
+   * @throws ResolverError
+   *           If a name resolution error occurs
+   */
+
+  public UASTRCompilation run()
+    throws ResolverError
   {
     final ImportResolver ri = new ImportResolver(this.compilation, this.log);
 
     final Map<ModulePathFlat, UASTUDModule> modules =
       this.compilation.getModules();
 
-    final HashMap<ModulePathFlat, UASTRDModule> results =
+    final Map<ModulePathFlat, UASTRDModule> results =
       new HashMap<ModulePathFlat, UASTRDModule>();
 
     for (final ModulePathFlat path : modules.keySet()) {

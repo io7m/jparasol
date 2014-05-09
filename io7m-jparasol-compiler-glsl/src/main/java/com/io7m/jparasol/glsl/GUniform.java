@@ -19,10 +19,8 @@ package com.io7m.jparasol.glsl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Pair;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Pair;
 import com.io7m.jparasol.typed.TType;
 import com.io7m.jparasol.typed.TType.TBoolean;
 import com.io7m.jparasol.typed.TType.TFloat;
@@ -41,136 +39,146 @@ import com.io7m.jparasol.typed.TType.TVector3F;
 import com.io7m.jparasol.typed.TType.TVector3I;
 import com.io7m.jparasol.typed.TType.TVector4F;
 import com.io7m.jparasol.typed.TType.TVector4I;
-import com.io7m.jparasol.typed.TTypeVisitor;
+import com.io7m.jparasol.typed.TTypeVisitorType;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentParameter;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexParameter;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class GUniform
+/**
+ * Functions to expand parameters into GLSL uniforms.
+ */
+
+@EqualityReference public final class GUniform
 {
-  private static abstract class Expander implements
-    TTypeVisitor<List<Pair<String, TType>>, ConstraintError>
+  private GUniform()
   {
-    private static @Nonnull List<Pair<String, TType>> one(
-      final @Nonnull String name,
-      final @Nonnull TType type)
+    throw new UnreachableCodeException();
+  }
+
+  @EqualityReference private static abstract class Expander implements
+    TTypeVisitorType<List<Pair<String, TType>>, UnreachableCodeException>
+  {
+    private static List<Pair<String, TType>> one(
+      final String name,
+      final TType type)
     {
-      final ArrayList<Pair<String, TType>> ls =
+      final List<Pair<String, TType>> ls =
         new ArrayList<Pair<String, TType>>();
-      final Pair<String, TType> r = new Pair<String, TType>(name, type);
+      final Pair<String, TType> r = Pair.pair(name, type);
       ls.add(r);
       return ls;
     }
 
-    private final @Nonnull String name;
+    private final String name;
 
     public Expander(
-      final @Nonnull String in_name)
+      final String in_name)
     {
       this.name = in_name;
     }
 
     @Override public List<Pair<String, TType>> typeVisitBoolean(
       final TBoolean t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitFloat(
       final TFloat t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitFunction(
       final TFunction t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitInteger(
       final TInteger t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitMatrix3x3F(
       final TMatrix3x3F t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitMatrix4x4F(
       final TMatrix4x4F t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitSampler2D(
       final TSampler2D t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitSamplerCube(
       final TSamplerCube t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitVector2F(
       final TVector2F t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitVector2I(
       final TVector2I t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitVector3F(
       final TVector3F t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitVector3I(
       final TVector3I t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitVector4F(
       final TVector4F t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
 
     @Override public List<Pair<String, TType>> typeVisitVector4I(
       final TVector4I t)
-      throws ConstraintError
+      throws UnreachableCodeException
     {
       return Expander.one(this.name, t);
     }
   }
 
-  private static @Nonnull List<Pair<String, TType>> expandRecordUniforms(
-    final @Nonnull List<String> s,
-    final @Nonnull TRecord f)
+  private static List<Pair<String, TType>> expandRecordUniforms(
+    final List<String> s,
+    final TRecord f)
   {
     final List<Pair<String, TType>> lb = new ArrayList<Pair<String, TType>>();
 
@@ -188,44 +196,58 @@ public final class GUniform
     return lb;
   }
 
-  public static @Nonnull List<Pair<String, TType>> expandUniformFragment(
-    final @Nonnull TASTDShaderFragmentParameter p)
-    throws ConstraintError
+  /**
+   * Expand the given shader parameter into one or more GLSL uniforms.
+   * 
+   * @param p
+   *          The parameter
+   * @return The expanded uniforms
+   */
+
+  public static List<Pair<String, TType>> expandUniformFragment(
+    final TASTDShaderFragmentParameter p)
   {
     final String name = p.getName().getCurrent();
     return p.getType().ttypeVisitableAccept(new Expander(name) {
       @Override public List<Pair<String, TType>> typeVisitRecord(
-        final @Nonnull TRecord t)
-        throws ConstraintError
+        final TRecord t)
+        throws UnreachableCodeException
       {
-        final ArrayList<String> ls = new ArrayList<String>();
+        final List<String> ls = new ArrayList<String>();
         ls.add(name);
         return GUniform.expandRecordUniforms(ls, t);
       }
     });
   }
 
-  public static @Nonnull List<Pair<String, TType>> expandUniformVertex(
-    final @Nonnull TASTDShaderVertexParameter p)
-    throws ConstraintError
+  /**
+   * Expand the given shader parameter into one or more GLSL uniforms.
+   * 
+   * @param p
+   *          The parameter
+   * @return The expanded uniforms
+   */
+
+  public static List<Pair<String, TType>> expandUniformVertex(
+    final TASTDShaderVertexParameter p)
   {
     final String name = p.getName().getCurrent();
     return p.getType().ttypeVisitableAccept(new Expander(name) {
       @Override public List<Pair<String, TType>> typeVisitRecord(
-        final @Nonnull TRecord t)
-        throws ConstraintError
+        final TRecord t)
+        throws UnreachableCodeException
       {
-        final ArrayList<String> ls = new ArrayList<String>();
+        final List<String> ls = new ArrayList<String>();
         ls.add(name);
         return GUniform.expandRecordUniforms(ls, t);
       }
     });
   }
 
-  private static @Nonnull Pair<String, TType> expandValue(
-    final @Nonnull List<String> s,
-    final @Nonnull String name,
-    final @Nonnull TManifestType type)
+  private static Pair<String, TType> expandValue(
+    final List<String> s,
+    final String name,
+    final TManifestType type)
   {
     final StringBuilder b = new StringBuilder();
     final int max = s.size() - 1;
@@ -236,6 +258,6 @@ public final class GUniform
     }
 
     b.append(name);
-    return new Pair<String, TType>(b.toString(), type);
+    return Pair.pair(b.toString(), (TType) type);
   }
 }

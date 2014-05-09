@@ -23,10 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.NameRestrictions;
@@ -36,23 +34,24 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.untyped.UnitCombinerError;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 
-public final class UASTICompilation
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public final class UASTICompilation
 {
-  static final @Nonnull Set<String> EMPTY;
+  static final Set<String> EMPTY;
 
   static {
     EMPTY = Collections.unmodifiableSet(new HashSet<String>());
   }
 
-  public static @Nonnull UASTICompilation fromUnits(
-    final @Nonnull List<UASTIUnit> units)
-    throws ConstraintError,
-      UnitCombinerError
+  public static UASTICompilation fromUnits(
+    final List<UASTIUnit> units)
+    throws UnitCombinerError
   {
     try {
-      final HashMap<ModulePathFlat, UASTIDModule> m =
+      final Map<ModulePathFlat, UASTIDModule> m =
         new HashMap<ModulePathFlat, UASTIDModule>();
-      final HashMap<ModulePathFlat, ModulePath> paths =
+      final Map<ModulePathFlat, ModulePath> paths =
         new HashMap<ModulePathFlat, ModulePath>();
 
       for (final UASTIUnit u : units) {
@@ -84,24 +83,23 @@ public final class UASTICompilation
     }
   }
 
-  private final @Nonnull Map<ModulePathFlat, UASTIDModule> modules;
-  private final @Nonnull Map<ModulePathFlat, ModulePath>   paths;
+  private final Map<ModulePathFlat, UASTIDModule> modules;
+  private final Map<ModulePathFlat, ModulePath>   paths;
 
   private UASTICompilation(
-    final @Nonnull Map<ModulePathFlat, UASTIDModule> in_modules,
-    final @Nonnull Map<ModulePathFlat, ModulePath> in_paths)
-    throws ConstraintError
+    final Map<ModulePathFlat, UASTIDModule> in_modules,
+    final Map<ModulePathFlat, ModulePath> in_paths)
   {
-    this.modules = Constraints.constrainNotNull(in_modules, "Modules");
-    this.paths = Constraints.constrainNotNull(in_paths, "Paths");
+    this.modules = NullCheck.notNull(in_modules, "Modules");
+    this.paths = NullCheck.notNull(in_paths, "Paths");
   }
 
-  public @Nonnull Map<ModulePathFlat, UASTIDModule> getModules()
+  public Map<ModulePathFlat, UASTIDModule> getModules()
   {
     return Collections.unmodifiableMap(this.modules);
   }
 
-  public @Nonnull Map<ModulePathFlat, ModulePath> getPaths()
+  public Map<ModulePathFlat, ModulePath> getPaths()
   {
     return Collections.unmodifiableMap(this.paths);
   }

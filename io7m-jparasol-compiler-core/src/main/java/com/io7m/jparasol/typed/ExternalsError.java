@@ -18,35 +18,69 @@ package com.io7m.jparasol.typed;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
 import org.jgrapht.GraphPath;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlat;
 import com.io7m.jparasol.typed.ast.TASTReference;
+import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
+
+/**
+ * The type of errors raised by the externals checker.
+ * 
+ * @see Externals
+ */
 
 public final class ExternalsError extends CompilerError
 {
-  static enum Code
+  /**
+   * Error codes for the externals checker.
+   */
+
+  public static enum Code
   {
+    /**
+     * External not allowed in fragment shader.
+     */
+
     EXTERNALS_DISALLOWED_IN_FRAGMENT_SHADER,
+
+    /**
+     * External not allowed in vertex shader.
+     */
+
     EXTERNALS_DISALLOWED_IN_VERTEX_SHADER
   }
 
   private static final long serialVersionUID = -4604639514273970019L;
 
-  public static @Nonnull ExternalsError termDisallowedInFragmentShader(
-    final @Nonnull TASTNameTermShaderFlat.Shader start_shader,
-    final @Nonnull TASTReference start_term_reference,
-    final @Nonnull TASTTermNameFlat final_term,
-    final @Nonnull GraphPath<TASTTermNameFlat, TASTReference> path)
-    throws ConstraintError
+  /**
+   * An error indicating that a term cannot be used in a fragment shader.
+   * 
+   * @param start_shader
+   *          The shader
+   * @param start_term_reference
+   *          The term reference
+   * @param final_term
+   *          The resulting term
+   * @param path
+   *          The path to the term
+   * @return An error
+   */
+
+  public static ExternalsError termDisallowedInFragmentShader(
+    final TASTShaderNameFlat start_shader,
+    final TASTReference start_term_reference,
+    final TASTTermNameFlat final_term,
+    final GraphPath<TASTTermNameFlat, TASTReference> path)
   {
+    NullCheck.notNull(start_shader, "Shader");
+    NullCheck.notNull(start_term_reference, "Initial term");
+    NullCheck.notNull(final_term, "Final term");
+    NullCheck.notNull(path, "Graph path");
+
     final StringBuilder m = new StringBuilder();
     m.append("The external function ");
     m.append(final_term.show());
@@ -65,7 +99,7 @@ public final class ExternalsError extends CompilerError
     m.append(")\n");
 
     for (final TASTReference e : path.getEdgeList()) {
-      m.append("      -> Term ");
+      m.append("      → Term ");
       m.append(e.getSourceModuleFlat().getActual());
       m.append(".");
       m.append(e.getSourceName().getActual());
@@ -76,23 +110,43 @@ public final class ExternalsError extends CompilerError
       m.append(")\n");
     }
 
-    m.append("      -> Term ");
+    m.append("      → Term ");
     m.append(final_term.show());
 
+    final String r = m.toString();
+    assert r != null;
     return new ExternalsError(
       Code.EXTERNALS_DISALLOWED_IN_FRAGMENT_SHADER,
-      m.toString(),
+      r,
       start_term_reference.getSourceName().getFile(),
       start_term_reference.getSourceName().getPosition());
   }
 
-  public static @Nonnull ExternalsError termDisallowedInVertexShader(
-    final @Nonnull TASTNameTermShaderFlat.Shader start_shader,
-    final @Nonnull TASTReference start_term_reference,
-    final @Nonnull TASTTermNameFlat final_term,
-    final @Nonnull GraphPath<TASTTermNameFlat, TASTReference> path)
-    throws ConstraintError
+  /**
+   * An error indicating that a term cannot be used in a vertex shader.
+   * 
+   * @param start_shader
+   *          The shader
+   * @param start_term_reference
+   *          The term reference
+   * @param final_term
+   *          The resulting term
+   * @param path
+   *          The path to the term
+   * @return An error
+   */
+
+  public static ExternalsError termDisallowedInVertexShader(
+    final TASTShaderNameFlat start_shader,
+    final TASTReference start_term_reference,
+    final TASTTermNameFlat final_term,
+    final GraphPath<TASTTermNameFlat, TASTReference> path)
   {
+    NullCheck.notNull(start_shader, "Shader");
+    NullCheck.notNull(start_term_reference, "Initial term");
+    NullCheck.notNull(final_term, "Final term");
+    NullCheck.notNull(path, "Graph path");
+
     final StringBuilder m = new StringBuilder();
     m.append("The external function ");
     m.append(final_term.show());
@@ -111,7 +165,7 @@ public final class ExternalsError extends CompilerError
     m.append(")\n");
 
     for (final TASTReference e : path.getEdgeList()) {
-      m.append("      -> Term ");
+      m.append("      → Term ");
       m.append(e.getSourceModuleFlat().getActual());
       m.append(".");
       m.append(e.getSourceName().getActual());
@@ -122,30 +176,35 @@ public final class ExternalsError extends CompilerError
       m.append(")\n");
     }
 
-    m.append("      -> Term ");
+    m.append("      → Term ");
     m.append(final_term.show());
 
+    final String r = m.toString();
+    assert r != null;
     return new ExternalsError(
       Code.EXTERNALS_DISALLOWED_IN_VERTEX_SHADER,
-      m.toString(),
+      r,
       start_term_reference.getSourceName().getFile(),
       start_term_reference.getSourceName().getPosition());
   }
 
-  private final @Nonnull Code code;
+  private final Code code;
 
   private ExternalsError(
-    final @Nonnull Code in_code,
-    final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
+    final Code in_code,
+    final String message,
+    final File file,
+    final Position position)
   {
     super(message, file, position);
-    this.code = Constraints.constrainNotNull(in_code, "Code");
+    this.code = NullCheck.notNull(in_code, "Code");
   }
 
-  public @Nonnull Code getCode()
+  /**
+   * @return The error code
+   */
+
+  public Code getCode()
   {
     return this.code;
   }

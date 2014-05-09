@@ -22,15 +22,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jlog.Level;
-import com.io7m.jlog.Log;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
@@ -52,35 +50,64 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
  * </p>
  */
 
-public final class Topology
+@EqualityReference public final class Topology
 {
-  public static @Nonnull Topology fromShader(
-    final @Nonnull TASTCompilation compilation,
-    final @Nonnull Referenced referenced,
-    final @Nonnull TASTShaderNameFlat shader_name,
-    final @Nonnull Log log)
-    throws ConstraintError
+  /**
+   * Calculate a topologically sorted set of terms and types for the given
+   * shader.
+   * 
+   * @param compilation
+   *          The AST
+   * @param referenced
+   *          The referenced terms and types
+   * @param shader_name
+   *          The name of the shader
+   * @param log
+   *          A log interface
+   * @return A set of terms and types
+   */
+
+  public static Topology fromShader(
+    final TASTCompilation compilation,
+    final Referenced referenced,
+    final TASTShaderNameFlat shader_name,
+    final LogUsableType log)
   {
-    Constraints.constrainNotNull(compilation, "Compilation");
-    Constraints.constrainNotNull(referenced, "Referenced");
-    Constraints.constrainNotNull(shader_name, "Shader name");
-    Constraints.constrainNotNull(log, "Log");
-    Constraints.constrainArbitrary(
-      referenced.getShaderName().equals(shader_name),
-      "References produced for shader");
+    NullCheck.notNull(compilation, "Compilation");
+    NullCheck.notNull(referenced, "Referenced");
+    NullCheck.notNull(shader_name, "Shader name");
+    NullCheck.notNull(log, "Log");
+
+    if (referenced.getShaderName().equals(shader_name) == false) {
+      final StringBuilder m = new StringBuilder();
+      m.append("References not produced for shader.\n");
+      m.append("  References: ");
+      m.append(referenced.getShaderName());
+      m.append("\n");
+      m.append("  Shader: ");
+      m.append(shader_name);
+      m.append("\n");
+      throw new IllegalArgumentException(m.toString());
+    }
 
     final Map<ModulePathFlat, TASTDModule> modules = compilation.getModules();
-    Constraints.constrainArbitrary(
-      modules.containsKey(shader_name.getModulePath()),
-      "Module exists");
+    if (modules.containsKey(shader_name.getModulePath()) == false) {
+      throw new IllegalStateException(String.format(
+        "Module %s does not exist",
+        shader_name.getModulePath()));
+    }
+
     final TASTDModule m = modules.get(shader_name.getModulePath());
-    Constraints.constrainArbitrary(
-      m.getShaders().containsKey(shader_name.getName()),
-      "Shader exists");
+    if (m.getShaders().containsKey(shader_name.getName()) == false) {
+      throw new IllegalStateException(String.format(
+        "Shader %s does not exist",
+        shader_name.getName()));
+    }
 
-    final Log log_actual = new Log(log, "topology");
-
+    final LogUsableType log_actual = log.with("topology");
+    // CHECKSTYLE:OFF
     final LinkedList<TTypeNameFlat> types = new LinkedList<TTypeNameFlat>();
+    // CHECKSTYLE:ON
     final Set<TTypeNameFlat> referenced_types = referenced.getTypes();
 
     {
@@ -92,10 +119,11 @@ public final class Topology
       while (type_iter.hasNext()) {
         final TTypeNameFlat type_current = type_iter.next();
         if (referenced_types.contains(type_current)) {
-          if (log_actual.enabled(Level.LOG_DEBUG)) {
-            log_actual.debug(String.format(
-              "Adding type %s",
-              type_current.show()));
+          if (log_actual.wouldLog(LogLevel.LOG_DEBUG)) {
+            final String r =
+              String.format("Adding type %s", type_current.show());
+            assert r != null;
+            log_actual.debug(r);
           }
           types.addFirst(type_current);
         }
@@ -103,8 +131,10 @@ public final class Topology
       assert types.size() == referenced_types.size();
     }
 
+    // CHECKSTYLE:OFF
     final LinkedList<TASTTermNameFlat> terms =
       new LinkedList<TASTTermNameFlat>();
+    // CHECKSTYLE:ON
     final Set<TASTTermNameFlat> referenced_terms = referenced.getTerms();
 
     {
@@ -117,10 +147,11 @@ public final class Topology
       while (term_iter.hasNext()) {
         final TASTTermNameFlat term_current = term_iter.next();
         if (referenced_terms.contains(term_current)) {
-          if (log_actual.enabled(Level.LOG_DEBUG)) {
-            log_actual.debug(String.format(
-              "Adding term %s",
-              term_current.show()));
+          if (log_actual.wouldLog(LogLevel.LOG_DEBUG)) {
+            final String r =
+              String.format("Adding term %s", term_current.show());
+            assert r != null;
+            log_actual.debug(r);
           }
           terms.addFirst(term_current);
         }
@@ -132,32 +163,48 @@ public final class Topology
     return new Topology(shader_name, terms, types);
   }
 
-  private final @Nonnull TASTShaderNameFlat     shader_name;
-  private final @Nonnull List<TASTTermNameFlat> terms;
-  private final @Nonnull List<TTypeNameFlat>    types;
+  private final TASTShaderNameFlat     shader_name;
+  private final List<TASTTermNameFlat> terms;
+  private final List<TTypeNameFlat>    types;
 
   private Topology(
-    final @Nonnull TASTShaderNameFlat in_shader_name,
-    final @Nonnull List<TASTTermNameFlat> in_terms,
-    final @Nonnull List<TTypeNameFlat> in_types)
+    final TASTShaderNameFlat in_shader_name,
+    final List<TASTTermNameFlat> in_terms,
+    final List<TTypeNameFlat> in_types)
   {
     this.shader_name = in_shader_name;
     this.terms = in_terms;
     this.types = in_types;
   }
 
-  public @Nonnull TASTShaderNameFlat getShaderName()
+  /**
+   * @return The name of the shader
+   */
+
+  public TASTShaderNameFlat getShaderName()
   {
     return this.shader_name;
   }
 
-  public @Nonnull List<TASTTermNameFlat> getTerms()
+  /**
+   * @return The sorted list of terms
+   */
+
+  public List<TASTTermNameFlat> getTerms()
   {
-    return Collections.unmodifiableList(this.terms);
+    final List<TASTTermNameFlat> r = Collections.unmodifiableList(this.terms);
+    assert r != null;
+    return r;
   }
 
-  public @Nonnull List<TTypeNameFlat> getTypes()
+  /**
+   * @return The sorted list of types
+   */
+
+  public List<TTypeNameFlat> getTypes()
   {
-    return Collections.unmodifiableList(this.types);
+    final List<TTypeNameFlat> r = Collections.unmodifiableList(this.types);
+    assert r != null;
+    return r;
   }
 }

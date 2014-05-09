@@ -16,37 +16,62 @@
 
 package com.io7m.jparasol.typed.ast;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePathFlat;
-import com.io7m.jparasol.NameFlat;
+import com.io7m.jparasol.NameFlatType;
+import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 
-public final class TASTTermNameFlat implements NameFlat
+/**
+ * A flattened term name.
+ */
+
+@EqualityStructural public final class TASTTermNameFlat implements
+  NameFlatType,
+  TASTNameTypeTermFlatType,
+  TASTNameTermShaderFlatType
 {
-  public static @Nonnull TASTTermNameFlat fromTermNameGlobal(
-    final @Nonnull TASTTermNameGlobal name)
-    throws ConstraintError
+  /**
+   * @param name
+   *          The name
+   * @return A flattened version of the given name
+   */
+
+  public static TASTTermNameFlat fromTermNameGlobal(
+    final TASTTermNameGlobal name)
   {
-    return new TASTTermNameFlat(name.getFlat(), name.getName().getActual());
+    NullCheck.notNull(name, "Name");
+
+    final TokenIdentifierLower n = name.getName();
+    final String text = n.getActual();
+    assert text != null;
+    return new TASTTermNameFlat(name.getFlat(), text);
   }
 
-  private final @Nonnull String         name;
-  private final @Nonnull ModulePathFlat path;
+  private final String         name;
+  private final ModulePathFlat path;
+
+  /**
+   * Construct a flattened name.
+   * 
+   * @param in_path
+   *          The flattened module path
+   * @param in_name
+   *          The name
+   */
 
   public TASTTermNameFlat(
-    final @Nonnull ModulePathFlat in_path,
-    final @Nonnull String in_name)
-    throws ConstraintError
+    final ModulePathFlat in_path,
+    final String in_name)
   {
-    this.path = Constraints.constrainNotNull(in_path, "Path");
-    this.name = Constraints.constrainNotNull(in_name, "Name");
+    this.path = NullCheck.notNull(in_path, "Path");
+    this.name = NullCheck.notNull(in_name, "Name");
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -72,7 +97,7 @@ public final class TASTTermNameFlat implements NameFlat
     return this.path;
   }
 
-  @Override public @Nonnull String getName()
+  @Override public String getName()
   {
     return this.name;
   }
@@ -86,13 +111,35 @@ public final class TASTTermNameFlat implements NameFlat
     return result;
   }
 
-  @Override public @Nonnull String show()
+  @Override public
+    <A, E extends Throwable, V extends TASTNameTermShaderFlatVisitorType<A, E>>
+    A
+    nameTermShaderVisitableAccept(
+      final V v)
+      throws E
+  {
+    return v.nameTypeShaderVisitTerm(this);
+  }
+
+  @Override public
+    <A, E extends Throwable, V extends TASTNameTypeTermFlatVisitorType<A, E>>
+    A
+    nameTypeTermVisitableAccept(
+      final V v)
+      throws E
+  {
+    return v.nameTypeTermVisitTerm(this);
+  }
+
+  @Override public String show()
   {
     final StringBuilder builder = new StringBuilder();
     builder.append(this.path.getActual());
     builder.append(".");
     builder.append(this.name);
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 
   @Override public String toString()
@@ -103,6 +150,8 @@ public final class TASTTermNameFlat implements NameFlat
     builder.append(" ");
     builder.append(this.name);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

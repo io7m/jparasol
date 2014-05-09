@@ -20,43 +20,42 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDModule;
 
-public final class UASTRCompilation
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public final class UASTRCompilation
 {
-  private final @Nonnull List<ModulePathFlat>              module_topology;
-  private final @Nonnull Map<ModulePathFlat, UASTRDModule> modules;
-  private final @Nonnull Map<ModulePathFlat, ModulePath>   paths;
+  private final List<ModulePathFlat>              module_topology;
+  private final Map<ModulePathFlat, UASTRDModule> modules;
+  private final Map<ModulePathFlat, ModulePath>   paths;
 
   public UASTRCompilation(
-    final @Nonnull List<ModulePathFlat> in_module_topology,
-    final @Nonnull Map<ModulePathFlat, UASTRDModule> in_modules,
-    final @Nonnull Map<ModulePathFlat, ModulePath> in_paths)
-    throws ConstraintError
+    final List<ModulePathFlat> in_module_topology,
+    final Map<ModulePathFlat, UASTRDModule> in_modules,
+    final Map<ModulePathFlat, ModulePath> in_paths)
   {
     this.module_topology =
-      Constraints.constrainNotNull(in_module_topology, "Module topology");
-    this.modules = Constraints.constrainNotNull(in_modules, "Modules");
-    this.paths = Constraints.constrainNotNull(in_paths, "Paths");
+      NullCheck.notNull(in_module_topology, "Module topology");
+    this.modules = NullCheck.notNull(in_modules, "Modules");
+    this.paths = NullCheck.notNull(in_paths, "Paths");
   }
 
-  public @Nonnull Map<ModulePathFlat, UASTRDModule> getModules()
+  public Map<ModulePathFlat, UASTRDModule> getModules()
   {
     return Collections.unmodifiableMap(this.modules);
   }
 
-  public @Nonnull List<ModulePathFlat> getModuleTopology()
+  public List<ModulePathFlat> getModuleTopology()
   {
     return this.module_topology;
   }
 
-  public @Nonnull Map<ModulePathFlat, ModulePath> getPaths()
+  public Map<ModulePathFlat, ModulePath> getPaths()
   {
     return Collections.unmodifiableMap(this.paths);
   }

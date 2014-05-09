@@ -18,96 +18,90 @@ package com.io7m.jparasol.glsl.ast;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.functional.Pair;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Pair;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.glsl.ast.GASTStatement.GASTScope;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 
-public abstract class GASTTermDeclaration implements
-  GASTTermDeclarationVisitable
+/**
+ * The type of term declarations.
+ */
+
+@EqualityReference public abstract class GASTTermDeclaration
 {
-  public static final class GASTTermFunction extends GASTTermDeclaration
+  /**
+   * The type of function declarations.
+   */
+
+  @EqualityReference public static final class GASTTermFunction extends
+    GASTTermDeclaration
   {
-    private final @Nonnull GTermNameGlobal                       name;
-    private final @Nonnull List<Pair<GTermNameLocal, GTypeName>> parameters;
-    private final @Nonnull GTypeName                             returns;
-    private final @Nonnull GASTScope                             statement;
+    private final GTermNameGlobal                       name;
+    private final List<Pair<GTermNameLocal, GTypeName>> parameters;
+    private final GTypeName                             returns;
+    private final GASTScope                             statement;
+
+    /**
+     * Construct a function declaration.
+     * 
+     * @param in_name
+     *          The name
+     * @param in_returns
+     *          The return type
+     * @param in_parameters
+     *          The parameters
+     * @param in_statement
+     *          The body of the function
+     */
 
     public GASTTermFunction(
-      final @Nonnull GTermNameGlobal in_name,
-      final @Nonnull GTypeName in_returns,
-      final @Nonnull List<Pair<GTermNameLocal, GTypeName>> in_parameters,
-      final @Nonnull GASTScope in_statement)
+      final GTermNameGlobal in_name,
+      final GTypeName in_returns,
+      final List<Pair<GTermNameLocal, GTypeName>> in_parameters,
+      final GASTScope in_statement)
     {
-      this.name = in_name;
-      this.returns = in_returns;
-      this.parameters = in_parameters;
-      this.statement = in_statement;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.returns = NullCheck.notNull(in_returns, "Return");
+      this.parameters = NullCheck.notNull(in_parameters, "Parameters");
+      this.statement = NullCheck.notNull(in_statement, "Body");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTTermFunction other = (GASTTermFunction) obj;
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.parameters.equals(other.parameters)) {
-        return false;
-      }
-      if (!this.returns.equals(other.returns)) {
-        return false;
-      }
-      if (!this.statement.equals(other.statement)) {
-        return false;
-      }
-      return true;
-    }
-
-    @Override public @Nonnull GTermNameGlobal getName()
+    @Override public GTermNameGlobal getName()
     {
       return this.name;
     }
 
-    public @Nonnull List<Pair<GTermNameLocal, GTypeName>> getParameters()
+    /**
+     * @return The parameters
+     */
+
+    public List<Pair<GTermNameLocal, GTypeName>> getParameters()
     {
       return this.parameters;
     }
 
-    public @Nonnull GTypeName getReturns()
+    /**
+     * @return The return type
+     */
+
+    public GTypeName getReturns()
     {
       return this.returns;
     }
 
-    public @Nonnull GASTScope getStatement()
+    /**
+     * @return The body of the function
+     */
+
+    public GASTScope getStatement()
     {
       return this.statement;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.parameters.hashCode();
-      result = (prime * result) + this.returns.hashCode();
-      result = (prime * result) + this.statement.hashCode();
-      return result;
-    }
-
     @Override public
-      <A, E extends Throwable, V extends GASTTermDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTTermDeclarationVisitorType<A, E>>
       A
       termDeclarationVisitableAccept(
         final V v)
@@ -128,78 +122,69 @@ public abstract class GASTTermDeclaration implements
       builder.append(" ");
       builder.append(this.statement);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GASTTermValue extends GASTTermDeclaration
+  /**
+   * The type of value declarations.
+   */
+
+  @EqualityReference public static final class GASTTermValue extends
+    GASTTermDeclaration
   {
-    private final @Nonnull GASTExpression  expression;
-    private final @Nonnull GTermNameGlobal name;
-    private final @Nonnull GTypeName       type;
+    private final GASTExpression  expression;
+    private final GTermNameGlobal name;
+    private final GTypeName       type;
+
+    /**
+     * Construct a value declaration.
+     * 
+     * @param in_name
+     *          The name
+     * @param in_type
+     *          The type
+     * @param in_expression
+     *          The body
+     */
 
     public GASTTermValue(
-      final @Nonnull GTermNameGlobal in_name,
-      final @Nonnull GTypeName in_type,
-      final @Nonnull GASTExpression in_expression)
+      final GTermNameGlobal in_name,
+      final GTypeName in_type,
+      final GASTExpression in_expression)
     {
-      this.name = in_name;
-      this.type = in_type;
-      this.expression = in_expression;
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.expression = NullCheck.notNull(in_expression, "Body");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final GASTTermValue other = (GASTTermValue) obj;
-      if (!this.expression.equals(other.expression)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      if (!this.type.equals(other.type)) {
-        return false;
-      }
-      return true;
-    }
+    /**
+     * @return The body
+     */
 
-    public @Nonnull GASTExpression getExpression()
+    public GASTExpression getExpression()
     {
       return this.expression;
     }
 
-    @Override public @Nonnull GTermNameGlobal getName()
+    @Override public GTermNameGlobal getName()
     {
       return this.name;
     }
 
-    public @Nonnull GTypeName getType()
+    /**
+     * @return The type
+     */
+
+    public GTypeName getType()
     {
       return this.type;
     }
 
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.expression.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      result = (prime * result) + this.type.hashCode();
-      return result;
-    }
-
     @Override public
-      <A, E extends Throwable, V extends GASTTermDeclarationVisitor<A, E>>
+      <A, E extends Throwable, V extends GASTTermDeclarationVisitorType<A, E>>
       A
       termDeclarationVisitableAccept(
         final V v)
@@ -218,9 +203,32 @@ public abstract class GASTTermDeclaration implements
       builder.append(" ");
       builder.append(this.expression);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public abstract @Nonnull GTermNameGlobal getName();
+  /**
+   * @return The name of the type
+   */
+
+  public abstract GTermNameGlobal getName();
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return The value returned by the visitor
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends GASTTermDeclarationVisitorType<A, E>>
+    A
+    termDeclarationVisitableAccept(
+      final V v)
+      throws E;
 }

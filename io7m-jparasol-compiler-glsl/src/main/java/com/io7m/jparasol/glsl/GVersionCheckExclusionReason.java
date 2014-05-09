@@ -18,31 +18,44 @@ package com.io7m.jparasol.glsl;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.lexer.Position;
 
-public final class GVersionCheckExclusionReason
+/**
+ * The reason a particular GLSL version was excluded.
+ */
+
+@EqualityStructural public final class GVersionCheckExclusionReason
 {
-  private final @Nonnull File     file;
-  private final @Nonnull String   message;
-  private final @Nonnull Position position;
+  private final File     file;
+  private final String   message;
+  private final Position position;
+
+  /**
+   * Construct an exclusion reason.
+   * 
+   * @param in_file
+   *          The file
+   * @param in_position
+   *          The position in the file
+   * @param in_message
+   *          The exclusion reason
+   */
 
   public GVersionCheckExclusionReason(
-    final @Nonnull File in_file,
-    final @Nonnull Position in_position,
-    final @Nonnull String in_message)
-    throws ConstraintError
+    final File in_file,
+    final Position in_position,
+    final String in_message)
   {
-    this.file = Constraints.constrainNotNull(in_file, "File");
-    this.position = Constraints.constrainNotNull(in_position, "Position");
-    this.message = Constraints.constrainNotNull(in_message, "Message");
+    this.file = NullCheck.notNull(in_file, "File");
+    this.position = NullCheck.notNull(in_position, "Position");
+    this.message = NullCheck.notNull(in_message, "Message");
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -67,17 +80,29 @@ public final class GVersionCheckExclusionReason
     return true;
   }
 
-  public @Nonnull File getFile()
+  /**
+   * @return The file
+   */
+
+  public File getFile()
   {
     return this.file;
   }
 
-  public @Nonnull String getMessage()
+  /**
+   * @return The message
+   */
+
+  public String getMessage()
   {
     return this.message;
   }
 
-  public @Nonnull Position getPosition()
+  /**
+   * @return The position
+   */
+
+  public Position getPosition()
   {
     return this.position;
   }
@@ -102,6 +127,8 @@ public final class GVersionCheckExclusionReason
     builder.append(" ");
     builder.append(this.message);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

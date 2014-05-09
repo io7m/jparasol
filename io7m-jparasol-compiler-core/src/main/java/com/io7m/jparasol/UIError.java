@@ -19,13 +19,9 @@ package com.io7m.jparasol;
 import java.io.File;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jaux.functional.Pair;
-import com.io7m.jaux.functional.Unit;
+import com.io7m.jfunctional.Pair;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
@@ -34,7 +30,13 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderProgram;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
-import com.io7m.jparasol.typed.ast.TASTShaderVisitor;
+import com.io7m.jparasol.typed.ast.TASTShaderVisitorType;
+import com.io7m.junreachable.UnreachableCodeException;
+
+/**
+ * The type of UI errors (that is; mistakes made by the user on the command
+ * line).
+ */
 
 public final class UIError extends CompilerError
 {
@@ -54,11 +56,14 @@ public final class UIError extends CompilerError
     serialVersionUID = 9123684816142549504L;
   }
 
-  public static @Nonnull UIError badBatch(
+  /**
+   * @return A new error indicating a bad batch.
+   */
+
+  public static UIError badBatch(
     final int line_no,
-    final @Nonnull File batch_file,
-    final @Nonnull String message)
-    throws ConstraintError
+    final File batch_file,
+    final String message)
   {
     return new UIError(
       Code.UI_ERROR_BAD_BATCH,
@@ -67,9 +72,12 @@ public final class UIError extends CompilerError
       new Position(line_no, 0));
   }
 
-  public static @Nonnull UIError incorrectCommandLine(
-    final @Nonnull String message)
-    throws ConstraintError
+  /**
+   * @return A new error indicating a generally incorrect command line.
+   */
+
+  public static UIError incorrectCommandLine(
+    final String message)
   {
     return new UIError(
       Code.UI_ERROR_COMMAND_LINE_INCORRECT,
@@ -78,11 +86,14 @@ public final class UIError extends CompilerError
       new Position(0, 0));
   }
 
-  public static @Nonnull UIError shaderNameUnparseable(
-    final @Nonnull String name,
-    final @Nonnull Pair<File, Position> meta,
-    final @CheckForNull String extra)
-    throws ConstraintError
+  /**
+   * @return A new error indicating an unparseable shader name.
+   */
+
+  public static UIError shaderNameUnparseable(
+    final String name,
+    final Pair<File, Position> meta,
+    final @Nullable String extra)
   {
     final StringBuilder m = new StringBuilder();
     m.append("Could not parse ");
@@ -103,17 +114,22 @@ public final class UIError extends CompilerError
     m.append("  Example: com.io7m.example.M.p\n");
     m.append("  Example: x.M.s\n");
 
+    final String r = m.toString();
+    assert r != null;
     return new UIError(
       Code.UI_ERROR_SHADER_NAME_UNPARSEABLE,
-      m.toString(),
-      meta.first,
-      meta.second);
+      r,
+      meta.getLeft(),
+      meta.getRight());
   }
 
-  public static @Nonnull UIError shaderProgramNonexistent(
-    final @Nonnull TASTShaderNameFlat name,
-    final @Nonnull TASTCompilation typed)
-    throws ConstraintError
+  /**
+   * @return A new error indicating a nonexistent shader program.
+   */
+
+  public static UIError shaderProgramNonexistent(
+    final TASTShaderNameFlat name,
+    final TASTCompilation typed)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The named shader program ");
@@ -123,6 +139,7 @@ public final class UIError extends CompilerError
     final Map<ModulePathFlat, TASTDModule> modules = typed.getModules();
     if (modules.containsKey(name.getModulePath())) {
       final TASTDModule module = modules.get(name.getModulePath());
+      assert module != null;
       UIError.showProgramsInModule(name, m, module);
     } else {
       m.append("The module ");
@@ -130,68 +147,72 @@ public final class UIError extends CompilerError
       m.append(" does not exist");
     }
 
+    final String r = m.toString();
+    assert r != null;
     return new UIError(
       Code.UI_ERROR_SHADER_NONEXISTENT,
-      m.toString(),
+      r,
       new File("<none>"),
       new Position(0, 0));
   }
 
-  public static @Nonnull UIError shaderProgramNotProgram(
-    final @Nonnull TASTShaderNameFlat name,
-    final @Nonnull TASTDShader p,
-    final @Nonnull TASTCompilation typed)
-    throws ConstraintError
+  /**
+   * @return A new error indicating the the given name does not correspond to
+   *         a program.
+   */
+
+  public static UIError shaderProgramNotProgram(
+    final TASTShaderNameFlat name,
+    final TASTDShader p,
+    final TASTCompilation typed)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The named shader program ");
     m.append(name.show());
     m.append(" is not a program, it is a ");
 
-    p.shaderVisitableAccept(new TASTShaderVisitor<Unit, ConstraintError>() {
-      @Override public Unit moduleVisitFragmentShader(
-        final @Nonnull TASTDShaderFragment f)
-        throws ConstraintError,
-          ConstraintError
-      {
-        m.append("fragment shader");
-        return Unit.unit();
-      }
+    p
+      .shaderVisitableAccept(new TASTShaderVisitorType<Unit, UnreachableCodeException>() {
+        @Override public Unit moduleVisitFragmentShader(
+          final TASTDShaderFragment f)
+        {
+          m.append("fragment shader");
+          return Unit.unit();
+        }
 
-      @Override public Unit moduleVisitProgramShader(
-        final @Nonnull TASTDShaderProgram _)
-        throws ConstraintError,
-          ConstraintError
-      {
-        throw new UnreachableCodeException();
-      }
+        @Override public Unit moduleVisitProgramShader(
+          final TASTDShaderProgram _)
+        {
+          throw new UnreachableCodeException();
+        }
 
-      @Override public Unit moduleVisitVertexShader(
-        final @Nonnull TASTDShaderVertex f)
-        throws ConstraintError,
-          ConstraintError
-      {
-        m.append("vertex shader");
-        return Unit.unit();
-      }
-    });
+        @Override public Unit moduleVisitVertexShader(
+          final TASTDShaderVertex f)
+        {
+          m.append("vertex shader");
+          return Unit.unit();
+        }
+      });
 
     final Map<ModulePathFlat, TASTDModule> modules = typed.getModules();
     assert modules.containsKey(name.getModulePath());
     final TASTDModule module = modules.get(name.getModulePath());
+    assert module != null;
     UIError.showProgramsInModule(name, m, module);
 
+    final String r = m.toString();
+    assert r != null;
     return new UIError(
       Code.UI_ERROR_SHADER_NOT_PROGRAM,
-      m.toString(),
+      r,
       new File("<none>"),
       new Position(0, 0));
   }
 
   private static void showProgramsInModule(
-    final @Nonnull TASTShaderNameFlat name,
-    final @Nonnull StringBuilder m,
-    final @Nonnull TASTDModule module)
+    final TASTShaderNameFlat name,
+    final StringBuilder m,
+    final TASTDModule module)
   {
     boolean found = false;
     for (final String s_name : module.getShaders().keySet()) {
@@ -210,44 +231,47 @@ public final class UIError extends CompilerError
     }
   }
 
-  public static @Nonnull UIError versionUnknown(
+  /**
+   * @return A new error indicating an unknown GLSL version.
+   */
+
+  public static UIError versionUnknown(
     final int v)
-    throws ConstraintError
   {
     final StringBuilder m = new StringBuilder();
     m.append("Unknown GLSL version ");
     m.append(v);
 
-    return new UIError(
-      Code.UI_ERROR_GLSL_VERSION_UNKNOWN,
-      m.toString(),
-      new File("<none>"),
-      new Position(0, 0));
+    final String r = m.toString();
+    assert r != null;
+    return new UIError(Code.UI_ERROR_GLSL_VERSION_UNKNOWN, r, new File(
+      "<none>"), new Position(0, 0));
   }
 
-  public static @Nonnull UIError versionUnknownES(
+  /**
+   * @return A new error indicating an unknown GLSL ES version.
+   */
+
+  public static UIError versionUnknownES(
     final int v)
-    throws ConstraintError
   {
     final StringBuilder m = new StringBuilder();
     m.append("Unknown GLSL ES version ");
     m.append(v);
 
-    return new UIError(
-      Code.UI_ERROR_GLSL_VERSION_UNKNOWN,
-      m.toString(),
-      new File("<none>"),
-      new Position(0, 0));
+    final String r = m.toString();
+    assert r != null;
+    return new UIError(Code.UI_ERROR_GLSL_VERSION_UNKNOWN, r, new File(
+      "<none>"), new Position(0, 0));
   }
 
-  private final @Nonnull Code code;
+  private final Code code;
 
   private UIError(
-    final @Nonnull Code in_code,
-    final @Nonnull String message,
-    final @Nonnull File file,
-    final @Nonnull Position position)
-    throws ConstraintError
+    final Code in_code,
+    final String message,
+    final File file,
+    final Position position)
   {
     super(message, file, position);
     this.code = in_code;
@@ -256,5 +280,14 @@ public final class UIError extends CompilerError
   @Override public String getCategory()
   {
     return "ui-error";
+  }
+
+  /**
+   * @return The error code.
+   */
+
+  Code getCode()
+  {
+    return this.code;
   }
 }

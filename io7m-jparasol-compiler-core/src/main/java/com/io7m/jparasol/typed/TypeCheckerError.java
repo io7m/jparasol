@@ -21,11 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jaux.functional.Unit;
+import com.io7m.jfunctional.Unit;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token.TokenDiscard;
@@ -46,7 +42,7 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentInput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderProgram;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTExpression;
-import com.io7m.jparasol.typed.ast.TASTShaderVisitor;
+import com.io7m.jparasol.typed.ast.TASTShaderVisitorType;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentInput;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentOutput;
@@ -58,46 +54,183 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName.UASTRTypeNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName.UASTRTypeNameGlobal;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeNameVisitor;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeNameVisitorType;
+import com.io7m.junreachable.UnreachableCodeException;
+
+/**
+ * The type of type errors.
+ */
 
 public final class TypeCheckerError extends CompilerError
 {
+  /**
+   * Type error codes.
+   */
+
   public static enum Code
   {
+    /**
+     * Incorrect types for function application.
+     */
+
     TYPE_ERROR_EXPRESSION_APPLICATION_BAD_TYPES,
+
+    /**
+     * Attempting to apply a value of a non-function.
+     */
+
     TYPE_ERROR_EXPRESSION_APPLICATION_NOT_FUNCTION_TYPE,
+
+    /**
+     * Non-boolean condition on conditional.
+     */
+
     TYPE_ERROR_EXPRESSION_CONDITION_NOT_BOOLEAN,
+
+    /**
+     * No available constructor for the given list of expressions.
+     */
+
     TYPE_ERROR_EXPRESSION_NEW_NO_APPROPRIATE_CONSTRUCTORS,
+
+    /**
+     * Type has no constructor.
+     */
+
     TYPE_ERROR_EXPRESSION_NEW_TYPE_NOT_CONSTRUCTABLE,
+
+    /**
+     * Incorrect record field type.
+     */
+
     TYPE_ERROR_EXPRESSION_RECORD_FIELD_BAD_TYPE,
+
+    /**
+     * Unknown record field.
+     */
+
     TYPE_ERROR_EXPRESSION_RECORD_FIELD_UNKNOWN,
+
+    /**
+     * Record fields left unassigned.
+     */
+
     TYPE_ERROR_EXPRESSION_RECORD_FIELDS_UNASSIGNED,
+
+    /**
+     * Value is not of a record type.
+     */
+
     TYPE_ERROR_EXPRESSION_RECORD_NOT_RECORD_TYPE,
+
+    /**
+     * Nonexistent field in record projection.
+     */
+
     TYPE_ERROR_EXPRESSION_RECORD_PROJECTION_NO_SUCH_FIELD,
+
+    /**
+     * Target of record projection is not of a record type.
+     */
+
     TYPE_ERROR_EXPRESSION_RECORD_PROJECTION_NOT_RECORD,
+
+    /**
+     * Target of swizzle expression is not of a vector type.
+     */
+
     TYPE_ERROR_EXPRESSION_SWIZZLE_NOT_VECTOR,
+
+    /**
+     * Too many components in swizzle expression.
+     */
+
     TYPE_ERROR_EXPRESSION_SWIZZLE_TOO_MANY_COMPONENTS,
+
+    /**
+     * Unknown component(s) in swizzle expression.
+     */
+
     TYPE_ERROR_EXPRESSION_SWIZZLE_UNKNOWN_COMPONENT,
+
+    /**
+     * Returned value incompatible with declared return type.
+     */
+
     TYPE_ERROR_FUNCTION_BODY_RETURN_INCOMPATIBLE,
+
+    /**
+     * Record field is of non-manifest type.
+     */
+
     TYPE_ERROR_RECORD_FIELD_NOT_MANIFEST,
+
+    /**
+     * Shader value or output assignment of incorrect type.
+     */
+
     TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE,
+
+    /**
+     * Shader attribute is of a type that is not allowed by GLSL.
+     */
+
     TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE,
+
+    /**
+     * Shader depth output is not a scalar floating point.
+     */
+
     TYPE_ERROR_SHADER_DEPTH_NOT_FLOAT,
+
+    /**
+     * Shader discard expression is not boolean.
+     */
+
     TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN,
+
+    /**
+     * Main shader output is not of an appropriate type.
+     */
+
     TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE,
+
+    /**
+     * Incorrect type of shader specified (vertex shader where fragment shader
+     * is required, etc).
+     */
+
     TYPE_ERROR_SHADER_WRONG_SHADER_TYPE,
+
+    /**
+     * Vertex and fragment shaders are incompatible.
+     */
+
     TYPE_ERROR_SHADERS_INCOMPATIBLE,
+
+    /**
+     * The type ascribed to a value does not match the type of the value.
+     */
+
     TYPE_ERROR_VALUE_ASCRIPTION_MISMATCH,
+
+    /**
+     * Non-value type used where a value type is required.
+     */
+
     TYPE_ERROR_VALUE_NON_VALUE_TYPE
   }
 
   private static final long serialVersionUID = 8186811920948826949L;
 
-  public static @Nonnull TypeCheckerError shaderAssignmentBadType(
-    final @Nonnull TokenIdentifierLower name,
-    final @Nonnull TValueType out_type,
-    final @Nonnull TType type)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError shaderAssignmentBadType(
+    final TokenIdentifierLower name,
+    final TValueType out_type,
+    final TType type)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The shader output ");
@@ -107,33 +240,43 @@ public final class TypeCheckerError extends CompilerError
     m.append(" but an expression was given of type ");
     m.append(type.getShowName());
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError shaderDiscardNotBoolean(
-    final @Nonnull TokenDiscard discard,
-    final @Nonnull TType type)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError shaderDiscardNotBoolean(
+    final TokenDiscard discard,
+    final TType type)
   {
     final StringBuilder m = new StringBuilder();
     m.append("A discard expression must be of type ");
     m.append(TBoolean.get().getShowName());
     m.append(" but an expression was given of type ");
     m.append(type.getShowName());
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       discard.getFile(),
       discard.getPosition(),
       Code.TYPE_ERROR_SHADER_DISCARD_NOT_BOOLEAN,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError shaderFragmentInputBadType(
-    final @Nonnull UASTRDShaderFragmentInput i)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError shaderFragmentInputBadType(
+    final UASTRDShaderFragmentInput i)
   {
     return new TypeCheckerError(
       i.getName().getFile(),
@@ -142,9 +285,12 @@ public final class TypeCheckerError extends CompilerError
       "An input of a fragment shader cannot be of a record type");
   }
 
-  public static @Nonnull TypeCheckerError shaderFragmentOutputBadType(
-    final @Nonnull UASTRDShaderFragmentOutput o)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError shaderFragmentOutputBadType(
+    final UASTRDShaderFragmentOutput o)
   {
     return new TypeCheckerError(
       o.getName().getFile(),
@@ -153,9 +299,12 @@ public final class TypeCheckerError extends CompilerError
       "An output of a fragment shader cannot be of a record type");
   }
 
+  /**
+   * @return A type error
+   */
+
   public static TypeCheckerError shaderFragmentOutputDepthWrongType(
-    final @Nonnull UASTRDShaderFragmentOutputDepth d)
-    throws ConstraintError
+    final UASTRDShaderFragmentOutputDepth d)
   {
     return new TypeCheckerError(
       d.getName().getFile(),
@@ -164,10 +313,13 @@ public final class TypeCheckerError extends CompilerError
       "The depth output of a fragment shader must be of type float");
   }
 
-  public static @Nonnull TypeCheckerError shaderNotFragment(
-    final @Nonnull UASTRShaderName name,
-    final @Nonnull TASTDShader shader)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError shaderNotFragment(
+    final UASTRShaderName name,
+    final TASTDShader shader)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The name ");
@@ -175,19 +327,15 @@ public final class TypeCheckerError extends CompilerError
     m.append(" refers to a ");
 
     shader
-      .shaderVisitableAccept(new TASTShaderVisitor<Unit, ConstraintError>() {
+      .shaderVisitableAccept(new TASTShaderVisitorType<Unit, UnreachableCodeException>() {
         @Override public Unit moduleVisitFragmentShader(
           final TASTDShaderFragment f)
-          throws ConstraintError,
-            ConstraintError
         {
           throw new UnreachableCodeException();
         }
 
         @Override public Unit moduleVisitProgramShader(
           final TASTDShaderProgram p)
-          throws ConstraintError,
-            ConstraintError
         {
           m.append("program shader");
           return Unit.unit();
@@ -195,8 +343,6 @@ public final class TypeCheckerError extends CompilerError
 
         @Override public Unit moduleVisitVertexShader(
           final TASTDShaderVertex f)
-          throws ConstraintError,
-            ConstraintError
         {
           m.append("vertex shader");
           return Unit.unit();
@@ -204,15 +350,20 @@ public final class TypeCheckerError extends CompilerError
       });
 
     m.append(" but a fragment shader is required");
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(name.getName().getFile(), name
       .getName()
-      .getPosition(), Code.TYPE_ERROR_SHADER_WRONG_SHADER_TYPE, m.toString());
+      .getPosition(), Code.TYPE_ERROR_SHADER_WRONG_SHADER_TYPE, r);
   }
 
-  public static @Nonnull TypeCheckerError shaderNotVertex(
-    final @Nonnull UASTRShaderName name,
-    final @Nonnull TASTDShader shader)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError shaderNotVertex(
+    final UASTRShaderName name,
+    final TASTDShader shader)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The name ");
@@ -220,11 +371,9 @@ public final class TypeCheckerError extends CompilerError
     m.append(" refers to a ");
 
     shader
-      .shaderVisitableAccept(new TASTShaderVisitor<Unit, ConstraintError>() {
+      .shaderVisitableAccept(new TASTShaderVisitorType<Unit, UnreachableCodeException>() {
         @Override public Unit moduleVisitFragmentShader(
           final TASTDShaderFragment f)
-          throws ConstraintError,
-            ConstraintError
         {
           m.append("fragment shader");
           return Unit.unit();
@@ -232,8 +381,6 @@ public final class TypeCheckerError extends CompilerError
 
         @Override public Unit moduleVisitProgramShader(
           final TASTDShaderProgram p)
-          throws ConstraintError,
-            ConstraintError
         {
           m.append("program shader");
           return Unit.unit();
@@ -241,25 +388,28 @@ public final class TypeCheckerError extends CompilerError
 
         @Override public Unit moduleVisitVertexShader(
           final TASTDShaderVertex f)
-          throws ConstraintError,
-            ConstraintError
         {
           throw new UnreachableCodeException();
         }
       });
 
     m.append(" but a vertex shader is required");
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(name.getName().getFile(), name
       .getName()
-      .getPosition(), Code.TYPE_ERROR_SHADER_WRONG_SHADER_TYPE, m.toString());
+      .getPosition(), Code.TYPE_ERROR_SHADER_WRONG_SHADER_TYPE, r);
   }
 
-  public static @Nonnull TypeCheckerError shadersNotCompatible(
-    final @Nonnull TokenIdentifierLower program,
-    final @Nonnull TASTDShaderFragment fs,
-    final @Nonnull Set<String> assigned,
-    final @Nonnull Map<String, TValueType> wrong_types)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError shadersNotCompatible(
+    final TokenIdentifierLower program,
+    final TASTDShaderFragment fs,
+    final Set<String> assigned,
+    final Map<String, TValueType> wrong_types)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The shaders for program ");
@@ -288,16 +438,21 @@ public final class TypeCheckerError extends CompilerError
       }
     }
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       program.getFile(),
       program.getPosition(),
       Code.TYPE_ERROR_SHADERS_INCOMPATIBLE,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError shaderVertexInputBadType(
-    final @Nonnull UASTRDShaderVertexInput i)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError shaderVertexInputBadType(
+    final UASTRDShaderVertexInput i)
   {
     return new TypeCheckerError(
       i.getName().getFile(),
@@ -306,10 +461,13 @@ public final class TypeCheckerError extends CompilerError
       "An input of a vertex shader cannot be of a record type");
   }
 
-  public static @Nonnull TypeCheckerError shaderVertexMainOutputBadType(
-    final @Nonnull UASTRDShaderVertexOutput o,
-    final @Nonnull TType t)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError shaderVertexMainOutputBadType(
+    final UASTRDShaderVertexOutput o,
+    final TType t)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The main output of a vertex shader must be of type ");
@@ -317,16 +475,19 @@ public final class TypeCheckerError extends CompilerError
     m.append(" but the given output is of type ");
     m.append(t.getShowName());
 
-    return new TypeCheckerError(
-      o.getName().getFile(),
-      o.getName().getPosition(),
-      Code.TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE,
-      m.toString());
+    final String r = m.toString();
+    assert r != null;
+    return new TypeCheckerError(o.getName().getFile(), o
+      .getName()
+      .getPosition(), Code.TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE, r);
   }
 
-  public static @Nonnull TypeCheckerError shaderVertexOutputBadType(
-    final @Nonnull UASTRDShaderVertexOutput o)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError shaderVertexOutputBadType(
+    final UASTRDShaderVertexOutput o)
   {
     return new TypeCheckerError(
       o.getName().getFile(),
@@ -335,11 +496,14 @@ public final class TypeCheckerError extends CompilerError
       "An output of a vertex shader cannot be of a record type");
   }
 
-  public static @Nonnull TypeCheckerError termExpressionApplicationBadTypes(
-    final @Nonnull UASTRTermName name,
-    final @Nonnull List<TFunctionArgument> expected,
-    final @Nonnull List<TASTExpression> got)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionApplicationBadTypes(
+    final UASTRTermName name,
+    final List<TFunctionArgument> expected,
+    final List<TASTExpression> got)
   {
     final StringBuilder m = new StringBuilder();
     m.append("Incorrect argument types for application of function ");
@@ -350,19 +514,23 @@ public final class TypeCheckerError extends CompilerError
     m.append("\n");
     m.append("Got:      ");
     m.append(TType.formatTypeExpressionList(got));
+
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_APPLICATION_BAD_TYPES,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull
-    TypeCheckerError
-    termExpressionApplicationNotFunctionType(
-      final @Nonnull UASTRTermName name,
-      final @Nonnull TType t)
-      throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionApplicationNotFunctionType(
+    final UASTRTermName name,
+    final TType t)
   {
     final StringBuilder m = new StringBuilder();
     m.append("Cannot apply the term ");
@@ -371,20 +539,24 @@ public final class TypeCheckerError extends CompilerError
     m.append(name.getName().getActual());
     m.append(" is of the non-function type ");
     m.append(t.getShowName());
+
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_APPLICATION_NOT_FUNCTION_TYPE,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull
-    TypeCheckerError
-    termExpressionNewNoAppropriateConstructors(
-      final @Nonnull UASTRTypeName name,
-      final @Nonnull List<TASTExpression> arguments,
-      final @Nonnull List<TConstructor> constructors)
-      throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionNewNoAppropriateConstructors(
+    final UASTRTypeName name,
+    final List<TASTExpression> arguments,
+    final List<TConstructor> constructors)
   {
     final StringBuilder m = new StringBuilder();
     m.append("No appropriate constructor for type ");
@@ -402,16 +574,21 @@ public final class TypeCheckerError extends CompilerError
       m.append("\n");
     }
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       name.getName().getFile(),
       name.getName().getPosition(),
       Code.TYPE_ERROR_EXPRESSION_NEW_NO_APPROPRIATE_CONSTRUCTORS,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError termExpressionNewNotConstructable(
-    final @Nonnull UASTRTypeName name)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionNewNotConstructable(
+    final UASTRTypeName name)
   {
     final TokenIdentifierLower n_name = name.getName();
     final StringBuilder m = new StringBuilder();
@@ -419,18 +596,23 @@ public final class TypeCheckerError extends CompilerError
     m.append(n_name);
     m.append(" is not constructable");
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       n_name.getFile(),
       n_name.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_NEW_TYPE_NOT_CONSTRUCTABLE,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError termExpressionRecordBadFieldType(
-    final @Nonnull TokenIdentifierLower field_name,
-    final @Nonnull TManifestType expected_type,
-    final @Nonnull TType got_type)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionRecordBadFieldType(
+    final TokenIdentifierLower field_name,
+    final TManifestType expected_type,
+    final TType got_type)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The type of field ");
@@ -439,19 +621,23 @@ public final class TypeCheckerError extends CompilerError
     m.append(expected_type.getShowName());
     m.append(" but an expression was given of type ");
     m.append(got_type.getShowName());
+
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       field_name.getFile(),
       field_name.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_RECORD_FIELD_BAD_TYPE,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull
-    TypeCheckerError
-    termExpressionRecordFieldsUnassigned(
-      final @Nonnull UASTRTypeName name,
-      final @Nonnull List<TRecordField> unassigned)
-      throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionRecordFieldsUnassigned(
+    final UASTRTypeName name,
+    final List<TRecordField> unassigned)
   {
     final TokenIdentifierLower n_name = name.getName();
     final StringBuilder m = new StringBuilder();
@@ -466,16 +652,21 @@ public final class TypeCheckerError extends CompilerError
       m.append("\n");
     }
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       n_name.getFile(),
       n_name.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_RECORD_FIELDS_UNASSIGNED,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError termExpressionRecordNotRecordType(
-    final @Nonnull UASTRTypeName name)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionRecordNotRecordType(
+    final UASTRTypeName name)
   {
     final TokenIdentifierLower n_name = name.getName();
     final StringBuilder m = new StringBuilder();
@@ -484,19 +675,22 @@ public final class TypeCheckerError extends CompilerError
     m
       .append(" is not a record type and therefore values cannot be constructed with record expressions");
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       n_name.getFile(),
       n_name.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_RECORD_NOT_RECORD_TYPE,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull
-    TypeCheckerError
-    termExpressionRecordProjectionNoSuchField(
-      final @Nonnull TRecord tr,
-      final @Nonnull TokenIdentifierLower field)
-      throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionRecordProjectionNoSuchField(
+    final TRecord tr,
+    final TokenIdentifierLower field)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The type ");
@@ -514,36 +708,45 @@ public final class TypeCheckerError extends CompilerError
       m.append("\n");
     }
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       field.getFile(),
       field.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_RECORD_PROJECTION_NO_SUCH_FIELD,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull
-    TypeCheckerError
-    termExpressionRecordProjectionNotRecord(
-      final @Nonnull TASTExpression body,
-      final @Nonnull TokenIdentifierLower field)
-      throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionRecordProjectionNotRecord(
+    final TASTExpression body,
+    final TokenIdentifierLower field)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The type of the given expression is ");
     m.append(body.getType().getShowName());
     m
       .append(", which is not a record type and therefore the expression cannot be the body of a record projection");
+
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       field.getFile(),
       field.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_RECORD_PROJECTION_NOT_RECORD,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError termExpressionRecordUnknownField(
-    final @Nonnull TokenIdentifierLower field_name,
-    final @Nonnull TRecord record)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionRecordUnknownField(
+    final TokenIdentifierLower field_name,
+    final TRecord record)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The type ");
@@ -561,51 +764,66 @@ public final class TypeCheckerError extends CompilerError
       m.append("\n");
     }
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       field_name.getFile(),
       field_name.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_RECORD_FIELD_UNKNOWN,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError termExpressionSwizzleNotVector(
-    final @Nonnull TASTExpression body,
-    final @Nonnull TokenIdentifierLower first_field)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionSwizzleNotVector(
+    final TASTExpression body,
+    final TokenIdentifierLower first_field)
   {
     final StringBuilder m = new StringBuilder();
     m
       .append("Only expressions of vector types can be swizzled. The given expression is of type ");
     m.append(body.getType().getShowName());
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       first_field.getFile(),
       first_field.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_SWIZZLE_NOT_VECTOR,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError termExpressionSwizzleTooManyFields(
-    final @Nonnull TokenIdentifierLower first,
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionSwizzleTooManyFields(
+    final TokenIdentifierLower first,
     final int size)
-    throws ConstraintError
   {
     final StringBuilder m = new StringBuilder();
     m.append("Swizzle expressions can contain at most four components (");
     m.append(size);
     m.append(" were given)");
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       first.getFile(),
       first.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_SWIZZLE_TOO_MANY_COMPONENTS,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError termExpressionSwizzleUnknownField(
-    final @Nonnull TVectorType tv,
-    final @Nonnull TokenIdentifierLower f)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionSwizzleUnknownField(
+    final TVectorType tv,
+    final TokenIdentifierLower f)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The type ");
@@ -620,18 +838,23 @@ public final class TypeCheckerError extends CompilerError
       m.append(" ");
     }
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       f.getFile(),
       f.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_SWIZZLE_UNKNOWN_COMPONENT,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError termFunctionBodyReturnMismatch(
-    final @Nonnull TokenIdentifierLower name,
-    final @Nonnull TType expected,
-    final @Nonnull TType got)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termFunctionBodyReturnMismatch(
+    final TokenIdentifierLower name,
+    final TType expected,
+    final TType got)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The body of function ");
@@ -640,20 +863,24 @@ public final class TypeCheckerError extends CompilerError
     m.append(expected.getShowName());
     m.append(" but an expression was given of type ");
     m.append(got.getShowName());
+
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
       Code.TYPE_ERROR_FUNCTION_BODY_RETURN_INCOMPATIBLE,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull
-    TypeCheckerError
-    termValueExpressionAscriptionMismatch(
-      final @Nonnull TokenIdentifierLower name,
-      final @Nonnull TType expected,
-      final @Nonnull TType got)
-      throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termValueExpressionAscriptionMismatch(
+    final TokenIdentifierLower name,
+    final TType expected,
+    final TType got)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The ascription on value ");
@@ -662,51 +889,68 @@ public final class TypeCheckerError extends CompilerError
     m.append(expected.getShowName());
     m.append(" but an expression was given of type ");
     m.append(got.getShowName());
+
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
       Code.TYPE_ERROR_VALUE_ASCRIPTION_MISMATCH,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError termValueNotValueType(
-    final @Nonnull TokenIdentifierLower name,
-    final @Nonnull TType type)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termValueNotValueType(
+    final TokenIdentifierLower name,
+    final TType type)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The body of value ");
     m.append(name.getActual());
     m.append(" is of a non-value type ");
     m.append(type.getShowName());
+
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       name.getFile(),
       name.getPosition(),
       Code.TYPE_ERROR_VALUE_NON_VALUE_TYPE,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError typeConditionNotBoolean(
-    final @Nonnull TokenIf token,
-    final @Nonnull TASTExpression condition)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError typeConditionNotBoolean(
+    final TokenIf token,
+    final TASTExpression condition)
   {
     final StringBuilder m = new StringBuilder();
     m
       .append("The condition expression of a condition must be of type boolean, but an expression was given here of type ");
     m.append(condition.getType().getShowName());
 
+    final String r = m.toString();
+    assert r != null;
     return new TypeCheckerError(
       token.getFile(),
       token.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_CONDITION_NOT_BOOLEAN,
-      m.toString());
+      r);
   }
 
-  public static @Nonnull TypeCheckerError typeRecordFieldNotManifest(
-    final @Nonnull UASTRTypeName type_name,
-    final @Nonnull TType ty)
-    throws ConstraintError
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError typeRecordFieldNotManifest(
+    final UASTRTypeName type_name,
+    final TType ty)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The (non-manifest) type ");
@@ -714,45 +958,46 @@ public final class TypeCheckerError extends CompilerError
     m.append(" cannot be used as the type of a record field");
 
     return type_name
-      .typeNameVisitableAccept(new UASTRTypeNameVisitor<TypeCheckerError, ConstraintError>() {
+      .typeNameVisitableAccept(new UASTRTypeNameVisitorType<TypeCheckerError, UnreachableCodeException>() {
         @SuppressWarnings("synthetic-access") @Override public
           TypeCheckerError
           typeNameVisitBuiltIn(
-            final @Nonnull UASTRTypeNameBuiltIn t)
-            throws ConstraintError
+            final UASTRTypeNameBuiltIn t)
         {
           final TokenIdentifierLower name = t.getName();
+          final String r = m.toString();
+          assert r != null;
           return new TypeCheckerError(
             name.getFile(),
             name.getPosition(),
             Code.TYPE_ERROR_RECORD_FIELD_NOT_MANIFEST,
-            m.toString());
+            r);
         }
 
         @SuppressWarnings("synthetic-access") @Override public
           TypeCheckerError
           typeNameVisitGlobal(
-            final @Nonnull UASTRTypeNameGlobal t)
-            throws ConstraintError
+            final UASTRTypeNameGlobal t)
         {
           final TokenIdentifierLower name = t.getName();
+          final String r = m.toString();
+          assert r != null;
           return new TypeCheckerError(
             name.getFile(),
             name.getPosition(),
             Code.TYPE_ERROR_RECORD_FIELD_NOT_MANIFEST,
-            m.toString());
+            r);
         }
       });
   }
 
-  private final @Nonnull Code code;
+  private final Code code;
 
   private TypeCheckerError(
-    final @Nonnull File file,
-    final @Nonnull Position position,
-    final @Nonnull Code in_code,
-    final @Nonnull String message)
-    throws ConstraintError
+    final File file,
+    final Position position,
+    final Code in_code,
+    final String message)
   {
     super(message, file, position);
     this.code = in_code;
@@ -763,7 +1008,11 @@ public final class TypeCheckerError extends CompilerError
     return "type-checker";
   }
 
-  public @Nonnull Code getCode()
+  /**
+   * @return The error code.
+   */
+
+  public Code getCode()
   {
     return this.code;
   }

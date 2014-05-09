@@ -21,54 +21,47 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Unit;
-import com.io7m.jlog.Level;
-import com.io7m.jlog.Log;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDModule;
-import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlat;
-import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlat;
-import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlatVisitor;
-import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlat;
-import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlat.Term;
-import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlat.Type;
-import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlatVisitor;
+import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlatType;
+import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlatType;
+import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlatVisitorType;
+import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlatType;
+import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlatVisitorType;
 import com.io7m.jparasol.typed.ast.TASTReference;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
+import com.io7m.junreachable.UnreachableCodeException;
 
 /**
  * Determine all of the referenced terms and types for a given shader.
  */
 
-public final class Referenced
+@EqualityReference public final class Referenced
 {
   private static void collectTermsFromShader(
-    final @Nonnull TASTCompilation compilation,
-    final @Nonnull TASTShaderNameFlat shader_name,
-    final @Nonnull Log log_actual,
-    final @Nonnull Set<TASTTermNameFlat> terms)
-    throws ConstraintError
+    final TASTCompilation compilation,
+    final TASTShaderNameFlat shader_name,
+    final LogUsableType log_actual,
+    final Set<TASTTermNameFlat> terms)
   {
-    final TASTNameTermShaderFlat shader_term_name =
-      new TASTNameTermShaderFlat.Shader(shader_name);
-
-    final DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> shader_term_graph =
+    final DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference> shader_term_graph =
       compilation.getShaderTermGraph();
     final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> term_term_graph =
       compilation.getTermGraph();
 
     for (final TASTReference d : shader_term_graph
-      .outgoingEdgesOf(shader_term_name)) {
+      .outgoingEdgesOf(shader_name)) {
       final ModulePathFlat term_module = d.getTargetModuleFlat();
       final TokenIdentifierLower term_name = d.getTargetName();
       final TASTTermNameFlat term =
@@ -81,8 +74,10 @@ public final class Referenced
 
       while (bfi.hasNext()) {
         final TASTTermNameFlat current = bfi.next();
-        if (log_actual.enabled(Level.LOG_DEBUG)) {
-          log_actual.debug(String.format("Adding term %s", current.show()));
+        if (log_actual.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r = String.format("Adding term %s", current.show());
+          assert r != null;
+          log_actual.debug(r);
         }
         terms.add(new TASTTermNameFlat(current.getModulePath(), current
           .getName()));
@@ -90,11 +85,50 @@ public final class Referenced
     }
   }
 
+  private static void collectTypesForTerm(
+    final TASTCompilation compilation,
+    final Set<TTypeNameFlat> types,
+    final TASTTermNameFlat term,
+    final LogUsableType log)
+  {
+    final DirectedAcyclicGraph<TASTNameTypeTermFlatType, TASTReference> term_type =
+      compilation.getTermTypeGraph();
+
+    final BreadthFirstIterator<TASTNameTypeTermFlatType, TASTReference> bfi =
+      new BreadthFirstIterator<TASTNameTypeTermFlatType, TASTReference>(
+        term_type,
+        term);
+
+    while (bfi.hasNext()) {
+      final TASTNameTypeTermFlatType current = bfi.next();
+      current
+        .nameTypeTermVisitableAccept(new TASTNameTypeTermFlatVisitorType<Unit, UnreachableCodeException>() {
+          @Override public Unit nameTypeTermVisitTerm(
+            final TASTTermNameFlat _)
+          {
+            return Unit.unit();
+          }
+
+          @Override public Unit nameTypeTermVisitType(
+            final TTypeNameFlat type)
+          {
+            if (log.wouldLog(LogLevel.LOG_DEBUG)) {
+              final String r = String.format("Adding type %s", type.show());
+              assert r != null;
+              log.debug(r);
+            }
+            types.add(type);
+            return Unit.unit();
+          }
+        });
+    }
+  }
+
   private static void collectTypesForType(
-    final @Nonnull TASTCompilation compilation,
-    final @Nonnull Set<TTypeNameFlat> types,
-    final @Nonnull TTypeNameFlat type_name,
-    final @Nonnull Log log)
+    final TASTCompilation compilation,
+    final Set<TTypeNameFlat> types,
+    final TTypeNameFlat type_name,
+    final LogUsableType log)
   {
     final DirectedAcyclicGraph<TTypeNameFlat, TASTReference> type_graph =
       compilation.getTypeGraph();
@@ -106,117 +140,89 @@ public final class Referenced
 
     while (bfi.hasNext()) {
       final TTypeNameFlat current = bfi.next();
-      if (log.enabled(Level.LOG_DEBUG)) {
-        log.debug(String.format("Adding type %s", current.show()));
+      if (log.wouldLog(LogLevel.LOG_DEBUG)) {
+        final String r = String.format("Adding type %s", current.show());
+        assert r != null;
+        log.debug(r);
       }
       types.add(current);
     }
   }
 
   private static void collectTypesFromShader(
-    final @Nonnull TASTCompilation compilation,
-    final @Nonnull Set<TTypeNameFlat> types,
-    final @Nonnull TASTShaderNameFlat shader_name,
-    final @Nonnull Log log)
-    throws ConstraintError
+    final TASTCompilation compilation,
+    final Set<TTypeNameFlat> types,
+    final TASTShaderNameFlat shader_name,
+    final LogUsableType log)
   {
-    final TASTNameTypeShaderFlat shader_type_name =
-      new TASTNameTypeShaderFlat.Shader(shader_name);
-
-    final DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference> shader_type =
+    final DirectedAcyclicGraph<TASTNameTypeShaderFlatType, TASTReference> shader_type =
       compilation.getShaderTypeGraph();
 
-    final BreadthFirstIterator<TASTNameTypeShaderFlat, TASTReference> bfi =
-      new BreadthFirstIterator<TASTNameTypeShaderFlat, TASTReference>(
+    final BreadthFirstIterator<TASTNameTypeShaderFlatType, TASTReference> bfi =
+      new BreadthFirstIterator<TASTNameTypeShaderFlatType, TASTReference>(
         shader_type,
-        shader_type_name);
+        shader_name);
 
     while (bfi.hasNext()) {
-      final TASTNameTypeShaderFlat current = bfi.next();
+      final TASTNameTypeShaderFlatType current = bfi.next();
       current
-        .nameTypeShaderVisitableAccept(new TASTNameTypeShaderFlatVisitor<Unit, ConstraintError>() {
+        .nameTypeShaderVisitableAccept(new TASTNameTypeShaderFlatVisitorType<Unit, UnreachableCodeException>() {
           @Override public Unit nameTypeShaderVisitShader(
-            final TASTNameTypeShaderFlat.Shader t)
-            throws ConstraintError
+            final TASTShaderNameFlat t)
           {
             return Unit.unit();
           }
 
           @Override public Unit nameTypeShaderVisitType(
-            final TASTNameTypeShaderFlat.Type t)
-            throws ConstraintError
+            final TTypeNameFlat t)
           {
-            if (log.enabled(Level.LOG_DEBUG)) {
-              log.debug(String.format("Adding type %s", t.show()));
+            if (log.wouldLog(LogLevel.LOG_DEBUG)) {
+              final String r = String.format("Adding type %s", t.show());
+              assert r != null;
+              log.debug(r);
             }
-            types.add(t.getName());
+            types.add(t);
             return Unit.unit();
           }
         });
     }
   }
 
-  private static void collectTypesForTerm(
-    final @Nonnull TASTCompilation compilation,
-    final @Nonnull Set<TTypeNameFlat> types,
-    final @Nonnull TASTTermNameFlat t,
-    final @Nonnull Log log)
-    throws ConstraintError
+  /**
+   * @param compilation
+   *          The typed AST
+   * @param shader_name
+   *          The name of a shader
+   * @param log
+   *          A log interface
+   * @return The terms and types referenced by the shader
+   */
+
+  public static Referenced fromShader(
+    final TASTCompilation compilation,
+    final TASTShaderNameFlat shader_name,
+    final LogUsableType log)
   {
-    final DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference> term_type =
-      compilation.getTermTypeGraph();
-
-    final TASTNameTypeTermFlat.Term term = new TASTNameTypeTermFlat.Term(t);
-    final BreadthFirstIterator<TASTNameTypeTermFlat, TASTReference> bfi =
-      new BreadthFirstIterator<TASTNameTypeTermFlat, TASTReference>(
-        term_type,
-        term);
-
-    while (bfi.hasNext()) {
-      final TASTNameTypeTermFlat current = bfi.next();
-      current
-        .nameTypeTermVisitableAccept(new TASTNameTypeTermFlatVisitor<Unit, ConstraintError>() {
-          @Override public Unit nameTypeTermVisitTerm(
-            final @Nonnull Term _)
-            throws ConstraintError
-          {
-            return Unit.unit();
-          }
-
-          @Override public Unit nameTypeTermVisitType(
-            final @Nonnull Type type)
-            throws ConstraintError
-          {
-            if (log.enabled(Level.LOG_DEBUG)) {
-              log.debug(String.format("Adding type %s", type.show()));
-            }
-            types.add(type.getName());
-            return Unit.unit();
-          }
-        });
-    }
-  }
-
-  public static @Nonnull Referenced fromShader(
-    final @Nonnull TASTCompilation compilation,
-    final @Nonnull TASTShaderNameFlat shader_name,
-    final @Nonnull Log log)
-    throws ConstraintError
-  {
-    Constraints.constrainNotNull(compilation, "Compilation");
-    Constraints.constrainNotNull(shader_name, "Shader name");
-    Constraints.constrainNotNull(log, "Log");
+    NullCheck.notNull(compilation, "Compilation");
+    NullCheck.notNull(shader_name, "Shader name");
+    NullCheck.notNull(log, "Log");
 
     final Map<ModulePathFlat, TASTDModule> modules = compilation.getModules();
-    Constraints.constrainArbitrary(
-      modules.containsKey(shader_name.getModulePath()),
-      "Module exists");
-    final TASTDModule m = modules.get(shader_name.getModulePath());
-    Constraints.constrainArbitrary(
-      m.getShaders().containsKey(shader_name.getName()),
-      "Shader exists");
 
-    final Log log_actual = new Log(log, "referenced");
+    if (modules.containsKey(shader_name.getModulePath()) == false) {
+      throw new IllegalStateException(String.format(
+        "Module %s does not exist",
+        shader_name.getModulePath()));
+    }
+    final TASTDModule m = modules.get(shader_name.getModulePath());
+    if (m.getShaders().containsKey(shader_name.getName()) == false) {
+      throw new IllegalStateException(String.format(
+        "Shader %s does not exist",
+        shader_name.getName()));
+    }
+
+    final LogUsableType log_actual =
+      NullCheck.notNull(log, "Log").with("referenced");
 
     /**
      * Collect all terms referenced by the shader.
@@ -235,6 +241,7 @@ public final class Referenced
 
     final Set<TTypeNameFlat> types = new HashSet<TTypeNameFlat>();
     for (final TASTTermNameFlat t : terms) {
+      assert t != null;
       Referenced.collectTypesForTerm(compilation, types, t, log_actual);
     }
 
@@ -252,40 +259,57 @@ public final class Referenced
      * Collect all types referenced by those types.
      */
 
-    final HashSet<TTypeNameFlat> extra_types = new HashSet<TTypeNameFlat>();
+    final Set<TTypeNameFlat> extra_types = new HashSet<TTypeNameFlat>();
     for (final TTypeNameFlat t : types) {
+      assert t != null;
       Referenced.collectTypesForType(compilation, extra_types, t, log_actual);
     }
     types.addAll(extra_types);
     return new Referenced(shader_name, terms, types);
   }
 
-  private final @Nonnull TASTShaderNameFlat    shader_name;
-  private final @Nonnull Set<TASTTermNameFlat> terms;
-  private final @Nonnull Set<TTypeNameFlat>    types;
+  private final TASTShaderNameFlat    shader_name;
+  private final Set<TASTTermNameFlat> terms;
+  private final Set<TTypeNameFlat>    types;
 
   private Referenced(
-    final @Nonnull TASTShaderNameFlat in_shader_name,
-    final @Nonnull Set<TASTTermNameFlat> in_terms,
-    final @Nonnull Set<TTypeNameFlat> in_types)
+    final TASTShaderNameFlat in_shader_name,
+    final Set<TASTTermNameFlat> in_terms,
+    final Set<TTypeNameFlat> in_types)
   {
     this.shader_name = in_shader_name;
     this.terms = in_terms;
     this.types = in_types;
   }
 
-  public @Nonnull TASTShaderNameFlat getShaderName()
+  /**
+   * @return The name of the shader referenced
+   */
+
+  public TASTShaderNameFlat getShaderName()
   {
     return this.shader_name;
   }
 
-  public @Nonnull Set<TASTTermNameFlat> getTerms()
+  /**
+   * @return The set of terms referenced by the shader
+   */
+
+  public Set<TASTTermNameFlat> getTerms()
   {
-    return Collections.unmodifiableSet(this.terms);
+    final Set<TASTTermNameFlat> r = Collections.unmodifiableSet(this.terms);
+    assert r != null;
+    return r;
   }
 
-  public @Nonnull Set<TTypeNameFlat> getTypes()
+  /**
+   * @return The set of types referenced by the shader
+   */
+
+  public Set<TTypeNameFlat> getTypes()
   {
-    return Collections.unmodifiableSet(this.types);
+    final Set<TTypeNameFlat> r = Collections.unmodifiableSet(this.types);
+    assert r != null;
+    return r;
   }
 }

@@ -18,51 +18,69 @@ package com.io7m.jparasol.typed.ast;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.NameShowType;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-public abstract class TASTTermName implements TASTTermNameVisitable
+/**
+ * A term name.
+ */
+
+@EqualityStructural public abstract class TASTTermName implements
+  NameShowType
 {
   /**
    * A name that refers to an external. Will only appear in typed ASTs if
    * inserted there via an FFI mechanism.
    */
 
-  public static final class TASTTermNameExternal extends TASTTermName
+  @EqualityStructural public static final class TASTTermNameExternal extends
+    TASTTermName
   {
-    private final @Nonnull String               current;
-    private final @Nonnull TokenIdentifierLower token;
+    private final String               current;
+    private final TokenIdentifierLower token;
+
+    /**
+     * Construct an external term name.
+     * 
+     * @param in_token
+     *          The token
+     * @param in_current
+     *          The name
+     */
 
     public TASTTermNameExternal(
-      final @Nonnull TokenIdentifierLower in_token,
-      final @Nonnull String in_current)
-      throws ConstraintError
+      final TokenIdentifierLower in_token,
+      final String in_current)
     {
-      super(
-        Constraints.constrainNotNull(in_token, "Token").getFile(),
-        Constraints.constrainNotNull(in_token, "Token").getPosition());
+      super(NullCheck.notNull(in_token, "Token").getFile(), NullCheck
+        .notNull(in_token, "Token")
+        .getPosition());
       this.token = in_token;
-      this.current = Constraints.constrainNotNull(in_current, "Current");
+      this.current = NullCheck.notNull(in_current, "Current");
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
       }
-      if (!super.equals(obj)) {
+      if (obj == null) {
         return false;
       }
       if (this.getClass() != obj.getClass()) {
         return false;
       }
+      if (super.baseEquals(obj) == false) {
+        return false;
+      }
+
       final TASTTermNameExternal other = (TASTTermNameExternal) obj;
       if (!this.current.equals(other.current)) {
         return false;
@@ -73,7 +91,11 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       return true;
     }
 
-    public @Nonnull String getCurrent()
+    /**
+     * @return The name as a string.
+     */
+
+    public String getCurrent()
     {
       return this.current;
     }
@@ -81,7 +103,7 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     @Override public int hashCode()
     {
       final int prime = 31;
-      int result = super.hashCode();
+      int result = super.baseHashCode();
       result = (prime * result) + this.current.hashCode();
       result = (prime * result) + this.token.hashCode();
       return result;
@@ -93,12 +115,11 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TASTTermNameVisitor<A, E>>
+      <A, E extends Throwable, V extends TASTTermNameVisitorType<A, E>>
       A
       termNameVisitableAccept(
-        final @Nonnull V v)
-        throws ConstraintError,
-          E
+        final V v)
+        throws E
     {
       return v.termNameVisitExternal(this);
     }
@@ -111,7 +132,9 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       builder.append(" ");
       builder.append(this.token);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -119,27 +142,36 @@ public abstract class TASTTermName implements TASTTermNameVisitable
    * A fully qualified name.
    */
 
-  public static final class TASTTermNameGlobal extends TASTTermName
+  @EqualityStructural public static final class TASTTermNameGlobal extends
+    TASTTermName
   {
-    private final @Nonnull ModulePathFlat       flat;
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull ModulePath           path;
+    private final ModulePathFlat       flat;
+    private final TokenIdentifierLower name;
+    private final ModulePath           path;
+
+    /**
+     * Construct a global term name.
+     * 
+     * @param in_path
+     *          The module path
+     * @param actual
+     *          The name
+     */
 
     public TASTTermNameGlobal(
-      final @Nonnull ModulePath in_path,
-      final @Nonnull TokenIdentifierLower actual)
-      throws ConstraintError
+      final ModulePath in_path,
+      final TokenIdentifierLower actual)
     {
-      super(
-        Constraints.constrainNotNull(actual, "Actual").getFile(),
-        Constraints.constrainNotNull(actual, "Actual").getPosition());
-      this.path = Constraints.constrainNotNull(in_path, "Path");
+      super(NullCheck.notNull(actual, "Actual").getFile(), NullCheck.notNull(
+        actual,
+        "Actual").getPosition());
+      this.path = NullCheck.notNull(in_path, "Path");
       this.flat = ModulePathFlat.fromModulePath(in_path);
       this.name = actual;
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -150,6 +182,10 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       if (this.getClass() != obj.getClass()) {
         return false;
       }
+      if (super.baseEquals(obj) == false) {
+        return false;
+      }
+
       final TASTTermNameGlobal other = (TASTTermNameGlobal) obj;
       if (!this.flat.equals(other.flat)) {
         return false;
@@ -163,17 +199,29 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       return true;
     }
 
-    public @Nonnull ModulePathFlat getFlat()
+    /**
+     * @return The flattened module path
+     */
+
+    public ModulePathFlat getFlat()
     {
       return this.flat;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    /**
+     * @return The name
+     */
+
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull ModulePath getPath()
+    /**
+     * @return The module path
+     */
+
+    public ModulePath getPath()
     {
       return this.path;
     }
@@ -181,7 +229,7 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     @Override public int hashCode()
     {
       final int prime = 31;
-      int result = 1;
+      int result = super.baseHashCode();
       result = (prime * result) + this.flat.hashCode();
       result = (prime * result) + this.name.hashCode();
       result = (prime * result) + this.path.hashCode();
@@ -195,16 +243,17 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       s.append(this.flat.getActual());
       s.append(".");
       s.append(this.name.getActual());
-      return s.toString();
+      final String r = s.toString();
+      assert r != null;
+      return r;
     }
 
     @Override public
-      <A, E extends Throwable, V extends TASTTermNameVisitor<A, E>>
+      <A, E extends Throwable, V extends TASTTermNameVisitorType<A, E>>
       A
       termNameVisitableAccept(
-        final @Nonnull V v)
-        throws ConstraintError,
-          E
+        final V v)
+        throws E
     {
       return v.termNameVisitGlobal(this);
     }
@@ -217,7 +266,9 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       builder.append(" ");
       builder.append(this.name);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
@@ -225,25 +276,34 @@ public abstract class TASTTermName implements TASTTermNameVisitable
    * A name that refers to a local variable.
    */
 
-  public static final class TASTTermNameLocal extends TASTTermName
+  @EqualityStructural public static final class TASTTermNameLocal extends
+    TASTTermName
   {
-    private final @Nonnull String               current;
-    private final @Nonnull TokenIdentifierLower original;
+    private final String               current;
+    private final TokenIdentifierLower original;
+
+    /**
+     * Construct a local term name.
+     * 
+     * @param in_original
+     *          The original name
+     * @param in_current
+     *          The current name
+     */
 
     public TASTTermNameLocal(
-      final @Nonnull TokenIdentifierLower in_original,
-      final @Nonnull String in_current)
-      throws ConstraintError
+      final TokenIdentifierLower in_original,
+      final String in_current)
     {
-      super(
-        Constraints.constrainNotNull(in_original, "Original").getFile(),
-        Constraints.constrainNotNull(in_original, "Original").getPosition());
+      super(NullCheck.notNull(in_original, "Original").getFile(), NullCheck
+        .notNull(in_original, "Original")
+        .getPosition());
       this.original = in_original;
-      this.current = Constraints.constrainNotNull(in_current, "Current");
+      this.current = NullCheck.notNull(in_current, "Current");
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -254,6 +314,10 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       if (this.getClass() != obj.getClass()) {
         return false;
       }
+      if (super.baseEquals(obj) == false) {
+        return false;
+      }
+
       final TASTTermNameLocal other = (TASTTermNameLocal) obj;
       if (!this.current.equals(other.current)) {
         return false;
@@ -264,12 +328,20 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       return true;
     }
 
-    public @Nonnull String getCurrent()
+    /**
+     * @return The current name as a string
+     */
+
+    public String getCurrent()
     {
       return this.current;
     }
 
-    public @Nonnull TokenIdentifierLower getOriginal()
+    /**
+     * @return The original name as it appeared in source code
+     */
+
+    public TokenIdentifierLower getOriginal()
     {
       return this.original;
     }
@@ -277,7 +349,7 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     @Override public int hashCode()
     {
       final int prime = 31;
-      int result = 1;
+      int result = super.baseHashCode();
       result = (prime * result) + this.current.hashCode();
       result = (prime * result) + this.original.hashCode();
       return result;
@@ -289,12 +361,11 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends TASTTermNameVisitor<A, E>>
+      <A, E extends Throwable, V extends TASTTermNameVisitorType<A, E>>
       A
       termNameVisitableAccept(
-        final @Nonnull V v)
-        throws ConstraintError,
-          E
+        final V v)
+        throws E
     {
       return v.termNameVisitLocal(this);
     }
@@ -307,24 +378,25 @@ public abstract class TASTTermName implements TASTTermNameVisitable
       builder.append(" ");
       builder.append(this.original);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  private final @Nonnull File     file;
-  private final @Nonnull Position position;
+  private final File     file;
+  private final Position position;
 
   protected TASTTermName(
-    final @Nonnull File in_file,
-    final @Nonnull Position in_position)
-    throws ConstraintError
+    final File in_file,
+    final Position in_position)
   {
-    this.file = Constraints.constrainNotNull(in_file, "File");
-    this.position = Constraints.constrainNotNull(in_position, "Position");
+    this.file = NullCheck.notNull(in_file, "File");
+    this.position = NullCheck.notNull(in_position, "Position");
   }
 
-  @Override public boolean equals(
-    final Object obj)
+  protected final boolean baseEquals(
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -345,17 +417,7 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     return true;
   }
 
-  public final @Nonnull File getFile()
-  {
-    return this.file;
-  }
-
-  public final @Nonnull Position getPosition()
-  {
-    return this.position;
-  }
-
-  @Override public int hashCode()
+  protected final int baseHashCode()
   {
     final int prime = 31;
     int result = 1;
@@ -364,5 +426,43 @@ public abstract class TASTTermName implements TASTTermNameVisitable
     return result;
   }
 
-  public abstract @Nonnull String show();
+  @Override public abstract boolean equals(
+    @Nullable Object obj);
+
+  /**
+   * @return The file in which the name appears
+   */
+
+  public final File getFile()
+  {
+    return this.file;
+  }
+
+  /**
+   * @return The position at which the name appears
+   */
+
+  public final Position getPosition()
+  {
+    return this.position;
+  }
+
+  @Override public abstract int hashCode();
+
+  /**
+   * Accept a term name visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return The value returned by the visitor
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends TASTTermNameVisitorType<A, E>>
+    A
+    termNameVisitableAccept(
+      final V v)
+      throws E;
 }

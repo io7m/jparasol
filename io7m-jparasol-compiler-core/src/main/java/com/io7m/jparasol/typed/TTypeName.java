@@ -16,29 +16,44 @@
 
 package com.io7m.jparasol.typed;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.NameShowType;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-public abstract class TTypeName implements TTypeNameVisitable
+/**
+ * The type of type names.
+ */
+
+@EqualityStructural public abstract class TTypeName implements NameShowType
 {
-  public static final class TTypeNameBuiltIn extends TTypeName
+  /**
+   * A built-in type name.
+   */
+
+  @EqualityStructural public static final class TTypeNameBuiltIn extends
+    TTypeName
   {
-    private final @Nonnull String name;
+    private final String name;
+
+    /**
+     * Construct a built-in type name.
+     * 
+     * @param in_name
+     *          The name
+     */
 
     public TTypeNameBuiltIn(
-      final @Nonnull String in_name)
-      throws ConstraintError
+      final String in_name)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -56,7 +71,11 @@ public abstract class TTypeName implements TTypeNameVisitable
       return true;
     }
 
-    public @Nonnull String getName()
+    /**
+     * @return The name
+     */
+
+    public String getName()
     {
       return this.name;
     }
@@ -69,7 +88,7 @@ public abstract class TTypeName implements TTypeNameVisitable
       return result;
     }
 
-    @Override public @Nonnull String show()
+    @Override public String show()
     {
       return this.name;
     }
@@ -80,39 +99,53 @@ public abstract class TTypeName implements TTypeNameVisitable
       builder.append("[TTypeNameBuiltIn ");
       builder.append(this.name);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeNameVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeNameVisitorType<A, E>>
       A
       typeNameVisitableAccept(
-        final @Nonnull V v)
-        throws ConstraintError,
-          E
+        final V v)
+        throws E
     {
       return v.typeNameVisitBuiltIn(this);
     }
   }
 
-  public static final class TTypeNameGlobal extends TTypeName
+  /**
+   * A global type name.
+   */
+
+  @EqualityStructural public static final class TTypeNameGlobal extends
+    TTypeName
   {
-    private final @Nonnull ModulePathFlat       flat;
-    private final @Nonnull TokenIdentifierLower name;
-    private final @Nonnull ModulePath           path;
+    private final ModulePathFlat       flat;
+    private final TokenIdentifierLower name;
+    private final ModulePath           path;
+
+    /**
+     * Construct a global type name.
+     * 
+     * @param in_path
+     *          The module path
+     * @param in_name
+     *          The name of the type
+     */
 
     public TTypeNameGlobal(
-      final @Nonnull ModulePath in_path,
-      final @Nonnull TokenIdentifierLower in_name)
-      throws ConstraintError
+      final ModulePath in_path,
+      final TokenIdentifierLower in_name)
     {
-      this.path = Constraints.constrainNotNull(in_path, "Path");
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.path = NullCheck.notNull(in_path, "Path");
+      this.name = NullCheck.notNull(in_name, "Name");
       this.flat = ModulePathFlat.fromModulePath(in_path);
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -127,23 +160,35 @@ public abstract class TTypeName implements TTypeNameVisitable
       if (!this.name.equals(other.name)) {
         return false;
       }
-      if (!this.path.equals(other.path)) {
+      if (!this.flat.equals(other.flat)) {
         return false;
       }
       return true;
     }
 
-    public @Nonnull ModulePathFlat getFlat()
+    /**
+     * @return The flattened module path
+     */
+
+    public ModulePathFlat getFlat()
     {
       return this.flat;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    /**
+     * @return The name of the type
+     */
+
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
 
-    public @Nonnull ModulePath getPath()
+    /**
+     * @return The module path
+     */
+
+    public ModulePath getPath()
     {
       return this.path;
     }
@@ -157,13 +202,15 @@ public abstract class TTypeName implements TTypeNameVisitable
       return result;
     }
 
-    @Override public @Nonnull String show()
+    @Override public String show()
     {
       final StringBuilder s = new StringBuilder();
       s.append(this.flat.getActual());
       s.append(".");
       s.append(this.name.getActual());
-      return s.toString();
+      final String r = s.toString();
+      assert r != null;
+      return r;
     }
 
     @Override public String toString()
@@ -174,20 +221,41 @@ public abstract class TTypeName implements TTypeNameVisitable
       builder.append(" ");
       builder.append(this.name);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
 
     @Override public
-      <A, E extends Throwable, V extends TTypeNameVisitor<A, E>>
+      <A, E extends Throwable, V extends TTypeNameVisitorType<A, E>>
       A
       typeNameVisitableAccept(
-        final @Nonnull V v)
-        throws ConstraintError,
-          E
+        final V v)
+        throws E
     {
       return v.typeNameVisitGlobal(this);
     }
   }
 
-  public abstract @Nonnull String show();
+  @Override public abstract boolean equals(
+    @Nullable Object obj);
+
+  @Override public abstract int hashCode();
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return The value returned by the visitor
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends TTypeNameVisitorType<A, E>>
+    A
+    typeNameVisitableAccept(
+      final V v)
+      throws E;
 }

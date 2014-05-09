@@ -21,19 +21,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jaux.functional.Option;
-import com.io7m.jaux.functional.Option.Some;
-import com.io7m.jaux.functional.PartialFunction;
-import com.io7m.jaux.functional.Unit;
-import com.io7m.jlog.Level;
-import com.io7m.jlog.Log;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Option;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.PartialFunctionType;
+import com.io7m.jfunctional.Some;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
@@ -143,74 +142,83 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRERecordProjec
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRESwizzle;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREVariable;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRRecordFieldAssignment;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpressionVisitor;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderLocalVisitor;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderOutputVisitor;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderVisitor;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRLocalLevelVisitor;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRExpressionVisitorType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderLocalVisitorType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderOutputVisitorType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderVisitorType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRLocalLevelVisitorType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderName;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderVisitor;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderVisitorType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameGlobal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRTermNameVisitor;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRTermVisitor;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRTermNameVisitorType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRTermVisitorType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName.UASTRTypeNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeName.UASTRTypeNameGlobal;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeNameVisitor;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeVisitor;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRVertexShaderLocalVisitor;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRVertexShaderVisitor;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeNameVisitorType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRTypeVisitorType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRVertexShaderLocalVisitorType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRVertexShaderVisitorType;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class TypeChecker
+/**
+ * The type checker.
+ */
+
+@SuppressWarnings("synthetic-access") @EqualityReference public final class TypeChecker
 {
-
   /**
    * The types of local terms.
    */
 
-  private static class LocalTypes
+  @EqualityReference private static final class LocalTypes
   {
-    public static @Nonnull LocalTypes initial()
+    public static LocalTypes initial()
     {
       return new LocalTypes(null);
     }
 
-    private final @CheckForNull LocalTypes         parent;
-    private final @Nonnull Map<String, TValueType> terms;
+    private final @Nullable LocalTypes    parent;
+    private final Map<String, TValueType> terms;
 
     private LocalTypes(
-      final @CheckForNull LocalTypes in_parent)
+      final @Nullable LocalTypes in_parent)
     {
       this.terms = new HashMap<String, TValueType>();
       this.parent = in_parent;
     }
 
     public void addTerm(
-      final @Nonnull String name,
-      final @Nonnull TValueType type)
+      final String name,
+      final TValueType type)
     {
       assert this.terms.containsKey(name) == false;
       this.terms.put(name, type);
     }
 
-    public @Nonnull TValueType getName(
-      final @Nonnull String name)
+    public TValueType getName(
+      final String name)
     {
       if (this.parent == null) {
         assert this.terms.containsKey(name);
-        return this.terms.get(name);
+        final TValueType r = this.terms.get(name);
+        assert r != null;
+        return r;
       }
 
       if (this.terms.containsKey(name)) {
-        return this.terms.get(name);
+        final TValueType r = this.terms.get(name);
+        assert r != null;
+        return r;
       }
 
+      assert this.parent != null;
       return this.parent.getName(name);
     }
 
-    public @Nonnull LocalTypes withNew()
+    public LocalTypes withNew()
     {
       return new LocalTypes(this);
     }
@@ -220,23 +228,23 @@ public final class TypeChecker
    * Expression type checker.
    */
 
-  private static final class TypeCheckerExpression implements
-    UASTRExpressionVisitor<TASTExpression, TASTDValueLocal, TypeCheckerError>
+  @EqualityReference private static final class TypeCheckerExpression implements
+    UASTRExpressionVisitorType<TASTExpression, TASTDValueLocal, TypeCheckerError>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private @Nonnull LocalTypes                             locals;
-    private final @Nonnull Log                              log;
-    private final @Nonnull UASTRDModule                     module;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private @Nullable LocalTypes                   locals;
+    private final LogUsableType                    log;
+    private final UASTRDModule                     module;
 
     public TypeCheckerExpression(
-      final @Nonnull UASTRDModule in_module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull LocalTypes in_locals,
-      final @Nonnull Log in_log)
+      final UASTRDModule in_module,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDType> in_checked_types,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final @Nullable LocalTypes in_locals,
+      final LogUsableType in_log)
     {
       this.module = in_module;
       this.checked_modules = in_checked_modules;
@@ -246,13 +254,10 @@ public final class TypeChecker
       this.log = in_log;
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      TASTEApplication
-      expressionVisitApplication(
-        final @Nonnull List<TASTExpression> arguments,
-        final @Nonnull UASTREApplication e)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTEApplication expressionVisitApplication(
+      final List<TASTExpression> arguments,
+      final UASTREApplication e)
+      throws TypeCheckerError
     {
       final TType t =
         TypeChecker.lookupTermType(
@@ -270,7 +275,7 @@ public final class TypeChecker
             final TFunctionArgument exp = f_args.get(index);
             final TASTExpression got = arguments.get(index);
 
-            if (got.getType().equals(exp.getType()) == false) {
+            if (TTypeEquality.typesAreEqual(got.getType(), exp.getType()) == false) {
               throw TypeCheckerError.termExpressionApplicationBadTypes(
                 e.getName(),
                 f_args,
@@ -296,30 +301,27 @@ public final class TypeChecker
     }
 
     @Override public void expressionVisitApplicationPre(
-      final @Nonnull UASTREApplication e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTREApplication e)
+      throws TypeCheckerError
     {
       // Nothing
     }
 
     @Override public TASTEBoolean expressionVisitBoolean(
-      final @Nonnull UASTREBoolean e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTREBoolean e)
+      throws TypeCheckerError
     {
       return new TASTEBoolean(e.getToken());
     }
 
     @Override public TASTEConditional expressionVisitConditional(
-      final @Nonnull TASTExpression condition,
-      final @Nonnull TASTExpression left,
-      final @Nonnull TASTExpression right,
-      final @Nonnull UASTREConditional e)
-      throws TypeCheckerError,
-        ConstraintError
+      final TASTExpression condition,
+      final TASTExpression left,
+      final TASTExpression right,
+      final UASTREConditional e)
+      throws TypeCheckerError
     {
-      if (condition.getType().equals(TBoolean.get()) == false) {
+      if (TTypeEquality.typesAreEqual(condition.getType(), TBoolean.get()) == false) {
         throw TypeCheckerError.typeConditionNotBoolean(e.getIf(), condition);
       }
 
@@ -327,84 +329,75 @@ public final class TypeChecker
     }
 
     @Override public void expressionVisitConditionalConditionPost(
-      final @Nonnull UASTREConditional e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTREConditional e)
+      throws TypeCheckerError
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalConditionPre(
-      final @Nonnull UASTREConditional e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTREConditional e)
+      throws TypeCheckerError
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalLeftPost(
-      final @Nonnull UASTREConditional e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTREConditional e)
+      throws TypeCheckerError
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalLeftPre(
-      final @Nonnull UASTREConditional e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTREConditional e)
+      throws TypeCheckerError
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalRightPost(
-      final @Nonnull UASTREConditional e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTREConditional e)
+      throws TypeCheckerError
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalRightPre(
-      final @Nonnull UASTREConditional e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTREConditional e)
+      throws TypeCheckerError
     {
       // Nothing
     }
 
     @Override public TASTEInteger expressionVisitInteger(
-      final @Nonnull UASTREInteger e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTREInteger e)
+      throws TypeCheckerError
     {
       return new TASTEInteger(e.getToken());
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      TASTELet
-      expressionVisitLet(
-        final @Nonnull List<TASTDValueLocal> bindings,
-        final @Nonnull TASTExpression body,
-        final @Nonnull UASTRELet e)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTELet expressionVisitLet(
+      final List<TASTDValueLocal> bindings,
+      final TASTExpression body,
+      final UASTRELet e)
+      throws TypeCheckerError
     {
-      assert this.locals.parent != null;
-      this.locals = this.locals.parent;
-
+      final LocalTypes l = this.locals;
+      assert l != null;
+      this.locals = l.parent;
       return new TASTELet(e.getToken(), bindings, body);
     }
 
     @Override public
-      UASTRLocalLevelVisitor<TASTDValueLocal, TypeCheckerError>
+      UASTRLocalLevelVisitorType<TASTDValueLocal, TypeCheckerError>
       expressionVisitLetPre(
-        final @Nonnull UASTRELet e)
-        throws TypeCheckerError,
-          ConstraintError
+        final UASTRELet e)
+        throws TypeCheckerError
     {
-      this.locals = this.locals.withNew();
+      final LocalTypes l = this.locals;
+      assert l != null;
+      this.locals = l.withNew();
 
       return new TypeCheckerLocal(
         this.checked_modules,
@@ -415,13 +408,10 @@ public final class TypeChecker
         this.module);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      TASTENew
-      expressionVisitNew(
-        final @Nonnull List<TASTExpression> arguments,
-        final @Nonnull UASTRENew e)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTENew expressionVisitNew(
+      final List<TASTExpression> arguments,
+      final UASTRENew e)
+      throws TypeCheckerError
     {
       final TType t =
         TypeChecker.lookupType(
@@ -442,7 +432,7 @@ public final class TypeChecker
           for (int index = 0; index < c_args.size(); ++index) {
             final TValueType ct = c_args.get(index);
             final TType at = arguments.get(index).getType();
-            if (ct.equals(at) == false) {
+            if (TTypeEquality.typesAreEqual(at, ct) == false) {
               continue check_constructors;
             }
           }
@@ -457,27 +447,22 @@ public final class TypeChecker
     }
 
     @Override public void expressionVisitNewPre(
-      final @Nonnull UASTRENew e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTRENew e)
+      throws TypeCheckerError
     {
       // Nothing
     }
 
     @Override public TASTEReal expressionVisitReal(
-      final @Nonnull UASTREReal e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTREReal e)
+      throws TypeCheckerError
     {
       return new TASTEReal(e.getToken());
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      TASTERecord
-      expressionVisitRecord(
-        final @Nonnull UASTRERecord e)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTERecord expressionVisitRecord(
+      final UASTRERecord e)
+      throws TypeCheckerError
     {
       final TType t =
         TypeChecker.lookupType(
@@ -493,7 +478,7 @@ public final class TypeChecker
 
       final TRecord tr = (TRecord) t;
       final List<TRecordField> t_fields = tr.getFields();
-      final HashMap<String, TRecordField> t_fields_map =
+      final Map<String, TRecordField> t_fields_map =
         new HashMap<String, TRecordField>();
 
       for (final TRecordField tf : t_fields) {
@@ -501,9 +486,9 @@ public final class TypeChecker
         t_fields_map.put(tf.getName(), tf);
       }
 
-      final HashMap<String, TokenIdentifierLower> assigned =
+      final Map<String, TokenIdentifierLower> assigned =
         new HashMap<String, TokenIdentifierLower>();
-      final ArrayList<TASTRecordFieldAssignment> typed_assigns =
+      final List<TASTRecordFieldAssignment> typed_assigns =
         new ArrayList<TASTRecordFieldAssignment>();
 
       for (final UASTRRecordFieldAssignment f : e.getAssignments()) {
@@ -526,7 +511,7 @@ public final class TypeChecker
         final TManifestType expected_type =
           t_fields_map.get(f_name.getActual()).getType();
 
-        if (expected_type.equals(et.getType()) == false) {
+        if (TTypeEquality.typesAreEqual(et.getType(), expected_type) == false) {
           throw TypeCheckerError.termExpressionRecordBadFieldType(
             f_name,
             expected_type,
@@ -554,10 +539,9 @@ public final class TypeChecker
     }
 
     @Override public TASTERecordProjection expressionVisitRecordProjection(
-      final @Nonnull TASTExpression body,
-      final @Nonnull UASTRERecordProjection e)
-      throws TypeCheckerError,
-        ConstraintError
+      final TASTExpression body,
+      final UASTRERecordProjection e)
+      throws TypeCheckerError
     {
       if (body.getType() instanceof TRecord) {
         final TRecord tr = (TRecord) body.getType();
@@ -579,27 +563,28 @@ public final class TypeChecker
     }
 
     @Override public void expressionVisitRecordProjectionPre(
-      final @Nonnull UASTRERecordProjection e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTRERecordProjection e)
+      throws TypeCheckerError
     {
       // Nothing
     }
 
     @Override public TASTESwizzle expressionVisitSwizzle(
-      final @Nonnull TASTExpression body,
-      final @Nonnull UASTRESwizzle e)
-      throws TypeCheckerError,
-        ConstraintError
+      final TASTExpression body,
+      final UASTRESwizzle e)
+      throws TypeCheckerError
     {
       final List<TokenIdentifierLower> ef = e.getFields();
+      final TokenIdentifierLower r = ef.get(0);
+      assert r != null;
+
       if (body.getType() instanceof TVectorType) {
         final TVectorType tv = (TVectorType) body.getType();
         final List<String> components = tv.getComponentNames();
 
         if (ef.size() > 4) {
           throw TypeCheckerError.termExpressionSwizzleTooManyFields(
-            ef.get(0),
+            r,
             ef.size());
         }
 
@@ -613,23 +598,19 @@ public final class TypeChecker
         return new TASTESwizzle(actual, body, ef);
       }
 
-      throw TypeCheckerError.termExpressionSwizzleNotVector(body, ef.get(0));
+      throw TypeCheckerError.termExpressionSwizzleNotVector(body, r);
     }
 
     @Override public void expressionVisitSwizzlePre(
-      final @Nonnull UASTRESwizzle e)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTRESwizzle e)
+      throws TypeCheckerError
     {
       // Nothing
     }
 
-    @SuppressWarnings("synthetic-access") @Override public @Nonnull
-      TASTEVariable
-      expressionVisitVariable(
-        final @Nonnull UASTREVariable e)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTEVariable expressionVisitVariable(
+      final UASTREVariable e)
+      throws TypeCheckerError
     {
       final TType t =
         TypeChecker.lookupTermType(
@@ -647,23 +628,23 @@ public final class TypeChecker
    * Type checking of fragment shaders.
    */
 
-  private static final class TypeCheckerFragmentShader implements
-    UASTRFragmentShaderVisitor<TASTDShaderFragment, TASTDShaderFragmentInput, TASTDShaderFragmentParameter, TASTDShaderFragmentOutput, TASTDShaderFragmentLocal, TASTDShaderFragmentOutputAssignment, TypeCheckerError>
+  @EqualityReference private static final class TypeCheckerFragmentShader implements
+    UASTRFragmentShaderVisitorType<TASTDShaderFragment, TASTDShaderFragmentInput, TASTDShaderFragmentParameter, TASTDShaderFragmentOutput, TASTDShaderFragmentLocal, TASTDShaderFragmentOutputAssignment, TypeCheckerError>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull LocalTypes                       locals;
-    private final @Nonnull Log                              log;
-    private final @Nonnull UASTRDModule                     module;
-    private final @Nonnull Map<String, TValueType>          outputs;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final LocalTypes                       locals;
+    private final LogUsableType                    log;
+    private final UASTRDModule                     module;
+    private final Map<String, TValueType>          outputs;
 
     public TypeCheckerFragmentShader(
-      final @Nonnull UASTRDModule in_module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Log in_log)
+      final UASTRDModule in_module,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDType> in_checked_types,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final LogUsableType in_log)
     {
       this.module = in_module;
       this.checked_modules = in_checked_modules;
@@ -674,17 +655,14 @@ public final class TypeChecker
       this.outputs = new HashMap<String, TValueType>();
     }
 
-    @Override public
-      TASTDShaderFragment
-      fragmentShaderVisit(
-        final @Nonnull List<TASTDShaderFragmentInput> r_inputs,
-        final @Nonnull List<TASTDShaderFragmentParameter> r_parameters,
-        final @Nonnull List<TASTDShaderFragmentOutput> r_outputs,
-        final @Nonnull List<TASTDShaderFragmentLocal> r_locals,
-        final @Nonnull List<TASTDShaderFragmentOutputAssignment> r_output_assignments,
-        final @Nonnull UASTRDShaderFragment f)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDShaderFragment fragmentShaderVisit(
+      final List<TASTDShaderFragmentInput> r_inputs,
+      final List<TASTDShaderFragmentParameter> r_parameters,
+      final List<TASTDShaderFragmentOutput> r_outputs,
+      final List<TASTDShaderFragmentLocal> r_locals,
+      final List<TASTDShaderFragmentOutputAssignment> r_output_assignments,
+      final UASTRDShaderFragment f)
+      throws TypeCheckerError
     {
       return new TASTDShaderFragment(
         f.getName(),
@@ -695,12 +673,9 @@ public final class TypeChecker
         r_output_assignments);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      TASTDShaderFragmentInput
-      fragmentShaderVisitInput(
-        final @Nonnull UASTRDShaderFragmentInput i)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDShaderFragmentInput fragmentShaderVisitInput(
+      final UASTRDShaderFragmentInput i)
+      throws TypeCheckerError
     {
       final UASTRTermNameLocal in = i.getName();
       final TASTTermNameLocal name =
@@ -722,10 +697,9 @@ public final class TypeChecker
     }
 
     @Override public
-      UASTRFragmentShaderLocalVisitor<TASTDShaderFragmentLocal, TypeCheckerError>
+      UASTRFragmentShaderLocalVisitorType<TASTDShaderFragmentLocal, TypeCheckerError>
       fragmentShaderVisitLocalsPre()
-        throws TypeCheckerError,
-          ConstraintError
+        throws TypeCheckerError
     {
       return new TypeCheckerFragmentShaderLocal(
         this.module,
@@ -736,12 +710,11 @@ public final class TypeChecker
         this.log);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
+    @Override public
       TASTDShaderFragmentOutputAssignment
       fragmentShaderVisitOutputAssignment(
-        final @Nonnull UASTRDShaderFragmentOutputAssignment a)
-        throws TypeCheckerError,
-          ConstraintError
+        final UASTRDShaderFragmentOutputAssignment a)
+        throws TypeCheckerError
     {
       final TType type =
         TypeChecker.lookupTermType(
@@ -754,8 +727,9 @@ public final class TypeChecker
       final TokenIdentifierLower a_name = a.getName();
       assert this.outputs.containsKey(a_name.getActual());
       final TValueType out_type = this.outputs.get(a_name.getActual());
+      assert out_type != null;
 
-      if (out_type.equals(type) == false) {
+      if (TTypeEquality.typesAreEqual(out_type, type) == false) {
         throw TypeCheckerError
           .shaderAssignmentBadType(a_name, out_type, type);
       }
@@ -766,19 +740,17 @@ public final class TypeChecker
       return new TASTDShaderFragmentOutputAssignment(a_name, variable);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      UASTRFragmentShaderOutputVisitor<TASTDShaderFragmentOutput, TypeCheckerError>
+    @Override public
+      UASTRFragmentShaderOutputVisitorType<TASTDShaderFragmentOutput, TypeCheckerError>
       fragmentShaderVisitOutputsPre()
-        throws TypeCheckerError,
-          ConstraintError
+        throws TypeCheckerError
     {
-      return new UASTRFragmentShaderOutputVisitor<TASTDShaderFragmentOutput, TypeCheckerError>() {
+      return new UASTRFragmentShaderOutputVisitorType<TASTDShaderFragmentOutput, TypeCheckerError>() {
         @Override public
           TASTDShaderFragmentOutput
           fragmentShaderVisitOutputData(
-            final @Nonnull UASTRDShaderFragmentOutputData d)
-            throws TypeCheckerError,
-              ConstraintError
+            final UASTRDShaderFragmentOutputData d)
+            throws TypeCheckerError
         {
           final TType t =
             TypeChecker.lookupType(
@@ -803,9 +775,8 @@ public final class TypeChecker
         @Override public
           TASTDShaderFragmentOutput
           fragmentShaderVisitOutputDepth(
-            final @Nonnull UASTRDShaderFragmentOutputDepth d)
-            throws TypeCheckerError,
-              ConstraintError
+            final UASTRDShaderFragmentOutputDepth d)
+            throws TypeCheckerError
         {
           final TType t =
             TypeChecker.lookupType(
@@ -826,12 +797,11 @@ public final class TypeChecker
       };
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
+    @Override public
       TASTDShaderFragmentParameter
       fragmentShaderVisitParameter(
-        final @Nonnull UASTRDShaderFragmentParameter p)
-        throws TypeCheckerError,
-          ConstraintError
+        final UASTRDShaderFragmentParameter p)
+        throws TypeCheckerError
     {
       final UASTRTermNameLocal in = p.getName();
       final TASTTermNameLocal name =
@@ -853,23 +823,23 @@ public final class TypeChecker
    * Type checking of fragment shader locals.
    */
 
-  private static final class TypeCheckerFragmentShaderLocal implements
-    UASTRFragmentShaderLocalVisitor<TASTDShaderFragmentLocal, TypeCheckerError>
+  @EqualityReference private static final class TypeCheckerFragmentShaderLocal implements
+    UASTRFragmentShaderLocalVisitorType<TASTDShaderFragmentLocal, TypeCheckerError>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull LocalTypes                       locals;
-    private final @Nonnull Log                              log;
-    private final @Nonnull UASTRDModule                     module;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final LocalTypes                       locals;
+    private final LogUsableType                    log;
+    private final UASTRDModule                     module;
 
     public TypeCheckerFragmentShaderLocal(
-      final @Nonnull UASTRDModule in_module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull LocalTypes in_locals,
-      final @Nonnull Log in_log)
+      final UASTRDModule in_module,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDType> in_checked_types,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final LocalTypes in_locals,
+      final LogUsableType in_log)
     {
       this.module = in_module;
       this.checked_modules = in_checked_modules;
@@ -882,9 +852,8 @@ public final class TypeChecker
     @Override public
       TASTDShaderFragmentLocalDiscard
       fragmentShaderVisitLocalDiscard(
-        final @Nonnull UASTRDShaderFragmentLocalDiscard d)
-        throws TypeCheckerError,
-          ConstraintError
+        final UASTRDShaderFragmentLocalDiscard d)
+        throws TypeCheckerError
     {
       final TASTExpression e =
         d.getExpression().expressionVisitableAccept(
@@ -896,7 +865,7 @@ public final class TypeChecker
             this.locals,
             this.log));
 
-      if (e.getType().equals(TBoolean.get())) {
+      if (TTypeEquality.typesAreEqual(e.getType(), TBoolean.get())) {
         return new TASTDShaderFragmentLocalDiscard(d.getDiscard(), e);
       }
 
@@ -908,9 +877,8 @@ public final class TypeChecker
     @Override public
       TASTDShaderFragmentLocalValue
       fragmentShaderVisitLocalValue(
-        final @Nonnull UASTRDShaderFragmentLocalValue v)
-        throws TypeCheckerError,
-          ConstraintError
+        final UASTRDShaderFragmentLocalValue v)
+        throws TypeCheckerError
     {
       final TypeCheckerLocal lc =
         new TypeCheckerLocal(
@@ -925,23 +893,23 @@ public final class TypeChecker
     }
   }
 
-  private static final class TypeCheckerLocal implements
-    UASTRLocalLevelVisitor<TASTDValueLocal, TypeCheckerError>
+  @EqualityReference private static final class TypeCheckerLocal implements
+    UASTRLocalLevelVisitorType<TASTDValueLocal, TypeCheckerError>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull LocalTypes                       locals;
-    private final @Nonnull Log                              log;
-    private final @Nonnull UASTRDModule                     module;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final LocalTypes                       locals;
+    private final LogUsableType                    log;
+    private final UASTRDModule                     module;
 
     public TypeCheckerLocal(
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull LocalTypes in_locals,
-      final @Nonnull Log in_log,
-      final @Nonnull UASTRDModule in_module)
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final Map<String, TASTDType> in_checked_types,
+      final LocalTypes in_locals,
+      final LogUsableType in_log,
+      final UASTRDModule in_module)
     {
       this.checked_modules = in_checked_modules;
       this.checked_terms = in_checked_terms;
@@ -952,9 +920,8 @@ public final class TypeChecker
     }
 
     @Override public TASTDValueLocal localVisitValueLocal(
-      final @Nonnull UASTRDValueLocal v)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTRDValueLocal v)
+      throws TypeCheckerError
     {
       final TASTExpression e =
         v.getExpression().expressionVisitableAccept(
@@ -969,28 +936,25 @@ public final class TypeChecker
       final UASTRTermNameLocal vn = v.getName();
 
       v.getAscription().mapPartial(
-        new PartialFunction<UASTRTypeName, Unit, TypeCheckerError>() {
-          @SuppressWarnings("synthetic-access") @Override public Unit call(
-            final @Nonnull UASTRTypeName t)
+        new PartialFunctionType<UASTRTypeName, Unit, TypeCheckerError>() {
+          @Override public Unit call(
+            final UASTRTypeName t)
             throws TypeCheckerError
           {
-            try {
-              final TType r =
-                TypeChecker.lookupType(
-                  TypeCheckerLocal.this.module,
-                  TypeCheckerLocal.this.checked_modules,
-                  TypeCheckerLocal.this.checked_types,
-                  t);
-              if (r.equals(e.getType()) == false) {
-                throw TypeCheckerError.termValueExpressionAscriptionMismatch(
-                  vn.getOriginal(),
-                  r,
-                  e.getType());
-              }
-              return Unit.unit();
-            } catch (final ConstraintError x) {
-              throw new UnreachableCodeException(x);
+            final TType r =
+              TypeChecker.lookupType(
+                TypeCheckerLocal.this.module,
+                TypeCheckerLocal.this.checked_modules,
+                TypeCheckerLocal.this.checked_types,
+                t);
+
+            if (TTypeEquality.typesAreEqual(e.getType(), r) == false) {
+              throw TypeCheckerError.termValueExpressionAscriptionMismatch(
+                vn.getOriginal(),
+                r,
+                e.getType());
             }
+            return Unit.unit();
           }
         });
 
@@ -1002,32 +966,41 @@ public final class TypeChecker
     }
   }
 
-  private static final class TypeCheckerModule
+  @EqualityReference private static final class TypeCheckerModule
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Log                              log;
-    private final @Nonnull UASTRDModule                     module;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final LogUsableType                    log;
+    private final UASTRDModule                     module;
 
     public TypeCheckerModule(
-      final @Nonnull UASTRDModule in_module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Log in_log)
+      final UASTRDModule in_module,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final LogUsableType in_log)
     {
       this.module = in_module;
       this.checked_modules = in_checked_modules;
-      this.log = new Log(in_log, "module-checker");
+      this.log = in_log.with("module-checker");
 
-      if (in_log.enabled(Level.LOG_DEBUG)) {
+      if (in_log.wouldLog(LogLevel.LOG_DEBUG)) {
         final StringBuilder m = new StringBuilder();
         m.append("Checking ");
         m.append(in_module.getFlat().getActual());
-        in_log.debug(m.toString());
+        final String r = m.toString();
+        assert r != null;
+        in_log.debug(r);
       }
     }
 
-    public @Nonnull TASTDModule check()
-      throws TypeCheckerError,
-        ConstraintError
+    /**
+     * Type-check the given module
+     * 
+     * @return A typed module
+     * @throws TypeCheckerError
+     *           If a type error occurs
+     */
+
+    public TASTDModule check()
+      throws TypeCheckerError
     {
       final Map<String, TASTDType> checked_types =
         new HashMap<String, TASTDType>();
@@ -1049,27 +1022,7 @@ public final class TypeChecker
 
       final Map<String, UASTRDType> types = this.module.getTypes();
       final List<String> types_topo = this.module.getTypeTopology();
-
-      if (this.log.enabled(Level.LOG_DEBUG)) {
-        final StringBuilder m = new StringBuilder();
-        m.append(types_topo.size());
-        m.append(" types in topology");
-        this.log.debug(m.toString());
-      }
-
-      for (int index = types_topo.size() - 1; index >= 0; --index) {
-        final String name = types_topo.get(index);
-        final UASTRDType type = types.get(name);
-        final TASTDType checked =
-          type.typeVisitableAccept(new TypeCheckerTypeDeclaration(
-            this.module,
-            this.checked_modules,
-            checked_types,
-            this.log));
-
-        assert checked_types.containsKey(name) == false;
-        checked_types.put(name, checked);
-      }
+      this.checkTypeDeclarations(checked_types, types, types_topo);
       assert checked_types.size() == types_topo.size();
       assert checked_types.size() == types.size();
 
@@ -1079,28 +1032,11 @@ public final class TypeChecker
 
       final Map<String, UASTRDTerm> terms = this.module.getTerms();
       final List<String> terms_topo = this.module.getTermTopology();
-
-      if (this.log.enabled(Level.LOG_DEBUG)) {
-        final StringBuilder m = new StringBuilder();
-        m.append(terms_topo.size());
-        m.append(" terms in topology");
-        this.log.debug(m.toString());
-      }
-
-      for (int index = terms_topo.size() - 1; index >= 0; --index) {
-        final String name = terms_topo.get(index);
-        final UASTRDTerm term = terms.get(name);
-        final TASTDTerm checked =
-          term.termVisitableAccept(new TypeCheckerTermDeclaration(
-            this.module,
-            this.checked_modules,
-            checked_types,
-            checked_terms,
-            this.log));
-
-        assert checked_terms.containsKey(name) == false;
-        checked_terms.put(name, checked);
-      }
+      this.checkTermDeclarations(
+        checked_types,
+        checked_terms,
+        terms,
+        terms_topo);
       assert checked_terms.size() == terms_topo.size();
       assert checked_terms.size() == terms.size();
 
@@ -1110,29 +1046,12 @@ public final class TypeChecker
 
       final Map<String, UASTRDShader> shaders = this.module.getShaders();
       final List<String> shaders_topo = this.module.getShaderTopology();
-
-      if (this.log.enabled(Level.LOG_DEBUG)) {
-        final StringBuilder m = new StringBuilder();
-        m.append(shaders_topo.size());
-        m.append(" shaders in topology");
-        this.log.debug(m.toString());
-      }
-
-      for (int index = shaders_topo.size() - 1; index >= 0; --index) {
-        final String name = shaders_topo.get(index);
-        final UASTRDShader shader = shaders.get(name);
-        final TASTDShader checked =
-          shader.shaderVisitableAccept(new TypeCheckerShaderDeclaration(
-            this.module,
-            this.checked_modules,
-            checked_types,
-            checked_terms,
-            checked_shaders,
-            this.log));
-
-        assert checked_shaders.containsKey(name) == false;
-        checked_shaders.put(name, checked);
-      }
+      this.checkShaderDeclarations(
+        checked_types,
+        checked_terms,
+        checked_shaders,
+        shaders,
+        shaders_topo);
       assert checked_shaders.size() == shaders_topo.size();
       assert checked_shaders.size() == shaders.size();
 
@@ -1191,21 +1110,116 @@ public final class TypeChecker
         checked_shaders,
         shaders_topo);
     }
+
+    private void checkShaderDeclarations(
+      final Map<String, TASTDType> checked_types,
+      final Map<String, TASTDTerm> checked_terms,
+      final Map<String, TASTDShader> checked_shaders,
+      final Map<String, UASTRDShader> shaders,
+      final List<String> shaders_topo)
+      throws TypeCheckerError
+    {
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+        final StringBuilder m = new StringBuilder();
+        m.append(shaders_topo.size());
+        m.append(" shaders in topology");
+        final String r = m.toString();
+        assert r != null;
+        this.log.debug(r);
+      }
+
+      for (int index = shaders_topo.size() - 1; index >= 0; --index) {
+        final String name = shaders_topo.get(index);
+        final UASTRDShader shader = shaders.get(name);
+        final TASTDShader checked =
+          shader.shaderVisitableAccept(new TypeCheckerShaderDeclaration(
+            this.module,
+            this.checked_modules,
+            checked_types,
+            checked_terms,
+            checked_shaders,
+            this.log));
+
+        assert checked_shaders.containsKey(name) == false;
+        checked_shaders.put(name, checked);
+      }
+    }
+
+    private void checkTermDeclarations(
+      final Map<String, TASTDType> checked_types,
+      final Map<String, TASTDTerm> checked_terms,
+      final Map<String, UASTRDTerm> terms,
+      final List<String> terms_topo)
+      throws TypeCheckerError
+    {
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+        final StringBuilder m = new StringBuilder();
+        m.append(terms_topo.size());
+        m.append(" terms in topology");
+        final String r = m.toString();
+        assert r != null;
+        this.log.debug(r);
+      }
+
+      for (int index = terms_topo.size() - 1; index >= 0; --index) {
+        final String name = terms_topo.get(index);
+        final UASTRDTerm term = terms.get(name);
+        final TASTDTerm checked =
+          term.termVisitableAccept(new TypeCheckerTermDeclaration(
+            this.module,
+            this.checked_modules,
+            checked_types,
+            checked_terms,
+            this.log));
+
+        assert checked_terms.containsKey(name) == false;
+        checked_terms.put(name, checked);
+      }
+    }
+
+    private void checkTypeDeclarations(
+      final Map<String, TASTDType> checked_types,
+      final Map<String, UASTRDType> types,
+      final List<String> types_topo)
+      throws TypeCheckerError
+    {
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+        final StringBuilder m = new StringBuilder();
+        m.append(types_topo.size());
+        m.append(" types in topology");
+        final String r = m.toString();
+        assert r != null;
+        this.log.debug(r);
+      }
+
+      for (int index = types_topo.size() - 1; index >= 0; --index) {
+        final String name = types_topo.get(index);
+        final UASTRDType type = types.get(name);
+        final TASTDType checked =
+          type.typeVisitableAccept(new TypeCheckerTypeDeclaration(
+            this.module,
+            this.checked_modules,
+            checked_types,
+            this.log));
+
+        assert checked_types.containsKey(name) == false;
+        checked_types.put(name, checked);
+      }
+    }
   }
 
-  private static final class TypeCheckerShaderDeclaration implements
-    UASTRShaderVisitor<TASTDShader, TypeCheckerError>
+  @EqualityReference private static final class TypeCheckerShaderDeclaration implements
+    UASTRShaderVisitorType<TASTDShader, TypeCheckerError>
   {
     private static void checkShaderTypeCompatibility(
-      final @Nonnull TokenIdentifierLower program,
-      final @Nonnull TASTDShaderVertex vs,
-      final @Nonnull TASTDShaderFragment fs)
-      throws TypeCheckerError,
-        ConstraintError
+      final TokenIdentifierLower program,
+      final TASTDShaderVertex vs,
+      final TASTDShaderFragment fs)
+      throws TypeCheckerError
     {
       boolean compatible = true;
-      final HashSet<String> assigned = new HashSet<String>();
-      final HashMap<String, TValueType> wrong_types =
+      final Set<String> assigned = new HashSet<String>();
+      final Map<String, TValueType> wrong_types =
         new HashMap<String, TValueType>();
 
       for (final TASTDShaderFragmentInput fi : fs.getInputs()) {
@@ -1215,7 +1229,8 @@ public final class TypeChecker
           if (fi_name.equals(vo_name)) {
             final TValueType fi_type = fi.getType();
             final TValueType vo_type = vo.getType();
-            if (fi_type.equals(vo_type) == false) {
+
+            if (TTypeEquality.typesAreEqual(fi_type, vo_type) == false) {
               wrong_types.put(fi_name, vo.getType());
               compatible = false;
               break;
@@ -1242,20 +1257,20 @@ public final class TypeChecker
       }
     }
 
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDShader>         checked_shaders;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull Log                              log;
-    private final @Nonnull UASTRDModule                     module;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDShader>         checked_shaders;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final LogUsableType                    log;
+    private final UASTRDModule                     module;
 
     public TypeCheckerShaderDeclaration(
-      final @Nonnull UASTRDModule in_module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Map<String, TASTDShader> in_checked_shaders,
-      final @Nonnull Log in_log)
+      final UASTRDModule in_module,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDType> in_checked_types,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final Map<String, TASTDShader> in_checked_shaders,
+      final LogUsableType in_log)
     {
       this.module = in_module;
       this.checked_modules = in_checked_modules;
@@ -1266,9 +1281,8 @@ public final class TypeChecker
     }
 
     @Override public TASTDShaderFragment moduleVisitFragmentShader(
-      final @Nonnull UASTRDShaderFragment f)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTRDShaderFragment f)
+      throws TypeCheckerError
     {
       return f.fragmentShaderVisitableAccept(new TypeCheckerFragmentShader(
         this.module,
@@ -1278,12 +1292,9 @@ public final class TypeChecker
         this.log));
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      TASTDShaderProgram
-      moduleVisitProgramShader(
-        final @Nonnull UASTRDShaderProgram p)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDShaderProgram moduleVisitProgramShader(
+      final UASTRDShaderProgram p)
+      throws TypeCheckerError
     {
       final TASTDShader vs =
         TypeChecker.lookupShader(
@@ -1315,9 +1326,8 @@ public final class TypeChecker
     }
 
     @Override public TASTDShaderVertex moduleVisitVertexShader(
-      final @Nonnull UASTRDShaderVertex v)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTRDShaderVertex v)
+      throws TypeCheckerError
     {
       return v.vertexShaderVisitableAccept(new TypeCheckerVertexShader(
         this.module,
@@ -1328,21 +1338,21 @@ public final class TypeChecker
     }
   }
 
-  private static final class TypeCheckerTermDeclaration implements
-    UASTRTermVisitor<TASTDTerm, TypeCheckerError>
+  @EqualityReference private static final class TypeCheckerTermDeclaration implements
+    UASTRTermVisitorType<TASTDTerm, TypeCheckerError>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull Log                              log;
-    private final @Nonnull UASTRDModule                     module;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final LogUsableType                    log;
+    private final UASTRDModule                     module;
 
     public TypeCheckerTermDeclaration(
-      final @Nonnull UASTRDModule in_module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Log in_log)
+      final UASTRDModule in_module,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDType> in_checked_types,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final LogUsableType in_log)
     {
       this.module = in_module;
       this.checked_modules = in_checked_modules;
@@ -1351,18 +1361,15 @@ public final class TypeChecker
       this.log = in_log;
     }
 
-    @SuppressWarnings("synthetic-access") @Override public @Nonnull
-      TASTDFunctionDefined
-      termVisitFunctionDefined(
-        final @Nonnull UASTRDFunctionDefined f)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDFunctionDefined termVisitFunctionDefined(
+      final UASTRDFunctionDefined f)
+      throws TypeCheckerError
     {
       final LocalTypes locals = LocalTypes.initial();
 
       final List<TASTDFunctionArgument> arguments =
         new ArrayList<TASTDFunctionArgument>();
-      final ArrayList<TFunctionArgument> f_arguments =
+      final List<TFunctionArgument> f_arguments =
         new ArrayList<TFunctionArgument>();
 
       for (final UASTRDFunctionArgument a : f.getArguments()) {
@@ -1403,7 +1410,7 @@ public final class TypeChecker
             locals,
             this.log));
 
-      if (body.getType().equals(treturn)) {
+      if (TTypeEquality.typesAreEqual(body.getType(), treturn)) {
         final TFunction ft = new TFunction(f_arguments, (TValueType) treturn);
         final TASTDFunctionDefined fd =
           new TASTDFunctionDefined(f.getName(), arguments, body, ft);
@@ -1416,18 +1423,15 @@ public final class TypeChecker
         body.getType());
     }
 
-    @SuppressWarnings("synthetic-access") @Override public @Nonnull
-      TASTDFunctionExternal
-      termVisitFunctionExternal(
-        final @Nonnull UASTRDFunctionExternal f)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDFunctionExternal termVisitFunctionExternal(
+      final UASTRDFunctionExternal f)
+      throws TypeCheckerError
     {
       final LocalTypes locals = LocalTypes.initial();
 
       final List<TASTDFunctionArgument> arguments =
         new ArrayList<TASTDFunctionArgument>();
-      final ArrayList<TFunctionArgument> f_arguments =
+      final List<TFunctionArgument> f_arguments =
         new ArrayList<TFunctionArgument>();
 
       for (final UASTRDFunctionArgument a : f.getArguments()) {
@@ -1461,25 +1465,22 @@ public final class TypeChecker
       final TFunction tf = new TFunction(f_arguments, (TValueType) treturn);
       final UASTRDExternal orig_ext = f.getExternal();
 
-      final Option<UASTRExpression> orig_emulation = orig_ext.getEmulation();
-      final Option<TASTExpression> emulation =
+      final OptionType<UASTRExpression> orig_emulation =
+        orig_ext.getEmulation();
+      final OptionType<TASTExpression> emulation =
         orig_emulation
-          .mapPartial(new PartialFunction<UASTRExpression, TASTExpression, TypeCheckerError>() {
+          .mapPartial(new PartialFunctionType<UASTRExpression, TASTExpression, TypeCheckerError>() {
             @Override public TASTExpression call(
-              final @Nonnull UASTRExpression e)
+              final UASTRExpression e)
               throws TypeCheckerError
             {
-              try {
-                return e.expressionVisitableAccept(new TypeCheckerExpression(
-                  TypeCheckerTermDeclaration.this.module,
-                  TypeCheckerTermDeclaration.this.checked_modules,
-                  TypeCheckerTermDeclaration.this.checked_types,
-                  TypeCheckerTermDeclaration.this.checked_terms,
-                  locals,
-                  TypeCheckerTermDeclaration.this.log));
-              } catch (final ConstraintError x) {
-                throw new UnreachableCodeException(x);
-              }
+              return e.expressionVisitableAccept(new TypeCheckerExpression(
+                TypeCheckerTermDeclaration.this.module,
+                TypeCheckerTermDeclaration.this.checked_modules,
+                TypeCheckerTermDeclaration.this.checked_types,
+                TypeCheckerTermDeclaration.this.checked_terms,
+                locals,
+                TypeCheckerTermDeclaration.this.log));
             }
           });
 
@@ -1492,10 +1493,12 @@ public final class TypeChecker
 
       if (emulation.isSome()) {
         final Some<TASTExpression> some = (Some<TASTExpression>) emulation;
-        final TType emu_type = some.value.getType();
-        if (emu_type.equals(tf.getReturnType())) {
+        final TType emu_type = some.get().getType();
+
+        if (TTypeEquality.typesAreEqual(emu_type, tf.getReturnType())) {
           return new TASTDFunctionExternal(f.getName(), arguments, tf, ext);
         }
+
         throw TypeCheckerError.termFunctionBodyReturnMismatch(
           f.getName(),
           treturn,
@@ -1505,10 +1508,9 @@ public final class TypeChecker
       return new TASTDFunctionExternal(f.getName(), arguments, tf, ext);
     }
 
-    @Override public @Nonnull TASTDValueDefined termVisitValueDefined(
-      final @Nonnull UASTRDValueDefined v)
-      throws TypeCheckerError,
-        ConstraintError
+    @Override public TASTDValueDefined termVisitValueDefined(
+      final UASTRDValueDefined v)
+      throws TypeCheckerError
     {
       final LocalTypes locals = LocalTypes.initial();
 
@@ -1523,28 +1525,25 @@ public final class TypeChecker
             this.log));
 
       v.getAscription().mapPartial(
-        new PartialFunction<UASTRTypeName, Unit, TypeCheckerError>() {
-          @SuppressWarnings("synthetic-access") @Override public Unit call(
-            final @Nonnull UASTRTypeName n)
+        new PartialFunctionType<UASTRTypeName, Unit, TypeCheckerError>() {
+          @Override public Unit call(
+            final UASTRTypeName n)
             throws TypeCheckerError
           {
-            try {
-              final TType t =
-                TypeChecker.lookupType(
-                  TypeCheckerTermDeclaration.this.module,
-                  TypeCheckerTermDeclaration.this.checked_modules,
-                  TypeCheckerTermDeclaration.this.checked_types,
-                  n);
-              if (e.getType().equals(t) == false) {
-                throw TypeCheckerError.termValueExpressionAscriptionMismatch(
-                  v.getName(),
-                  t,
-                  e.getType());
-              }
-              return Unit.unit();
-            } catch (final ConstraintError x) {
-              throw new UnreachableCodeException(x);
+            final TType t =
+              TypeChecker.lookupType(
+                TypeCheckerTermDeclaration.this.module,
+                TypeCheckerTermDeclaration.this.checked_modules,
+                TypeCheckerTermDeclaration.this.checked_types,
+                n);
+
+            if (TTypeEquality.typesAreEqual(e.getType(), t) == false) {
+              throw TypeCheckerError.termValueExpressionAscriptionMismatch(
+                v.getName(),
+                t,
+                e.getType());
             }
+            return Unit.unit();
           }
         });
 
@@ -1555,15 +1554,12 @@ public final class TypeChecker
       throw TypeCheckerError.termValueNotValueType(v.getName(), e.getType());
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      TASTDTerm
-      termVisitValueExternal(
-        final @Nonnull UASTRDValueExternal v)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDTerm termVisitValueExternal(
+      final UASTRDValueExternal v)
+      throws TypeCheckerError
     {
       final UASTRDExternal original_external = v.getExternal();
-      final Option<TASTExpression> none = Option.none();
+      final OptionType<TASTExpression> none = Option.none();
       final TASTDExternal external =
         new TASTDExternal(
           original_external.getName(),
@@ -1582,19 +1578,19 @@ public final class TypeChecker
     }
   }
 
-  private static final class TypeCheckerTypeDeclaration implements
-    UASTRTypeVisitor<TASTDType, TypeCheckerError>
+  @EqualityReference private static final class TypeCheckerTypeDeclaration implements
+    UASTRTypeVisitorType<TASTDType, TypeCheckerError>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull Log                              log;
-    private final @Nonnull UASTRDModule                     module;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDType>           checked_types;
+    private final LogUsableType                    log;
+    private final UASTRDModule                     module;
 
     public TypeCheckerTypeDeclaration(
-      final @Nonnull UASTRDModule in_module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Log in_log)
+      final UASTRDModule in_module,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDType> in_checked_types,
+      final LogUsableType in_log)
     {
       this.module = in_module;
       this.checked_modules = in_checked_modules;
@@ -1602,20 +1598,19 @@ public final class TypeChecker
       this.log = in_log;
     }
 
-    @SuppressWarnings("synthetic-access") @Override public @Nonnull
-      TASTDTypeRecord
-      typeVisitTypeRecord(
-        final @Nonnull UASTRDTypeRecord r)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDTypeRecord typeVisitTypeRecord(
+      final UASTRDTypeRecord r)
+      throws TypeCheckerError
     {
-      if (this.log.enabled(Level.LOG_DEBUG)) {
+      if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         final StringBuilder m = new StringBuilder();
         m.append("Checking ");
         m.append(this.module.getFlat().getActual());
         m.append(".");
         m.append(r.getName().getActual());
-        this.log.debug(m.toString());
+        final String rs = m.toString();
+        assert rs != null;
+        this.log.debug(rs);
       }
 
       final List<TASTDTypeRecordField> fields =
@@ -1635,8 +1630,9 @@ public final class TypeChecker
         }
 
         final TokenIdentifierLower f_name = f.getName();
-        t_fields
-          .add(new TRecordField(f_name.getActual(), (TManifestType) rt));
+        final String fn = f_name.getActual();
+        assert fn != null;
+        t_fields.add(new TRecordField(fn, (TManifestType) rt));
         fields.add(new TASTDTypeRecordField(f_name, (TManifestType) rt));
       }
 
@@ -1651,23 +1647,23 @@ public final class TypeChecker
     }
   }
 
-  private static final class TypeCheckerVertexShader implements
-    UASTRVertexShaderVisitor<TASTDShaderVertex, TASTDShaderVertexInput, TASTDShaderVertexParameter, TASTDShaderVertexOutput, TASTDShaderVertexLocalValue, TASTDShaderVertexOutputAssignment, TypeCheckerError>
+  @EqualityReference private static final class TypeCheckerVertexShader implements
+    UASTRVertexShaderVisitorType<TASTDShaderVertex, TASTDShaderVertexInput, TASTDShaderVertexParameter, TASTDShaderVertexOutput, TASTDShaderVertexLocalValue, TASTDShaderVertexOutputAssignment, TypeCheckerError>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull LocalTypes                       locals;
-    private final @Nonnull Log                              log;
-    private final @Nonnull UASTRDModule                     module;
-    private final @Nonnull Map<String, TValueType>          outputs;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final LocalTypes                       locals;
+    private final LogUsableType                    log;
+    private final UASTRDModule                     module;
+    private final Map<String, TValueType>          outputs;
 
     public TypeCheckerVertexShader(
-      final @Nonnull UASTRDModule in_module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Log in_log)
+      final UASTRDModule in_module,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDType> in_checked_types,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final LogUsableType in_log)
     {
       this.module = in_module;
       this.checked_modules = in_checked_modules;
@@ -1678,17 +1674,14 @@ public final class TypeChecker
       this.outputs = new HashMap<String, TValueType>();
     }
 
-    @Override public
-      TASTDShaderVertex
-      vertexShaderVisit(
-        final @Nonnull List<TASTDShaderVertexInput> r_inputs,
-        final @Nonnull List<TASTDShaderVertexParameter> r_parameters,
-        final @Nonnull List<TASTDShaderVertexOutput> r_outputs,
-        final @Nonnull List<TASTDShaderVertexLocalValue> r_values,
-        final @Nonnull List<TASTDShaderVertexOutputAssignment> r_output_assignments,
-        final @Nonnull UASTRDShaderVertex v)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDShaderVertex vertexShaderVisit(
+      final List<TASTDShaderVertexInput> r_inputs,
+      final List<TASTDShaderVertexParameter> r_parameters,
+      final List<TASTDShaderVertexOutput> r_outputs,
+      final List<TASTDShaderVertexLocalValue> r_values,
+      final List<TASTDShaderVertexOutputAssignment> r_output_assignments,
+      final UASTRDShaderVertex v)
+      throws TypeCheckerError
     {
       return new TASTDShaderVertex(
         v.getName(),
@@ -1699,12 +1692,9 @@ public final class TypeChecker
         r_output_assignments);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      TASTDShaderVertexInput
-      vertexShaderVisitInput(
-        final @Nonnull UASTRDShaderVertexInput i)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDShaderVertexInput vertexShaderVisitInput(
+      final UASTRDShaderVertexInput i)
+      throws TypeCheckerError
     {
       final UASTRTermNameLocal in = i.getName();
       final TASTTermNameLocal name =
@@ -1726,10 +1716,9 @@ public final class TypeChecker
     }
 
     @Override public
-      UASTRVertexShaderLocalVisitor<TASTDShaderVertexLocalValue, TypeCheckerError>
+      UASTRVertexShaderLocalVisitorType<TASTDShaderVertexLocalValue, TypeCheckerError>
       vertexShaderVisitLocalsPre()
-        throws TypeCheckerError,
-          ConstraintError
+        throws TypeCheckerError
     {
       return new TypeCheckerVertexShaderLocal(
         this.module,
@@ -1740,12 +1729,9 @@ public final class TypeChecker
         this.log);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      TASTDShaderVertexOutput
-      vertexShaderVisitOutput(
-        final @Nonnull UASTRDShaderVertexOutput o)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDShaderVertexOutput vertexShaderVisitOutput(
+      final UASTRDShaderVertexOutput o)
+      throws TypeCheckerError
     {
       final TType t =
         TypeChecker.lookupType(
@@ -1755,7 +1741,7 @@ public final class TypeChecker
           o.getType());
 
       if (o.isMain()) {
-        if (t.equals(TVector4F.get()) == false) {
+        if (TTypeEquality.typesAreEqual(t, TVector4F.get()) == false) {
           throw TypeCheckerError.shaderVertexMainOutputBadType(o, t);
         }
       }
@@ -1771,12 +1757,11 @@ public final class TypeChecker
         o.isMain());
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
+    @Override public
       TASTDShaderVertexOutputAssignment
       vertexShaderVisitOutputAssignment(
-        final @Nonnull UASTRDShaderVertexOutputAssignment a)
-        throws TypeCheckerError,
-          ConstraintError
+        final UASTRDShaderVertexOutputAssignment a)
+        throws TypeCheckerError
     {
       final TType type =
         TypeChecker.lookupTermType(
@@ -1791,7 +1776,7 @@ public final class TypeChecker
       final TValueType out_type = this.outputs.get(a_name.getActual());
       assert out_type != null;
 
-      if (out_type.equals(type) == false) {
+      if (TTypeEquality.typesAreEqual(out_type, type) == false) {
         throw TypeCheckerError
           .shaderAssignmentBadType(a_name, out_type, type);
       }
@@ -1802,12 +1787,9 @@ public final class TypeChecker
       return new TASTDShaderVertexOutputAssignment(a_name, variable);
     }
 
-    @SuppressWarnings("synthetic-access") @Override public
-      TASTDShaderVertexParameter
-      vertexShaderVisitParameter(
-        final @Nonnull UASTRDShaderVertexParameter p)
-        throws TypeCheckerError,
-          ConstraintError
+    @Override public TASTDShaderVertexParameter vertexShaderVisitParameter(
+      final UASTRDShaderVertexParameter p)
+      throws TypeCheckerError
     {
       final UASTRTermNameLocal in = p.getName();
       final TASTTermNameLocal name =
@@ -1825,23 +1807,23 @@ public final class TypeChecker
     }
   }
 
-  private static final class TypeCheckerVertexShaderLocal implements
-    UASTRVertexShaderLocalVisitor<TASTDShaderVertexLocalValue, TypeCheckerError>
+  @EqualityReference private static final class TypeCheckerVertexShaderLocal implements
+    UASTRVertexShaderLocalVisitorType<TASTDShaderVertexLocalValue, TypeCheckerError>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull LocalTypes                       locals;
-    private final @Nonnull Log                              log;
-    private final @Nonnull UASTRDModule                     module;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final LocalTypes                       locals;
+    private final LogUsableType                    log;
+    private final UASTRDModule                     module;
 
     public TypeCheckerVertexShaderLocal(
-      final @Nonnull UASTRDModule in_module,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull LocalTypes in_locals,
-      final @Nonnull Log in_log)
+      final UASTRDModule in_module,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDType> in_checked_types,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final LocalTypes in_locals,
+      final LogUsableType in_log)
     {
       this.module = in_module;
       this.checked_modules = in_checked_modules;
@@ -1852,9 +1834,8 @@ public final class TypeChecker
     }
 
     @Override public TASTDShaderVertexLocalValue vertexShaderVisitLocalValue(
-      final @Nonnull UASTRDShaderVertexLocalValue v)
-      throws TypeCheckerError,
-        ConstraintError
+      final UASTRDShaderVertexLocalValue v)
+      throws TypeCheckerError
     {
       final TypeCheckerLocal lc =
         new TypeCheckerLocal(
@@ -1869,36 +1850,38 @@ public final class TypeChecker
     }
   }
 
-  private static @Nonnull TASTDShader lookupShader(
-    final @Nonnull UASTRDModule module,
-    final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-    final @Nonnull Map<String, TASTDShader> checked_shaders,
-    final @Nonnull UASTRShaderName name)
+  private static TASTDShader lookupShader(
+    final UASTRDModule module,
+    final Map<ModulePathFlat, TASTDModule> checked_modules,
+    final Map<String, TASTDShader> checked_shaders,
+    final UASTRShaderName name)
   {
     final TokenIdentifierLower sname = name.getName();
     if (name.getFlat().equals(module.getFlat())) {
       assert checked_shaders.containsKey(sname.getActual());
-      return checked_shaders.get(sname.getActual());
+      final TASTDShader r = checked_shaders.get(sname.getActual());
+      assert r != null;
+      return r;
     }
 
     final TASTDModule m = checked_modules.get(name.getFlat());
     assert m.getShaders().containsKey(sname.getActual());
-    return m.getShaders().get(sname.getActual());
+    final TASTDShader r = m.getShaders().get(sname.getActual());
+    assert r != null;
+    return r;
   }
 
-  private static @Nonnull TType lookupTermType(
-    final @Nonnull UASTRTermName name,
-    final @Nonnull UASTRDModule module,
-    final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-    final @Nonnull Map<String, TASTDTerm> checked_terms,
-    final @Nonnull LocalTypes locals)
-    throws ConstraintError
+  private static TType lookupTermType(
+    final UASTRTermName name,
+    final UASTRDModule module,
+    final Map<ModulePathFlat, TASTDModule> checked_modules,
+    final Map<String, TASTDTerm> checked_terms,
+    final @Nullable LocalTypes locals)
   {
     return name
-      .termNameVisitableAccept(new UASTRTermNameVisitor<TType, ConstraintError>() {
+      .termNameVisitableAccept(new UASTRTermNameVisitorType<TType, UnreachableCodeException>() {
         @Override public TType termNameVisitGlobal(
-          final @Nonnull UASTRTermNameGlobal t)
-          throws ConstraintError
+          final UASTRTermNameGlobal t)
         {
           final TokenIdentifierLower t_name = t.getName();
 
@@ -1917,36 +1900,35 @@ public final class TypeChecker
         }
 
         @Override public TType termNameVisitLocal(
-          final @Nonnull UASTRTermNameLocal t)
-          throws ConstraintError
+          final UASTRTermNameLocal t)
         {
+          assert locals != null;
           return locals.getName(t.getCurrent());
         }
       });
   }
 
-  private static @Nonnull TType lookupType(
-    final @Nonnull UASTRDModule module,
-    final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules,
-    final @Nonnull Map<String, TASTDType> checked_types,
-    final @Nonnull UASTRTypeName type)
-    throws ConstraintError
+  private static TType lookupType(
+    final UASTRDModule module,
+    final Map<ModulePathFlat, TASTDModule> checked_modules,
+    final Map<String, TASTDType> checked_types,
+    final UASTRTypeName type)
   {
     return type
-      .typeNameVisitableAccept(new UASTRTypeNameVisitor<TType, ConstraintError>() {
+      .typeNameVisitableAccept(new UASTRTypeNameVisitorType<TType, UnreachableCodeException>() {
         @Override public TType typeNameVisitBuiltIn(
-          final @Nonnull UASTRTypeNameBuiltIn t)
-          throws ConstraintError
+          final UASTRTypeNameBuiltIn t)
         {
           final String actual = t.getName().getActual();
           final Map<TTypeNameBuiltIn, TType> bt = TType.getBaseTypesByName();
           final TTypeNameBuiltIn tbn = new TTypeNameBuiltIn(actual);
-          return bt.get(tbn);
+          final TType r = bt.get(tbn);
+          assert r != null;
+          return r;
         }
 
         @Override public TType typeNameVisitGlobal(
-          final @Nonnull UASTRTypeNameGlobal t)
-          throws ConstraintError
+          final UASTRTypeNameGlobal t)
         {
           final ModulePath current_path = module.getPath();
           final ModulePathFlat current_flat =
@@ -1971,31 +1953,25 @@ public final class TypeChecker
       });
   }
 
-  private static @Nonnull TASTShaderName mapShaderName(
-    final @Nonnull UASTRShaderName name)
-    throws ConstraintError
+  private static TASTShaderName mapShaderName(
+    final UASTRShaderName name)
   {
     return new TASTShaderName(name.getPath(), name.getName());
   }
 
-  private static @Nonnull TASTTermName mapTermName(
-    final @Nonnull UASTRTermName n)
-    throws ConstraintError
+  private static TASTTermName mapTermName(
+    final UASTRTermName n)
   {
     return n
-      .termNameVisitableAccept(new UASTRTermNameVisitor<TASTTermName, ConstraintError>() {
-        @Override public @Nonnull TASTTermNameGlobal termNameVisitGlobal(
-          final @Nonnull UASTRTermNameGlobal t_name)
-          throws ConstraintError,
-            ConstraintError
+      .termNameVisitableAccept(new UASTRTermNameVisitorType<TASTTermName, UnreachableCodeException>() {
+        @Override public TASTTermNameGlobal termNameVisitGlobal(
+          final UASTRTermNameGlobal t_name)
         {
           return new TASTTermNameGlobal(t_name.getPath(), t_name.getName());
         }
 
-        @Override public @Nonnull TASTTermNameLocal termNameVisitLocal(
-          final @Nonnull UASTRTermNameLocal t_name)
-          throws ConstraintError,
-            ConstraintError
+        @Override public TASTTermNameLocal termNameVisitLocal(
+          final UASTRTermNameLocal t_name)
         {
           return new TASTTermNameLocal(t_name.getOriginal(), t_name
             .getCurrent());
@@ -2003,41 +1979,57 @@ public final class TypeChecker
       });
   }
 
-  public static @Nonnull TypeChecker newTypeChecker(
-    final @Nonnull UASTRCompilation compilation,
-    final @Nonnull Log log)
-    throws ConstraintError
+  /**
+   * Construct a new type checker for the given AST.
+   * 
+   * @param compilation
+   *          The AST
+   * @param log
+   *          A log interface
+   * @return A type checker
+   */
+
+  public static TypeChecker newTypeChecker(
+    final UASTRCompilation compilation,
+    final LogUsableType log)
   {
     return new TypeChecker(compilation, log);
   }
 
-  private final @Nonnull UASTRCompilation compilation;
-  private final @Nonnull Log              log;
+  private final UASTRCompilation compilation;
+  private final LogUsableType    log;
 
   private TypeChecker(
-    final @Nonnull UASTRCompilation in_compilation,
-    final @Nonnull Log in_log)
-    throws ConstraintError
+    final UASTRCompilation in_compilation,
+    final LogUsableType in_log)
   {
-    this.log = new Log(in_log, "type-checker");
-    this.compilation =
-      Constraints.constrainNotNull(in_compilation, "Compilation");
+    this.log = in_log.with("type-checker");
+    this.compilation = NullCheck.notNull(in_compilation, "Compilation");
   }
 
-  public @Nonnull TASTCompilation check()
-    throws ConstraintError,
-      TypeCheckerError
+  /**
+   * Check the given AST.
+   * 
+   * @return A typed AST
+   * @throws TypeCheckerError
+   *           If a type error occurs
+   */
+
+  public TASTCompilation check()
+    throws TypeCheckerError
   {
     final Map<ModulePathFlat, UASTRDModule> modules =
       this.compilation.getModules();
 
     final List<ModulePathFlat> topology =
       this.compilation.getModuleTopology();
-    if (this.log.enabled(Level.LOG_DEBUG)) {
+    if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
       final StringBuilder m = new StringBuilder();
       m.append(topology.size());
       m.append(" modules in topology");
-      this.log.debug(m.toString());
+      final String r = m.toString();
+      assert r != null;
+      this.log.debug(r);
     }
 
     /**
@@ -2050,6 +2042,7 @@ public final class TypeChecker
     for (int index = topology.size() - 1; index >= 0; --index) {
       final ModulePathFlat path = topology.get(index);
       final UASTRDModule module = modules.get(path);
+      assert module != null;
       final TypeCheckerModule mr =
         new TypeCheckerModule(module, checked_modules, this.log);
       final TASTDModule checked = mr.check();

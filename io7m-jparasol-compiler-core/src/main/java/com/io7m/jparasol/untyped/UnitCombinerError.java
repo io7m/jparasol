@@ -18,23 +18,29 @@ package com.io7m.jparasol.untyped;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.NameRestrictions.NameRestrictionsException;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 
+/**
+ * Errors raised during the unit combination phase.
+ * 
+ * @see UnitCombinerError
+ */
+
 public final class UnitCombinerError extends CompilerError
 {
   private static final long serialVersionUID = 5359160308099372566L;
 
+  /**
+   * @return A unit combiner error
+   */
+
   public static UnitCombinerError duplicateModule(
-    final @Nonnull UASTIDModule original,
-    final @Nonnull UASTIDModule current)
-    throws ConstraintError
+    final UASTIDModule original,
+    final UASTIDModule current)
   {
     final TokenIdentifierUpper cn = current.getPath().getName();
     final StringBuilder m = new StringBuilder();
@@ -52,17 +58,19 @@ public final class UnitCombinerError extends CompilerError
   }
 
   private UnitCombinerError(
-    final @Nonnull File file,
-    final @Nonnull Position position,
-    final @Nonnull String message)
-    throws ConstraintError
+    final File file,
+    final Position position,
+    final String message)
   {
     super(message, file, position);
   }
 
+  /**
+   * Construct a unit combiner error
+   */
+
   public UnitCombinerError(
-    final @Nonnull NameRestrictionsException x)
-    throws ConstraintError
+    final NameRestrictionsException x)
   {
     super(x, x.getMessage(), x.getFile(), x.getPosition());
   }

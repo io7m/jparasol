@@ -21,53 +21,81 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
-public final class PackagePath
+/**
+ * The type of package paths.
+ */
+
+@SuppressWarnings("synthetic-access") @EqualityStructural public final class PackagePath
 {
-  public interface Builder
+  /**
+   * The type of mutable package path builders.
+   */
+
+  public interface BuilderType
   {
-    public void addComponent(
-      final @Nonnull TokenIdentifierLower c)
-      throws ConstraintError;
+    /**
+     * Add a path component.
+     * 
+     * @param c
+     *          The component
+     */
 
-    public void addFakeComponent(
-      final @Nonnull String c)
-      throws ConstraintError;
+    void addComponent(
+      final TokenIdentifierLower c);
 
-    public @Nonnull PackagePath build()
-      throws ConstraintError;
+    /**
+     * Add a "fake" (that is; did not come from a source file) path component.
+     * 
+     * @param c
+     *          The component
+     */
+
+    void addFakeComponent(
+      final String c);
+
+    /**
+     * @return A new package path, raising an error if the resulting path is
+     *         invalid.
+     */
+
+    PackagePath build();
   }
 
-  public static @Nonnull Builder newBuilder()
+  /**
+   * @return A new mutable path builder.
+   */
+
+  public static BuilderType newBuilder()
   {
-    return new Builder() {
-      private final @Nonnull List<TokenIdentifierLower> components =
-                                                                     new ArrayList<Token.TokenIdentifierLower>();
+    return new BuilderType() {
+      private final List<TokenIdentifierLower> components =
+                                                            new ArrayList<Token.TokenIdentifierLower>();
 
       @Override public PackagePath build()
-        throws ConstraintError
       {
         return new PackagePath(this.components);
       }
 
       @Override public void addFakeComponent(
-        final @Nonnull String c)
-        throws ConstraintError
+        final String c)
       {
-        Constraints.constrainNotNull(c, "Component");
-        Constraints.constrainArbitrary(
-          c.isEmpty() == false,
-          "Package path component is non-empty");
-        Constraints.constrainArbitrary(
-          Character.isLowerCase(c.charAt(0)),
-          "Package path component is lowercase");
+        NullCheck.notNull(c, "Component");
+
+        if (c.isEmpty()) {
+          throw new IllegalArgumentException(
+            "Package path component is empty");
+        }
+        if (Character.isLowerCase(c.charAt(0)) == false) {
+          throw new IllegalArgumentException(
+            "Package path component is not lowercase");
+        }
 
         final File file = new File("<generated>");
         final Position position = Position.ZERO;
@@ -78,26 +106,23 @@ public final class PackagePath
 
       @Override public void addComponent(
         final TokenIdentifierLower c)
-        throws ConstraintError
       {
-        Constraints.constrainNotNull(c, "Component");
+        NullCheck.notNull(c, "Component");
         this.components.add(c);
       }
     };
   }
 
-  private final @Nonnull List<TokenIdentifierLower> components;
+  private final List<TokenIdentifierLower> components;
 
   private PackagePath(
-    final @Nonnull List<TokenIdentifierLower> in_components)
-    throws ConstraintError
+    final List<TokenIdentifierLower> in_components)
   {
-    this.components =
-      Constraints.constrainNotNull(in_components, "Components");
+    this.components = NullCheck.notNullAll(in_components, "Components");
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -115,9 +140,16 @@ public final class PackagePath
     return true;
   }
 
-  public @Nonnull List<TokenIdentifierLower> getComponents()
+  /**
+   * @return The list of tokens that make up the path.
+   */
+
+  public List<TokenIdentifierLower> getComponents()
   {
-    return Collections.unmodifiableList(this.components);
+    final List<TokenIdentifierLower> r =
+      Collections.unmodifiableList(this.components);
+    assert r != null;
+    return r;
   }
 
   @Override public int hashCode()
@@ -134,6 +166,8 @@ public final class PackagePath
     builder.append("[PackagePath components=");
     builder.append(this.components);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

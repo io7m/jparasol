@@ -16,24 +16,41 @@
 
 package com.io7m.jparasol.glsl.ast;
 
-import javax.annotation.Nonnull;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
+import com.io7m.jparasol.NameShowType;
 
-import com.io7m.jparasol.NameShow;
+/**
+ * Term names.
+ */
 
-public abstract class GTermName implements GTermNameVisitable, NameShow
+@EqualityStructural public abstract class GTermName implements NameShowType
 {
-  public static final class GTermNameExternal extends GTermName
+  /**
+   * An external term name.
+   */
+
+  @EqualityStructural public static final class GTermNameExternal extends
+    GTermName
   {
-    private final @Nonnull String name;
+    private final String name;
+
+    /**
+     * Construct a name.
+     * 
+     * @param in_name
+     *          The name as a string.
+     */
 
     public GTermNameExternal(
-      final @Nonnull String in_name)
+      final String in_name)
     {
-      this.name = in_name;
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -56,13 +73,13 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
       return result;
     }
 
-    @Override public @Nonnull String show()
+    @Override public String show()
     {
       return this.name;
     }
 
     @Override public
-      <A, E extends Throwable, V extends GTermNameVisitor<A, E>>
+      <A, E extends Throwable, V extends GTermNameVisitorType<A, E>>
       A
       termNameVisitableAccept(
         final V v)
@@ -77,22 +94,36 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
       builder.append("[GTermNameExternal ");
       builder.append(this.name);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GTermNameGlobal extends GTermName
+  /**
+   * The name of a global term.
+   */
+
+  @EqualityStructural public static final class GTermNameGlobal extends
+    GTermName
   {
-    private final @Nonnull String name;
+    private final String name;
+
+    /**
+     * Construct a name.
+     * 
+     * @param in_name
+     *          The name as a string.
+     */
 
     public GTermNameGlobal(
-      final @Nonnull String in_name)
+      final String in_name)
     {
-      this.name = in_name;
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -115,13 +146,13 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
       return result;
     }
 
-    @Override public @Nonnull String show()
+    @Override public String show()
     {
       return this.name;
     }
 
     @Override public
-      <A, E extends Throwable, V extends GTermNameVisitor<A, E>>
+      <A, E extends Throwable, V extends GTermNameVisitorType<A, E>>
       A
       termNameVisitableAccept(
         final V v)
@@ -136,22 +167,36 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
       builder.append("[GTermNameGlobal ");
       builder.append(this.name);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
 
-  public static final class GTermNameLocal extends GTermName
+  /**
+   * The name of a local term.
+   */
+
+  @EqualityStructural public static final class GTermNameLocal extends
+    GTermName
   {
-    private final @Nonnull String name;
+    private final String name;
+
+    /**
+     * Construct a name.
+     * 
+     * @param in_name
+     *          The name as a string.
+     */
 
     public GTermNameLocal(
-      final @Nonnull String in_name)
+      final String in_name)
     {
-      this.name = in_name;
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
     @Override public boolean equals(
-      final Object obj)
+      final @Nullable Object obj)
     {
       if (this == obj) {
         return true;
@@ -180,7 +225,7 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
     }
 
     @Override public
-      <A, E extends Throwable, V extends GTermNameVisitor<A, E>>
+      <A, E extends Throwable, V extends GTermNameVisitorType<A, E>>
       A
       termNameVisitableAccept(
         final V v)
@@ -195,7 +240,31 @@ public abstract class GTermName implements GTermNameVisitable, NameShow
       builder.append("[GTermNameLocal ");
       builder.append(this.name);
       builder.append("]");
-      return builder.toString();
+      final String r = builder.toString();
+      assert r != null;
+      return r;
     }
   }
+
+  @Override public abstract boolean equals(
+    @Nullable Object obj);
+
+  @Override public abstract int hashCode();
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return The value returned by the visitor
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends GTermNameVisitorType<A, E>>
+    A
+    termNameVisitableAccept(
+      final V v)
+      throws E;
 }

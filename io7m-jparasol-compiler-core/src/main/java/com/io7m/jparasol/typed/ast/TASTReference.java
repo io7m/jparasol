@@ -16,49 +16,56 @@
 
 package com.io7m.jparasol.typed.ast;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
 /**
- * A reference from a term, type, or shader to a term, type, or shader.
+ * A reference from a term, type, or shader, to a term, type, or shader.
  */
 
-public final class TASTReference
+@EqualityStructural public final class TASTReference
 {
-  private final @Nonnull ModulePath           source_module;
-  private final @Nonnull ModulePathFlat       source_module_flat;
-  private final @Nonnull TokenIdentifierLower source_name;
-  private final @Nonnull ModulePath           target_module;
-  private final @Nonnull ModulePathFlat       target_module_flat;
-  private final @Nonnull TokenIdentifierLower target_name;
+  private final ModulePath           source_module;
+  private final ModulePathFlat       source_module_flat;
+  private final TokenIdentifierLower source_name;
+  private final ModulePath           target_module;
+  private final ModulePathFlat       target_module_flat;
+  private final TokenIdentifierLower target_name;
+
+  /**
+   * Construct a reference.
+   * 
+   * @param in_source_module
+   *          The source module
+   * @param in_source_name
+   *          The source name
+   * @param in_target_module
+   *          The target module
+   * @param in_target_name
+   *          The target name
+   */
 
   public TASTReference(
-    final @Nonnull ModulePath in_source_module,
-    final @Nonnull TokenIdentifierLower in_source_name,
-    final @Nonnull ModulePath in_target_module,
-    final @Nonnull TokenIdentifierLower in_target_name)
-    throws ConstraintError
+    final ModulePath in_source_module,
+    final TokenIdentifierLower in_source_name,
+    final ModulePath in_target_module,
+    final TokenIdentifierLower in_target_name)
   {
-    this.source_module =
-      Constraints.constrainNotNull(in_source_module, "Source module");
-    this.source_name =
-      Constraints.constrainNotNull(in_source_name, "Source name");
-    this.target_module =
-      Constraints.constrainNotNull(in_target_module, "Target module");
-    this.target_name =
-      Constraints.constrainNotNull(in_target_name, "Target name");
+    this.source_module = NullCheck.notNull(in_source_module, "Source module");
+    this.source_name = NullCheck.notNull(in_source_name, "Source name");
+    this.target_module = NullCheck.notNull(in_target_module, "Target module");
+    this.target_name = NullCheck.notNull(in_target_name, "Target name");
 
     this.source_module_flat = ModulePathFlat.fromModulePath(in_source_module);
     this.target_module_flat = ModulePathFlat.fromModulePath(in_target_module);
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -85,32 +92,56 @@ public final class TASTReference
     return true;
   }
 
-  public @Nonnull ModulePath getSourceModule()
+  /**
+   * @return The source module path
+   */
+
+  public ModulePath getSourceModule()
   {
     return this.source_module;
   }
 
-  public @Nonnull ModulePathFlat getSourceModuleFlat()
+  /**
+   * @return The source module flattened path
+   */
+
+  public ModulePathFlat getSourceModuleFlat()
   {
     return this.source_module_flat;
   }
 
-  public @Nonnull TokenIdentifierLower getSourceName()
+  /**
+   * @return The source name
+   */
+
+  public TokenIdentifierLower getSourceName()
   {
     return this.source_name;
   }
 
-  public @Nonnull ModulePath getTargetModule()
+  /**
+   * @return The target module path
+   */
+
+  public ModulePath getTargetModule()
   {
     return this.target_module;
   }
 
-  public @Nonnull ModulePathFlat getTargetModuleFlat()
+  /**
+   * @return The target module flattened path
+   */
+
+  public ModulePathFlat getTargetModuleFlat()
   {
     return this.target_module_flat;
   }
 
-  public @Nonnull TokenIdentifierLower getTargetName()
+  /**
+   * @return The target name
+   */
+
+  public TokenIdentifierLower getTargetName()
   {
     return this.target_name;
   }
@@ -133,11 +164,13 @@ public final class TASTReference
     builder.append(this.source_module);
     builder.append(" ");
     builder.append(this.source_name);
-    builder.append(" -> ");
+    builder.append(" → ");
     builder.append(this.target_module);
     builder.append(" ");
     builder.append(this.target_name);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 }

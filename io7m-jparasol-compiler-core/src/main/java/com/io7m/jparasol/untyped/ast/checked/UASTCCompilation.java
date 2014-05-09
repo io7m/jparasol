@@ -19,34 +19,33 @@ package com.io7m.jparasol.untyped.ast.checked;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDModule;
 
-public final class UASTCCompilation
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public final class UASTCCompilation
 {
-  private final @Nonnull Map<ModulePathFlat, UASTCDModule> modules;
-  private final @Nonnull Map<ModulePathFlat, ModulePath>   paths;
+  private final Map<ModulePathFlat, UASTCDModule> modules;
+  private final Map<ModulePathFlat, ModulePath>   paths;
 
   public UASTCCompilation(
-    final @Nonnull Map<ModulePathFlat, UASTCDModule> in_modules,
-    final @Nonnull Map<ModulePathFlat, ModulePath> in_paths)
-    throws ConstraintError
+    final Map<ModulePathFlat, UASTCDModule> in_modules,
+    final Map<ModulePathFlat, ModulePath> in_paths)
   {
-    this.modules = Constraints.constrainNotNull(in_modules, "Modules");
-    this.paths = Constraints.constrainNotNull(in_paths, "Paths");
+    this.modules = NullCheck.notNull(in_modules, "Modules");
+    this.paths = NullCheck.notNull(in_paths, "Paths");
   }
 
-  public @Nonnull Map<ModulePathFlat, UASTCDModule> getModules()
+  public Map<ModulePathFlat, UASTCDModule> getModules()
   {
     return Collections.unmodifiableMap(this.modules);
   }
 
-  public @Nonnull Map<ModulePathFlat, ModulePath> getPaths()
+  public Map<ModulePathFlat, ModulePath> getPaths()
   {
     return Collections.unmodifiableMap(this.paths);
   }

@@ -16,71 +16,41 @@
 
 package com.io7m.jparasol.untyped.ast.unique_binders;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Function;
-import com.io7m.jaux.functional.Option;
-import com.io7m.jaux.functional.Unit;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.FunctionType;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
-public abstract class UniqueName implements UniqueNameVisitable
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public abstract class UniqueName implements
+  UniqueNameVisitableType
 {
-  public static final class UniqueNameLocal extends UniqueName
+  @EqualityReference public static final class UniqueNameLocal extends
+    UniqueName
   {
-    private final @Nonnull String               current;
-    private final @Nonnull TokenIdentifierLower original;
+    private final String               current;
+    private final TokenIdentifierLower original;
 
     public UniqueNameLocal(
-      final @Nonnull TokenIdentifierLower in_original,
-      final @Nonnull String in_current)
-      throws ConstraintError
+      final TokenIdentifierLower in_original,
+      final String in_current)
     {
-      this.original = Constraints.constrainNotNull(in_original, "Original");
-      this.current = Constraints.constrainNotNull(in_current, "Current");
+      this.original = NullCheck.notNull(in_original, "Original");
+      this.current = NullCheck.notNull(in_current, "Current");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final UniqueNameLocal other = (UniqueNameLocal) obj;
-      if (!this.current.equals(other.current)) {
-        return false;
-      }
-      if (!this.original.equals(other.original)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull String getCurrent()
+    public String getCurrent()
     {
       return this.current;
     }
 
-    public @Nonnull TokenIdentifierLower getOriginal()
+    public TokenIdentifierLower getOriginal()
     {
       return this.original;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.current.hashCode();
-      result = (prime * result) + this.original.hashCode();
-      return result;
     }
 
     @Override public String show()
@@ -100,79 +70,47 @@ public abstract class UniqueName implements UniqueNameVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends UniqueNameVisitor<A, E>>
+      <A, E extends Throwable, V extends UniqueNameVisitorType<A, E>>
       A
       uniqueNameVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.uniqueNameVisitLocal(this);
     }
   }
 
-  public static final class UniqueNameNonLocal extends UniqueName
+  @EqualityReference public static final class UniqueNameNonLocal extends
+    UniqueName
   {
-    private final @Nonnull Option<TokenIdentifierUpper> module;
-    private final @Nonnull TokenIdentifierLower         name;
+    private final OptionType<TokenIdentifierUpper> module;
+    private final TokenIdentifierLower             name;
 
     public UniqueNameNonLocal(
-      final @Nonnull Option<TokenIdentifierUpper> in_module,
-      final @Nonnull TokenIdentifierLower in_name)
-      throws ConstraintError
+      final OptionType<TokenIdentifierUpper> in_module,
+      final TokenIdentifierLower in_name)
     {
-      this.module = Constraints.constrainNotNull(in_module, "Module");
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.module = NullCheck.notNull(in_module, "Module");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
-    @Override public boolean equals(
-      final Object obj)
-    {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (this.getClass() != obj.getClass()) {
-        return false;
-      }
-      final UniqueNameNonLocal other = (UniqueNameNonLocal) obj;
-      if (!this.module.equals(other.module)) {
-        return false;
-      }
-      if (!this.name.equals(other.name)) {
-        return false;
-      }
-      return true;
-    }
-
-    public @Nonnull Option<TokenIdentifierUpper> getModule()
+    public OptionType<TokenIdentifierUpper> getModule()
     {
       return this.module;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
-    }
-
-    @Override public int hashCode()
-    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.module.hashCode();
-      result = (prime * result) + this.name.hashCode();
-      return result;
     }
 
     @Override public String show()
     {
       final StringBuilder sb = new StringBuilder();
       sb.append("$");
-      this.module.map(new Function<TokenIdentifierUpper, Unit>() {
+      this.module.map(new FunctionType<TokenIdentifierUpper, Unit>() {
         @Override public Unit call(
-          final @Nonnull TokenIdentifierUpper x)
+          final TokenIdentifierUpper x)
         {
           sb.append(x.getActual());
           sb.append(".");
@@ -195,16 +133,15 @@ public abstract class UniqueName implements UniqueNameVisitable
     }
 
     @Override public
-      <A, E extends Throwable, V extends UniqueNameVisitor<A, E>>
+      <A, E extends Throwable, V extends UniqueNameVisitorType<A, E>>
       A
       uniqueNameVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.uniqueNameVisitNonLocal(this);
     }
   }
 
-  public abstract @Nonnull String show();
+  public abstract String show();
 }

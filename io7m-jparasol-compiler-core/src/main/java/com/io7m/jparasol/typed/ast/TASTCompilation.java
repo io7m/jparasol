@@ -20,13 +20,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.typed.TTypeNameFlat;
@@ -35,97 +33,174 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShader;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTerm;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDType;
 
-public final class TASTCompilation
+/**
+ * The final typed AST produced by the compiler pipeline.
+ */
+
+@EqualityReference public final class TASTCompilation
 {
-  private final @Nonnull List<ModulePathFlat>                                        module_topology;
-  private final @Nonnull Map<ModulePathFlat, TASTDModule>                            modules;
-  private final @Nonnull Map<ModulePathFlat, ModulePath>                             paths;
-  private final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> shader_term_graph;
-  private final @Nonnull DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference> shader_type_graph;
-  private final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>       term_graph;
-  private final @Nonnull DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference>   term_type_graph;
-  private final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference>          type_graph;
+  private final List<ModulePathFlat>                                            module_topology;
+  private final Map<ModulePathFlat, TASTDModule>                                modules;
+  private final Map<ModulePathFlat, ModulePath>                                 paths;
+  private final DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference> shader_term_graph;
+  private final DirectedAcyclicGraph<TASTNameTypeShaderFlatType, TASTReference> shader_type_graph;
+  private final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>           term_graph;
+  private final DirectedAcyclicGraph<TASTNameTypeTermFlatType, TASTReference>   term_type_graph;
+  private final DirectedAcyclicGraph<TTypeNameFlat, TASTReference>              type_graph;
+
+  /**
+   * Construct a new typed AST.
+   * 
+   * @param in_module_topology
+   *          The module topology
+   * @param in_modules
+   *          The map of modules, by name
+   * @param in_paths
+   *          The map of flat module paths to module paths
+   * @param in_term_graph
+   *          The term graph
+   * @param in_term_type_graph
+   *          The term → type dependency graph
+   * @param in_type_graph
+   *          The type graph
+   * @param in_shader_type_graph
+   *          The shader → type dependency graph
+   * @param in_shader_term_graph
+   *          The shader → term dependency graph
+   */
 
   public TASTCompilation(
-    final @Nonnull List<ModulePathFlat> in_module_topology,
-    final @Nonnull Map<ModulePathFlat, TASTDModule> in_modules,
-    final @Nonnull Map<ModulePathFlat, ModulePath> in_paths,
-    final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> in_term_graph,
-    final @Nonnull DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference> in_term_type_graph,
-    final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference> in_type_graph,
-    final @Nonnull DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference> in_shader_type_graph,
-    final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> in_shader_term_graph)
-    throws ConstraintError
+    final List<ModulePathFlat> in_module_topology,
+    final Map<ModulePathFlat, TASTDModule> in_modules,
+    final Map<ModulePathFlat, ModulePath> in_paths,
+    final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> in_term_graph,
+    final DirectedAcyclicGraph<TASTNameTypeTermFlatType, TASTReference> in_term_type_graph,
+    final DirectedAcyclicGraph<TTypeNameFlat, TASTReference> in_type_graph,
+    final DirectedAcyclicGraph<TASTNameTypeShaderFlatType, TASTReference> in_shader_type_graph,
+    final DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference> in_shader_term_graph)
   {
     this.module_topology =
-      Constraints.constrainNotNull(in_module_topology, "Module topology");
-    this.modules = Constraints.constrainNotNull(in_modules, "Modules");
-    this.paths = Constraints.constrainNotNull(in_paths, "Paths");
+      NullCheck.notNull(in_module_topology, "Module topology");
+    this.modules = NullCheck.notNull(in_modules, "Modules");
+    this.paths = NullCheck.notNull(in_paths, "Paths");
 
-    this.term_graph =
-      Constraints.constrainNotNull(in_term_graph, "Term graph");
-    this.type_graph =
-      Constraints.constrainNotNull(in_type_graph, "Type graph");
+    this.term_graph = NullCheck.notNull(in_term_graph, "Term graph");
+    this.type_graph = NullCheck.notNull(in_type_graph, "Type graph");
     this.term_type_graph =
-      Constraints.constrainNotNull(in_term_type_graph, "Term/type graph");
+      NullCheck.notNull(in_term_type_graph, "Term/type graph");
     this.shader_term_graph =
-      Constraints.constrainNotNull(in_shader_term_graph, "Shader/Term graph");
+      NullCheck.notNull(in_shader_term_graph, "Shader/Term graph");
     this.shader_type_graph =
-      Constraints.constrainNotNull(in_shader_type_graph, "Shader/Type graph");
+      NullCheck.notNull(in_shader_type_graph, "Shader/Type graph");
   }
 
-  public @Nonnull Map<ModulePathFlat, TASTDModule> getModules()
+  /**
+   * @return The module map
+   */
+
+  public Map<ModulePathFlat, TASTDModule> getModules()
   {
-    return Collections.unmodifiableMap(this.modules);
+    final Map<ModulePathFlat, TASTDModule> r =
+      Collections.unmodifiableMap(this.modules);
+    assert r != null;
+    return r;
   }
 
-  public @Nonnull List<ModulePathFlat> getModuleTopology()
+  /**
+   * @return The list of flat module paths
+   */
+
+  public List<ModulePathFlat> getModuleTopology()
   {
     return this.module_topology;
   }
 
-  public @Nonnull Map<ModulePathFlat, ModulePath> getPaths()
+  /**
+   * @return The map of flat paths to module paths
+   */
+
+  public Map<ModulePathFlat, ModulePath> getPaths()
   {
-    return Collections.unmodifiableMap(this.paths);
+    final Map<ModulePathFlat, ModulePath> r =
+      Collections.unmodifiableMap(this.paths);
+    assert r != null;
+    return r;
   }
 
-  public @Nonnull
-    DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference>
+  /**
+   * @return The graph of shader → term dependencies
+   */
+
+  public
+    DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference>
     getShaderTermGraph()
   {
     return this.shader_term_graph;
   }
 
-  public @Nonnull
-    DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference>
+  /**
+   * @return The graph of shader → type dependencies
+   */
+
+  public
+    DirectedAcyclicGraph<TASTNameTypeShaderFlatType, TASTReference>
     getShaderTypeGraph()
   {
     return this.shader_type_graph;
   }
 
-  public @Nonnull
-    DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>
-    getTermGraph()
+  /**
+   * @return The graph of term → term dependencies
+   */
+
+  public DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> getTermGraph()
   {
     return this.term_graph;
   }
 
-  public @Nonnull
-    DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference>
+  /**
+   * @return The graph of term → type dependencies
+   */
+
+  public
+    DirectedAcyclicGraph<TASTNameTypeTermFlatType, TASTReference>
     getTermTypeGraph()
   {
     return this.term_type_graph;
   }
 
-  public @Nonnull
-    DirectedAcyclicGraph<TTypeNameFlat, TASTReference>
-    getTypeGraph()
+  /**
+   * @return The graph of type → type dependencies
+   */
+
+  public DirectedAcyclicGraph<TTypeNameFlat, TASTReference> getTypeGraph()
   {
     return this.type_graph;
   }
 
-  public @CheckForNull TASTDTerm lookupTerm(
-    final @Nonnull TASTTermNameFlat name)
+  /**
+   * @return The shader associated with the given name, if any
+   */
+
+  public @Nullable TASTDShader lookupShader(
+    final TASTShaderNameFlat name)
+  {
+    final TASTDModule m = this.modules.get(name.getModulePath());
+    if (m != null) {
+      final TASTDShader s = m.getShaders().get(name.getName());
+      if (s != null) {
+        return s;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @return The term associated with the given name, if any
+   */
+
+  public @Nullable TASTDTerm lookupTerm(
+    final TASTTermNameFlat name)
   {
     final TASTDModule m = this.modules.get(name.getModulePath());
     if (m != null) {
@@ -134,25 +209,16 @@ public final class TASTCompilation
     return null;
   }
 
-  public @CheckForNull TASTDType lookupType(
-    final @Nonnull TTypeNameFlat name)
+  /**
+   * @return The type associated with the given name, if any
+   */
+
+  public @Nullable TASTDType lookupType(
+    final TTypeNameFlat name)
   {
     final TASTDModule m = this.modules.get(name.getModulePath());
     if (m != null) {
       return m.getTypes().get(name.getName());
-    }
-    return null;
-  }
-
-  public @CheckForNull TASTDShader lookupShader(
-    final @Nonnull TASTShaderNameFlat name)
-  {
-    final TASTDModule m = this.modules.get(name.getModulePath());
-    if (m != null) {
-      final TASTDShader s = m.getShaders().get(name.getName());
-      if (s != null) {
-        return s;
-      }
     }
     return null;
   }

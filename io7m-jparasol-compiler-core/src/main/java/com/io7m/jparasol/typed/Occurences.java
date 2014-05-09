@@ -20,12 +20,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jaux.functional.Unit;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
 import com.io7m.jparasol.typed.ast.TASTExpression;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
@@ -40,27 +38,28 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecordProjection;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTESwizzle;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
-import com.io7m.jparasol.typed.ast.TASTExpressionVisitor;
-import com.io7m.jparasol.typed.ast.TASTLocalLevelVisitor;
+import com.io7m.jparasol.typed.ast.TASTExpressionVisitorType;
+import com.io7m.jparasol.typed.ast.TASTLocalLevelVisitorType;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameExternal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
-import com.io7m.jparasol.typed.ast.TASTTermNameVisitor;
+import com.io7m.jparasol.typed.ast.TASTTermNameVisitorType;
+import com.io7m.junreachable.UnreachableCodeException;
 
 /**
  * Calculate the set of local variables that occur in a given expression.
  */
 
-public final class Occurences
+@EqualityReference public final class Occurences
 {
-  private static final class Checker implements
-    TASTExpressionVisitor<Unit, Unit, ConstraintError>
+  @EqualityReference private static final class Checker implements
+    TASTExpressionVisitorType<Unit, Unit, UnreachableCodeException>
   {
-    private final @Nonnull Set<String> check_names;
-    private final @Nonnull Set<String> found_names;
+    private final Set<String> check_names;
+    private final Set<String> found_names;
 
     public Checker(
-      final @Nonnull Set<String> names)
+      final Set<String> names)
     {
       this.check_names = names;
       this.found_names = new HashSet<String>();
@@ -69,24 +68,20 @@ public final class Occurences
     @Override public Unit expressionVisitApplication(
       final List<Unit> arguments,
       final TASTEApplication e)
-      throws ConstraintError,
-        ConstraintError
+      throws UnreachableCodeException,
+        UnreachableCodeException
     {
       return Unit.unit();
     }
 
     @Override public boolean expressionVisitApplicationPre(
       final TASTEApplication e)
-      throws ConstraintError,
-        ConstraintError
     {
       return true;
     }
 
     @Override public Unit expressionVisitBoolean(
       final TASTEBoolean e)
-      throws ConstraintError,
-        ConstraintError
     {
       return Unit.unit();
     }
@@ -96,72 +91,54 @@ public final class Occurences
       final Unit left,
       final Unit right,
       final TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
     {
       return Unit.unit();
     }
 
     @Override public void expressionVisitConditionalConditionPost(
       final TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalConditionPre(
       final TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalLeftPost(
       final TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalLeftPre(
       final TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
     {
       // Nothing
     }
 
     @Override public boolean expressionVisitConditionalPre(
       final TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
     {
       return true;
     }
 
     @Override public void expressionVisitConditionalRightPost(
       final TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalRightPre(
       final TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
     {
       // Nothing
     }
 
     @Override public Unit expressionVisitInteger(
       final TASTEInteger e)
-      throws ConstraintError,
-        ConstraintError
     {
       return Unit.unit();
     }
@@ -170,18 +147,14 @@ public final class Occurences
       final List<Unit> bindings,
       final Unit body,
       final TASTELet e)
-      throws ConstraintError,
-        ConstraintError
     {
       return Unit.unit();
     }
 
-    @Override public
-      TASTLocalLevelVisitor<Unit, ConstraintError>
+    @Override public @Nullable
+      TASTLocalLevelVisitorType<Unit, UnreachableCodeException>
       expressionVisitLetPre(
         final TASTELet e)
-        throws ConstraintError,
-          ConstraintError
     {
       return new LocalChecker(this.check_names, this.found_names);
     }
@@ -189,32 +162,24 @@ public final class Occurences
     @Override public Unit expressionVisitNew(
       final List<Unit> arguments,
       final TASTENew e)
-      throws ConstraintError,
-        ConstraintError
     {
       return Unit.unit();
     }
 
     @Override public boolean expressionVisitNewPre(
       final TASTENew e)
-      throws ConstraintError,
-        ConstraintError
     {
       return true;
     }
 
     @Override public Unit expressionVisitReal(
       final TASTEReal e)
-      throws ConstraintError,
-        ConstraintError
     {
       return Unit.unit();
     }
 
     @Override public Unit expressionVisitRecord(
       final TASTERecord e)
-      throws ConstraintError,
-        ConstraintError
     {
       for (final TASTRecordFieldAssignment a : e.getAssignments()) {
         a.getExpression().expressionVisitableAccept(this);
@@ -226,16 +191,12 @@ public final class Occurences
     @Override public Unit expressionVisitRecordProjection(
       final Unit body,
       final TASTERecordProjection e)
-      throws ConstraintError,
-        ConstraintError
     {
       return Unit.unit();
     }
 
     @Override public boolean expressionVisitRecordProjectionPre(
-      final TASTERecordProjection e)
-      throws ConstraintError,
-        ConstraintError
+      final @Nullable TASTERecordProjection e)
     {
       return true;
     }
@@ -243,31 +204,29 @@ public final class Occurences
     @Override public Unit expressionVisitSwizzle(
       final Unit body,
       final TASTESwizzle e)
-      throws ConstraintError,
-        ConstraintError
     {
       return Unit.unit();
     }
 
     @Override public boolean expressionVisitSwizzlePre(
       final TASTESwizzle e)
-      throws ConstraintError,
-        ConstraintError
     {
       return true;
     }
 
     @Override public Unit expressionVisitVariable(
       final TASTEVariable e)
-      throws ConstraintError,
-        ConstraintError
     {
       e.getName().termNameVisitableAccept(
-        new TASTTermNameVisitor<Unit, ConstraintError>() {
+        new TASTTermNameVisitorType<Unit, UnreachableCodeException>() {
+          @Override public Unit termNameVisitExternal(
+            final TASTTermNameExternal t)
+          {
+            return Unit.unit();
+          }
+
           @Override public Unit termNameVisitGlobal(
-            final @Nonnull TASTTermNameGlobal t)
-            throws ConstraintError,
-              ConstraintError
+            final TASTTermNameGlobal t)
           {
             return Unit.unit();
           }
@@ -275,21 +234,11 @@ public final class Occurences
           @SuppressWarnings("synthetic-access") @Override public
             Unit
             termNameVisitLocal(
-              final @Nonnull TASTTermNameLocal t)
-              throws ConstraintError,
-                ConstraintError
+              final TASTTermNameLocal t)
           {
             if (Checker.this.check_names.contains(t.getCurrent())) {
               Checker.this.found_names.add(t.getCurrent());
             }
-            return Unit.unit();
-          }
-
-          @Override public Unit termNameVisitExternal(
-            final @Nonnull TASTTermNameExternal t)
-            throws ConstraintError,
-              ConstraintError
-          {
             return Unit.unit();
           }
         });
@@ -297,30 +246,28 @@ public final class Occurences
       return Unit.unit();
     }
 
-    public @Nonnull Set<String> getFoundNames()
+    public Set<String> getFoundNames()
     {
       return this.found_names;
     }
   }
 
-  private static final class LocalChecker implements
-    TASTLocalLevelVisitor<Unit, ConstraintError>
+  @EqualityReference private static final class LocalChecker implements
+    TASTLocalLevelVisitorType<Unit, UnreachableCodeException>
   {
-    private final @Nonnull Set<String> check_names;
-    private final @Nonnull Set<String> found_names;
+    private final Set<String> check_names;
+    private final Set<String> found_names;
 
     public LocalChecker(
-      final @Nonnull Set<String> in_check_names,
-      final @Nonnull Set<String> in_found_names)
+      final Set<String> in_check_names,
+      final Set<String> in_found_names)
     {
       this.check_names = in_check_names;
       this.found_names = in_found_names;
     }
 
     @Override public Unit localVisitValueLocal(
-      final @Nonnull TASTDValueLocal v)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDValueLocal v)
     {
       final String name = v.getName().getCurrent();
       if (this.check_names.contains(name)) {
@@ -330,13 +277,20 @@ public final class Occurences
     }
   }
 
-  public static @Nonnull Set<String> occursIn(
-    final @Nonnull TASTExpression e,
-    final @Nonnull Set<String> names)
-    throws ConstraintError
+  /**
+   * @param e
+   *          The expression
+   * @param names
+   *          The names
+   * @return The occurences of the given names in the given expression
+   */
+
+  public static Set<String> occursIn(
+    final TASTExpression e,
+    final Set<String> names)
   {
-    Constraints.constrainNotNull(e, "Expression");
-    Constraints.constrainNotNull(names, "Names");
+    NullCheck.notNull(e, "Expression");
+    NullCheck.notNullAll(names, "Names");
 
     final Checker ec = new Checker(names);
     e.expressionVisitableAccept(ec);

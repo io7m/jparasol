@@ -19,16 +19,15 @@ package com.io7m.jparasol.typed;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph.CycleFoundException;
 
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jaux.functional.Unit;
-import com.io7m.jlog.Level;
-import com.io7m.jlog.Log;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Unit;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogUsableType;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.typed.TType.TManifestType;
@@ -74,44 +73,45 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecordProjection;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTESwizzle;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
-import com.io7m.jparasol.typed.ast.TASTExpressionVisitor;
-import com.io7m.jparasol.typed.ast.TASTFragmentShaderLocalVisitor;
-import com.io7m.jparasol.typed.ast.TASTFragmentShaderVisitor;
-import com.io7m.jparasol.typed.ast.TASTLocalLevelVisitor;
-import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlat;
-import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlat;
-import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlat;
+import com.io7m.jparasol.typed.ast.TASTExpressionVisitorType;
+import com.io7m.jparasol.typed.ast.TASTFragmentShaderLocalVisitorType;
+import com.io7m.jparasol.typed.ast.TASTFragmentShaderVisitorType;
+import com.io7m.jparasol.typed.ast.TASTLocalLevelVisitorType;
+import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlatType;
+import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlatType;
+import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlatType;
 import com.io7m.jparasol.typed.ast.TASTReference;
 import com.io7m.jparasol.typed.ast.TASTShaderName;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
-import com.io7m.jparasol.typed.ast.TASTShaderVisitor;
+import com.io7m.jparasol.typed.ast.TASTShaderVisitorType;
 import com.io7m.jparasol.typed.ast.TASTTermName;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameExternal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
-import com.io7m.jparasol.typed.ast.TASTTermNameVisitor;
-import com.io7m.jparasol.typed.ast.TASTTermVisitor;
-import com.io7m.jparasol.typed.ast.TASTTypeVisitor;
-import com.io7m.jparasol.typed.ast.TASTVertexShaderLocalVisitor;
-import com.io7m.jparasol.typed.ast.TASTVertexShaderVisitor;
+import com.io7m.jparasol.typed.ast.TASTTermNameVisitorType;
+import com.io7m.jparasol.typed.ast.TASTTermVisitorType;
+import com.io7m.jparasol.typed.ast.TASTTypeVisitorType;
+import com.io7m.jparasol.typed.ast.TASTVertexShaderLocalVisitorType;
+import com.io7m.jparasol.typed.ast.TASTVertexShaderVisitorType;
+import com.io7m.junreachable.UnreachableCodeException;
 
-final class TGraphs
+@EqualityReference final class TGraphs
 {
   /**
-   * Graphs of term->term, term->type, and type->type dependencies.
+   * Graphs of term→term, term→type, and type→type dependencies.
    */
 
-  static final class GlobalGraph
+  @EqualityReference static final class GlobalGraph
   {
-    private final @Nonnull GlobalTermShaderGraph term_shader;
-    private final @Nonnull GlobalTermTermGraph   term_term;
-    private final @Nonnull GlobalTermTypeGraph   term_type;
-    private final @Nonnull GlobalTypeShaderGraph type_shader;
-    private final @Nonnull GlobalTypeTypeGraph   type_type;
+    private final GlobalTermShaderGraph term_shader;
+    private final GlobalTermTermGraph   term_term;
+    private final GlobalTermTypeGraph   term_type;
+    private final GlobalTypeShaderGraph type_shader;
+    private final GlobalTypeTypeGraph   type_type;
 
     public GlobalGraph(
-      final @Nonnull Log log)
+      final LogUsableType log)
     {
       this.term_term = new GlobalTermTermGraph(log);
       this.term_type = new GlobalTermTypeGraph(log);
@@ -121,8 +121,7 @@ final class TGraphs
     }
 
     public void addShader(
-      final @Nonnull TASTShaderName shader)
-      throws ConstraintError
+      final TASTShaderName shader)
     {
       final TASTShaderNameFlat flat =
         TASTShaderNameFlat.fromShaderName(shader);
@@ -131,9 +130,8 @@ final class TGraphs
     }
 
     public void addShaderTermReference(
-      final @Nonnull TASTShaderName shader,
-      final @Nonnull TASTTermNameGlobal term)
-      throws ConstraintError
+      final TASTShaderName shader,
+      final TASTTermNameGlobal term)
     {
       this.addTerm(term);
       this.addShader(shader);
@@ -141,9 +139,8 @@ final class TGraphs
     }
 
     public void addShaderTypeReference(
-      final @Nonnull TASTShaderName shader,
-      final @Nonnull TTypeNameGlobal type)
-      throws ConstraintError
+      final TASTShaderName shader,
+      final TTypeNameGlobal type)
     {
       this.addType(type);
       this.addShader(shader);
@@ -151,8 +148,7 @@ final class TGraphs
     }
 
     public void addTerm(
-      final @Nonnull TASTTermNameGlobal term)
-      throws ConstraintError
+      final TASTTermNameGlobal term)
     {
       final TASTTermNameFlat flat = TASTTermNameFlat.fromTermNameGlobal(term);
       this.term_term.addTerm(flat);
@@ -161,9 +157,8 @@ final class TGraphs
     }
 
     public void addTermTermReference(
-      final @Nonnull TASTTermNameGlobal source,
-      final @Nonnull TASTTermNameGlobal target)
-      throws ConstraintError
+      final TASTTermNameGlobal source,
+      final TASTTermNameGlobal target)
     {
       this.addTerm(source);
       this.addTerm(target);
@@ -171,17 +166,15 @@ final class TGraphs
     }
 
     public void addTermTypeReference(
-      final @Nonnull TASTTermNameGlobal source,
-      final @Nonnull TTypeNameGlobal target)
-      throws ConstraintError
+      final TASTTermNameGlobal source,
+      final TTypeNameGlobal target)
     {
       this.addTerm(source);
       this.term_type.addTermTypeReference(source, target);
     }
 
     public void addType(
-      final @Nonnull TTypeNameGlobal type)
-      throws ConstraintError
+      final TTypeNameGlobal type)
     {
       final TTypeNameFlat flat = TTypeNameFlat.fromTypeNameGlobal(type);
       this.term_type.addType(flat);
@@ -190,36 +183,35 @@ final class TGraphs
     }
 
     public void addTypeTypeReference(
-      final @Nonnull TTypeNameGlobal source,
-      final @Nonnull TTypeNameGlobal target)
-      throws ConstraintError
+      final TTypeNameGlobal source,
+      final TTypeNameGlobal target)
     {
       this.addType(source);
       this.addType(target);
       this.type_type.addTypeReference(source, target);
     }
 
-    public @Nonnull GlobalTermShaderGraph getTermShader()
+    public GlobalTermShaderGraph getTermShader()
     {
       return this.term_shader;
     }
 
-    public @Nonnull GlobalTermTermGraph getTermTermGraph()
+    public GlobalTermTermGraph getTermTermGraph()
     {
       return this.term_term;
     }
 
-    public @Nonnull GlobalTermTypeGraph getTermTypeGraph()
+    public GlobalTermTypeGraph getTermTypeGraph()
     {
       return this.term_type;
     }
 
-    public @Nonnull GlobalTypeShaderGraph getTypeShader()
+    public GlobalTypeShaderGraph getTypeShader()
     {
       return this.type_shader;
     }
 
-    public @Nonnull GlobalTypeTypeGraph getTypeTypeGraph()
+    public GlobalTypeTypeGraph getTypeTypeGraph()
     {
       return this.type_type;
     }
@@ -230,62 +222,55 @@ final class TGraphs
    * entire compilation.
    */
 
-  static final class GlobalTermShaderGraph
+  @EqualityReference static final class GlobalTermShaderGraph
   {
-    private final @Nonnull DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference> graph;
-    private final @Nonnull Log                                                         log;
+    private final DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference> graph;
+    private final LogUsableType                                                   log;
 
     public GlobalTermShaderGraph(
-      final @Nonnull Log in_log)
+      final LogUsableType in_log)
     {
-      this.log = new Log(in_log, "global-shader-term-graph");
+      this.log = in_log.with("global-shader-term-graph");
       this.graph =
-        new DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference>(
+        new DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference>(
           TASTReference.class);
     }
 
     public void addShader(
-      final @Nonnull TASTShaderNameFlat flat)
-      throws ConstraintError
+      final TASTShaderNameFlat flat)
     {
-      final TASTNameTermShaderFlat.Shader e_term =
-        new TASTNameTermShaderFlat.Shader(flat);
-      if (this.graph.containsVertex(e_term) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add shader %s", flat.show()));
+      if (this.graph.containsVertex(flat) == false) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r = String.format("Add shader %s", flat.show());
+          assert r != null;
+          this.log.debug(r);
         }
-        this.graph.addVertex(e_term);
+        this.graph.addVertex(flat);
       }
     }
 
     public void addTerm(
-      final @Nonnull TASTTermNameFlat term)
-      throws ConstraintError
+      final TASTTermNameFlat term)
     {
-      final TASTNameTermShaderFlat.Term e_term =
-        new TASTNameTermShaderFlat.Term(term);
-      if (this.graph.containsVertex(e_term) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add term %s", term.show()));
+      if (this.graph.containsVertex(term) == false) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r = String.format("Add term %s", term.show());
+          assert r != null;
+          this.log.debug(r);
         }
-        this.graph.addVertex(e_term);
+        this.graph.addVertex(term);
       }
     }
 
     public void addTermShaderReference(
-      final @Nonnull TASTShaderName source,
-      final @Nonnull TASTTermNameGlobal target)
-      throws ConstraintError
+      final TASTShaderName source,
+      final TASTTermNameGlobal target)
     {
       final TASTShaderNameFlat source_flat =
         TASTShaderNameFlat.fromShaderName(source);
       final TASTTermNameFlat target_flat =
         TASTTermNameFlat.fromTermNameGlobal(target);
 
-      final TASTNameTermShaderFlat.Shader e_source =
-        new TASTNameTermShaderFlat.Shader(source_flat);
-      final TASTNameTermShaderFlat.Term e_target =
-        new TASTNameTermShaderFlat.Term(target_flat);
       final TASTReference reference =
         new TASTReference(
           source.getPath(),
@@ -294,28 +279,30 @@ final class TGraphs
           target.getName());
 
       if (this.graph.containsEdge(reference) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format(
-            "Add shader term reference %s.%s -> %s.%s",
-            source.getFlat().getActual(),
-            source.getName().getActual(),
-            target.getFlat().getActual(),
-            target.getName().getActual()));
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r =
+            String.format("Add shader term reference %s.%s → %s.%s", source
+              .getFlat()
+              .getActual(), source.getName().getActual(), target
+              .getFlat()
+              .getActual(), target.getName().getActual());
+          assert r != null;
+          this.log.debug(r);
         }
 
         this.addShader(source_flat);
         this.addTerm(target_flat);
 
         try {
-          this.graph.addDagEdge(e_source, e_target, reference);
+          this.graph.addDagEdge(source_flat, target_flat, reference);
         } catch (final CycleFoundException e) {
           throw new UnreachableCodeException(e);
         }
       }
     }
 
-    public @Nonnull
-      DirectedAcyclicGraph<TASTNameTermShaderFlat, TASTReference>
+    public
+      DirectedAcyclicGraph<TASTNameTermShaderFlatType, TASTReference>
       getGraph()
     {
       return this.graph;
@@ -327,35 +314,36 @@ final class TGraphs
    * compilation.
    */
 
-  static final class GlobalTermTermGraph
+  @EqualityReference static final class GlobalTermTermGraph
   {
-    private final @Nonnull DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> graph;
-    private final @Nonnull Log                                                   log;
+    private final DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> graph;
+    private final LogUsableType                                         log;
 
     public GlobalTermTermGraph(
-      final @Nonnull Log in_log)
+      final LogUsableType in_log)
     {
-      this.log = new Log(in_log, "global-term-term-graph");
+      this.log = in_log.with("global-term-term-graph");
       this.graph =
         new DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>(
           TASTReference.class);
     }
 
     public void addTerm(
-      final @Nonnull TASTTermNameFlat term)
+      final TASTTermNameFlat term)
     {
       if (this.graph.containsVertex(term) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add term %s", term.show()));
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r = String.format("Add term %s", term.show());
+          assert r != null;
+          this.log.debug(r);
         }
         this.graph.addVertex(term);
       }
     }
 
     public void addTermReference(
-      final @Nonnull TASTTermNameGlobal source,
-      final @Nonnull TASTTermNameGlobal target)
-      throws ConstraintError
+      final TASTTermNameGlobal source,
+      final TASTTermNameGlobal target)
     {
       final TASTReference reference =
         new TASTReference(
@@ -365,13 +353,15 @@ final class TGraphs
           target.getName());
 
       if (this.graph.containsEdge(reference) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format(
-            "Add term reference %s.%s -> %s.%s",
-            source.getFlat().getActual(),
-            source.getName().getActual(),
-            target.getFlat().getActual(),
-            target.getName().getActual()));
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r =
+            String.format("Add term reference %s.%s → %s.%s", source
+              .getFlat()
+              .getActual(), source.getName().getActual(), target
+              .getFlat()
+              .getActual(), target.getName().getActual());
+          assert r != null;
+          this.log.debug(r);
         }
 
         final TASTTermNameFlat source_flat =
@@ -390,9 +380,7 @@ final class TGraphs
       }
     }
 
-    public @Nonnull
-      DirectedAcyclicGraph<TASTTermNameFlat, TASTReference>
-      getGraph()
+    public DirectedAcyclicGraph<TASTTermNameFlat, TASTReference> getGraph()
     {
       return this.graph;
     }
@@ -403,48 +391,42 @@ final class TGraphs
    * compilation.
    */
 
-  static final class GlobalTermTypeGraph
+  @EqualityReference static final class GlobalTermTypeGraph
   {
-    private final @Nonnull DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference> graph;
-    private final @Nonnull Log                                                       log;
+    private final DirectedAcyclicGraph<TASTNameTypeTermFlatType, TASTReference> graph;
+    private final LogUsableType                                                 log;
 
     public GlobalTermTypeGraph(
-      final @Nonnull Log in_log)
+      final LogUsableType in_log)
     {
-      this.log = new Log(in_log, "global-term-type-graph");
+      this.log = in_log.with("global-term-type-graph");
       this.graph =
-        new DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference>(
+        new DirectedAcyclicGraph<TASTNameTypeTermFlatType, TASTReference>(
           TASTReference.class);
     }
 
     public void addTerm(
-      final @Nonnull TASTTermNameFlat flat)
-      throws ConstraintError
+      final TASTTermNameFlat flat)
     {
-      final TASTNameTypeTermFlat.Term e_term =
-        new TASTNameTypeTermFlat.Term(flat);
-      if (this.graph.containsVertex(e_term) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add term %s", flat.show()));
+      if (this.graph.containsVertex(flat) == false) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r = String.format("Add term %s", flat.show());
+          assert r != null;
+          this.log.debug(r);
         }
-        this.graph.addVertex(e_term);
+        this.graph.addVertex(flat);
       }
     }
 
     public void addTermTypeReference(
-      final @Nonnull TASTTermNameGlobal source,
-      final @Nonnull TTypeNameGlobal target)
-      throws ConstraintError
+      final TASTTermNameGlobal source,
+      final TTypeNameGlobal target)
     {
       final TASTTermNameFlat source_flat =
         TASTTermNameFlat.fromTermNameGlobal(source);
       final TTypeNameFlat target_flat =
         TTypeNameFlat.fromTypeNameGlobal(target);
 
-      final TASTNameTypeTermFlat.Term e_source =
-        new TASTNameTypeTermFlat.Term(source_flat);
-      final TASTNameTypeTermFlat.Type e_target =
-        new TASTNameTypeTermFlat.Type(target_flat);
       final TASTReference reference =
         new TASTReference(
           source.getPath(),
@@ -453,20 +435,22 @@ final class TGraphs
           target.getName());
 
       if (this.graph.containsEdge(reference) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format(
-            "Add term type reference %s.%s -> %s.%s",
-            source.getFlat().getActual(),
-            source.getName().getActual(),
-            target.getFlat().getActual(),
-            target.getName().getActual()));
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r =
+            String.format("Add term type reference %s.%s → %s.%s", source
+              .getFlat()
+              .getActual(), source.getName().getActual(), target
+              .getFlat()
+              .getActual(), target.getName().getActual());
+          assert r != null;
+          this.log.debug(r);
         }
 
         this.addTerm(source_flat);
         this.addType(target_flat);
 
         try {
-          this.graph.addDagEdge(e_source, e_target, reference);
+          this.graph.addDagEdge(source_flat, target_flat, reference);
         } catch (final CycleFoundException e) {
           throw new UnreachableCodeException(e);
         }
@@ -474,21 +458,20 @@ final class TGraphs
     }
 
     public void addType(
-      final @Nonnull TTypeNameFlat type)
-      throws ConstraintError
+      final TTypeNameFlat type)
     {
-      final TASTNameTypeTermFlat.Type e_type =
-        new TASTNameTypeTermFlat.Type(type);
-      if (this.graph.containsVertex(e_type) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add type %s", type.show()));
+      if (this.graph.containsVertex(type) == false) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r = String.format("Add type %s", type.show());
+          assert r != null;
+          this.log.debug(r);
         }
-        this.graph.addVertex(e_type);
+        this.graph.addVertex(type);
       }
     }
 
-    public @Nonnull
-      DirectedAcyclicGraph<TASTNameTypeTermFlat, TASTReference>
+    public
+      DirectedAcyclicGraph<TASTNameTypeTermFlatType, TASTReference>
       getGraph()
     {
       return this.graph;
@@ -500,62 +483,55 @@ final class TGraphs
    * entire compilation.
    */
 
-  static final class GlobalTypeShaderGraph
+  @EqualityReference static final class GlobalTypeShaderGraph
   {
-    private final @Nonnull DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference> graph;
-    private final @Nonnull Log                                                         log;
+    private final DirectedAcyclicGraph<TASTNameTypeShaderFlatType, TASTReference> graph;
+    private final LogUsableType                                                   log;
 
     public GlobalTypeShaderGraph(
-      final @Nonnull Log in_log)
+      final LogUsableType in_log)
     {
-      this.log = new Log(in_log, "global-shader-type-graph");
+      this.log = in_log.with("global-shader-type-graph");
       this.graph =
-        new DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference>(
+        new DirectedAcyclicGraph<TASTNameTypeShaderFlatType, TASTReference>(
           TASTReference.class);
     }
 
     public void addShader(
-      final @Nonnull TASTShaderNameFlat flat)
-      throws ConstraintError
+      final TASTShaderNameFlat flat)
     {
-      final TASTNameTypeShaderFlat.Shader e_term =
-        new TASTNameTypeShaderFlat.Shader(flat);
-      if (this.graph.containsVertex(e_term) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add shader %s", flat.show()));
+      if (this.graph.containsVertex(flat) == false) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r = String.format("Add shader %s", flat.show());
+          assert r != null;
+          this.log.debug(r);
         }
-        this.graph.addVertex(e_term);
+        this.graph.addVertex(flat);
       }
     }
 
     public void addType(
-      final @Nonnull TTypeNameFlat type)
-      throws ConstraintError
+      final TTypeNameFlat type)
     {
-      final TASTNameTypeShaderFlat.Type e_type =
-        new TASTNameTypeShaderFlat.Type(type);
-      if (this.graph.containsVertex(e_type) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add type %s", type.show()));
+      if (this.graph.containsVertex(type) == false) {
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r = String.format("Add type %s", type.show());
+          assert r != null;
+          this.log.debug(r);
         }
-        this.graph.addVertex(e_type);
+        this.graph.addVertex(type);
       }
     }
 
     public void addTypeShaderReference(
-      final @Nonnull TASTShaderName source,
-      final @Nonnull TTypeNameGlobal target)
-      throws ConstraintError
+      final TASTShaderName source,
+      final TTypeNameGlobal target)
     {
       final TASTShaderNameFlat source_flat =
         TASTShaderNameFlat.fromShaderName(source);
       final TTypeNameFlat target_flat =
         TTypeNameFlat.fromTypeNameGlobal(target);
 
-      final TASTNameTypeShaderFlat.Shader e_source =
-        new TASTNameTypeShaderFlat.Shader(source_flat);
-      final TASTNameTypeShaderFlat.Type e_target =
-        new TASTNameTypeShaderFlat.Type(target_flat);
       final TASTReference reference =
         new TASTReference(
           source.getPath(),
@@ -564,28 +540,30 @@ final class TGraphs
           target.getName());
 
       if (this.graph.containsEdge(reference) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format(
-            "Add shader type reference %s.%s -> %s.%s",
-            source.getFlat().getActual(),
-            source.getName().getActual(),
-            target.getFlat().getActual(),
-            target.getName().getActual()));
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r =
+            String.format("Add shader type reference %s.%s → %s.%s", source
+              .getFlat()
+              .getActual(), source.getName().getActual(), target
+              .getFlat()
+              .getActual(), target.getName().getActual());
+          assert r != null;
+          this.log.debug(r);
         }
 
         this.addShader(source_flat);
         this.addType(target_flat);
 
         try {
-          this.graph.addDagEdge(e_source, e_target, reference);
+          this.graph.addDagEdge(source_flat, target_flat, reference);
         } catch (final CycleFoundException e) {
           throw new UnreachableCodeException(e);
         }
       }
     }
 
-    public @Nonnull
-      DirectedAcyclicGraph<TASTNameTypeShaderFlat, TASTReference>
+    public
+      DirectedAcyclicGraph<TASTNameTypeShaderFlatType, TASTReference>
       getGraph()
     {
       return this.graph;
@@ -597,15 +575,15 @@ final class TGraphs
    * compilation.
    */
 
-  static final class GlobalTypeTypeGraph
+  @EqualityReference static final class GlobalTypeTypeGraph
   {
-    private final @Nonnull DirectedAcyclicGraph<TTypeNameFlat, TASTReference> graph;
-    private final @Nonnull Log                                                log;
+    private final DirectedAcyclicGraph<TTypeNameFlat, TASTReference> graph;
+    private final LogUsableType                                      log;
 
     public GlobalTypeTypeGraph(
-      final @Nonnull Log in_log)
+      final LogUsableType in_log)
     {
-      this.log = new Log(in_log, "global-type-type-graph");
+      this.log = in_log.with("global-type-type-graph");
       this.graph =
         new DirectedAcyclicGraph<TTypeNameFlat, TASTReference>(
           TASTReference.class);
@@ -615,17 +593,18 @@ final class TGraphs
       final TTypeNameFlat type)
     {
       if (this.graph.containsVertex(type) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format("Add type %s", type.show()));
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r = String.format("Add type %s", type.show());
+          assert r != null;
+          this.log.debug(r);
         }
         this.graph.addVertex(type);
       }
     }
 
     public void addTypeReference(
-      final @Nonnull TTypeNameGlobal source,
-      final @Nonnull TTypeNameGlobal target)
-      throws ConstraintError
+      final TTypeNameGlobal source,
+      final TTypeNameGlobal target)
     {
       final TASTReference reference =
         new TASTReference(
@@ -635,13 +614,15 @@ final class TGraphs
           target.getName());
 
       if (this.graph.containsEdge(reference) == false) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
-          this.log.debug(String.format(
-            "Add type reference %s.%s -> %s.%s",
-            source.getFlat().getActual(),
-            source.getName().getActual(),
-            target.getFlat().getActual(),
-            target.getName().getActual()));
+        if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
+          final String r =
+            String.format("Add type reference %s.%s → %s.%s", source
+              .getFlat()
+              .getActual(), source.getName().getActual(), target
+              .getFlat()
+              .getActual(), target.getName().getActual());
+          assert r != null;
+          this.log.debug(r);
         }
 
         final TTypeNameFlat source_flat =
@@ -660,33 +641,31 @@ final class TGraphs
       }
     }
 
-    public @Nonnull
-      DirectedAcyclicGraph<TTypeNameFlat, TASTReference>
-      getGraph()
+    public DirectedAcyclicGraph<TTypeNameFlat, TASTReference> getGraph()
     {
       return this.graph;
     }
   }
 
-  private static final class GraphBuilderFragmentShader implements
-    TASTFragmentShaderVisitor<TASTDShaderFragment, TASTDShaderFragmentInput, TASTDShaderFragmentParameter, TASTDShaderFragmentOutput, TASTDShaderFragmentLocal, TASTDShaderFragmentOutputAssignment, ConstraintError>
+  @EqualityReference private static final class GraphBuilderFragmentShader implements
+    TASTFragmentShaderVisitorType<TASTDShaderFragment, TASTDShaderFragmentInput, TASTDShaderFragmentParameter, TASTDShaderFragmentOutput, TASTDShaderFragmentLocal, TASTDShaderFragmentOutputAssignment, UnreachableCodeException>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull GlobalGraph                      graph;
-    private final @Nonnull Log                              log;
-    private final @Nonnull ModulePath                       module_path;
-    private final @Nonnull TASTShaderName                   source;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final GlobalGraph                      graph;
+    private final LogUsableType                    log;
+    private final ModulePath                       module_path;
+    private final TASTShaderName                   source;
 
     public GraphBuilderFragmentShader(
-      final @Nonnull TASTShaderName in_source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Log in_log,
-      final @Nonnull ModulePath in_module_path,
-      final @Nonnull GlobalGraph in_graph)
+      final TASTShaderName in_source,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final Map<String, TASTDType> in_checked_types,
+      final LogUsableType in_log,
+      final ModulePath in_module_path,
+      final GlobalGraph in_graph)
     {
       this.source = in_source;
       this.checked_modules = in_checked_modules;
@@ -698,15 +677,12 @@ final class TGraphs
     }
 
     private void addTypeReference(
-      final @Nonnull TType type)
-      throws ConstraintError
+      final TType type)
     {
       type.getName().typeNameVisitableAccept(
-        new TTypeNameVisitor<Unit, ConstraintError>() {
+        new TTypeNameVisitorType<Unit, UnreachableCodeException>() {
           @Override public Unit typeNameVisitBuiltIn(
-            final @Nonnull TTypeNameBuiltIn t)
-            throws ConstraintError,
-              ConstraintError
+            final TTypeNameBuiltIn t)
           {
             return Unit.unit();
           }
@@ -714,9 +690,7 @@ final class TGraphs
           @SuppressWarnings("synthetic-access") @Override public
             Unit
             typeNameVisitGlobal(
-              final @Nonnull TTypeNameGlobal t)
-              throws ConstraintError,
-                ConstraintError
+              final TTypeNameGlobal t)
           {
             GraphBuilderFragmentShader.this.graph.addShaderTypeReference(
               GraphBuilderFragmentShader.this.source,
@@ -726,35 +700,27 @@ final class TGraphs
         });
     }
 
-    @Override public
-      TASTDShaderFragment
-      fragmentShaderVisit(
-        final @Nonnull List<TASTDShaderFragmentInput> inputs,
-        final @Nonnull List<TASTDShaderFragmentParameter> parameters,
-        final @Nonnull List<TASTDShaderFragmentOutput> outputs,
-        final @Nonnull List<TASTDShaderFragmentLocal> locals,
-        final @Nonnull List<TASTDShaderFragmentOutputAssignment> output_assignments,
-        final @Nonnull TASTDShaderFragment f)
-        throws ConstraintError,
-          ConstraintError
+    @Override public TASTDShaderFragment fragmentShaderVisit(
+      final List<TASTDShaderFragmentInput> inputs,
+      final List<TASTDShaderFragmentParameter> parameters,
+      final List<TASTDShaderFragmentOutput> outputs,
+      final List<TASTDShaderFragmentLocal> locals,
+      final List<TASTDShaderFragmentOutputAssignment> output_assignments,
+      final TASTDShaderFragment f)
     {
       return f;
     }
 
     @Override public TASTDShaderFragmentInput fragmentShaderVisitInput(
-      final @Nonnull TASTDShaderFragmentInput i)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDShaderFragmentInput i)
     {
       this.addTypeReference(i.getType());
       return i;
     }
 
-    @Override public
-      TASTFragmentShaderLocalVisitor<TASTDShaderFragmentLocal, ConstraintError>
+    @Override public @Nullable
+      TASTFragmentShaderLocalVisitorType<TASTDShaderFragmentLocal, UnreachableCodeException>
       fragmentShaderVisitLocalsPre()
-        throws ConstraintError,
-          ConstraintError
     {
       return new GraphBuilderFragmentShaderLocal(
         this.source,
@@ -767,9 +733,7 @@ final class TGraphs
     }
 
     @Override public TASTDShaderFragmentOutput fragmentShaderVisitOutput(
-      final @Nonnull TASTDShaderFragmentOutput o)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDShaderFragmentOutput o)
     {
       this.addTypeReference(o.getType());
       return o;
@@ -778,9 +742,7 @@ final class TGraphs
     @Override public
       TASTDShaderFragmentOutputAssignment
       fragmentShaderVisitOutputAssignment(
-        final @Nonnull TASTDShaderFragmentOutputAssignment a)
-        throws ConstraintError,
-          ConstraintError
+        final TASTDShaderFragmentOutputAssignment a)
     {
       a.getVariable().expressionVisitableAccept(
         new GraphBuilderShaderExpression(
@@ -797,34 +759,32 @@ final class TGraphs
     @Override public
       TASTDShaderFragmentParameter
       fragmentShaderVisitParameter(
-        final @Nonnull TASTDShaderFragmentParameter p)
-        throws ConstraintError,
-          ConstraintError
+        final TASTDShaderFragmentParameter p)
     {
       this.addTypeReference(p.getType());
       return p;
     }
   }
 
-  private static final class GraphBuilderFragmentShaderLocal implements
-    TASTFragmentShaderLocalVisitor<TASTDShaderFragmentLocal, ConstraintError>
+  @EqualityReference private static final class GraphBuilderFragmentShaderLocal implements
+    TASTFragmentShaderLocalVisitorType<TASTDShaderFragmentLocal, UnreachableCodeException>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull GlobalGraph                      graph;
-    private final @Nonnull Log                              log;
-    private final @Nonnull ModulePath                       module_path;
-    private final @Nonnull TASTShaderName                   source;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final GlobalGraph                      graph;
+    private final LogUsableType                    log;
+    private final ModulePath                       module_path;
+    private final TASTShaderName                   source;
 
     public GraphBuilderFragmentShaderLocal(
-      final @Nonnull TASTShaderName in_source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Log in_log,
-      final @Nonnull ModulePath in_module_path,
-      final @Nonnull GlobalGraph in_graph)
+      final TASTShaderName in_source,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final Map<String, TASTDType> in_checked_types,
+      final LogUsableType in_log,
+      final ModulePath in_module_path,
+      final GlobalGraph in_graph)
     {
       this.source = in_source;
       this.checked_modules = in_checked_modules;
@@ -838,9 +798,7 @@ final class TGraphs
     @Override public
       TASTDShaderFragmentLocal
       fragmentShaderVisitLocalDiscard(
-        final @Nonnull TASTDShaderFragmentLocalDiscard d)
-        throws ConstraintError,
-          ConstraintError
+        final TASTDShaderFragmentLocalDiscard d)
     {
       d.getExpression().expressionVisitableAccept(
         new GraphBuilderShaderExpression(
@@ -855,9 +813,7 @@ final class TGraphs
     }
 
     @Override public TASTDShaderFragmentLocal fragmentShaderVisitLocalValue(
-      final @Nonnull TASTDShaderFragmentLocalValue v)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDShaderFragmentLocalValue v)
     {
       v
         .getValue()
@@ -879,23 +835,23 @@ final class TGraphs
    * A visitor that produces dependency information from shader declarations.
    */
 
-  private static final class GraphBuilderShader implements
-    TASTShaderVisitor<TASTDShader, ConstraintError>
+  @EqualityReference private static final class GraphBuilderShader implements
+    TASTShaderVisitorType<TASTDShader, UnreachableCodeException>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull GlobalGraph                      graph;
-    private final @Nonnull Log                              log;
-    private final @Nonnull ModulePath                       module_path;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final GlobalGraph                      graph;
+    private final LogUsableType                    log;
+    private final ModulePath                       module_path;
 
     public GraphBuilderShader(
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Log in_log,
-      final @Nonnull ModulePath in_module_path,
-      final @Nonnull GlobalGraph in_graph)
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final Map<String, TASTDType> in_checked_types,
+      final LogUsableType in_log,
+      final ModulePath in_module_path,
+      final GlobalGraph in_graph)
     {
       this.checked_modules = in_checked_modules;
       this.checked_terms = in_checked_terms;
@@ -906,9 +862,7 @@ final class TGraphs
     }
 
     @Override public TASTDShader moduleVisitFragmentShader(
-      final @Nonnull TASTDShaderFragment f)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDShaderFragment f)
     {
       final TASTShaderName source =
         new TASTShaderName(this.module_path, f.getName());
@@ -927,9 +881,7 @@ final class TGraphs
     }
 
     @Override public TASTDShader moduleVisitProgramShader(
-      final @Nonnull TASTDShaderProgram p)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDShaderProgram p)
     {
       final TASTShaderName source =
         new TASTShaderName(this.module_path, p.getName());
@@ -940,9 +892,7 @@ final class TGraphs
     }
 
     @Override public TASTDShader moduleVisitVertexShader(
-      final @Nonnull TASTDShaderVertex v)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDShaderVertex v)
     {
       final TASTShaderName source =
         new TASTShaderName(this.module_path, v.getName());
@@ -966,25 +916,25 @@ final class TGraphs
    * references to other terms and types to the given graph.
    */
 
-  private static final class GraphBuilderShaderExpression implements
-    TASTExpressionVisitor<TASTExpression, TASTDValueLocal, ConstraintError>
+  @EqualityReference private static final class GraphBuilderShaderExpression implements
+    TASTExpressionVisitorType<TASTExpression, TASTDValueLocal, UnreachableCodeException>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull GlobalGraph                      graph;
-    private final @Nonnull Log                              log;
-    private final @Nonnull ModulePath                       module_path;
-    private final @Nonnull TASTShaderName                   source;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final GlobalGraph                      graph;
+    private final LogUsableType                    log;
+    private final ModulePath                       module_path;
+    private final TASTShaderName                   source;
 
     public GraphBuilderShaderExpression(
-      final @Nonnull TASTShaderName in_source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Log in_log,
-      final @Nonnull ModulePath in_module_path,
-      final @Nonnull GlobalGraph in_graph)
+      final TASTShaderName in_source,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final Map<String, TASTDType> in_checked_types,
+      final LogUsableType in_log,
+      final ModulePath in_module_path,
+      final GlobalGraph in_graph)
     {
       this.source = in_source;
       this.checked_modules = in_checked_modules;
@@ -996,15 +946,12 @@ final class TGraphs
     }
 
     @SuppressWarnings("synthetic-access") private void addTermReference(
-      final @Nonnull TASTTermName name)
-      throws ConstraintError
+      final TASTTermName name)
     {
       name
-        .termNameVisitableAccept(new TASTTermNameVisitor<Unit, ConstraintError>() {
+        .termNameVisitableAccept(new TASTTermNameVisitorType<Unit, UnreachableCodeException>() {
           @Override public Unit termNameVisitGlobal(
             final TASTTermNameGlobal t)
-            throws ConstraintError,
-              ConstraintError
           {
             GraphBuilderShaderExpression.this.graph.addShaderTermReference(
               GraphBuilderShaderExpression.this.source,
@@ -1014,16 +961,12 @@ final class TGraphs
 
           @Override public Unit termNameVisitLocal(
             final TASTTermNameLocal t)
-            throws ConstraintError,
-              ConstraintError
           {
             return Unit.unit();
           }
 
           @Override public Unit termNameVisitExternal(
-            final @Nonnull TASTTermNameExternal t)
-            throws ConstraintError,
-              ConstraintError
+            final TASTTermNameExternal t)
           {
             return Unit.unit();
           }
@@ -1031,15 +974,12 @@ final class TGraphs
     }
 
     private void addTypeReference(
-      final @Nonnull TType type)
-      throws ConstraintError
+      final TType type)
     {
       type.getName().typeNameVisitableAccept(
-        new TTypeNameVisitor<Unit, ConstraintError>() {
+        new TTypeNameVisitorType<Unit, UnreachableCodeException>() {
           @Override public Unit typeNameVisitBuiltIn(
             final TTypeNameBuiltIn t)
-            throws ConstraintError,
-              ConstraintError
           {
             return Unit.unit();
           }
@@ -1048,8 +988,6 @@ final class TGraphs
             Unit
             typeNameVisitGlobal(
               final TTypeNameGlobal t)
-              throws ConstraintError,
-                ConstraintError
           {
             GraphBuilderShaderExpression.this.graph.addShaderTypeReference(
               GraphBuilderShaderExpression.this.source,
@@ -1060,122 +998,94 @@ final class TGraphs
     }
 
     @Override public TASTExpression expressionVisitApplication(
-      final @Nonnull List<TASTExpression> arguments,
-      final @Nonnull TASTEApplication e)
-      throws ConstraintError,
-        ConstraintError
+      final List<TASTExpression> arguments,
+      final TASTEApplication e)
     {
       this.addTermReference(e.getName());
       return e;
     }
 
     @Override public boolean expressionVisitApplicationPre(
-      final @Nonnull TASTEApplication e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEApplication e)
     {
       return true;
     }
 
     @Override public TASTExpression expressionVisitBoolean(
-      final @Nonnull TASTEBoolean e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEBoolean e)
     {
       return e;
     }
 
     @Override public TASTExpression expressionVisitConditional(
-      final @Nonnull TASTExpression condition,
-      final @Nonnull TASTExpression left,
-      final @Nonnull TASTExpression right,
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTExpression condition,
+      final TASTExpression left,
+      final TASTExpression right,
+      final TASTEConditional e)
     {
       return e;
     }
 
     @Override public void expressionVisitConditionalConditionPost(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalConditionPre(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalLeftPost(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalLeftPre(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public boolean expressionVisitConditionalPre(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       return true;
     }
 
     @Override public void expressionVisitConditionalRightPost(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalRightPre(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public TASTExpression expressionVisitInteger(
-      final @Nonnull TASTEInteger e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEInteger e)
     {
       return e;
     }
 
     @Override public TASTExpression expressionVisitLet(
-      final @Nonnull List<TASTDValueLocal> bindings,
-      final @Nonnull TASTExpression body,
-      final @Nonnull TASTELet e)
-      throws ConstraintError,
-        ConstraintError
+      final List<TASTDValueLocal> bindings,
+      final TASTExpression body,
+      final TASTELet e)
     {
       return e;
     }
 
-    @Override public
-      TASTLocalLevelVisitor<TASTDValueLocal, ConstraintError>
+    @Override public @Nullable
+      TASTLocalLevelVisitorType<TASTDValueLocal, UnreachableCodeException>
       expressionVisitLetPre(
-        final @Nonnull TASTELet e)
-        throws ConstraintError,
-          ConstraintError
+        final TASTELet e)
     {
       return new GraphBuilderShaderLocal(
         this.source,
@@ -1188,79 +1098,61 @@ final class TGraphs
     }
 
     @Override public TASTExpression expressionVisitNew(
-      final @Nonnull List<TASTExpression> arguments,
-      final @Nonnull TASTENew e)
-      throws ConstraintError,
-        ConstraintError
+      final List<TASTExpression> arguments,
+      final TASTENew e)
     {
       this.addTypeReference(e.getType());
       return e;
     }
 
     @Override public boolean expressionVisitNewPre(
-      final @Nonnull TASTENew e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTENew e)
     {
       return true;
     }
 
     @Override public TASTExpression expressionVisitReal(
-      final @Nonnull TASTEReal e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEReal e)
     {
       return e;
     }
 
     @Override public TASTExpression expressionVisitRecord(
-      final @Nonnull TASTERecord e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTERecord e)
     {
       this.addTypeReference(e.getType());
       return e;
     }
 
     @Override public TASTExpression expressionVisitRecordProjection(
-      final @Nonnull TASTExpression body,
-      final @Nonnull TASTERecordProjection e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTExpression body,
+      final TASTERecordProjection e)
     {
       this.addTypeReference(body.getType());
       return e;
     }
 
     @Override public boolean expressionVisitRecordProjectionPre(
-      final @Nonnull TASTERecordProjection e)
-      throws ConstraintError,
-        ConstraintError
+      final @Nullable TASTERecordProjection e)
     {
       return true;
     }
 
     @Override public TASTExpression expressionVisitSwizzle(
-      final @Nonnull TASTExpression body,
-      final @Nonnull TASTESwizzle e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTExpression body,
+      final TASTESwizzle e)
     {
       return e;
     }
 
     @Override public boolean expressionVisitSwizzlePre(
-      final @Nonnull TASTESwizzle e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTESwizzle e)
     {
       return true;
     }
 
     @Override public TASTExpression expressionVisitVariable(
-      final @Nonnull TASTEVariable e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEVariable e)
     {
       this.addTermReference(e.getName());
       this.addTypeReference(e.getType());
@@ -1268,25 +1160,25 @@ final class TGraphs
     }
   }
 
-  private static final class GraphBuilderShaderLocal implements
-    TASTLocalLevelVisitor<TASTDValueLocal, ConstraintError>
+  @EqualityReference private static final class GraphBuilderShaderLocal implements
+    TASTLocalLevelVisitorType<TASTDValueLocal, UnreachableCodeException>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull GlobalGraph                      graph;
-    private final @Nonnull Log                              log;
-    private final @Nonnull ModulePath                       module_path;
-    private final @Nonnull TASTShaderName                   source;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final GlobalGraph                      graph;
+    private final LogUsableType                    log;
+    private final ModulePath                       module_path;
+    private final TASTShaderName                   source;
 
     public GraphBuilderShaderLocal(
-      final @Nonnull TASTShaderName in_source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Log in_log,
-      final @Nonnull ModulePath in_module_path,
-      final @Nonnull GlobalGraph in_graph)
+      final TASTShaderName in_source,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final Map<String, TASTDType> in_checked_types,
+      final LogUsableType in_log,
+      final ModulePath in_module_path,
+      final GlobalGraph in_graph)
     {
       this.checked_modules = in_checked_modules;
       this.checked_terms = in_checked_terms;
@@ -1298,9 +1190,7 @@ final class TGraphs
     }
 
     @Override public TASTDValueLocal localVisitValueLocal(
-      final @Nonnull TASTDValueLocal v)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDValueLocal v)
     {
       v.getExpression().expressionVisitableAccept(
         new GraphBuilderShaderExpression(
@@ -1319,23 +1209,23 @@ final class TGraphs
    * A visitor that produces dependency information from term declarations.
    */
 
-  private static final class GraphBuilderTerm implements
-    TASTTermVisitor<TASTDTerm, ConstraintError>
+  @EqualityReference private static final class GraphBuilderTerm implements
+    TASTTermVisitorType<TASTDTerm, UnreachableCodeException>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull GlobalGraph                      graph;
-    private final @Nonnull Log                              log;
-    private final @Nonnull ModulePath                       module_path;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final GlobalGraph                      graph;
+    private final LogUsableType                    log;
+    private final ModulePath                       module_path;
 
     public GraphBuilderTerm(
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Log in_log,
-      final @Nonnull ModulePath in_module_path,
-      final @Nonnull GlobalGraph in_graph)
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final Map<String, TASTDType> in_checked_types,
+      final LogUsableType in_log,
+      final ModulePath in_module_path,
+      final GlobalGraph in_graph)
     {
       this.checked_modules = in_checked_modules;
       this.checked_terms = in_checked_terms;
@@ -1346,16 +1236,13 @@ final class TGraphs
     }
 
     private void addTermTypeReference(
-      final @Nonnull TASTTermNameGlobal source,
-      final @Nonnull TType type)
-      throws ConstraintError
+      final TASTTermNameGlobal source,
+      final TType type)
     {
       type.getName().typeNameVisitableAccept(
-        new TTypeNameVisitor<Unit, ConstraintError>() {
+        new TTypeNameVisitorType<Unit, UnreachableCodeException>() {
           @Override public Unit typeNameVisitBuiltIn(
-            final @Nonnull TTypeNameBuiltIn t)
-            throws ConstraintError,
-              ConstraintError
+            final TTypeNameBuiltIn t)
           {
             return Unit.unit();
           }
@@ -1363,9 +1250,7 @@ final class TGraphs
           @SuppressWarnings("synthetic-access") @Override public
             Unit
             typeNameVisitGlobal(
-              final @Nonnull TTypeNameGlobal t)
-              throws ConstraintError,
-                ConstraintError
+              final TTypeNameGlobal t)
           {
             GraphBuilderTerm.this.graph.addTermTypeReference(source, t);
             return Unit.unit();
@@ -1374,9 +1259,7 @@ final class TGraphs
     }
 
     @Override public TASTDTerm termVisitFunctionDefined(
-      final @Nonnull TASTDFunctionDefined f)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDFunctionDefined f)
     {
       final TASTTermNameGlobal source =
         new TASTTermNameGlobal(this.module_path, f.getName());
@@ -1401,9 +1284,7 @@ final class TGraphs
     }
 
     @Override public TASTDTerm termVisitFunctionExternal(
-      final @Nonnull TASTDFunctionExternal f)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDFunctionExternal f)
     {
       final TASTTermNameGlobal source =
         new TASTTermNameGlobal(this.module_path, f.getName());
@@ -1417,9 +1298,7 @@ final class TGraphs
     }
 
     @Override public TASTDTerm termVisitValueDefined(
-      final @Nonnull TASTDValueDefined v)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDValueDefined v)
     {
       final TASTTermNameGlobal source =
         new TASTTermNameGlobal(this.module_path, v.getName());
@@ -1438,9 +1317,7 @@ final class TGraphs
     }
 
     @Override public TASTDTerm termVisitValueExternal(
-      final @Nonnull TASTDValueExternal v)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDValueExternal v)
     {
       final TASTTermNameGlobal source =
         new TASTTermNameGlobal(this.module_path, v.getName());
@@ -1455,25 +1332,25 @@ final class TGraphs
    * and adds references to other terms and types to the given graph.
    */
 
-  private static final class GraphBuilderTermExpression implements
-    TASTExpressionVisitor<TASTExpression, TASTDValueLocal, ConstraintError>
+  @EqualityReference private static final class GraphBuilderTermExpression implements
+    TASTExpressionVisitorType<TASTExpression, TASTDValueLocal, UnreachableCodeException>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull GlobalGraph                      graph;
-    private final @Nonnull Log                              log;
-    private final @Nonnull ModulePath                       module_path;
-    private final @Nonnull TASTTermNameGlobal               source;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final GlobalGraph                      graph;
+    private final LogUsableType                    log;
+    private final ModulePath                       module_path;
+    private final TASTTermNameGlobal               source;
 
     public GraphBuilderTermExpression(
-      final @Nonnull TASTTermNameGlobal in_source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Log in_log,
-      final @Nonnull ModulePath in_module_path,
-      final @Nonnull GlobalGraph in_graph)
+      final TASTTermNameGlobal in_source,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final Map<String, TASTDType> in_checked_types,
+      final LogUsableType in_log,
+      final ModulePath in_module_path,
+      final GlobalGraph in_graph)
     {
       this.source = in_source;
       this.checked_modules = in_checked_modules;
@@ -1485,15 +1362,12 @@ final class TGraphs
     }
 
     @SuppressWarnings("synthetic-access") private void addTermReference(
-      final @Nonnull TASTTermName name)
-      throws ConstraintError
+      final TASTTermName name)
     {
       name
-        .termNameVisitableAccept(new TASTTermNameVisitor<Unit, ConstraintError>() {
+        .termNameVisitableAccept(new TASTTermNameVisitorType<Unit, UnreachableCodeException>() {
           @Override public Unit termNameVisitGlobal(
             final TASTTermNameGlobal t)
-            throws ConstraintError,
-              ConstraintError
           {
             GraphBuilderTermExpression.this.graph.addTermTermReference(
               GraphBuilderTermExpression.this.source,
@@ -1503,16 +1377,12 @@ final class TGraphs
 
           @Override public Unit termNameVisitLocal(
             final TASTTermNameLocal t)
-            throws ConstraintError,
-              ConstraintError
           {
             return Unit.unit();
           }
 
           @Override public Unit termNameVisitExternal(
             final TASTTermNameExternal t)
-            throws ConstraintError,
-              ConstraintError
           {
             return Unit.unit();
           }
@@ -1520,15 +1390,12 @@ final class TGraphs
     }
 
     private void addTermTypeReference(
-      final @Nonnull TType type)
-      throws ConstraintError
+      final TType type)
     {
       type.getName().typeNameVisitableAccept(
-        new TTypeNameVisitor<Unit, ConstraintError>() {
+        new TTypeNameVisitorType<Unit, UnreachableCodeException>() {
           @Override public Unit typeNameVisitBuiltIn(
-            final @Nonnull TTypeNameBuiltIn t)
-            throws ConstraintError,
-              ConstraintError
+            final TTypeNameBuiltIn t)
           {
             return Unit.unit();
           }
@@ -1536,9 +1403,7 @@ final class TGraphs
           @SuppressWarnings("synthetic-access") @Override public
             Unit
             typeNameVisitGlobal(
-              final @Nonnull TTypeNameGlobal t)
-              throws ConstraintError,
-                ConstraintError
+              final TTypeNameGlobal t)
           {
             GraphBuilderTermExpression.this.graph.addTermTypeReference(
               GraphBuilderTermExpression.this.source,
@@ -1549,130 +1414,100 @@ final class TGraphs
     }
 
     @Override public TASTExpression expressionVisitApplication(
-      final @Nonnull List<TASTExpression> arguments,
-      final @Nonnull TASTEApplication e)
-      throws ConstraintError,
-        ConstraintError
+      final List<TASTExpression> arguments,
+      final TASTEApplication e)
     {
       this.addTermReference(e.getName());
       return e;
     }
 
     @Override public boolean expressionVisitApplicationPre(
-      final @Nonnull TASTEApplication e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEApplication e)
     {
       return true;
     }
 
     @Override public TASTExpression expressionVisitBoolean(
-      final @Nonnull TASTEBoolean e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEBoolean e)
     {
       return e;
     }
 
     @Override public TASTExpression expressionVisitConditional(
-      final @Nonnull TASTExpression condition,
-      final @Nonnull TASTExpression left,
-      final @Nonnull TASTExpression right,
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTExpression condition,
+      final TASTExpression left,
+      final TASTExpression right,
+      final TASTEConditional e)
     {
       return e;
     }
 
     @Override public void expressionVisitConditionalConditionPost(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalConditionPre(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalLeftPost(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalLeftPre(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public boolean expressionVisitConditionalPre(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       return true;
     }
 
     @Override public void expressionVisitConditionalRightPost(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public void expressionVisitConditionalRightPre(
-      final @Nonnull TASTEConditional e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEConditional e)
     {
       // Nothing
     }
 
     @Override public TASTExpression expressionVisitInteger(
-      final @Nonnull TASTEInteger e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEInteger e)
     {
       return e;
     }
 
     @Override public TASTExpression expressionVisitLet(
-      final @Nonnull List<TASTDValueLocal> bindings,
-      final @Nonnull TASTExpression body,
-      final @Nonnull TASTELet e)
-      throws ConstraintError,
-        ConstraintError
+      final List<TASTDValueLocal> bindings,
+      final TASTExpression body,
+      final TASTELet e)
     {
       return e;
     }
 
-    @Override public
-      TASTLocalLevelVisitor<TASTDValueLocal, ConstraintError>
+    @Override public @Nullable
+      TASTLocalLevelVisitorType<TASTDValueLocal, UnreachableCodeException>
       expressionVisitLetPre(
-        final @Nonnull TASTELet e)
-        throws ConstraintError,
-          ConstraintError
+        final TASTELet e)
     {
-      return new TASTLocalLevelVisitor<TASTDValueLocal, ConstraintError>() {
+      return new TASTLocalLevelVisitorType<TASTDValueLocal, UnreachableCodeException>() {
         @SuppressWarnings("synthetic-access") @Override public
           TASTDValueLocal
           localVisitValueLocal(
             final TASTDValueLocal v)
-            throws ConstraintError,
-              ConstraintError
         {
           v.getExpression().expressionVisitableAccept(
             new GraphBuilderTermExpression(
@@ -1689,35 +1524,27 @@ final class TGraphs
     }
 
     @Override public TASTExpression expressionVisitNew(
-      final @Nonnull List<TASTExpression> arguments,
-      final @Nonnull TASTENew e)
-      throws ConstraintError,
-        ConstraintError
+      final List<TASTExpression> arguments,
+      final TASTENew e)
     {
       this.addTermTypeReference(e.getType());
       return e;
     }
 
     @Override public boolean expressionVisitNewPre(
-      final @Nonnull TASTENew e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTENew e)
     {
       return true;
     }
 
     @Override public TASTExpression expressionVisitReal(
-      final @Nonnull TASTEReal e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEReal e)
     {
       return e;
     }
 
     @Override public TASTExpression expressionVisitRecord(
-      final @Nonnull TASTERecord e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTERecord e)
     {
       this.addTermTypeReference(e.getType());
 
@@ -1736,44 +1563,34 @@ final class TGraphs
     }
 
     @Override public TASTExpression expressionVisitRecordProjection(
-      final @Nonnull TASTExpression body,
-      final @Nonnull TASTERecordProjection e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTExpression body,
+      final TASTERecordProjection e)
     {
       this.addTermTypeReference(body.getType());
       return e;
     }
 
     @Override public boolean expressionVisitRecordProjectionPre(
-      final @Nonnull TASTERecordProjection e)
-      throws ConstraintError,
-        ConstraintError
+      final @Nullable TASTERecordProjection e)
     {
       return true;
     }
 
     @Override public TASTExpression expressionVisitSwizzle(
-      final @Nonnull TASTExpression body,
-      final @Nonnull TASTESwizzle e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTExpression body,
+      final TASTESwizzle e)
     {
       return e;
     }
 
     @Override public boolean expressionVisitSwizzlePre(
-      final @Nonnull TASTESwizzle e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTESwizzle e)
     {
       return true;
     }
 
     @Override public TASTExpression expressionVisitVariable(
-      final @Nonnull TASTEVariable e)
-      throws ConstraintError,
-        ConstraintError
+      final TASTEVariable e)
     {
       this.addTermReference(e.getName());
       this.addTermTypeReference(e.getType());
@@ -1790,32 +1607,31 @@ final class TGraphs
    * A visitor that produces dependency information from type declarations.
    */
 
-  private static final class GraphBuilderType implements
-    TASTTypeVisitor<TASTDType, ConstraintError>
+  @EqualityReference private static final class GraphBuilderType implements
+    TASTTypeVisitorType<TASTDType, UnreachableCodeException>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull GlobalGraph                      graph;
-    private final @Nonnull Log                              log;
-    private final @Nonnull ModulePath                       module_path;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDType>           checked_types;
+    private final GlobalGraph                      graph;
+    private final LogUsableType                    log;
+    private final ModulePath                       module_path;
 
     public GraphBuilderType(
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Log in_log,
-      final @Nonnull ModulePath in_module_path,
-      final @Nonnull GlobalGraph in_graph)
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDType> in_checked_types,
+      final LogUsableType in_log,
+      final ModulePath in_module_path,
+      final GlobalGraph in_graph)
     {
-      this.checked_modules = in_checked_modules;
-      this.checked_types = in_checked_types;
+      this.checked_modules = NullCheck.notNull(in_checked_modules, "Modules");
+      this.checked_types = NullCheck.notNull(in_checked_types, "Types");
       this.log = in_log;
-      this.module_path = in_module_path;
+      this.module_path = NullCheck.notNull(in_module_path, "Path");
       this.graph = in_graph;
     }
 
     @Override public TASTDType typeVisitTypeRecord(
       final TASTDTypeRecord r)
-      throws ConstraintError
     {
       final TTypeNameGlobal source =
         new TTypeNameGlobal(this.module_path, r.getName());
@@ -1825,11 +1641,9 @@ final class TGraphs
       for (final TASTDTypeRecordField f : r.getFields()) {
         final TManifestType ft = f.getType();
         ft.getName().typeNameVisitableAccept(
-          new TTypeNameVisitor<Unit, ConstraintError>() {
+          new TTypeNameVisitorType<Unit, UnreachableCodeException>() {
             @Override public Unit typeNameVisitBuiltIn(
-              final @Nonnull TTypeNameBuiltIn t)
-              throws ConstraintError,
-                ConstraintError
+              final TTypeNameBuiltIn t)
             {
               return Unit.unit();
             }
@@ -1837,9 +1651,7 @@ final class TGraphs
             @SuppressWarnings("synthetic-access") @Override public
               Unit
               typeNameVisitGlobal(
-                final @Nonnull TTypeNameGlobal t)
-                throws ConstraintError,
-                  ConstraintError
+                final TTypeNameGlobal t)
             {
               GraphBuilderType.this.graph.addTypeTypeReference(source, t);
               return Unit.unit();
@@ -1851,25 +1663,25 @@ final class TGraphs
     }
   }
 
-  private static final class GraphBuilderVertexShader implements
-    TASTVertexShaderVisitor<TASTDShaderVertex, TASTDShaderVertexInput, TASTDShaderVertexParameter, TASTDShaderVertexOutput, TASTDShaderVertexLocalValue, TASTDShaderVertexOutputAssignment, ConstraintError>
+  @EqualityReference private static final class GraphBuilderVertexShader implements
+    TASTVertexShaderVisitorType<TASTDShaderVertex, TASTDShaderVertexInput, TASTDShaderVertexParameter, TASTDShaderVertexOutput, TASTDShaderVertexLocalValue, TASTDShaderVertexOutputAssignment, UnreachableCodeException>
   {
-    private final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules;
-    private final @Nonnull Map<String, TASTDTerm>           checked_terms;
-    private final @Nonnull Map<String, TASTDType>           checked_types;
-    private final @Nonnull GlobalGraph                      graph;
-    private final @Nonnull Log                              log;
-    private final @Nonnull ModulePath                       module_path;
-    private final @Nonnull TASTShaderName                   source;
+    private final Map<ModulePathFlat, TASTDModule> checked_modules;
+    private final Map<String, TASTDTerm>           checked_terms;
+    private final Map<String, TASTDType>           checked_types;
+    private final GlobalGraph                      graph;
+    private final LogUsableType                    log;
+    private final ModulePath                       module_path;
+    private final TASTShaderName                   source;
 
     public GraphBuilderVertexShader(
-      final @Nonnull TASTShaderName in_source,
-      final @Nonnull Map<ModulePathFlat, TASTDModule> in_checked_modules,
-      final @Nonnull Map<String, TASTDTerm> in_checked_terms,
-      final @Nonnull Map<String, TASTDType> in_checked_types,
-      final @Nonnull Log in_log,
-      final @Nonnull ModulePath in_module_path,
-      final @Nonnull GlobalGraph in_graph)
+      final TASTShaderName in_source,
+      final Map<ModulePathFlat, TASTDModule> in_checked_modules,
+      final Map<String, TASTDTerm> in_checked_terms,
+      final Map<String, TASTDType> in_checked_types,
+      final LogUsableType in_log,
+      final ModulePath in_module_path,
+      final GlobalGraph in_graph)
     {
       this.source = in_source;
       this.checked_modules = in_checked_modules;
@@ -1881,15 +1693,13 @@ final class TGraphs
     }
 
     private void addTypeReference(
-      final @Nonnull TType type)
-      throws ConstraintError
+      final TType type)
+      throws UnreachableCodeException
     {
       type.getName().typeNameVisitableAccept(
-        new TTypeNameVisitor<Unit, ConstraintError>() {
+        new TTypeNameVisitorType<Unit, UnreachableCodeException>() {
           @Override public Unit typeNameVisitBuiltIn(
-            final @Nonnull TTypeNameBuiltIn t)
-            throws ConstraintError,
-              ConstraintError
+            final TTypeNameBuiltIn t)
           {
             return Unit.unit();
           }
@@ -1897,9 +1707,7 @@ final class TGraphs
           @SuppressWarnings("synthetic-access") @Override public
             Unit
             typeNameVisitGlobal(
-              final @Nonnull TTypeNameGlobal t)
-              throws ConstraintError,
-                ConstraintError
+              final TTypeNameGlobal t)
           {
             GraphBuilderVertexShader.this.graph.addShaderTypeReference(
               GraphBuilderVertexShader.this.source,
@@ -1909,43 +1717,33 @@ final class TGraphs
         });
     }
 
-    @Override public
-      TASTDShaderVertex
-      vertexShaderVisit(
-        final @Nonnull List<TASTDShaderVertexInput> inputs,
-        final @Nonnull List<TASTDShaderVertexParameter> parameters,
-        final @Nonnull List<TASTDShaderVertexOutput> outputs,
-        final @Nonnull List<TASTDShaderVertexLocalValue> locals,
-        final @Nonnull List<TASTDShaderVertexOutputAssignment> output_assignments,
-        final @Nonnull TASTDShaderVertex v)
-        throws ConstraintError,
-          ConstraintError
+    @Override public TASTDShaderVertex vertexShaderVisit(
+      final List<TASTDShaderVertexInput> inputs,
+      final List<TASTDShaderVertexParameter> parameters,
+      final List<TASTDShaderVertexOutput> outputs,
+      final List<TASTDShaderVertexLocalValue> locals,
+      final List<TASTDShaderVertexOutputAssignment> output_assignments,
+      final TASTDShaderVertex v)
     {
       return v;
     }
 
     @Override public TASTDShaderVertexInput vertexShaderVisitInput(
-      final @Nonnull TASTDShaderVertexInput i)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDShaderVertexInput i)
     {
       this.addTypeReference(i.getType());
       return i;
     }
 
-    @Override public
-      TASTVertexShaderLocalVisitor<TASTDShaderVertexLocalValue, ConstraintError>
+    @Override public @Nullable
+      TASTVertexShaderLocalVisitorType<TASTDShaderVertexLocalValue, UnreachableCodeException>
       vertexShaderVisitLocalsPre()
-        throws ConstraintError,
-          ConstraintError
     {
-      return new TASTVertexShaderLocalVisitor<TASTDShaderVertexLocalValue, ConstraintError>() {
+      return new TASTVertexShaderLocalVisitorType<TASTDShaderVertexLocalValue, UnreachableCodeException>() {
         @SuppressWarnings("synthetic-access") @Override public
           TASTDShaderVertexLocalValue
           vertexShaderVisitLocalValue(
             final TASTDShaderVertexLocalValue v)
-            throws ConstraintError,
-              ConstraintError
         {
           v
             .getValue()
@@ -1965,9 +1763,7 @@ final class TGraphs
     }
 
     @Override public TASTDShaderVertexOutput vertexShaderVisitOutput(
-      final @Nonnull TASTDShaderVertexOutput o)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDShaderVertexOutput o)
     {
       this.addTypeReference(o.getType());
       return o;
@@ -1976,9 +1772,7 @@ final class TGraphs
     @Override public
       TASTDShaderVertexOutputAssignment
       vertexShaderVisitOutputAssignment(
-        final @Nonnull TASTDShaderVertexOutputAssignment a)
-        throws ConstraintError,
-          ConstraintError
+        final TASTDShaderVertexOutputAssignment a)
     {
       a.getVariable().expressionVisitableAccept(
         new GraphBuilderShaderExpression(
@@ -1993,33 +1787,32 @@ final class TGraphs
     }
 
     @Override public TASTDShaderVertexParameter vertexShaderVisitParameter(
-      final @Nonnull TASTDShaderVertexParameter p)
-      throws ConstraintError,
-        ConstraintError
+      final TASTDShaderVertexParameter p)
     {
       this.addTypeReference(p.getType());
       return p;
     }
   }
 
-  static @Nonnull TGraphs newGraphs(
-    final @Nonnull Log log)
+  static TGraphs newGraphs(
+    final LogUsableType log)
   {
     return new TGraphs(log);
   }
 
-  private final @Nonnull Log log;
+  private final LogUsableType log;
 
   private TGraphs(
-    final @Nonnull Log in_log)
+    final LogUsableType in_log)
   {
     this.log = in_log;
   }
 
-  public @Nonnull GlobalGraph check(
-    final @Nonnull Map<ModulePathFlat, TASTDModule> checked_modules)
-    throws ConstraintError
+  public GlobalGraph check(
+    final Map<ModulePathFlat, TASTDModule> checked_modules)
   {
+    NullCheck.notNull(checked_modules, "Modules");
+
     final GlobalGraph graph = new GlobalGraph(this.log);
 
     for (final ModulePathFlat p : checked_modules.keySet()) {

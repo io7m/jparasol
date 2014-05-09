@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -26,22 +26,42 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Pair;
+import com.io7m.jnull.NullCheck;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.functional.Pair;
+/**
+ * <p>
+ * A batch of shader names to be compiled.
+ * </p>
+ * <p>
+ * A batch is conceptually a list of pairs, with the left element of a pair
+ * denoting the output name of a GLSL shader, and the right element denoting
+ * the (fully-qualified) name of a Parasol program to compile.
+ * </p>
+ */
 
-public final class Batch
+@EqualityReference public final class Batch
 {
-  public static @Nonnull Batch fromFile(
-    final @Nonnull File base,
-    final @Nonnull File file)
-    throws IOException,
-      ConstraintError
+  /**
+   * Load a batch from a file.
+   * 
+   * @param base
+   *          The base directory
+   * @param file
+   *          The batch file
+   * @return A batch
+   * @throws IOException
+   *           If an I/O error occurs
+   */
+
+  public static Batch fromFile(
+    final File base,
+    final File file)
+    throws IOException
   {
-    Constraints.constrainNotNull(base, "Base");
-    Constraints.constrainNotNull(file, "File");
+    NullCheck.notNull(base, "Base");
+    NullCheck.notNull(file, "File");
 
     final FileInputStream stream = new FileInputStream(file);
     try {
@@ -51,18 +71,29 @@ public final class Batch
     }
   }
 
-  @SuppressWarnings("resource") public static @Nonnull Batch fromStream(
-    final @Nonnull File base,
-    final @Nonnull InputStream stream)
-    throws IOException,
-      ConstraintError
+  /**
+   * Load a batch from a stream.
+   * 
+   * @param base
+   *          The base directory
+   * @param stream
+   *          The stream
+   * @return A batch
+   * @throws IOException
+   *           If an I/O error occurs
+   */
+
+  @SuppressWarnings("resource") public static Batch fromStream(
+    final File base,
+    final InputStream stream)
+    throws IOException
   {
-    Constraints.constrainNotNull(base, "Base");
-    Constraints.constrainNotNull(stream, "Stream");
+    NullCheck.notNull(base, "Base");
+    NullCheck.notNull(stream, "Stream");
 
     final BufferedReader reader =
       new BufferedReader(new InputStreamReader(stream));
-    final ArrayList<Pair<String, String>> targets =
+    final List<Pair<String, String>> targets =
       new ArrayList<Pair<String, String>>();
 
     int line_number = 1;
@@ -80,32 +111,44 @@ public final class Batch
       }
       final String out = segments[0].trim();
       final String shader = segments[1].trim();
-      targets.add(new Pair<String, String>(out, shader));
+      assert out != null;
+      assert shader != null;
+      targets.add(Pair.pair(out, shader));
       ++line_number;
     }
 
     return new Batch(base, targets);
   }
 
-  private final @Nonnull File                            base;
-  private final @Nonnull ArrayList<Pair<String, String>> targets;
+  private final File                       base;
+  private final List<Pair<String, String>> targets;
 
   private Batch(
-    final @Nonnull File in_base,
-    final @Nonnull ArrayList<Pair<String, String>> in_targets)
-    throws ConstraintError
+    final File in_base,
+    final List<Pair<String, String>> in_targets)
   {
-    this.base = Constraints.constrainNotNull(in_base, "Base");
-    this.targets = Constraints.constrainNotNull(in_targets, "Targets");
+    this.base = NullCheck.notNull(in_base, "Base");
+    this.targets = NullCheck.notNullAll(in_targets, "Targets");
   }
 
-  public @Nonnull File getBase()
+  /**
+   * @return The base directory
+   */
+
+  public File getBase()
   {
     return this.base;
   }
 
-  public @Nonnull List<Pair<String, String>> getTargets()
+  /**
+   * @return The list of shaders to be compiled.
+   */
+
+  public List<Pair<String, String>> getTargets()
   {
-    return Collections.unmodifiableList(this.targets);
+    final List<Pair<String, String>> r =
+      Collections.unmodifiableList(this.targets);
+    assert r != null;
+    return r;
   }
 }

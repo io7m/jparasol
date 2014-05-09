@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 <code@io7m.com> http://io7m.com
+ * Copyright © 2014 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,35 +16,32 @@
 
 package com.io7m.jparasol.xml;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
 import nu.xom.Attribute;
 import nu.xom.Element;
 
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jnull.NullCheck;
+import com.io7m.jnull.Nullable;
 
 /**
  * A fragment shader output.
  */
 
-@Immutable public final class FragmentOutput implements
+@EqualityStructural public final class FragmentOutput implements
   Comparable<FragmentOutput>
 {
-  private final @Nonnull Integer index;
-  private final @Nonnull String  name;
-  private final @Nonnull String  type;
+  private final Integer index;
+  private final String  name;
+  private final String  type;
 
   FragmentOutput(
-    final @Nonnull Integer in_index,
-    final @Nonnull String in_name,
-    final @Nonnull String in_type)
-    throws ConstraintError
+    final Integer in_index,
+    final String in_name,
+    final String in_type)
   {
-    this.index = Constraints.constrainNotNull(in_index, "Index");
-    this.name = Constraints.constrainNotNull(in_name, "Output name");
-    this.type = Constraints.constrainNotNull(in_type, "Output type");
+    this.index = NullCheck.notNull(in_index, "Index");
+    this.name = NullCheck.notNull(in_name, "Output name");
+    this.type = NullCheck.notNull(in_type, "Output type");
   }
 
   @Override public int compareTo(
@@ -54,7 +51,7 @@ import com.io7m.jaux.Constraints.ConstraintError;
   }
 
   @Override public boolean equals(
-    final Object obj)
+    final @Nullable Object obj)
   {
     if (this == obj) {
       return true;
@@ -79,33 +76,34 @@ import com.io7m.jaux.Constraints.ConstraintError;
   }
 
   /**
-   * Retrieve the integer index of the output. This is used to address the
-   * output on older versions of OpenGL that do not support named fragment
-   * shader outputs.
+   * @return The integer index of the output. This is used to address the
+   *         output on older versions of OpenGL that do not support named
+   *         fragment shader outputs.
    */
 
-  public @Nonnull Integer getIndex()
+  public Integer getIndex()
   {
     return this.index;
   }
 
   /**
-   * Retrieve the name of the output. This is used to address the output on
-   * newer versions of OpenGL that support named fragment shader outputs.
+   * @return The name of the output. This is used to address the output on
+   *         newer versions of OpenGL that support named fragment shader
+   *         outputs.
    */
 
-  public @Nonnull String getName()
+  public String getName()
   {
     return this.name;
   }
 
   /**
-   * Retrieve the name of the type of the output. This is the type as it
-   * appears in GLSL. For example, most fragment shaders have outputs of type
-   * <code>"vec4"</code>.
+   * @return The name of the type of the output. This is the type as it
+   *         appears in GLSL. For example, most fragment shaders have outputs
+   *         of type <code>"vec4"</code>.
    */
 
-  public @Nonnull String getType()
+  public String getType()
   {
     return this.type;
   }
@@ -130,10 +128,16 @@ import com.io7m.jaux.Constraints.ConstraintError;
     builder.append(" ");
     builder.append(this.type);
     builder.append("]");
-    return builder.toString();
+    final String r = builder.toString();
+    assert r != null;
+    return r;
   }
 
-  public @Nonnull Element toXML()
+  /**
+   * @return The current output as XML
+   */
+
+  public Element toXML()
   {
     final String uri = PGLSLMetaXML.XML_URI_STRING;
     final Element e = new Element("g:fragment-output", uri);

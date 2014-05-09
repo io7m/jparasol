@@ -23,14 +23,11 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
-import com.io7m.jaux.UnreachableCodeException;
-import com.io7m.jaux.functional.Option;
-import com.io7m.jaux.functional.Option.None;
-import com.io7m.jaux.functional.Option.Some;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Option;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.Some;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.UIError;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
@@ -40,34 +37,95 @@ import com.io7m.jparasol.glsl.GVersionNumberSetToken.TokenLiteralIntegerDecimal;
 import com.io7m.jparasol.glsl.GVersionNumberSetToken.Type;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.parser.ParserError;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class GVersionNumberSetParser
+/**
+ * A version number set parser.
+ */
+
+@EqualityReference public final class GVersionNumberSetParser
 {
-  public static final class Bound
+  /**
+   * A version number bound.
+   */
+
+  @EqualityReference public static final class Bound
   {
-    public final @Nonnull BoundType       type;
-    public final @Nonnull Option<Integer> value;
+    private final BoundType           type;
+    private final OptionType<Integer> value;
+
+    /**
+     * Construct a bound.
+     * 
+     * @param in_type
+     *          The type of bound
+     * @param in_value
+     *          The bound value
+     */
 
     public Bound(
-      final @Nonnull BoundType in_type,
-      final @Nonnull Option<Integer> in_value)
+      final BoundType in_type,
+      final OptionType<Integer> in_value)
     {
-      this.type = in_type;
-      this.value = in_value;
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.value = NullCheck.notNull(in_value, "Value");
+    }
+
+    BoundType getType()
+    {
+      return this.type;
+    }
+
+    OptionType<Integer> getValue()
+    {
+      return this.value;
     }
   }
 
+  /**
+   * The type of version bounds.
+   */
+
   public static enum BoundType
   {
+    /**
+     * The bound is exclusive.
+     */
+
     BOUND_EXCLUSIVE,
+
+    /**
+     * The bound is inclusive.
+     */
+
     BOUND_INCLUSIVE
   }
 
-  public static abstract class Segment
+  /**
+   * A version number segment.
+   */
+
+  @EqualityReference public static abstract class Segment
   {
-    public static final class SegmentAtom extends Segment
+    /**
+     * A version number.
+     */
+
+    @EqualityReference public static final class SegmentAtom extends Segment
     {
-      public final int value;
+      private final int value;
+
+      int getValue()
+      {
+        return this.value;
+      }
+
+      /**
+       * Construct an atom.
+       * 
+       * @param in_value
+       *          The number
+       */
 
       public SegmentAtom(
         final int in_value)
@@ -76,41 +134,61 @@ public final class GVersionNumberSetParser
       }
     }
 
-    public static final class SegmentRange extends Segment
+    /**
+     * A version number range.
+     */
+
+    @EqualityReference public static final class SegmentRange extends Segment
     {
-      public final @Nonnull Bound lower;
-      public final @Nonnull Bound upper;
+      private final Bound lower;
+      private final Bound upper;
+
+      Bound getLower()
+      {
+        return this.lower;
+      }
+
+      Bound getUpper()
+      {
+        return this.upper;
+      }
+
+      /**
+       * Construct a range.
+       * 
+       * @param in_lower
+       *          The lower bound
+       * @param in_upper
+       *          The upper bound
+       */
 
       public SegmentRange(
-        final @Nonnull Bound in_lower,
-        final @Nonnull Bound in_upper)
+        final Bound in_lower,
+        final Bound in_upper)
       {
-        this.lower = in_lower;
-        this.upper = in_upper;
+        this.lower = NullCheck.notNull(in_lower, "Lower bound");
+        this.upper = NullCheck.notNull(in_upper, "Upper bound");
       }
     }
   }
 
-  private static @Nonnull GVersionES atomSetES(
-    final @Nonnull SegmentAtom s)
-    throws UIError,
-      ConstraintError
+  private static GVersionES atomSetES(
+    final SegmentAtom s)
+    throws UIError
   {
-    return GVersionNumberSetParser.checkVersionES(s.value);
+    return GVersionNumberSetParser.checkVersionES(s.getValue());
   }
 
-  private static @Nonnull GVersionFull atomSetFull(
-    final @Nonnull SegmentAtom s)
-    throws UIError,
-      ConstraintError
+  private static GVersionFull atomSetFull(
+    final SegmentAtom s)
+    throws UIError
   {
-    return GVersionNumberSetParser.checkVersionFull(s.value);
+    return GVersionNumberSetParser.checkVersionFull(s.getValue());
   }
 
-  private static @Nonnull GVersionES checkVersionES(
+  private static GVersionES checkVersionES(
     final int value)
-    throws UIError,
-      ConstraintError
+    throws UIError
   {
     final GVersionES v = new GVersionES(value);
     if (GVersionES.ALL.contains(v)) {
@@ -119,10 +197,9 @@ public final class GVersionNumberSetParser
     throw UIError.versionUnknownES(value);
   }
 
-  private static @Nonnull GVersionFull checkVersionFull(
+  private static GVersionFull checkVersionFull(
     final int value)
-    throws UIError,
-      ConstraintError
+    throws UIError
   {
     final GVersionFull v = new GVersionFull(value);
     if (GVersionFull.ALL.contains(v)) {
@@ -131,17 +208,17 @@ public final class GVersionNumberSetParser
     throw UIError.versionUnknown(value);
   }
 
-  private static @Nonnull GVersionES rangeSetDecideLowerES(
-    final @Nonnull SegmentRange s)
+  private static GVersionES rangeSetDecideLowerES(
+    final SegmentRange s)
   {
     GVersionES lower = GVersionES.GLSL_ES_LOWER;
 
-    switch (s.lower.type) {
+    switch (s.getLower().getType()) {
       case BOUND_EXCLUSIVE:
       {
-        if (s.lower.value.isSome()) {
-          final Some<Integer> some = (Some<Integer>) s.lower.value;
-          lower = new GVersionES(some.value.intValue() + 1);
+        if (s.getLower().getValue().isSome()) {
+          final Some<Integer> some = (Some<Integer>) s.getLower().getValue();
+          lower = new GVersionES(some.get().intValue() + 1);
         } else {
           lower = new GVersionES(lower.getNumber() + 1);
         }
@@ -149,9 +226,9 @@ public final class GVersionNumberSetParser
       }
       case BOUND_INCLUSIVE:
       {
-        if (s.lower.value.isSome()) {
-          final Some<Integer> some = (Some<Integer>) s.lower.value;
-          lower = new GVersionES(some.value.intValue());
+        if (s.getLower().getValue().isSome()) {
+          final Some<Integer> some = (Some<Integer>) s.getLower().getValue();
+          lower = new GVersionES(some.get().intValue());
         }
         break;
       }
@@ -159,17 +236,17 @@ public final class GVersionNumberSetParser
     return lower;
   }
 
-  private static @Nonnull GVersionFull rangeSetDecideLowerFull(
-    final @Nonnull SegmentRange s)
+  private static GVersionFull rangeSetDecideLowerFull(
+    final SegmentRange s)
   {
     GVersionFull lower = GVersionFull.GLSL_LOWER;
 
-    switch (s.lower.type) {
+    switch (s.getLower().getType()) {
       case BOUND_EXCLUSIVE:
       {
-        if (s.lower.value.isSome()) {
-          final Some<Integer> some = (Some<Integer>) s.lower.value;
-          lower = new GVersionFull(some.value.intValue() + 1);
+        if (s.getLower().getValue().isSome()) {
+          final Some<Integer> some = (Some<Integer>) s.getLower().getValue();
+          lower = new GVersionFull(some.get().intValue() + 1);
         } else {
           lower = new GVersionFull(lower.getNumber() + 1);
         }
@@ -177,9 +254,9 @@ public final class GVersionNumberSetParser
       }
       case BOUND_INCLUSIVE:
       {
-        if (s.lower.value.isSome()) {
-          final Some<Integer> some = (Some<Integer>) s.lower.value;
-          lower = new GVersionFull(some.value.intValue());
+        if (s.getLower().getValue().isSome()) {
+          final Some<Integer> some = (Some<Integer>) s.getLower().getValue();
+          lower = new GVersionFull(some.get().intValue());
         }
         break;
       }
@@ -187,18 +264,18 @@ public final class GVersionNumberSetParser
     return lower;
   }
 
-  private static @Nonnull GVersionES rangeSetDecideUpperES(
-    final @Nonnull SegmentRange s)
+  private static GVersionES rangeSetDecideUpperES(
+    final SegmentRange s)
   {
     GVersionES upper =
       new GVersionES(GVersionES.GLSL_ES_UPPER.getNumber() + 1);
 
-    switch (s.upper.type) {
+    switch (s.getUpper().getType()) {
       case BOUND_EXCLUSIVE:
       {
-        if (s.upper.value.isSome()) {
-          final Some<Integer> some = (Some<Integer>) s.upper.value;
-          upper = new GVersionES(some.value.intValue());
+        if (s.getUpper().getValue().isSome()) {
+          final Some<Integer> some = (Some<Integer>) s.getUpper().getValue();
+          upper = new GVersionES(some.get().intValue());
         } else {
           upper = new GVersionES(upper.getNumber() - 1);
         }
@@ -206,9 +283,9 @@ public final class GVersionNumberSetParser
       }
       case BOUND_INCLUSIVE:
       {
-        if (s.upper.value.isSome()) {
-          final Some<Integer> some = (Some<Integer>) s.upper.value;
-          upper = new GVersionES(some.value.intValue() + 1);
+        if (s.getUpper().getValue().isSome()) {
+          final Some<Integer> some = (Some<Integer>) s.getUpper().getValue();
+          upper = new GVersionES(some.get().intValue() + 1);
         }
         break;
       }
@@ -216,8 +293,8 @@ public final class GVersionNumberSetParser
     return upper;
   }
 
-  private static @Nonnull GVersionFull rangeSetDecideUpperFull(
-    final @Nonnull SegmentRange s)
+  private static GVersionFull rangeSetDecideUpperFull(
+    final SegmentRange s)
   {
     final int highest = GVersionFull.GLSL_UPPER.getNumber();
 
@@ -227,12 +304,12 @@ public final class GVersionNumberSetParser
      * exclusive upper bound.
      */
 
-    switch (s.upper.type) {
+    switch (s.getUpper().getType()) {
       case BOUND_EXCLUSIVE:
       {
-        if (s.upper.value.isSome()) {
-          final Some<Integer> some = (Some<Integer>) s.upper.value;
-          final Integer x = some.value;
+        if (s.getUpper().getValue().isSome()) {
+          final Some<Integer> some = (Some<Integer>) s.getUpper().getValue();
+          final Integer x = some.get();
 
           /**
            * If an exclusive upper bound was requested, and the bound is
@@ -256,9 +333,9 @@ public final class GVersionNumberSetParser
       }
       case BOUND_INCLUSIVE:
       {
-        if (s.upper.value.isSome()) {
-          final Some<Integer> some = (Some<Integer>) s.upper.value;
-          final Integer x = some.value;
+        if (s.getUpper().getValue().isSome()) {
+          final Some<Integer> some = (Some<Integer>) s.getUpper().getValue();
+          final Integer x = some.get();
 
           final SortedSet<GVersionFull> higher =
             GVersionFull.ALL.tailSet(new GVersionFull(x.intValue() + 1));
@@ -288,7 +365,7 @@ public final class GVersionNumberSetParser
   }
 
   private static Collection<? extends GVersionES> rangeSetES(
-    final @Nonnull SegmentRange s)
+    final SegmentRange s)
   {
     final GVersionES lower = GVersionNumberSetParser.rangeSetDecideLowerES(s);
     final GVersionES upper = GVersionNumberSetParser.rangeSetDecideUpperES(s);
@@ -296,7 +373,7 @@ public final class GVersionNumberSetParser
   }
 
   private static Collection<? extends GVersionFull> rangeSetFull(
-    final @Nonnull SegmentRange s)
+    final SegmentRange s)
   {
     final GVersionFull lower =
       GVersionNumberSetParser.rangeSetDecideLowerFull(s);
@@ -305,12 +382,23 @@ public final class GVersionNumberSetParser
     return GVersionFull.ALL.subSet(lower, upper);
   }
 
-  public static @Nonnull SortedSet<GVersionES> segmentsSetES(
-    final @Nonnull List<Segment> segments)
-    throws UIError,
-      ConstraintError
+  /**
+   * Calculate a set of GLSL ES version numbers from the given segments.
+   * 
+   * @param segments
+   *          The segments
+   * @return A set of version numbers
+   * @throws UIError
+   *           On mistakes
+   */
+
+  public static SortedSet<GVersionES> segmentsSetES(
+    final List<Segment> segments)
+    throws UIError
   {
-    final TreeSet<GVersionES> current = new TreeSet<GVersionES>();
+    NullCheck.notNullAll(segments, "Segments");
+
+    final SortedSet<GVersionES> current = new TreeSet<GVersionES>();
 
     for (final Segment s : segments) {
       if (s instanceof SegmentRange) {
@@ -323,12 +411,23 @@ public final class GVersionNumberSetParser
     return current;
   }
 
-  public static @Nonnull SortedSet<GVersionFull> segmentsSetFull(
-    final @Nonnull List<Segment> segments)
-    throws UIError,
-      ConstraintError
+  /**
+   * Calculate a set of GLSL version numbers from the given segments.
+   * 
+   * @param segments
+   *          The segments
+   * @return A set of version numbers
+   * @throws UIError
+   *           On mistakes
+   */
+
+  public static SortedSet<GVersionFull> segmentsSetFull(
+    final List<Segment> segments)
+    throws UIError
   {
-    final TreeSet<GVersionFull> current = new TreeSet<GVersionFull>();
+    NullCheck.notNullAll(segments, "Segments");
+
+    final SortedSet<GVersionFull> current = new TreeSet<GVersionFull>();
 
     for (final Segment s : segments) {
       if (s instanceof SegmentRange) {
@@ -342,32 +441,53 @@ public final class GVersionNumberSetParser
     return current;
   }
 
-  private final @Nonnull GVersionNumberSetLexer lexer;
-  private final @Nonnull StringBuilder          message;
-  private @Nonnull GVersionNumberSetToken       token;
+  private final GVersionNumberSetLexer lexer;
+  private final StringBuilder          message;
+  private GVersionNumberSetToken       token;
+
+  /**
+   * Construct a new version number set parser.
+   * 
+   * @param in_lexer
+   *          The lexer
+   * @throws IOException
+   *           On I/O errors
+   * @throws LexerError
+   *           On lexical errors
+   */
 
   public GVersionNumberSetParser(
-    final @Nonnull GVersionNumberSetLexer in_lexer)
-    throws ConstraintError,
-      IOException,
+    final GVersionNumberSetLexer in_lexer)
+    throws IOException,
       LexerError
   {
-    this.lexer = Constraints.constrainNotNull(in_lexer, "Lexer");
+    this.lexer = NullCheck.notNull(in_lexer, "Lexer");
     this.message = new StringBuilder();
     this.token = in_lexer.token();
   }
 
-  @SuppressWarnings("boxing") public @Nonnull Bound boundLower()
+  /**
+   * Parse a lower bound.
+   * 
+   * @return A lower bound
+   * @throws ParserError
+   *           If a parse error occurs
+   * @throws LexerError
+   *           If a lexical error occurs
+   * @throws IOException
+   *           If an I/O error occurs
+   */
+
+  @SuppressWarnings("boxing") public Bound boundLower()
     throws ParserError,
-      ConstraintError,
       LexerError,
       IOException
   {
-    final None<Integer> none = Option.none();
+    final OptionType<Integer> none = Option.none();
 
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_SQUARE_LEFT,
-      Type.TOKEN_ROUND_LEFT });
+      Type.TOKEN_ROUND_LEFT, });
 
     switch (this.token.getType()) {
       case TOKEN_ROUND_LEFT:
@@ -375,7 +495,7 @@ public final class GVersionNumberSetParser
         this.parserConsumeExact(Type.TOKEN_ROUND_LEFT);
         this.parserExpectOneOf(new Type[] {
           Type.TOKEN_LITERAL_INTEGER_DECIMAL,
-          Type.TOKEN_COMMA });
+          Type.TOKEN_COMMA, });
 
         switch (this.token.getType()) {
           case TOKEN_COMMA:
@@ -404,7 +524,7 @@ public final class GVersionNumberSetParser
         this.parserConsumeExact(Type.TOKEN_SQUARE_LEFT);
         this.parserExpectOneOf(new Type[] {
           Type.TOKEN_LITERAL_INTEGER_DECIMAL,
-          Type.TOKEN_COMMA });
+          Type.TOKEN_COMMA, });
 
         switch (this.token.getType()) {
           case TOKEN_COMMA:
@@ -433,18 +553,29 @@ public final class GVersionNumberSetParser
     }
   }
 
-  @SuppressWarnings("boxing") public @Nonnull Bound boundUpper()
+  /**
+   * Parse an upper bound.
+   * 
+   * @return An upper bound
+   * @throws ParserError
+   *           On parse errors
+   * @throws LexerError
+   *           On lexical errors
+   * @throws IOException
+   *           On I/O errors
+   */
+
+  @SuppressWarnings("boxing") public Bound boundUpper()
     throws ParserError,
-      ConstraintError,
       LexerError,
       IOException
   {
-    final None<Integer> none = Option.none();
+    final OptionType<Integer> none = Option.none();
 
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_SQUARE_RIGHT,
       Type.TOKEN_LITERAL_INTEGER_DECIMAL,
-      Type.TOKEN_ROUND_RIGHT });
+      Type.TOKEN_ROUND_RIGHT, });
 
     switch (this.token.getType()) {
       case TOKEN_LITERAL_INTEGER_DECIMAL:
@@ -470,12 +601,11 @@ public final class GVersionNumberSetParser
     throw new UnreachableCodeException();
   }
 
-  private @Nonnull Bound boundUpperClose(
-    final Option<Integer> opt)
+  private Bound boundUpperClose(
+    final OptionType<Integer> opt)
     throws ParserError,
       LexerError,
-      IOException,
-      ConstraintError
+      IOException
   {
     switch (this.token.getType()) {
       case TOKEN_ROUND_RIGHT:
@@ -498,16 +628,14 @@ public final class GVersionNumberSetParser
 
   protected void parserConsumeAny()
     throws IOException,
-      LexerError,
-      ConstraintError
+      LexerError
   {
     this.token = this.lexer.token();
   }
 
   protected void parserConsumeExact(
-    final @Nonnull GVersionNumberSetToken.Type type)
+    final GVersionNumberSetToken.Type type)
     throws ParserError,
-      ConstraintError,
       IOException,
       LexerError
   {
@@ -516,9 +644,8 @@ public final class GVersionNumberSetParser
   }
 
   protected void parserExpectExact(
-    final @Nonnull GVersionNumberSetToken.Type type)
-    throws ParserError,
-      ConstraintError
+    final GVersionNumberSetToken.Type type)
+    throws ParserError
   {
     if (this.token.getType() != type) {
       this.message.setLength(0);
@@ -534,9 +661,8 @@ public final class GVersionNumberSetParser
   }
 
   protected void parserExpectOneOf(
-    final @Nonnull GVersionNumberSetToken.Type types[])
-    throws ParserError,
-      ConstraintError
+    final GVersionNumberSetToken.Type[] types)
+    throws ParserError
   {
     for (final GVersionNumberSetToken.Type want : types) {
       if (this.token.getType() == want) {
@@ -566,9 +692,20 @@ public final class GVersionNumberSetParser
     this.message.append(this.token.getType().getDescription());
   }
 
-  public @Nonnull SegmentAtom segmentAtom()
+  /**
+   * Parse an atom.
+   * 
+   * @return An atom
+   * @throws ParserError
+   *           On parse errors
+   * @throws LexerError
+   *           On lexical errors
+   * @throws IOException
+   *           On I/O errors
+   */
+
+  public SegmentAtom segmentAtom()
     throws ParserError,
-      ConstraintError,
       LexerError,
       IOException
   {
@@ -579,15 +716,26 @@ public final class GVersionNumberSetParser
     return new SegmentAtom(t.getValue().intValue());
   }
 
-  public @Nonnull SegmentRange segmentRange()
+  /**
+   * Parse a range
+   * 
+   * @return A range
+   * @throws ParserError
+   *           On parse errors
+   * @throws LexerError
+   *           On lexical errors
+   * @throws IOException
+   *           On I/O errors
+   */
+
+  public SegmentRange segmentRange()
     throws ParserError,
-      ConstraintError,
       LexerError,
       IOException
   {
     this.parserExpectOneOf(new Type[] {
       Type.TOKEN_SQUARE_LEFT,
-      Type.TOKEN_ROUND_LEFT });
+      Type.TOKEN_ROUND_LEFT, });
 
     final Bound lower = this.boundLower();
     final Bound upper = this.boundUpper();
@@ -599,18 +747,31 @@ public final class GVersionNumberSetParser
     return new SegmentRange(lower, upper);
   }
 
+  /**
+   * @return <code>true</code> if the parser is at EOF
+   */
+
   public boolean isAtEOF()
   {
     return this.token.getType() == Type.TOKEN_EOF;
   }
 
-  public @Nonnull List<Segment> segments()
+  /**
+   * @return A list of version number segments
+   * @throws ParserError
+   *           If a parse error occurs
+   * @throws LexerError
+   *           If a lexical error occurs
+   * @throws IOException
+   *           If an I/O error occurs
+   */
+
+  public List<Segment> segments()
     throws ParserError,
-      ConstraintError,
       LexerError,
       IOException
   {
-    final ArrayList<Segment> s = new ArrayList<Segment>();
+    final List<Segment> s = new ArrayList<Segment>();
 
     for (;;) {
       this.parserExpectOneOf(new Type[] {
@@ -618,7 +779,7 @@ public final class GVersionNumberSetParser
         Type.TOKEN_LITERAL_INTEGER_DECIMAL,
         Type.TOKEN_COMMA,
         Type.TOKEN_EOF,
-        Type.TOKEN_ROUND_LEFT });
+        Type.TOKEN_ROUND_LEFT, });
 
       switch (this.token.getType()) {
         case TOKEN_EOF:

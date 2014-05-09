@@ -20,15 +20,18 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.lexer.Position;
 
-public final class GVersionCheckerError extends CompilerError
+/**
+ * The type of version checker errors.
+ */
+
+@EqualityReference public final class GVersionCheckerError extends
+  CompilerError
 {
   private static final long serialVersionUID;
 
@@ -36,12 +39,21 @@ public final class GVersionCheckerError extends CompilerError
     serialVersionUID = -5916767962958997985L;
   }
 
-  public static @Nonnull
+  /**
+   * Construct an error indicating that some versions were excluded.
+   * 
+   * @param exclusions_full
+   *          The GLSL versions excluded, and why
+   * @param exclusions_es
+   *          The GLSL ES versions excluded, and why
+   * @return An error
+   */
+
+  public static
     GVersionCheckerError
     requiredVersionsExcluded(
-      final @Nonnull Map<GVersionFull, List<GVersionCheckExclusionReason>> exclusions_full,
-      final @Nonnull Map<GVersionES, List<GVersionCheckExclusionReason>> exclusions_es)
-      throws ConstraintError
+      final Map<GVersionFull, List<GVersionCheckExclusionReason>> exclusions_full,
+      final Map<GVersionES, List<GVersionCheckExclusionReason>> exclusions_es)
   {
     final StringBuilder m = new StringBuilder();
     m.append("The given program cannot be used on the required versions.\n");
@@ -79,17 +91,18 @@ public final class GVersionCheckerError extends CompilerError
       }
     }
 
+    final String r = m.toString();
+    assert r != null;
     return new GVersionCheckerError(
       new File("<multiple>"),
       new Position(0, 0),
-      m.toString());
+      r);
   }
 
   private GVersionCheckerError(
-    final @Nonnull File file,
-    final @Nonnull Position position,
-    final @Nonnull String message)
-    throws ConstraintError
+    final File file,
+    final Position position,
+    final String message)
   {
     super(message, file, position);
   }

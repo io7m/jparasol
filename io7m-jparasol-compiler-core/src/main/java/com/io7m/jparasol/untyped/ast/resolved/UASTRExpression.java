@@ -21,43 +21,42 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import com.io7m.jaux.Constraints;
-import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIf;
 import com.io7m.jparasol.lexer.Token.TokenLet;
 import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
-import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
+import com.io7m.jparasol.lexer.Token.TokenLiteralIntegerType;
 import com.io7m.jparasol.lexer.Token.TokenLiteralReal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
 
-public abstract class UASTRExpression implements UASTRExpressionVisitable
+// CHECKSTYLE_JAVADOC:OFF
+
+@EqualityReference public abstract class UASTRExpression implements
+  UASTRExpressionVisitableType
 {
-  public static final class UASTREApplication extends UASTRExpression
+  @EqualityReference public static final class UASTREApplication extends
+    UASTRExpression
   {
-    private final @Nonnull List<UASTRExpression> arguments;
-    private final @Nonnull UASTRTermName         name;
+    private final List<UASTRExpression> arguments;
+    private final UASTRTermName         name;
 
     public UASTREApplication(
-      final @Nonnull UASTRTermName in_name,
-      final @Nonnull List<UASTRExpression> in_arguments)
-      throws ConstraintError
+      final UASTRTermName in_name,
+      final List<UASTRExpression> in_arguments)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.arguments =
-        Constraints.constrainNotNull(in_arguments, "Arguments");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       v.expressionVisitApplicationPre(this);
       final List<A> args = new ArrayList<A>();
@@ -68,12 +67,12 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
       return v.expressionVisitApplication(args, this);
     }
 
-    public @Nonnull List<UASTRExpression> getArguments()
+    public List<UASTRExpression> getArguments()
     {
       return this.arguments;
     }
 
-    public @Nonnull UASTRTermName getName()
+    public UASTRTermName getName()
     {
       return this.name;
     }
@@ -90,29 +89,28 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTREBoolean extends UASTRExpression
+  @EqualityReference public static final class UASTREBoolean extends
+    UASTRExpression
   {
-    private final @Nonnull TokenLiteralBoolean token;
+    private final TokenLiteralBoolean token;
 
     public UASTREBoolean(
-      final @Nonnull Token.TokenLiteralBoolean in_token)
-      throws ConstraintError
+      final Token.TokenLiteralBoolean in_token)
     {
-      this.token = Constraints.constrainNotNull(in_token, "Token");
+      this.token = NullCheck.notNull(in_token, "Token");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.expressionVisitBoolean(this);
     }
 
-    public @Nonnull TokenLiteralBoolean getToken()
+    public TokenLiteralBoolean getToken()
     {
       return this.token;
     }
@@ -132,34 +130,32 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTREConditional extends UASTRExpression
+  @EqualityReference public static final class UASTREConditional extends
+    UASTRExpression
   {
-    private final @Nonnull UASTRExpression condition;
-    private final @Nonnull UASTRExpression left;
-    private final @Nonnull UASTRExpression right;
-    private final @Nonnull TokenIf         token;
+    private final UASTRExpression condition;
+    private final UASTRExpression left;
+    private final UASTRExpression right;
+    private final TokenIf         token;
 
     public UASTREConditional(
-      final @Nonnull TokenIf in_token,
-      final @Nonnull UASTRExpression in_condition,
-      final @Nonnull UASTRExpression in_left,
-      final @Nonnull UASTRExpression in_right)
-      throws ConstraintError
+      final TokenIf in_token,
+      final UASTRExpression in_condition,
+      final UASTRExpression in_left,
+      final UASTRExpression in_right)
     {
-      this.token = Constraints.constrainNotNull(in_token, "Token");
-      this.condition =
-        Constraints.constrainNotNull(in_condition, "Condition");
-      this.left = Constraints.constrainNotNull(in_left, "Left");
-      this.right = Constraints.constrainNotNull(in_right, "Right");
+      this.token = NullCheck.notNull(in_token, "Token");
+      this.condition = NullCheck.notNull(in_condition, "Condition");
+      this.left = NullCheck.notNull(in_left, "Left");
+      this.right = NullCheck.notNull(in_right, "Right");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       v.expressionVisitConditionalConditionPre(this);
       final A c = this.condition.expressionVisitableAccept(v);
@@ -176,22 +172,22 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
       return v.expressionVisitConditional(c, l, r, this);
     }
 
-    public @Nonnull UASTRExpression getCondition()
+    public UASTRExpression getCondition()
     {
       return this.condition;
     }
 
-    public @Nonnull TokenIf getIf()
+    public TokenIf getIf()
     {
       return this.token;
     }
 
-    public @Nonnull UASTRExpression getLeft()
+    public UASTRExpression getLeft()
     {
       return this.left;
     }
 
-    public @Nonnull UASTRExpression getRight()
+    public UASTRExpression getRight()
     {
       return this.right;
     }
@@ -210,34 +206,33 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTREInteger extends UASTRExpression
+  @EqualityReference public static final class UASTREInteger extends
+    UASTRExpression
   {
-    private final @Nonnull TokenLiteralInteger token;
+    private final TokenLiteralIntegerType token;
 
     public UASTREInteger(
-      final @Nonnull Token.TokenLiteralInteger in_token)
-      throws ConstraintError
+      final Token.TokenLiteralIntegerType in_token)
     {
-      this.token = Constraints.constrainNotNull(in_token, "Token");
+      this.token = NullCheck.notNull(in_token, "Token");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.expressionVisitInteger(this);
     }
 
-    public @Nonnull TokenLiteralInteger getToken()
+    public TokenLiteralIntegerType getToken()
     {
       return this.token;
     }
 
-    public @Nonnull BigInteger getValue()
+    public BigInteger getValue()
     {
       return this.token.getValue();
     }
@@ -252,34 +247,34 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTRELet extends UASTRExpression
+  @EqualityReference public static final class UASTRELet extends
+    UASTRExpression
   {
-    private final @Nonnull List<UASTRDValueLocal> bindings;
-    private final @Nonnull UASTRExpression        body;
-    private final @Nonnull TokenLet               token;
+    private final List<UASTRDValueLocal> bindings;
+    private final UASTRExpression        body;
+    private final TokenLet               token;
 
     public UASTRELet(
-      final @Nonnull TokenLet in_token,
-      final @Nonnull List<UASTRDValueLocal> in_bindings,
-      final @Nonnull UASTRExpression in_body)
-      throws ConstraintError
+      final TokenLet in_token,
+      final List<UASTRDValueLocal> in_bindings,
+      final UASTRExpression in_body)
     {
-      this.token = Constraints.constrainNotNull(in_token, "Token");
-      this.bindings = Constraints.constrainNotNull(in_bindings, "Bindings");
-      this.body = Constraints.constrainNotNull(in_body, "Body");
+      this.token = NullCheck.notNull(in_token, "Token");
+      this.bindings = NullCheck.notNull(in_bindings, "Bindings");
+      this.body = NullCheck.notNull(in_body, "Body");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
-      final UASTRLocalLevelVisitor<L, E> bv = v.expressionVisitLetPre(this);
+      final UASTRLocalLevelVisitorType<L, E> bv =
+        v.expressionVisitLetPre(this);
 
-      final ArrayList<L> r_bindings = new ArrayList<L>();
+      final List<L> r_bindings = new ArrayList<L>();
       for (final UASTRDValueLocal b : this.bindings) {
         final L rb = bv.localVisitValueLocal(b);
         r_bindings.add(rb);
@@ -289,17 +284,17 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
       return v.expressionVisitLet(r_bindings, x, this);
     }
 
-    public @Nonnull List<UASTRDValueLocal> getBindings()
+    public List<UASTRDValueLocal> getBindings()
     {
       return this.bindings;
     }
 
-    public @Nonnull UASTRExpression getBody()
+    public UASTRExpression getBody()
     {
       return this.body;
     }
 
-    public @Nonnull TokenLet getToken()
+    public TokenLet getToken()
     {
       return this.token;
     }
@@ -316,28 +311,26 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTRENew extends UASTRExpression
+  @EqualityReference public static final class UASTRENew extends
+    UASTRExpression
   {
-    private final @Nonnull List<UASTRExpression> arguments;
-    private final @Nonnull UASTRTypeName         name;
+    private final List<UASTRExpression> arguments;
+    private final UASTRTypeName         name;
 
     public UASTRENew(
-      final @Nonnull UASTRTypeName in_name,
-      final @Nonnull List<UASTRExpression> in_arguments)
-      throws ConstraintError
+      final UASTRTypeName in_name,
+      final List<UASTRExpression> in_arguments)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.arguments =
-        Constraints.constrainNotNull(in_arguments, "Arguments");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       final List<A> args = new ArrayList<A>();
       for (final UASTRExpression b : this.arguments) {
@@ -347,12 +340,12 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
       return v.expressionVisitNew(args, this);
     }
 
-    public @Nonnull List<UASTRExpression> getArguments()
+    public List<UASTRExpression> getArguments()
     {
       return this.arguments;
     }
 
-    public @Nonnull UASTRTypeName getName()
+    public UASTRTypeName getName()
     {
       return this.name;
     }
@@ -369,34 +362,33 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTREReal extends UASTRExpression
+  @EqualityReference public static final class UASTREReal extends
+    UASTRExpression
   {
-    private final @Nonnull TokenLiteralReal token;
+    private final TokenLiteralReal token;
 
     public UASTREReal(
-      final @Nonnull Token.TokenLiteralReal in_token)
-      throws ConstraintError
+      final Token.TokenLiteralReal in_token)
     {
-      this.token = Constraints.constrainNotNull(in_token, "Token");
+      this.token = NullCheck.notNull(in_token, "Token");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.expressionVisitReal(this);
     }
 
-    public @Nonnull TokenLiteralReal getToken()
+    public TokenLiteralReal getToken()
     {
       return this.token;
     }
 
-    public @Nonnull BigDecimal getValue()
+    public BigDecimal getValue()
     {
       return this.token.getValue();
     }
@@ -411,39 +403,36 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTRERecord extends UASTRExpression
+  @EqualityReference public static final class UASTRERecord extends
+    UASTRExpression
   {
-    private final @Nonnull List<UASTRRecordFieldAssignment> assignments;
-    private final @Nonnull UASTRTypeName                    type_path;
+    private final List<UASTRRecordFieldAssignment> assignments;
+    private final UASTRTypeName                    type_path;
 
     public UASTRERecord(
-      final @Nonnull UASTRTypeName in_type_path,
-      final @Nonnull List<UASTRRecordFieldAssignment> in_assignments)
-      throws ConstraintError
+      final UASTRTypeName in_type_path,
+      final List<UASTRRecordFieldAssignment> in_assignments)
     {
-      this.type_path =
-        Constraints.constrainNotNull(in_type_path, "Type path");
-      this.assignments =
-        Constraints.constrainNotNull(in_assignments, "Assignments");
+      this.type_path = NullCheck.notNull(in_type_path, "Type path");
+      this.assignments = NullCheck.notNull(in_assignments, "Assignments");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.expressionVisitRecord(this);
     }
 
-    public @Nonnull List<UASTRRecordFieldAssignment> getAssignments()
+    public List<UASTRRecordFieldAssignment> getAssignments()
     {
       return this.assignments;
     }
 
-    public @Nonnull UASTRTypeName getTypePath()
+    public UASTRTypeName getTypePath()
     {
       return this.type_path;
     }
@@ -460,40 +449,38 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTRERecordProjection extends UASTRExpression
+  @EqualityReference public static final class UASTRERecordProjection extends
+    UASTRExpression
   {
-    private final @Nonnull UASTRExpression      expression;
-    private final @Nonnull TokenIdentifierLower field;
+    private final UASTRExpression      expression;
+    private final TokenIdentifierLower field;
 
     public UASTRERecordProjection(
-      final @Nonnull UASTRExpression in_expression,
-      final @Nonnull TokenIdentifierLower in_field)
-      throws ConstraintError
+      final UASTRExpression in_expression,
+      final TokenIdentifierLower in_field)
     {
-      this.expression =
-        Constraints.constrainNotNull(in_expression, "Expression");
-      this.field = Constraints.constrainNotNull(in_field, "Field");
+      this.expression = NullCheck.notNull(in_expression, "Expression");
+      this.field = NullCheck.notNull(in_field, "Field");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       v.expressionVisitRecordProjectionPre(this);
       final A x = this.expression.expressionVisitableAccept(v);
       return v.expressionVisitRecordProjection(x, this);
     }
 
-    public @Nonnull UASTRExpression getExpression()
+    public UASTRExpression getExpression()
     {
       return this.expression;
     }
 
-    public @Nonnull TokenIdentifierLower getField()
+    public TokenIdentifierLower getField()
     {
       return this.field;
     }
@@ -510,40 +497,38 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTRESwizzle extends UASTRExpression
+  @EqualityReference public static final class UASTRESwizzle extends
+    UASTRExpression
   {
-    private final @Nonnull UASTRExpression            expression;
-    private final @Nonnull List<TokenIdentifierLower> fields;
+    private final UASTRExpression            expression;
+    private final List<TokenIdentifierLower> fields;
 
     public UASTRESwizzle(
-      final @Nonnull UASTRExpression in_expression,
-      final @Nonnull List<TokenIdentifierLower> in_fields)
-      throws ConstraintError
+      final UASTRExpression in_expression,
+      final List<TokenIdentifierLower> in_fields)
     {
-      this.expression =
-        Constraints.constrainNotNull(in_expression, "Expression");
-      this.fields = Constraints.constrainNotNull(in_fields, "Fields");
+      this.expression = NullCheck.notNull(in_expression, "Expression");
+      this.fields = NullCheck.notNull(in_fields, "Fields");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       v.expressionVisitSwizzlePre(this);
       final A x = this.expression.expressionVisitableAccept(v);
       return v.expressionVisitSwizzle(x, this);
     }
 
-    public @Nonnull UASTRExpression getExpression()
+    public UASTRExpression getExpression()
     {
       return this.expression;
     }
 
-    public @Nonnull List<TokenIdentifierLower> getFields()
+    public List<TokenIdentifierLower> getFields()
     {
       return this.fields;
     }
@@ -562,29 +547,28 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTREVariable extends UASTRExpression
+  @EqualityReference public static final class UASTREVariable extends
+    UASTRExpression
   {
-    private final @Nonnull UASTRTermName name;
+    private final UASTRTermName name;
 
     public UASTREVariable(
-      final @Nonnull UASTRTermName in_name)
-      throws ConstraintError
+      final UASTRTermName in_name)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
+      this.name = NullCheck.notNull(in_name, "Name");
     }
 
     @Override public
-      <A, L, E extends Throwable, V extends UASTRExpressionVisitor<A, L, E>>
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
       A
       expressionVisitableAccept(
-        final @Nonnull V v)
-        throws E,
-          ConstraintError
+        final V v)
+        throws E
     {
       return v.expressionVisitVariable(this);
     }
 
-    public @Nonnull UASTRTermName getName()
+    public UASTRTermName getName()
     {
       return this.name;
     }
@@ -599,27 +583,25 @@ public abstract class UASTRExpression implements UASTRExpressionVisitable
     }
   }
 
-  public static final class UASTRRecordFieldAssignment
+  @EqualityReference public static final class UASTRRecordFieldAssignment
   {
-    private final @Nonnull UASTRExpression      expression;
-    private final @Nonnull TokenIdentifierLower name;
+    private final UASTRExpression      expression;
+    private final TokenIdentifierLower name;
 
     public UASTRRecordFieldAssignment(
-      final @Nonnull TokenIdentifierLower in_name,
-      final @Nonnull UASTRExpression in_expression)
-      throws ConstraintError
+      final TokenIdentifierLower in_name,
+      final UASTRExpression in_expression)
     {
-      this.name = Constraints.constrainNotNull(in_name, "Name");
-      this.expression =
-        Constraints.constrainNotNull(in_expression, "Expression");
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
-    public @Nonnull UASTRExpression getExpression()
+    public UASTRExpression getExpression()
     {
       return this.expression;
     }
 
-    public @Nonnull TokenIdentifierLower getName()
+    public TokenIdentifierLower getName()
     {
       return this.name;
     }
