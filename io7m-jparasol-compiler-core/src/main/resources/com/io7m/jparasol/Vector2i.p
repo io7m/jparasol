@@ -36,6 +36,24 @@ module Vector2i is
       fragment true;
     end;
 
+  function divide (
+    v0 : vector_2i,
+    v1 : vector_2i
+  ) : vector_2i =
+    external com_io7m_parasol_vector2i_divide is
+      vertex   true;
+      fragment true;
+    end;
+    
+  function divide_scalar (
+    v0 : vector_2i,
+    x  : integer
+  ) : vector_2i =
+    external com_io7m_parasol_vector2i_divide_scalar is
+      vertex   true;
+      fragment true;
+    end;
+
   function dot (
     v0 : vector_2i,
     v1 : vector_2i
@@ -115,6 +133,15 @@ module Vector2i is
     v1 : vector_2i
   ) : vector_2i =
     external com_io7m_parasol_vector2i_subtract is
+      vertex   true;
+      fragment true;
+    end;
+
+  function subtract_scalar (
+    v : vector_2i,
+    f : integer
+  ) : vector_2i =
+    external com_io7m_parasol_vector2i_subtract_scalar is
       vertex   true;
       fragment true;
     end;

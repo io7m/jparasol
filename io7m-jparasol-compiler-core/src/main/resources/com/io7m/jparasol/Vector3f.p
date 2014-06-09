@@ -45,6 +45,24 @@ module Vector3f is
       fragment true;
     end;
 
+  function divide (
+    v0 : vector_3f,
+    v1 : vector_3f
+  ) : vector_3f =
+    external com_io7m_parasol_vector3f_divide is
+      vertex   true;
+      fragment true;
+    end;
+    
+  function divide_scalar (
+    v0 : vector_3f,
+    x  : float
+  ) : vector_3f =
+    external com_io7m_parasol_vector3f_divide_scalar is
+      vertex   true;
+      fragment true;
+    end;
+
   function dot (
     v0 : vector_3f,
     v1 : vector_3f
@@ -124,6 +142,15 @@ module Vector3f is
     v1 : vector_3f
   ) : vector_3f =
     external com_io7m_parasol_vector3f_subtract is
+      vertex   true;
+      fragment true;
+    end;
+
+  function subtract_scalar (
+    v : vector_3f,
+    f : float
+  ) : vector_3f =
+    external com_io7m_parasol_vector3f_subtract_scalar is
       vertex   true;
       fragment true;
     end;

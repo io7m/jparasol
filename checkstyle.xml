@@ -135,9 +135,9 @@
       <property name="format" value="^[a-z][a-z0-9_]*$"/>
     </module>
     <module name="MethodCount">
-      <property name="maxTotal" value="150"/>
-      <property name="maxPublic" value="150"/>
-      <property name="maxPackage" value="150"/>
+      <property name="maxTotal" value="200"/>
+      <property name="maxPublic" value="200"/>
+      <property name="maxPackage" value="200"/>
     </module>
     <module name="MethodName">
       <property name="format" value="^[a-z][A-Za-z0-9]*$"/>

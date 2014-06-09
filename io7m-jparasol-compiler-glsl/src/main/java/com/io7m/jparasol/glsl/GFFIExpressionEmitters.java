@@ -54,11 +54,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @EqualityReference public final class GFFIExpressionEmitters
 {
-  private GFFIExpressionEmitters()
-  {
-    throw new UnreachableCodeException();
-  }
-
   // CHECKSTYLE:OFF
 
   static GFFIExpression com_io7m_parasol_float_absolute(
@@ -971,6 +966,31 @@ import com.io7m.junreachable.UnreachableCodeException;
       TFloat.get());
   }
 
+  static GFFIExpression com_io7m_parasol_vector2f_divide(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivide(
+      f,
+      arguments,
+      version,
+      TVector2F.get());
+  }
+
+  static GFFIExpression com_io7m_parasol_vector2f_divide_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivideScalar(
+      f,
+      arguments,
+      version,
+      TVector2F.get(),
+      TFloat.get());
+  }
+
   static GFFIExpression com_io7m_parasol_vector2f_dot(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
@@ -1092,6 +1112,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       TVector2F.get());
   }
 
+  static GFFIExpression com_io7m_parasol_vector2f_subtract_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericSubtractScalar(
+      f,
+      arguments,
+      version,
+      TVector2F.get(),
+      TFloat.get());
+  }
+
   static GFFIExpression com_io7m_parasol_vector2i_add(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
@@ -1110,6 +1143,31 @@ import com.io7m.junreachable.UnreachableCodeException;
     final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlusScalar(
+      f,
+      arguments,
+      version,
+      TVector2I.get(),
+      TInteger.get());
+  }
+
+  static GFFIExpression com_io7m_parasol_vector2i_divide(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivide(
+      f,
+      arguments,
+      version,
+      TVector2I.get());
+  }
+
+  static GFFIExpression com_io7m_parasol_vector2i_divide_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivideScalar(
       f,
       arguments,
       version,
@@ -1238,6 +1296,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       TVector2I.get());
   }
 
+  static GFFIExpression com_io7m_parasol_vector2i_subtract_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericSubtractScalar(
+      f,
+      arguments,
+      version,
+      TVector2I.get(),
+      TInteger.get());
+  }
+
   static GFFIExpression com_io7m_parasol_vector3f_add(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
@@ -1282,6 +1353,31 @@ import com.io7m.junreachable.UnreachableCodeException;
         tname,
         TFloat.get(),
         arguments));
+  }
+
+  static GFFIExpression com_io7m_parasol_vector3f_divide(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivide(
+      f,
+      arguments,
+      version,
+      TVector3F.get());
+  }
+
+  static GFFIExpression com_io7m_parasol_vector3f_divide_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivideScalar(
+      f,
+      arguments,
+      version,
+      TVector3F.get(),
+      TFloat.get());
   }
 
   static GFFIExpression com_io7m_parasol_vector3f_dot(
@@ -1405,6 +1501,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       TVector3F.get());
   }
 
+  static GFFIExpression com_io7m_parasol_vector3f_subtract_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericSubtractScalar(
+      f,
+      arguments,
+      version,
+      TVector3F.get(),
+      TFloat.get());
+  }
+
   static GFFIExpression com_io7m_parasol_vector3i_add(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
@@ -1423,6 +1532,31 @@ import com.io7m.junreachable.UnreachableCodeException;
     final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlusScalar(
+      f,
+      arguments,
+      version,
+      TVector3I.get(),
+      TInteger.get());
+  }
+
+  static GFFIExpression com_io7m_parasol_vector3i_divide(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivide(
+      f,
+      arguments,
+      version,
+      TVector3I.get());
+  }
+
+  static GFFIExpression com_io7m_parasol_vector3i_divide_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivideScalar(
       f,
       arguments,
       version,
@@ -1551,6 +1685,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       TVector3I.get());
   }
 
+  static GFFIExpression com_io7m_parasol_vector3i_subtract_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericSubtractScalar(
+      f,
+      arguments,
+      version,
+      TVector3I.get(),
+      TInteger.get());
+  }
+
   static GFFIExpression com_io7m_parasol_vector4f_add(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
@@ -1569,6 +1716,31 @@ import com.io7m.junreachable.UnreachableCodeException;
     final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlusScalar(
+      f,
+      arguments,
+      version,
+      TVector4F.get(),
+      TFloat.get());
+  }
+
+  static GFFIExpression com_io7m_parasol_vector4f_divide(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivide(
+      f,
+      arguments,
+      version,
+      TVector4F.get());
+  }
+
+  static GFFIExpression com_io7m_parasol_vector4f_divide_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivideScalar(
       f,
       arguments,
       version,
@@ -1697,6 +1869,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       TVector4F.get());
   }
 
+  static GFFIExpression com_io7m_parasol_vector4f_subtract_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericSubtractScalar(
+      f,
+      arguments,
+      version,
+      TVector4F.get(),
+      TFloat.get());
+  }
+
   static GFFIExpression com_io7m_parasol_vector4i_add(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
@@ -1715,6 +1900,31 @@ import com.io7m.junreachable.UnreachableCodeException;
     final GVersion version)
   {
     return GFFIExpressionEmitters.genericPlusScalar(
+      f,
+      arguments,
+      version,
+      TVector4I.get(),
+      TInteger.get());
+  }
+
+  static GFFIExpression com_io7m_parasol_vector4i_divide(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivide(
+      f,
+      arguments,
+      version,
+      TVector4I.get());
+  }
+
+  static GFFIExpression com_io7m_parasol_vector4i_divide_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericDivideScalar(
       f,
       arguments,
       version,
@@ -1843,6 +2053,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       TVector4I.get());
   }
 
+  static GFFIExpression com_io7m_parasol_vector4i_subtract_scalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version)
+  {
+    return GFFIExpressionEmitters.genericSubtractScalar(
+      f,
+      arguments,
+      version,
+      TVector4I.get(),
+      TInteger.get());
+  }
+
   private static GFFIExpressionBuiltIn genericClamp(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
@@ -1861,6 +2084,169 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
+  private static GFFIExpressionBuiltIn genericDivide(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
+  {
+    assert arguments.size() == 2;
+    assert f.getType().getArguments().size() == 2;
+    assert f.getType().getArguments().get(0).getType().equals(type);
+    assert f.getType().getArguments().get(1).getType().equals(type);
+    assert f.getType().getReturnType().equals(type);
+
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpDivide(
+        arguments.get(0),
+        arguments.get(1)));
+  }
+
+  private static GFFIExpressionBuiltIn genericDivideScalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType v_type,
+    final TValueType s_type)
+  {
+    assert arguments.size() == 2;
+    assert f.getType().getArguments().size() == 2;
+    assert f.getType().getArguments().get(0).getType().equals(v_type);
+    assert f.getType().getArguments().get(1).getType().equals(s_type);
+    assert f.getType().getReturnType().equals(v_type);
+
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpDivide(
+        arguments.get(0),
+        arguments.get(1)));
+  }
+
+  private static GFFIExpressionBuiltIn genericDot(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
+  {
+    assert arguments.size() == 2;
+    assert f.getType().getArguments().size() == 2;
+    assert f.getType().getArguments().get(0).getType().equals(type);
+    assert f.getType().getArguments().get(1).getType().equals(type);
+    assert f.getType().getReturnType().equals(TFloat.get());
+
+    final GTermNameExternal tname = new GTermNameExternal("dot");
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEApplicationExternal(
+        tname,
+        TFloat.get(),
+        arguments));
+  }
+
+  private static GFFIExpressionBuiltIn genericEquals(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
+  {
+    assert arguments.size() == 2;
+    assert f.getType().getArguments().size() == 2;
+    assert f.getType().getArguments().get(0).getType().equals(type);
+    assert f.getType().getArguments().get(1).getType().equals(type);
+    assert f.getType().getReturnType().equals(TBoolean.get());
+
+    return new GFFIExpression.GFFIExpressionBuiltIn(new GASTEBinaryOpEqual(
+      arguments.get(0),
+      arguments.get(1)));
+  }
+
+  private static GFFIExpressionBuiltIn genericInterpolate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
+  {
+    final TFunction ft = f.getType();
+    final List<TFunctionArgument> fta = ft.getArguments();
+
+    assert arguments.size() == 3;
+    assert fta.size() == 3;
+    assert fta.get(0).getType().equals(type);
+    assert fta.get(1).getType().equals(type);
+    assert fta.get(2).getType().equals(TFloat.get());
+    assert ft.getReturnType().equals(type);
+
+    final GTermNameExternal tname = new GTermNameExternal("mix");
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
+  }
+
+  private static GFFIExpressionBuiltIn genericMagnitude(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
+  {
+    assert arguments.size() == 1;
+    assert f.getType().getArguments().size() == 1;
+    assert f.getType().getArguments().get(0).getType().equals(type);
+    assert f.getType().getReturnType().equals(TFloat.get());
+
+    final GTermNameExternal tname = new GTermNameExternal("length");
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
+  }
+
+  private static GFFIExpressionBuiltIn genericMultiply(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
+  {
+    assert arguments.size() == 2;
+    assert f.getType().getArguments().size() == 2;
+    assert f.getType().getArguments().get(0).getType().equals(type);
+    assert f.getType().getArguments().get(1).getType().equals(type);
+    assert f.getType().getReturnType().equals(type);
+
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpMultiply(
+        arguments.get(0),
+        arguments.get(1)));
+  }
+
+  private static GFFIExpressionBuiltIn genericMultiplyScalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType v_type,
+    final TValueType s_type)
+  {
+    assert arguments.size() == 2;
+    assert f.getType().getArguments().size() == 2;
+    assert f.getType().getArguments().get(0).getType().equals(v_type);
+    assert f.getType().getArguments().get(1).getType().equals(s_type);
+    assert f.getType().getReturnType().equals(v_type);
+
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpMultiply(
+        arguments.get(0),
+        arguments.get(1)));
+  }
+
+  private static GFFIExpressionBuiltIn genericNegate(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
+  {
+    assert arguments.size() == 1;
+    assert f.getType().getArguments().size() == 1;
+    assert f.getType().getArguments().get(0).getType().equals(type);
+    assert f.getType().getReturnType().equals(type);
+
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEUnaryOp.GASTEUnaryOpNegate(arguments.get(0)));
+  }
+
   private static GFFIExpressionBuiltIn genericNormalize(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
@@ -1875,6 +2261,43 @@ import com.io7m.junreachable.UnreachableCodeException;
     final GTermNameExternal tname = new GTermNameExternal("normalize");
     return new GFFIExpression.GFFIExpressionBuiltIn(
       new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
+  }
+
+  private static GFFIExpressionBuiltIn genericPlus(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType type)
+  {
+    assert arguments.size() == 2;
+    assert f.getType().getArguments().size() == 2;
+    assert f.getType().getArguments().get(0).getType().equals(type);
+    assert f.getType().getArguments().get(1).getType().equals(type);
+    assert f.getType().getReturnType().equals(type);
+
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpPlus(
+        arguments.get(0),
+        arguments.get(1)));
+  }
+
+  private static GFFIExpressionBuiltIn genericPlusScalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType v_type,
+    final TValueType s_type)
+  {
+    assert arguments.size() == 2;
+    assert f.getType().getArguments().size() == 2;
+    assert f.getType().getArguments().get(0).getType().equals(v_type);
+    assert f.getType().getArguments().get(1).getType().equals(s_type);
+    assert f.getType().getReturnType().equals(v_type);
+
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpPlus(
+        arguments.get(0),
+        arguments.get(1)));
   }
 
   private static GFFIExpressionBuiltIn genericReflect(
@@ -1912,28 +2335,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
   }
 
-  private static GFFIExpressionBuiltIn genericInterpolate(
-    final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
-    final GVersion version,
-    final TValueType type)
-  {
-    final TFunction ft = f.getType();
-    final List<TFunctionArgument> fta = ft.getArguments();
-
-    assert arguments.size() == 3;
-    assert fta.size() == 3;
-    assert fta.get(0).getType().equals(type);
-    assert fta.get(1).getType().equals(type);
-    assert fta.get(2).getType().equals(TFloat.get());
-    assert ft.getReturnType().equals(type);
-
-    final GTermNameExternal tname = new GTermNameExternal("mix");
-    return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
-  }
-
-  private static GFFIExpressionBuiltIn genericDot(
+  private static GFFIExpressionBuiltIn genericSubtract(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
     final GVersion version,
@@ -1943,14 +2345,31 @@ import com.io7m.junreachable.UnreachableCodeException;
     assert f.getType().getArguments().size() == 2;
     assert f.getType().getArguments().get(0).getType().equals(type);
     assert f.getType().getArguments().get(1).getType().equals(type);
-    assert f.getType().getReturnType().equals(TFloat.get());
+    assert f.getType().getReturnType().equals(type);
 
-    final GTermNameExternal tname = new GTermNameExternal("dot");
     return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplicationExternal(
-        tname,
-        TFloat.get(),
-        arguments));
+      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpSubtract(
+        arguments.get(0),
+        arguments.get(1)));
+  }
+
+  private static GFFIExpressionBuiltIn genericSubtractScalar(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersion version,
+    final TValueType v_type,
+    final TValueType s_type)
+  {
+    assert arguments.size() == 2;
+    assert f.getType().getArguments().size() == 2;
+    assert f.getType().getArguments().get(0).getType().equals(v_type);
+    assert f.getType().getArguments().get(1).getType().equals(s_type);
+    assert f.getType().getReturnType().equals(v_type);
+
+    return new GFFIExpression.GFFIExpressionBuiltIn(
+      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpSubtract(
+        arguments.get(0),
+        arguments.get(1)));
   }
 
   private static GFFIExpressionBuiltIn genericUnary(
@@ -1971,161 +2390,8 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GASTExpression.GASTEApplicationExternal(tname, to, arguments));
   }
 
-  private static GFFIExpressionBuiltIn genericEquals(
-    final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
-    final GVersion version,
-    final TValueType type)
+  private GFFIExpressionEmitters()
   {
-    assert arguments.size() == 2;
-    assert f.getType().getArguments().size() == 2;
-    assert f.getType().getArguments().get(0).getType().equals(type);
-    assert f.getType().getArguments().get(1).getType().equals(type);
-    assert f.getType().getReturnType().equals(TBoolean.get());
-
-    return new GFFIExpression.GFFIExpressionBuiltIn(new GASTEBinaryOpEqual(
-      arguments.get(0),
-      arguments.get(1)));
-  }
-
-  private static GFFIExpressionBuiltIn genericPlus(
-    final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
-    final GVersion version,
-    final TValueType type)
-  {
-    assert arguments.size() == 2;
-    assert f.getType().getArguments().size() == 2;
-    assert f.getType().getArguments().get(0).getType().equals(type);
-    assert f.getType().getArguments().get(1).getType().equals(type);
-    assert f.getType().getReturnType().equals(type);
-
-    return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpPlus(
-        arguments.get(0),
-        arguments.get(1)));
-  }
-
-  private static GFFIExpressionBuiltIn genericSubtract(
-    final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
-    final GVersion version,
-    final TValueType type)
-  {
-    assert arguments.size() == 2;
-    assert f.getType().getArguments().size() == 2;
-    assert f.getType().getArguments().get(0).getType().equals(type);
-    assert f.getType().getArguments().get(1).getType().equals(type);
-    assert f.getType().getReturnType().equals(type);
-
-    return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpSubtract(
-        arguments.get(0),
-        arguments.get(1)));
-  }
-
-  private static GFFIExpressionBuiltIn genericPlusScalar(
-    final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
-    final GVersion version,
-    final TValueType v_type,
-    final TValueType s_type)
-  {
-    assert arguments.size() == 2;
-    assert f.getType().getArguments().size() == 2;
-    assert f.getType().getArguments().get(0).getType().equals(v_type);
-    assert f.getType().getArguments().get(1).getType().equals(s_type);
-    assert f.getType().getReturnType().equals(v_type);
-
-    return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpPlus(
-        arguments.get(0),
-        arguments.get(1)));
-  }
-
-  private static GFFIExpressionBuiltIn genericMultiplyScalar(
-    final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
-    final GVersion version,
-    final TValueType v_type,
-    final TValueType s_type)
-  {
-    assert arguments.size() == 2;
-    assert f.getType().getArguments().size() == 2;
-    assert f.getType().getArguments().get(0).getType().equals(v_type);
-    assert f.getType().getArguments().get(1).getType().equals(s_type);
-    assert f.getType().getReturnType().equals(v_type);
-
-    return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpMultiply(
-        arguments.get(0),
-        arguments.get(1)));
-  }
-
-  private static GFFIExpressionBuiltIn genericMultiply(
-    final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
-    final GVersion version,
-    final TValueType type)
-  {
-    assert arguments.size() == 2;
-    assert f.getType().getArguments().size() == 2;
-    assert f.getType().getArguments().get(0).getType().equals(type);
-    assert f.getType().getArguments().get(1).getType().equals(type);
-    assert f.getType().getReturnType().equals(type);
-
-    return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpMultiply(
-        arguments.get(0),
-        arguments.get(1)));
-  }
-
-  private static GFFIExpressionBuiltIn genericMagnitude(
-    final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
-    final GVersion version,
-    final TValueType type)
-  {
-    assert arguments.size() == 1;
-    assert f.getType().getArguments().size() == 1;
-    assert f.getType().getArguments().get(0).getType().equals(type);
-    assert f.getType().getReturnType().equals(TFloat.get());
-
-    final GTermNameExternal tname = new GTermNameExternal("length");
-    return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEApplicationExternal(tname, type, arguments));
-  }
-
-  private static GFFIExpressionBuiltIn genericDivide(
-    final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
-    final GVersion version,
-    final TValueType type)
-  {
-    assert arguments.size() == 2;
-    assert f.getType().getArguments().size() == 2;
-    assert f.getType().getArguments().get(0).getType().equals(type);
-    assert f.getType().getArguments().get(1).getType().equals(type);
-    assert f.getType().getReturnType().equals(type);
-
-    return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEBinaryOp.GASTEBinaryOpDivide(
-        arguments.get(0),
-        arguments.get(1)));
-  }
-
-  private static GFFIExpressionBuiltIn genericNegate(
-    final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
-    final GVersion version,
-    final TValueType type)
-  {
-    assert arguments.size() == 1;
-    assert f.getType().getArguments().size() == 1;
-    assert f.getType().getArguments().get(0).getType().equals(type);
-    assert f.getType().getReturnType().equals(type);
-
-    return new GFFIExpression.GFFIExpressionBuiltIn(
-      new GASTExpression.GASTEUnaryOp.GASTEUnaryOpNegate(arguments.get(0)));
+    throw new UnreachableCodeException();
   }
 }

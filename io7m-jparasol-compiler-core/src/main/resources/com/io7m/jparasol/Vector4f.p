@@ -36,6 +36,24 @@ module Vector4f is
       fragment true;
     end;
 
+  function divide (
+    v0 : vector_4f,
+    v1 : vector_4f
+  ) : vector_4f =
+    external com_io7m_parasol_vector4f_divide is
+      vertex   true;
+      fragment true;
+    end;
+    
+  function divide_scalar (
+    v0 : vector_4f,
+    x  : float
+  ) : vector_4f =
+    external com_io7m_parasol_vector4f_divide_scalar is
+      vertex   true;
+      fragment true;
+    end;
+
   function dot (
     v0 : vector_4f,
     v1 : vector_4f
@@ -115,6 +133,15 @@ module Vector4f is
     v1 : vector_4f
   ) : vector_4f =
     external com_io7m_parasol_vector4f_subtract is
+      vertex   true;
+      fragment true;
+    end;
+
+  function subtract_scalar (
+    v : vector_4f,
+    f : float
+  ) : vector_4f =
+    external com_io7m_parasol_vector4f_subtract_scalar is
       vertex   true;
       fragment true;
     end;

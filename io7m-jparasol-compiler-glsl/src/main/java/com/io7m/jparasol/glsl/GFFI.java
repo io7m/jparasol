@@ -1659,7 +1659,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_add(
             f,
@@ -1674,7 +1673,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_add_scalar(
             f,
@@ -1689,7 +1687,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_dot(
             f,
@@ -1704,7 +1701,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector4i_interpolate(f, arguments, version);
@@ -1717,7 +1713,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_magnitude(
             f,
@@ -1732,7 +1727,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_multiply(
             f,
@@ -1747,7 +1741,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters
             .com_io7m_parasol_vector4i_multiply_scalar(f, arguments, version);
@@ -1760,7 +1753,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_negate(
             f,
@@ -1775,7 +1767,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_normalize(
             f,
@@ -1790,7 +1781,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_reflect(
             f,
@@ -1805,7 +1795,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_refract(
             f,
@@ -1820,12 +1809,248 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersion version)
-
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_subtract(
             f,
             arguments,
             version);
+        }
+      });
+
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector4i_subtract_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector4i_subtract_scalar(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector4f_subtract_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector4f_subtract_scalar(f, arguments, version);
+        }
+      });
+
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector3i_subtract_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector3i_subtract_scalar(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector3f_subtract_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector3f_subtract_scalar(f, arguments, version);
+        }
+      });
+
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector2i_subtract_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector2i_subtract_scalar(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector2f_subtract_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector2f_subtract_scalar(f, arguments, version);
+        }
+      });
+
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector2f_divide",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_divide(
+            f,
+            arguments,
+            version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector2i_divide",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_divide(
+            f,
+            arguments,
+            version);
+        }
+      });
+
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector3f_divide",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_divide(
+            f,
+            arguments,
+            version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector3i_divide",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_divide(
+            f,
+            arguments,
+            version);
+        }
+      });
+
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector4f_divide",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_divide(
+            f,
+            arguments,
+            version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector4i_divide",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_divide(
+            f,
+            arguments,
+            version);
+        }
+      });
+
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector2f_divide_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector2f_divide_scalar(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector2i_divide_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector2i_divide_scalar(f, arguments, version);
+        }
+      });
+
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector3f_divide_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector3f_divide_scalar(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector3i_divide_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector3i_divide_scalar(f, arguments, version);
+        }
+      });
+
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector4f_divide_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector4f_divide_scalar(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector4i_divide_scalar",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersion version)
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_vector4i_divide_scalar(f, arguments, version);
         }
       });
   }

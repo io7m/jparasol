@@ -3842,6 +3842,24 @@ expression =
         </s:formal-item>
         <s:paragraph>Return the addition  <s:term s:type="expression">(v[x] + s, v[y] + s)</s:term>.</s:paragraph>
       </s:subsection>
+
+      <s:subsection>
+        <s:subsection-title>divide</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide Definition</s:formal-item-title>
+          <s:verbatim>function divide (v0 : vector_2f, v1 : vector_2f) : vector_2f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise division  <s:term s:type="expression">v0 / v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>divide_scalar</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide_scalar Definition</s:formal-item-title>
+          <s:verbatim>function divide_scalar (v : vector_2f, x : float) : vector_2f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the division  <s:term s:type="expression">(v[x] / s, v[y] / s)</s:term>.</s:paragraph>
+      </s:subsection>
+
       <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item s:kind="specifications">
@@ -3954,6 +3972,24 @@ expression =
         </s:formal-item>
         <s:paragraph>Return the addition  <s:term s:type="expression">(v[x] + s, v[y] + s)</s:term>.</s:paragraph>
       </s:subsection>
+
+      <s:subsection>
+        <s:subsection-title>divide</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide Definition</s:formal-item-title>
+          <s:verbatim>function divide (v0 : vector_2i, v1 : vector_2i) : vector_2i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise division  <s:term s:type="expression">v0 / v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>divide_scalar</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide_scalar Definition</s:formal-item-title>
+          <s:verbatim>function divide_scalar (v : vector_2i, x : integer) : vector_2i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the division  <s:term s:type="expression">(v[x] / s, v[y] / s)</s:term>.</s:paragraph>
+      </s:subsection>
+
       <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item s:kind="specifications">
@@ -4065,6 +4101,22 @@ expression =
           <s:verbatim>function add_scalar (v : vector_3f, x : integer) : vector_3f</s:verbatim>
         </s:formal-item>
         <s:paragraph>Return the addition  <s:term s:type="expression">(v[x] + s, v[y] + s, v[z] + s)</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>divide</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide Definition</s:formal-item-title>
+          <s:verbatim>function divide (v0 : vector_3f, v1 : vector_3f) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise division  <s:term s:type="expression">v0 / v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>divide_scalar</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide_scalar Definition</s:formal-item-title>
+          <s:verbatim>function divide_scalar (v : vector_3f, x : integer) : vector_3f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the division  <s:term s:type="expression">(v[x] / s, v[y] / s, v[z] / s)</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>cross</s:subsection-title>
@@ -4186,6 +4238,24 @@ expression =
         </s:formal-item>
         <s:paragraph>Return the addition  <s:term s:type="expression">(v[x] + s, v[y] + s, v[z] + s)</s:term>.</s:paragraph>
       </s:subsection>
+      
+      <s:subsection>
+        <s:subsection-title>divide</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide Definition</s:formal-item-title>
+          <s:verbatim>function divide (v0 : vector_3i, v1 : vector_3i) : vector_3i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise division  <s:term s:type="expression">v0 / v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>divide_scalar</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide_scalar Definition</s:formal-item-title>
+          <s:verbatim>function divide_scalar (v : vector_3i, x : integer) : vector_3i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the division  <s:term s:type="expression">(v[x] / s, v[y] / s, v[z] / s)</s:term>.</s:paragraph>
+      </s:subsection>
+      
       <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item s:kind="specifications">
@@ -4298,6 +4368,24 @@ expression =
         </s:formal-item>
         <s:paragraph>Return the addition <s:term s:type="expression">(v[x] + s, v[y] + s, v[z] + s, v[w] + s)</s:term>.</s:paragraph>
       </s:subsection>
+
+      <s:subsection>
+        <s:subsection-title>divide</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide Definition</s:formal-item-title>
+          <s:verbatim>function divide (v0 : vector_4f, v1 : vector_4f) : vector_4f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise division  <s:term s:type="expression">v0 / v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>divide_scalar</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide_scalar Definition</s:formal-item-title>
+          <s:verbatim>function divide_scalar (v : vector_4f, x : integer) : vector_4f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the division <s:term s:type="expression">(v[x] / s, v[y] / s, v[z] / s, v[w] / s)</s:term>.</s:paragraph>
+      </s:subsection>
+      
       <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item s:kind="specifications">
@@ -4410,6 +4498,24 @@ expression =
         </s:formal-item>
         <s:paragraph>Return the addition  <s:term s:type="expression">(v[x] + s, v[y] + s, v[z] + s, v[w] + s)</s:term>.</s:paragraph>
       </s:subsection>
+
+      <s:subsection>
+        <s:subsection-title>divide</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide Definition</s:formal-item-title>
+          <s:verbatim>function divide (v0 : vector_4i, v1 : vector_4i) : vector_4i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the component-wise division  <s:term s:type="expression">v0 / v1</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>divide_scalar</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>divide_scalar Definition</s:formal-item-title>
+          <s:verbatim>function divide_scalar (v : vector_4i, x : integer) : vector_4i</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the division  <s:term s:type="expression">(v[x] / s, v[y] / s, v[z] / s, v[w] / s)</s:term>.</s:paragraph>
+      </s:subsection>
+
       <s:subsection>
         <s:subsection-title>dot</s:subsection-title>
         <s:formal-item s:kind="specifications">
