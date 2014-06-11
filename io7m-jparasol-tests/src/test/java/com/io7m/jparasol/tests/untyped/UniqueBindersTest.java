@@ -305,6 +305,44 @@ import com.io7m.junreachable.UnreachableCodeException;
       .getActual());
   }
 
+  /**
+   * Successive let bindings shadow previous bindings in the same scope.
+   */
+
+  @Test public void testLetShadow0()
+    throws UniqueBindersError
+  {
+    final UASTUCompilation r =
+      UniqueBindersTest
+        .uniqueInternal(new String[] { "unique_binders/let-shadow-0.p" });
+
+    final UASTUDModule first = UniqueBindersTest.firstModule(r);
+    System.out.println(first);
+
+    final UASTUDValueDefined z =
+      (UASTUDValueDefined) first.getTerms().get("z");
+    final UASTUELet z_let = (UASTUELet) z.getExpression();
+
+    final List<UASTUDValueLocal> bindings = z_let.getBindings();
+    final UASTUDValueLocal x = bindings.get(0);
+    Assert.assertEquals("x", x.getName().getCurrent());
+    Assert.assertEquals(0, ((UASTUEInteger) x.getExpression())
+      .getValue()
+      .intValue());
+
+    final UASTUDValueLocal x1 = bindings.get(1);
+    Assert.assertEquals("x1", x1.getName().getCurrent());
+    Assert.assertEquals("&x", ((UASTUEVariable) x1.getExpression())
+      .getName()
+      .show());
+
+    final UASTUDValueLocal x2 = bindings.get(2);
+    Assert.assertEquals("x2", x2.getName().getCurrent());
+    Assert.assertEquals("&x1", ((UASTUEVariable) x2.getExpression())
+      .getName()
+      .show());
+  }
+
   @Test public void testNotRestricted()
     throws UniqueBindersError
   {
@@ -366,44 +404,6 @@ import com.io7m.junreachable.UnreachableCodeException;
       final UniqueNameLocal name = (UniqueNameLocal) y_let_body.getName();
       Assert.assertEquals("y1", name.getCurrent());
     }
-  }
-
-  /**
-   * Successive let bindings shadow previous bindings in the same scope.
-   */
-
-  @Test public void testLetShadow0()
-    throws UniqueBindersError
-  {
-    final UASTUCompilation r =
-      UniqueBindersTest
-        .uniqueInternal(new String[] { "unique_binders/let-shadow-0.p" });
-
-    final UASTUDModule first = UniqueBindersTest.firstModule(r);
-    System.out.println(first);
-
-    final UASTUDValueDefined z =
-      (UASTUDValueDefined) first.getTerms().get("z");
-    final UASTUELet z_let = (UASTUELet) z.getExpression();
-
-    final List<UASTUDValueLocal> bindings = z_let.getBindings();
-    final UASTUDValueLocal x = bindings.get(0);
-    Assert.assertEquals("x", x.getName().getCurrent());
-    Assert.assertEquals(0, ((UASTUEInteger) x.getExpression())
-      .getValue()
-      .intValue());
-
-    final UASTUDValueLocal x1 = bindings.get(1);
-    Assert.assertEquals("x1", x1.getName().getCurrent());
-    Assert.assertEquals("&x", ((UASTUEVariable) x1.getExpression())
-      .getName()
-      .show());
-
-    final UASTUDValueLocal x2 = bindings.get(2);
-    Assert.assertEquals("x2", x2.getName().getCurrent());
-    Assert.assertEquals("&x1", ((UASTUEVariable) x2.getExpression())
-      .getName()
-      .show());
   }
 
   @Test public void testPreSimple1()

@@ -50,6 +50,22 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
     Assert.assertTrue(types.contains(TestPipeline.typeName("x.M", "t")));
   }
 
+  @Test public void testRecordExpressionReferenced_0()
+
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .completeTyped(new String[] { "typed/referenced/expression-record-0.p" });
+
+    final TASTShaderNameFlat shader_name =
+      new TASTShaderNameFlat(new ModulePathFlat("x.y.M"), "v");
+    final Referenced ref =
+      Referenced.fromShader(r, shader_name, TestUtilities.getLog());
+
+    final Set<TASTTermNameFlat> terms = ref.getTerms();
+    Assert.assertEquals(2, terms.size());
+  }
+
   @Test public void testVertexShaderTerm_0()
 
   {
@@ -163,21 +179,5 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
     final Set<TTypeNameFlat> types = ref.getTypes();
     Assert.assertEquals(1, types.size());
     Assert.assertTrue(types.contains(TestPipeline.typeName("x.y.M", "t")));
-  }
-
-  @Test public void testRecordExpressionReferenced_0()
-
-  {
-    final TASTCompilation r =
-      TestPipeline
-        .completeTyped(new String[] { "typed/referenced/expression-record-0.p" });
-
-    final TASTShaderNameFlat shader_name =
-      new TASTShaderNameFlat(new ModulePathFlat("x.y.M"), "v");
-    final Referenced ref =
-      Referenced.fromShader(r, shader_name, TestUtilities.getLog());
-
-    final Set<TASTTermNameFlat> terms = ref.getTerms();
-    Assert.assertEquals(2, terms.size());
   }
 }

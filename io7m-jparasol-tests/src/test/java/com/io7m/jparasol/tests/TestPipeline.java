@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.io7m.jlog.LogUsableType;
 import com.io7m.jparasol.CompilerError;
@@ -291,7 +293,8 @@ public final class TestPipeline
 
       final TASTCompilation typed = pipe.pipeCompile();
       pipe.pipeClose();
-      return GPipeline.newPipeline(typed, log);
+      final ExecutorService exec = Executors.newFixedThreadPool(1);
+      return GPipeline.newPipeline(typed, exec, log);
     } catch (final LexerError e) {
       e.printStackTrace();
       throw new UnreachableCodeException(e);

@@ -139,7 +139,7 @@ import com.io7m.jnull.Nullable;
 
   public Element toXML()
   {
-    final String uri = PGLSLMetaXML.XML_URI_STRING;
+    final String uri = ShaderMeta.XML_URI_STRING;
     final Element e = new Element("g:fragment-output", uri);
     e.addAttribute(new Attribute("g:name", uri, this.name));
     e.addAttribute(new Attribute("g:type", uri, this.type));

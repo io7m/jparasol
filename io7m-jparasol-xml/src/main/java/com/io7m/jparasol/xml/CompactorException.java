@@ -14,36 +14,30 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.frontend;
-
-import com.io7m.jlog.LogUsableType;
+package com.io7m.jparasol.xml;
 
 /**
- * Execute the frontend.
+ * Exceptions that can occur during compaction.
  */
 
-public final class FrontendMain
+public final class CompactorException extends Exception
 {
-  private FrontendMain()
-  {
+  private static final long serialVersionUID;
 
+  static {
+    serialVersionUID = 1730611963150096323L;
   }
 
   /**
-   * Run the compiler, exiting on errors.
+   * Construct an exception.
    * 
-   * @param args
-   *          Command line arguments
+   * @param e
+   *          The cause.
    */
 
-  public static void main(
-    final String[] args)
+  public CompactorException(
+    final Exception e)
   {
-    try {
-      final LogUsableType log = Frontend.getLog(false);
-      Frontend.run(log, args);
-    } catch (final Exception e) {
-      System.exit(1);
-    }
+    super(e);
   }
 }

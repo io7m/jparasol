@@ -19,7 +19,8 @@ package com.io7m.jparasol.tests.xml;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -30,48 +31,47 @@ import nu.xom.Serializer;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import com.io7m.jfunctional.Pair;
-import com.io7m.jparasol.UIError;
-import com.io7m.jparasol.glsl.GFFIError;
+import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.glsl.GMeta;
-import com.io7m.jparasol.glsl.GVersion;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
-import com.io7m.jparasol.glsl.GVersionCheckerError;
-import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
-import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertex;
+import com.io7m.jparasol.glsl.pipeline.GCompilation;
+import com.io7m.jparasol.glsl.pipeline.GCompiledProgram;
 import com.io7m.jparasol.glsl.pipeline.GPipeline;
 import com.io7m.jparasol.tests.TestPipeline;
 import com.io7m.jparasol.tests.TestUtilities;
-import com.io7m.jparasol.xml.PGLSLMetaXML;
+import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
+import com.io7m.jparasol.xml.ShaderMeta;
 
-@SuppressWarnings("static-method") public final class GMetaValidationTest
+@SuppressWarnings({ "null", "static-method" }) public final class GMetaValidationTest
 {
   /**
    * Ensure that the output of GMeta is valid according to the schema.
+   * 
+   * @throws CompilerError
+   *           On errors.
    */
 
   @Test public void testValidation()
-    throws UIError,
-      GFFIError,
-      GVersionCheckerError,
-      IOException,
+    throws IOException,
       ParsingException,
       SAXException,
-      ParserConfigurationException
+      ParserConfigurationException,
+      CompilerError
   {
     final GPipeline gpipe =
       TestPipeline.makeGPipeline(new String[] { "glsl/meta/large.p" });
 
-    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> asts =
-      gpipe.makeProgram(
-        TestPipeline.shaderName("x.M", "p"),
-        GVersionES.ALL,
-        GVersionFull.ALL);
-
-    final Document meta =
-      GMeta.make(TestPipeline.shaderName("x.M", "p"), asts);
-
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    final TASTShaderNameFlat program_name =
+      TestPipeline.shaderName("x.M", "p");
+    program_names.add(program_name);
+    final GCompilation comp =
+      gpipe
+        .transformPrograms(program_names, GVersionES.ALL, GVersionFull.ALL);
+    final GCompiledProgram p = comp.getShadersProgram().get(program_name);
+    final Document meta = GMeta.ofProgram(p);
     final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
     {
@@ -92,6 +92,6 @@ import com.io7m.jparasol.xml.PGLSLMetaXML;
 
     final byte[] bytes = output.toByteArray();
     final ByteArrayInputStream input = new ByteArrayInputStream(bytes);
-    PGLSLMetaXML.fromStream(input, TestUtilities.getLog());
+    ShaderMeta.fromStream(input, TestUtilities.getLog());
   }
 }

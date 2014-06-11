@@ -63,10 +63,10 @@ public final class GTransformTest
   static class Prepared
   {
     final @Nonnull LogUsableType   log;
+    final @Nonnull CorePipeline    pipe;
     final @Nonnull Referenced      referenced;
     final @Nonnull Topology        topology;
     final @Nonnull TASTCompilation typed;
-    final @Nonnull CorePipeline    pipe;
 
     Prepared(
       final TASTShaderNameFlat shader,
@@ -114,6 +114,52 @@ public final class GTransformTest
         throw new UnreachableCodeException(e);
       }
     }
+  }
+
+  @SuppressWarnings("static-method") @Test public
+    void
+    testBug6c29e7b125ecb_0()
+      throws GFFIError
+  {
+    final TASTShaderNameFlat shader = TestPipeline.shaderName("x.y.M", "v");
+    final Prepared p =
+      new Prepared(
+        shader,
+        new String[] { "glsl/transform/bug-6c29e7b125ecb.p" });
+
+    final GASTShaderVertex s =
+      GTransform.transformVertex(
+        p.typed,
+        p.topology,
+        shader,
+        GVersionFull.GLSL_UPPER,
+        p.log);
+
+    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
+      s.getTerms();
+    Assert.assertEquals(1, terms.size());
+
+    {
+      final Pair<GTermNameGlobal, GASTTermDeclaration> t = terms.get(0);
+      final GASTTermDeclaration.GASTTermFunction f =
+        (GASTTermFunction) t.getRight();
+      Assert.assertEquals("p_x_y_M_f", t.getLeft().show());
+      Assert.assertEquals(1, f.getParameters().size());
+      final Pair<GTermNameLocal, GTypeName> p0 = f.getParameters().get(0);
+      Assert.assertEquals("pl_x", p0.getLeft().show());
+      Assert.assertEquals("float", p0.getRight().show());
+
+      final GASTScope scope = f.getStatement();
+      final List<GASTStatement> st = scope.getStatements();
+      final GASTScope ret_scope = (GASTScope) (st.get(st.size() - 1));
+      final GASTReturn ret = (GASTReturn) ret_scope.getStatements().get(0);
+
+      final GASTEApplicationExternal app =
+        (GASTEApplicationExternal) ret.getExpression();
+      Assert.assertEquals("max", app.getName().show());
+    }
+
+    GWriter.writeVertexShader(System.out, s);
   }
 
   @SuppressWarnings("static-method") @Test public void testFragmentSimple_0()
@@ -243,52 +289,6 @@ public final class GTransformTest
       Assert.assertEquals(1, f.getParameters().size());
       final Pair<GTermNameLocal, GTypeName> p0 = f.getParameters().get(0);
       Assert.assertEquals("float", p0.getRight().show());
-    }
-
-    GWriter.writeVertexShader(System.out, s);
-  }
-
-  @SuppressWarnings("static-method") @Test public
-    void
-    testBug6c29e7b125ecb_0()
-      throws GFFIError
-  {
-    final TASTShaderNameFlat shader = TestPipeline.shaderName("x.y.M", "v");
-    final Prepared p =
-      new Prepared(
-        shader,
-        new String[] { "glsl/transform/bug-6c29e7b125ecb.p" });
-
-    final GASTShaderVertex s =
-      GTransform.transformVertex(
-        p.typed,
-        p.topology,
-        shader,
-        GVersionFull.GLSL_UPPER,
-        p.log);
-
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
-      s.getTerms();
-    Assert.assertEquals(1, terms.size());
-
-    {
-      final Pair<GTermNameGlobal, GASTTermDeclaration> t = terms.get(0);
-      final GASTTermDeclaration.GASTTermFunction f =
-        (GASTTermFunction) t.getRight();
-      Assert.assertEquals("p_x_y_M_f", t.getLeft().show());
-      Assert.assertEquals(1, f.getParameters().size());
-      final Pair<GTermNameLocal, GTypeName> p0 = f.getParameters().get(0);
-      Assert.assertEquals("pl_x", p0.getLeft().show());
-      Assert.assertEquals("float", p0.getRight().show());
-
-      final GASTScope scope = f.getStatement();
-      final List<GASTStatement> st = scope.getStatements();
-      final GASTScope ret_scope = (GASTScope) (st.get(st.size() - 1));
-      final GASTReturn ret = (GASTReturn) ret_scope.getStatements().get(0);
-
-      final GASTEApplicationExternal app =
-        (GASTEApplicationExternal) ret.getExpression();
-      Assert.assertEquals("max", app.getName().show());
     }
 
     GWriter.writeVertexShader(System.out, s);

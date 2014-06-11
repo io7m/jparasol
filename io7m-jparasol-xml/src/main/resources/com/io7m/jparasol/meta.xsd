@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright © 2013 <code@io7m.com> http://io7m.com
+  Copyright © 2014 <code@io7m.com> http://io7m.com
   
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -112,30 +112,76 @@
   </xs:element>
   <xs:element name="mapping">
     <xs:complexType>
-      <xs:attribute name="number" use="required" form="qualified" type="xs:positiveInteger"/>
-      <xs:attribute name="api" use="required" form="qualified">
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="glsl"/>
-            <xs:enumeration value="glsl-es"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
-      <xs:attribute name="fragment-hash" use="required" form="qualified" type="xs:token"/>
-      <xs:attribute name="vertex-hash" use="required" form="qualified" type="xs:token"/>
+      <xs:simpleContent>
+        <xs:extension base="xs:token">
+          <xs:attribute name="number" use="required" form="qualified" type="xs:positiveInteger"/>
+          <xs:attribute name="api" use="required" form="qualified">
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:enumeration value="glsl"/>
+                <xs:enumeration value="glsl-es"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+        </xs:extension>
+      </xs:simpleContent>
     </xs:complexType>
   </xs:element>
-  <xs:element name="meta">
+  <xs:element name="shader-fragment" type="xs:token"/>
+  <xs:element name="shader-vertex" type="xs:token"/>
+  <xs:element name="shaders-vertex">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="g:shader-vertex"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="meta-program">
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="g:program-name"/>
         <xs:element ref="g:supports"/>
+        <xs:element ref="g:shaders-vertex"/>
+        <xs:element ref="g:shader-fragment"/>
+      </xs:sequence>
+      <xs:attribute name="version" use="required" form="qualified" type="xs:positiveInteger"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parameters-vertex">
+    <xs:complexType>
+      <xs:sequence>
         <xs:element ref="g:declared-vertex-parameters"/>
-        <xs:element ref="g:declared-fragment-parameters"/>
         <xs:element ref="g:declared-vertex-inputs"/>
-        <xs:element ref="g:declared-fragment-inputs"/>
         <xs:element ref="g:declared-vertex-outputs"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="meta-vertex">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="g:program-name"/>
+        <xs:element ref="g:supports"/>
+        <xs:element ref="g:parameters-vertex"/>
+        <xs:element minOccurs="0" ref="g:compact-mappings"/>
+      </xs:sequence>
+      <xs:attribute name="version" use="required" form="qualified" type="xs:positiveInteger"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parameters-fragment">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="g:declared-fragment-parameters"/>
+        <xs:element ref="g:declared-fragment-inputs"/>
         <xs:element ref="g:declared-fragment-outputs"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="meta-fragment">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="g:program-name"/>
+        <xs:element ref="g:supports"/>
+        <xs:element ref="g:parameters-fragment"/>
         <xs:element minOccurs="0" ref="g:compact-mappings"/>
       </xs:sequence>
       <xs:attribute name="version" use="required" form="qualified" type="xs:positiveInteger"/>

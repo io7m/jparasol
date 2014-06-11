@@ -103,6 +103,13 @@ final class TestData
   }
 
   /**
+   * The current test data directory. Initialized by
+   * {@link #getTestDataDirectory()}.
+   */
+
+  private static @CheckForNull TemporaryDirectory test_data_directory;
+
+  /**
    * A list of zip files that should be copied to the filesystem.
    */
 
@@ -124,17 +131,10 @@ final class TestData
   }
 
   /**
-   * The current test data directory. Initialized by
-   * {@link #getTestDataDirectory()}.
-   */
-
-  private static @CheckForNull TemporaryDirectory test_data_directory;
-
-  /**
    * Copy the resource <code>name</code> to the file <code>out</code>.
    */
 
-  @SuppressWarnings("resource") private static void copyResourceOut(
+  private static void copyResourceOut(
     final @Nonnull String name,
     final @Nonnull File out)
     throws FileNotFoundException,

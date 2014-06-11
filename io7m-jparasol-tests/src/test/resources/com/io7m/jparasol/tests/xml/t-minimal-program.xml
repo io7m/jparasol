@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<g:meta-program g:version="1" xmlns:g="http://schemas.io7m.com/parasol/glsl-meta">
+<g:meta-program g:version="4" xmlns:g="http://schemas.io7m.com/parasol/glsl-meta">
   <g:program-name>com.io7m.example.p</g:program-name>
   <g:supports>
     <g:version g:number="110" g:api="glsl"/>
   </g:supports>
   <g:shaders-vertex>
-    <g:shader-vertex>x</g:shader-vertex>
+    <g:shader-vertex>com.io7m.renderer.Vertex.standard_0</g:shader-vertex>
   </g:shaders-vertex>
-  <g:shader-fragment>y</g:shader-fragment>
+  <g:shader-fragment>com.io7m.renderer.example.f</g:shader-fragment>
 </g:meta-program>

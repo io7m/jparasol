@@ -21,11 +21,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import com.io7m.jequality.annotations.EqualityReference;
-import com.io7m.jfunctional.Pair;
 import com.io7m.jlog.LogUsableType;
 import com.io7m.jnull.NullCheck;
+import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.UIError;
 import com.io7m.jparasol.glsl.GFFIError;
 import com.io7m.jparasol.glsl.GTransform;
@@ -44,26 +49,32 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShader;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderProgram;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
-import com.io7m.jparasol.typed.ast.TASTShaderName;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
+import com.io7m.junreachable.UnreachableCodeException;
 
 /**
  * A GLSL pipeline.
  */
 
-@EqualityReference public final class GPipeline
+@EqualityReference @SuppressWarnings("synthetic-access") public final class GPipeline
 {
-  private final TASTCompilation typed;
-  private final LogUsableType   log;
-  private final GVersionChecker checker;
-
-  private GPipeline(
-    final TASTCompilation in_typed,
-    final LogUsableType in_log)
+  private static
+    void
+    cancelAll(
+      final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderVertex>>> futures_vertex,
+      final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderFragment>>> futures_fragment)
   {
-    this.typed = NullCheck.notNull(in_typed, "Typed AST");
-    this.log = NullCheck.notNull(in_log, "Log").with("gpipeline");
-    this.checker = GVersionChecker.newVersionChecker(in_log);
+    for (final TASTShaderNameFlat name : futures_vertex.keySet()) {
+      final Future<Map<GVersion, GASTShaderVertex>> f =
+        futures_vertex.get(name);
+      f.cancel(true);
+    }
+
+    for (final TASTShaderNameFlat name : futures_fragment.keySet()) {
+      final Future<Map<GVersion, GASTShaderFragment>> f =
+        futures_fragment.get(name);
+      f.cancel(true);
+    }
   }
 
   /**
@@ -78,99 +89,99 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
   public static GPipeline newPipeline(
     final TASTCompilation typed,
+    final ExecutorService exec,
     final LogUsableType log)
   {
-    return new GPipeline(typed, log);
+    return new GPipeline(typed, exec, log);
   }
 
-  /**
-   * Transform a shader into a set of GLSL shaders.
-   * 
-   * @param name
-   *          The shader name
-   * @param required_versions_es
-   *          The set of required GLSL ES versions
-   * @param required_versions_full
-   *          The set of required GLSL versions
-   * @return A set of GLSL shaders
-   * @throws UIError
-   *           On mistakes
-   * @throws GFFIError
-   *           If an FFI error occurs
-   * @throws GVersionCheckerError
-   *           If one or more of the required versions could not be satisfied
-   */
-
-  public
-    Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>>
-    makeProgram(
-      final TASTShaderNameFlat name,
-      final SortedSet<GVersionES> required_versions_es,
-      final SortedSet<GVersionFull> required_versions_full)
-      throws UIError,
-        GFFIError,
-        GVersionCheckerError
+  private static
+    GCompiledProgram
+    processProgram(
+      final Map<TASTShaderNameFlat, TASTDShaderProgram> shaders_program,
+      final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>> results_vertex,
+      final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderFragment>> results_fragment,
+      final TASTShaderNameFlat name)
   {
-    final TASTDShader s = this.typed.lookupShader(name);
-    if (s == null) {
-      throw UIError.shaderProgramNonexistent(name, this.typed);
-    }
+    final TASTDShaderProgram program = shaders_program.get(name);
+    final TASTShaderNameFlat v_name =
+      TASTShaderNameFlat.fromShaderName(program.getVertexShader());
+    final TASTShaderNameFlat f_name =
+      TASTShaderNameFlat.fromShaderName(program.getFragmentShader());
 
-    if (s instanceof TASTDShaderProgram) {
-      final TASTDShaderProgram p = (TASTDShaderProgram) s;
-      final TASTShaderName vn = p.getVertexShader();
-      final TASTShaderName fn = p.getFragmentShader();
-      final TASTShaderNameFlat vnf = TASTShaderNameFlat.fromShaderName(vn);
-      final TASTShaderNameFlat fnf = TASTShaderNameFlat.fromShaderName(fn);
+    final Map<GVersion, GASTShaderVertex> vertex = results_vertex.get(v_name);
+    final Map<GVersion, GASTShaderFragment> fragment =
+      results_fragment.get(f_name);
 
-      final Map<GVersion, GASTShaderVertex> v_map =
-        this.makeVertexShader(
-          vnf,
-          required_versions_es,
-          required_versions_full);
+    final Set<GVersion> v_versions = vertex.keySet();
+    final Set<GVersion> f_versions = fragment.keySet();
+    assert v_versions != null;
+    assert f_versions != null;
 
-      final Map<GVersion, GASTShaderFragment> f_map =
-        this.makeFragmentShader(
-          fnf,
-          required_versions_es,
-          required_versions_full);
+    final SortedSet<GVersionES> versions_es = new TreeSet<GVersionES>();
+    final SortedSet<GVersionFull> versions_full = new TreeSet<GVersionFull>();
 
-      final Set<GVersion> p_set = GPipeline.programVersions(v_map, f_map);
+    GPipeline.collectVersions(
+      v_versions,
+      f_versions,
+      versions_es,
+      versions_full);
 
-      final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> programs =
-        new HashMap<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>>();
+    final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>> vertex_shaders =
+      new HashMap<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>>();
+    vertex_shaders.put(v_name, vertex);
 
-      for (final GVersion version : p_set) {
-        assert v_map.containsKey(version);
-        assert f_map.containsKey(version);
-        final GASTShaderVertex vs = v_map.get(version);
-        final GASTShaderFragment fs = f_map.get(version);
-        final Pair<GASTShaderVertex, GASTShaderFragment> pair =
-          Pair.pair(vs, fs);
-        programs.put(version, pair);
+    final GCompiledProgram r =
+      new GCompiledProgram(
+        vertex_shaders,
+        fragment,
+        f_name,
+        name,
+        versions_es,
+        versions_full);
+    return r;
+  }
+
+  private static void collectVersions(
+    final Set<GVersion> v_versions,
+    final Set<GVersion> f_versions,
+    final SortedSet<GVersionES> versions_es,
+    final SortedSet<GVersionFull> versions_full)
+  {
+    final Set<GVersionES> v_es = new HashSet<GVersionES>();
+    final Set<GVersionFull> v_full = new HashSet<GVersionFull>();
+    final Set<GVersionES> f_es = new HashSet<GVersionES>();
+    final Set<GVersionFull> f_full = new HashSet<GVersionFull>();
+
+    for (final GVersion v : v_versions) {
+      if (v instanceof GVersionES) {
+        v_es.add((GVersionES) v);
+      } else {
+        v_full.add((GVersionFull) v);
       }
-
-      assert programs.size() == p_set.size();
-      return programs;
     }
 
-    throw UIError.shaderProgramNotProgram(name, s, this.typed);
+    for (final GVersion f : f_versions) {
+      if (f instanceof GVersionES) {
+        f_es.add((GVersionES) f);
+      } else {
+        f_full.add((GVersionFull) f);
+      }
+    }
+
+    versions_es.clear();
+    versions_es.addAll(GPipeline.setIntersection(v_es, f_es));
+    versions_full.clear();
+    versions_full.addAll(GPipeline.setIntersection(v_full, f_full));
   }
 
-  /**
-   * The versions supported by a program is the intersection of the versions
-   * supported by its vertex and fragment shaders.
-   */
-
-  private static Set<GVersion> programVersions(
-    final Map<GVersion, GASTShaderVertex> v_map,
-    final Map<GVersion, GASTShaderFragment> f_map)
+  private static <A> SortedSet<A> setIntersection(
+    final Set<A> v_set,
+    final Set<A> f_set)
   {
-    final Set<GVersion> v_set = v_map.keySet();
-    final Set<GVersion> f_set = f_map.keySet();
-    final Set<GVersion> p_set = new HashSet<GVersion>();
+    final SortedSet<A> p_set = new TreeSet<A>();
 
-    for (final GVersion v : v_set) {
+    for (final A v : v_set) {
       if (f_set.contains(v)) {
         p_set.add(v);
       }
@@ -179,75 +190,76 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     return p_set;
   }
 
-  private Map<GVersion, GASTShaderVertex> makeVertexShader(
-    final TASTShaderNameFlat name,
-    final SortedSet<GVersionES> required_versions_es,
-    final SortedSet<GVersionFull> required_versions_full)
-    throws GFFIError,
-      GVersionCheckerError
+  private final GVersionChecker checker;
+  private final ExecutorService exec;
+  private final LogUsableType   log;
+  private final TASTCompilation typed;
+
+  private GPipeline(
+    final TASTCompilation in_typed,
+    final ExecutorService in_exec,
+    final LogUsableType in_log)
   {
-    final TASTDShader s = this.typed.lookupShader(name);
-    NullCheck.notNull(s, "Shader");
+    this.typed = NullCheck.notNull(in_typed, "Typed AST");
+    this.exec = NullCheck.notNull(in_exec, "Executor");
+    this.log = NullCheck.notNull(in_log, "Log").with("gpipeline");
+    this.checker = GVersionChecker.newVersionChecker(in_log);
+  }
 
-    if ((s instanceof TASTDShaderVertex) == false) {
-      throw new IllegalArgumentException("Expected a vertex shader");
+  private void collectShaders(
+    final Set<TASTShaderNameFlat> program_names,
+    final Map<TASTShaderNameFlat, TASTDShaderProgram> shaders_program,
+    final Map<TASTShaderNameFlat, TASTDShaderVertex> shaders_vertex,
+    final Map<TASTShaderNameFlat, TASTDShaderFragment> shaders_fragment)
+    throws UIError
+  {
+    for (final TASTShaderNameFlat name : program_names) {
+      assert name != null;
+      final TASTDShader shader = this.typed.lookupShader(name);
+
+      if (shader == null) {
+        throw UIError.shaderProgramNonexistent(name, this.typed);
+      }
+
+      if (shader instanceof TASTDShaderProgram) {
+        final TASTDShaderProgram program = (TASTDShaderProgram) shader;
+
+        final TASTShaderNameFlat vertex =
+          TASTShaderNameFlat.fromShaderName(program.getVertexShader());
+        final TASTShaderNameFlat fragment =
+          TASTShaderNameFlat.fromShaderName(program.getFragmentShader());
+
+        shaders_vertex.put(
+          vertex,
+          (TASTDShaderVertex) this.typed.lookupShader(vertex));
+        shaders_fragment.put(
+          fragment,
+          (TASTDShaderFragment) this.typed.lookupShader(fragment));
+        shaders_program.put(name, program);
+
+      } else {
+        throw UIError.shaderProgramNotProgram(name, shader, this.typed);
+      }
     }
+  }
 
-    final TASTDShaderVertex v = (TASTDShaderVertex) s;
-    final Referenced referenced =
-      Referenced.fromShader(this.typed, name, this.log);
-    final Topology topo =
-      Topology.fromShader(this.typed, referenced, name, this.log);
+  /**
+   * @return The executor for the pipeline.
+   */
 
-    final GVersionsSupported supported =
-      this.checker.checkVertexShader(
-        v,
-        required_versions_full,
-        required_versions_es);
-
-    final Map<GVersion, GASTShaderVertex> produced =
-      new HashMap<GVersion, GASTShaderVertex>();
-
-    for (final GVersionES version : supported.getESVersions()) {
-      assert produced.containsKey(version) == false;
-      produced
-        .put(version, GTransform.transformVertex(
-          this.typed,
-          topo,
-          name,
-          version,
-          this.log));
-    }
-
-    for (final GVersionFull version : supported.getFullVersions()) {
-      assert produced.containsKey(version) == false;
-      produced
-        .put(version, GTransform.transformVertex(
-          this.typed,
-          topo,
-          name,
-          version,
-          this.log));
-    }
-
-    return produced;
+  public ExecutorService getExecutor()
+  {
+    return this.exec;
   }
 
   private Map<GVersion, GASTShaderFragment> makeFragmentShader(
     final TASTShaderNameFlat name,
+    final TASTDShaderFragment f,
     final SortedSet<GVersionES> required_versions_es,
     final SortedSet<GVersionFull> required_versions_full)
     throws GFFIError,
       GVersionCheckerError
   {
-    final TASTDShader s = this.typed.lookupShader(name);
-    NullCheck.notNull(s, "Shader");
-
-    if ((s instanceof TASTDShaderFragment) == false) {
-      throw new IllegalArgumentException("Expected a fragment shader");
-    }
-
-    final TASTDShaderFragment f = (TASTDShaderFragment) s;
     final Referenced referenced =
       Referenced.fromShader(this.typed, name, this.log);
     final Topology topo =
@@ -263,6 +275,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
       new HashMap<GVersion, GASTShaderFragment>();
 
     for (final GVersionES version : supported.getESVersions()) {
+      assert version != null;
       assert produced.containsKey(version) == false;
       produced.put(version, GTransform.transformFragment(
         this.typed,
@@ -273,6 +286,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     }
 
     for (final GVersionFull version : supported.getFullVersions()) {
+      assert version != null;
       assert produced.containsKey(version) == false;
       produced.put(version, GTransform.transformFragment(
         this.typed,
@@ -283,5 +297,255 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     }
 
     return produced;
+  }
+
+  private Map<GVersion, GASTShaderVertex> makeVertexShader(
+    final TASTShaderNameFlat name,
+    final TASTDShaderVertex v,
+    final SortedSet<GVersionES> required_versions_es,
+    final SortedSet<GVersionFull> required_versions_full)
+    throws GFFIError,
+      GVersionCheckerError
+  {
+    final Referenced referenced =
+      Referenced.fromShader(this.typed, name, this.log);
+    final Topology topo =
+      Topology.fromShader(this.typed, referenced, name, this.log);
+
+    final GVersionsSupported supported =
+      this.checker.checkVertexShader(
+        v,
+        required_versions_full,
+        required_versions_es);
+
+    final Map<GVersion, GASTShaderVertex> produced =
+      new HashMap<GVersion, GASTShaderVertex>();
+
+    for (final GVersionES version : supported.getESVersions()) {
+      assert version != null;
+      assert produced.containsKey(version) == false;
+      produced
+        .put(version, GTransform.transformVertex(
+          this.typed,
+          topo,
+          name,
+          version,
+          this.log));
+    }
+
+    for (final GVersionFull version : supported.getFullVersions()) {
+      assert version != null;
+      assert produced.containsKey(version) == false;
+      produced
+        .put(version, GTransform.transformVertex(
+          this.typed,
+          topo,
+          name,
+          version,
+          this.log));
+    }
+
+    return produced;
+  }
+
+  private GCompilation processAll(
+    final SortedSet<GVersionES> required_versions_es,
+    final SortedSet<GVersionFull> required_versions_full,
+    final Map<TASTShaderNameFlat, TASTDShaderVertex> shaders_vertex,
+    final Map<TASTShaderNameFlat, TASTDShaderFragment> shaders_fragment,
+    final Map<TASTShaderNameFlat, TASTDShaderProgram> shaders_program)
+    throws CompilerError
+  {
+    final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderVertex>>> futures_vertex =
+      new HashMap<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderVertex>>>();
+    final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderFragment>>> futures_fragment =
+      new HashMap<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderFragment>>>();
+
+    try {
+      this.submitShadersVertex(
+        required_versions_es,
+        required_versions_full,
+        shaders_vertex,
+        futures_vertex);
+
+      this.submitShadersFragment(
+        required_versions_es,
+        required_versions_full,
+        shaders_fragment,
+        futures_fragment);
+
+      final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>> results_vertex =
+        new HashMap<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>>();
+      final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderFragment>> results_fragment =
+        new HashMap<TASTShaderNameFlat, Map<GVersion, GASTShaderFragment>>();
+
+      for (final TASTShaderNameFlat name : futures_vertex.keySet()) {
+        assert name != null;
+        assert futures_vertex.containsKey(name);
+        final Future<Map<GVersion, GASTShaderVertex>> future =
+          futures_vertex.get(name);
+
+        try {
+          final Map<GVersion, GASTShaderVertex> r = future.get();
+          results_vertex.put(name, r);
+        } catch (final InterruptedException e) {
+          throw new UnreachableCodeException(e);
+        } catch (final ExecutionException e) {
+          final CompilerError x = (CompilerError) e.getCause();
+          throw x;
+        }
+      }
+
+      for (final TASTShaderNameFlat name : futures_fragment.keySet()) {
+        assert name != null;
+        assert futures_fragment.containsKey(name);
+        final Future<Map<GVersion, GASTShaderFragment>> future =
+          futures_fragment.get(name);
+
+        try {
+          final Map<GVersion, GASTShaderFragment> r = future.get();
+          results_fragment.put(name, r);
+        } catch (final InterruptedException e) {
+          throw new UnreachableCodeException(e);
+        } catch (final ExecutionException e) {
+          final CompilerError x = (CompilerError) e.getCause();
+          throw x;
+        }
+      }
+
+      final Map<TASTShaderNameFlat, GCompiledProgram> results_program =
+        new HashMap<TASTShaderNameFlat, GCompiledProgram>();
+
+      for (final TASTShaderNameFlat name : shaders_program.keySet()) {
+        assert name != null;
+
+        final GCompiledProgram r =
+          GPipeline.processProgram(
+            shaders_program,
+            results_vertex,
+            results_fragment,
+            name);
+
+        results_program.put(name, r);
+      }
+
+      return new GCompilation(
+        results_vertex,
+        results_fragment,
+        results_program);
+
+    } catch (final CompilerError e) {
+      assert futures_vertex != null;
+      assert futures_fragment != null;
+      GPipeline.cancelAll(futures_vertex, futures_fragment);
+      throw e;
+    }
+  }
+
+  private
+    void
+    submitShadersFragment(
+      final SortedSet<GVersionES> required_versions_es,
+      final SortedSet<GVersionFull> required_versions_full,
+      final Map<TASTShaderNameFlat, TASTDShaderFragment> shaders_fragment,
+      final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderFragment>>> futures_fragment)
+  {
+    for (final TASTShaderNameFlat name : shaders_fragment.keySet()) {
+      assert name != null;
+      final TASTDShaderFragment f = shaders_fragment.get(name);
+      assert f != null;
+
+      final Future<Map<GVersion, GASTShaderFragment>> future =
+        this.exec.submit(new Callable<Map<GVersion, GASTShaderFragment>>() {
+          @Override public Map<GVersion, GASTShaderFragment> call()
+            throws Exception
+          {
+            return GPipeline.this.makeFragmentShader(
+              name,
+              f,
+              required_versions_es,
+              required_versions_full);
+          }
+        });
+
+      futures_fragment.put(name, future);
+    }
+  }
+
+  private
+    void
+    submitShadersVertex(
+      final SortedSet<GVersionES> required_versions_es,
+      final SortedSet<GVersionFull> required_versions_full,
+      final Map<TASTShaderNameFlat, TASTDShaderVertex> shaders_vertex,
+      final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderVertex>>> futures_vertex)
+  {
+    for (final TASTShaderNameFlat name : shaders_vertex.keySet()) {
+      assert name != null;
+      final TASTDShaderVertex v = shaders_vertex.get(name);
+      assert v != null;
+
+      final Future<Map<GVersion, GASTShaderVertex>> future =
+        this.exec.submit(new Callable<Map<GVersion, GASTShaderVertex>>() {
+          @Override public Map<GVersion, GASTShaderVertex> call()
+            throws Exception
+          {
+            return GPipeline.this.makeVertexShader(
+              name,
+              v,
+              required_versions_es,
+              required_versions_full);
+          }
+        });
+
+      futures_vertex.put(name, future);
+    }
+  }
+
+  /**
+   * Transform the given set of programs to GLSL, assuming the given required
+   * versions.
+   * 
+   * @param program_names
+   *          The set of program names.
+   * @param required_versions_es
+   *          The required GLSL ES versions.
+   * @param required_versions_full
+   *          The required GLSL versions.
+   * @return A compilation.
+   * @throws CompilerError
+   *           If an error occurs, the specific subtype of which gives
+   *           details.
+   */
+
+  public GCompilation transformPrograms(
+    final Set<TASTShaderNameFlat> program_names,
+    final SortedSet<GVersionES> required_versions_es,
+    final SortedSet<GVersionFull> required_versions_full)
+    throws CompilerError
+  {
+    NullCheck.notNullAll(program_names, "Program names");
+    NullCheck.notNullAll(required_versions_es, "Required ES versions");
+    NullCheck.notNullAll(required_versions_full, "Required full versions");
+
+    final Map<TASTShaderNameFlat, TASTDShaderProgram> shaders_program =
+      new HashMap<TASTShaderNameFlat, TASTDShaderProgram>();
+    final Map<TASTShaderNameFlat, TASTDShaderVertex> shaders_vertex =
+      new HashMap<TASTShaderNameFlat, TASTDShaderVertex>();
+    final Map<TASTShaderNameFlat, TASTDShaderFragment> shaders_fragment =
+      new HashMap<TASTShaderNameFlat, TASTDShaderFragment>();
+
+    this.collectShaders(
+      program_names,
+      shaders_program,
+      shaders_vertex,
+      shaders_fragment);
+
+    return this.processAll(
+      required_versions_es,
+      required_versions_full,
+      shaders_vertex,
+      shaders_fragment,
+      shaders_program);
   }
 }
