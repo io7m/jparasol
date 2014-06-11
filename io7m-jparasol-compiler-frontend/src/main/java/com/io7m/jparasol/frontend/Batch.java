@@ -161,7 +161,7 @@ public final class Batch
         shader.show()));
     }
 
-    if (this.outputs_by_shader.containsKey(name)) {
+    if (this.shaders_by_output.containsKey(name)) {
       throw new IllegalArgumentException(String.format(
         "Output %s has already been added (for shader %s)",
         name,
