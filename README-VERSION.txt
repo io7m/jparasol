@@ -1,1 +1,1 @@
-io7m-jparasol 0.5.1
+io7m-jparasol 0.6.0
