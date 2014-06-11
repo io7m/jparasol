@@ -125,21 +125,20 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.]]>
       <s:formal-item s:kind="example">
         <s:formal-item-title>Compiler example</s:formal-item-title>
         <s:verbatim><![CDATA[$ java -jar io7m-jparasol-compiler-frontend-${project.version}-jparasol-c.jar
-parasol-c: [options] --compile output.pc shader         file0 [file1 ... fileN]
-        or [options] --compile-batch basedir batch-list source-list
-        or [options] --check                            file0 [file1 ... fileN]
+parasol-c: [options] --compile-one output-directory shader file0 [file1 ... fileN]
+        or [options] --compile-batch output-directory batch-list source-list
+        or [options] --check file0 [file1 ... fileN]
         or [options] --show-versions
         or [options] --version
 
-  Where: output.pc    is a directory that will be populated with GLSL files
-         basedir      is a directory that will be prefixed to the names given in batches
-         shader       is the fully-qualified name of a shading program
-         batch-list   is a file containing (output.pc , ":" , shader) tuples, separated by newlines
-         source-list  is a file containing a set of filenames, separated by newlines
-         file[0 .. N] is a series of filenames containing source code
+  Where: output-directory is a directory that will be populated with GLSL shaders
+         shader           is the fully-qualified name of a shading program
+         batch-list       is a file containing (output , ':' , shader) tuples, separated by newlines
+         source-list      is a file containing a set of filenames, separated by newlines
+         file[0 .. N]     is a series of filenames containing source code
 
      --check                         Parse and type-check all source files, but do not produce GLSL source
-     --compile                       Compile a specific shader program to GLSL source
+     --compile-one                   Compile a specific shader program to GLSL source
      --compile-batch                 Produce multiple GLSL programs from a set of sources
      --debug                         Enable debugging (debug messages, exception backtraces)
   -h,--help                          Show this help message
@@ -161,7 +160,7 @@ parasol-c: [options] --compile output.pc shader         file0 [file1 ... fileN]
      Example: 130 selects version 130
      Example: [120, 150] selects versions 120 to 150
      Example: (120, 150] selects versions 130 to 150
-     Example: 120,[140,330],430 selects versions 120, 140, 150, 330, and 430
+     Example: 120,[140,330],440 selects versions 120, 140, 150, 330, and 440
 
   Version: ${project.version}]]></s:verbatim>
       </s:formal-item>
@@ -607,15 +606,17 @@ end;]]></s:verbatim>
         </s:paragraph>
         <s:paragraph>
           Assuming that the above is in a file named <s:term s:type="file">HelloWorld.txt</s:term>
-          and that the resulting GLSL source code should be written to a directory
-          called <s:term s:type="file">hello_world</s:term>, the program can be compiled
+          and that the resulting GLSL shaders should be written to a directory
+          called <s:term s:type="file">/tmp/shaders</s:term>, the program can be compiled
           as follows:
         </s:paragraph>
         <s:formal-item s:kind="examples">
           <s:formal-item-title>Compilation</s:formal-item-title>
-          <s:verbatim><![CDATA[$ java -jar jparasol-c.jar --compile hello_world com.io7m.examples.HelloWorld.p HelloWorld.txt
-compiler: info: writing shader com.io7m.examples.HelloWorld.p]]></s:verbatim>
+          <s:verbatim><![CDATA[$ java -jar jparasol-c.jar --compile-one /tmp/shaders com.io7m.examples.HelloWorld.p HelloWorld.txt]]></s:verbatim>
         </s:formal-item>
+        <s:paragraph>
+          The compiler says nothing unless an error occurs.
+        </s:paragraph>
         <s:paragraph>
           By default, the compiler will attempt to produce GLSL shaders for all
           known versions of GLSL. It will silently fail to produce a program for
@@ -628,8 +629,7 @@ compiler: info: writing shader com.io7m.examples.HelloWorld.p]]></s:verbatim>
         </s:paragraph>
         <s:formal-item s:kind="examples">
           <s:formal-item-title>Compilation (versions)</s:formal-item-title>
-          <s:verbatim><![CDATA[$ java -jar jparasol-c.jar --require-full [,] --require-es [,] --compile hello_world com.io7m.examples.HelloWorld.p HelloWorld.txt
-compiler: info: writing shader com.io7m.examples.HelloWorld.p]]></s:verbatim>
+          <s:verbatim><![CDATA[$ java -jar jparasol-c.jar --require-full [,] --require-es [,] --compile-one /tmp/shaders com.io7m.examples.HelloWorld.p HelloWorld.txt]]></s:verbatim>
         </s:formal-item>
         <s:paragraph>
           The <s:term s:type="expression">[,]</s:term> notation is standard
@@ -644,38 +644,15 @@ compiler: info: writing shader com.io7m.examples.HelloWorld.p]]></s:verbatim>
         </s:paragraph>
         <s:formal-item s:kind="examples">
           <s:formal-item-title>Compilation output</s:formal-item-title>
-          <s:verbatim><![CDATA[$ ls -alF hello_world
-drwxr-xr-x  2 nobody   nobody    580 2014-04-28 19:35 ./
-drwxrwxrwt 68 nobody   nobody   5680 2014-04-28 19:38 ../
--rw-r--r--  1 nobody   nobody    104 2014-04-28 20:09 glsl-110.f
--rw-r--r--  1 nobody   nobody    261 2014-04-28 20:09 glsl-110.v
--rw-r--r--  1 nobody   nobody    104 2014-04-28 20:09 glsl-120.f
--rw-r--r--  1 nobody   nobody    261 2014-04-28 20:09 glsl-120.v
--rw-r--r--  1 nobody   nobody    105 2014-04-28 20:09 glsl-130.f
--rw-r--r--  1 nobody   nobody    250 2014-04-28 20:09 glsl-130.v
--rw-r--r--  1 nobody   nobody    105 2014-04-28 20:09 glsl-140.f
--rw-r--r--  1 nobody   nobody    250 2014-04-28 20:09 glsl-140.v
--rw-r--r--  1 nobody   nobody    105 2014-04-28 20:09 glsl-150.f
--rw-r--r--  1 nobody   nobody    250 2014-04-28 20:09 glsl-150.v
--rw-r--r--  1 nobody   nobody    105 2014-04-28 20:09 glsl-330.f
--rw-r--r--  1 nobody   nobody    250 2014-04-28 20:09 glsl-330.v
--rw-r--r--  1 nobody   nobody    105 2014-04-28 20:09 glsl-400.f
--rw-r--r--  1 nobody   nobody    250 2014-04-28 20:09 glsl-400.v
--rw-r--r--  1 nobody   nobody    105 2014-04-28 20:09 glsl-410.f
--rw-r--r--  1 nobody   nobody    250 2014-04-28 20:09 glsl-410.v
--rw-r--r--  1 nobody   nobody    105 2014-04-28 20:09 glsl-420.f
--rw-r--r--  1 nobody   nobody    250 2014-04-28 20:09 glsl-420.v
--rw-r--r--  1 nobody   nobody    105 2014-04-28 20:09 glsl-430.f
--rw-r--r--  1 nobody   nobody    250 2014-04-28 20:09 glsl-430.v
--rw-r--r--  1 nobody   nobody    105 2014-04-28 20:09 glsl-440.f
--rw-r--r--  1 nobody   nobody    250 2014-04-28 20:09 glsl-440.v
--rw-r--r--  1 nobody   nobody    149 2014-04-28 20:09 glsl-es-100.f
--rw-r--r--  1 nobody   nobody    306 2014-04-28 20:09 glsl-es-100.v
--rw-r--r--  1 nobody   nobody    150 2014-04-28 20:09 glsl-es-300.f
--rw-r--r--  1 nobody   nobody    295 2014-04-28 20:09 glsl-es-300.v
--rw-r--r--  1 nobody   nobody   1427 2014-04-28 20:09 meta.xml
+          <s:verbatim><![CDATA[$ ls -alF /tmp/shaders/
+total 0
+drwxr-xr-x  5 nobody nobody   100 2014-06-11 18:06 ./
+drwxrwxrwt 66 root   root    6020 2014-06-11 18:06 ../
+drwxr-xr-x  2 nobody nobody   320 2014-06-11 18:06 com.io7m.examples.HelloWorld.f/
+drwxr-xr-x  2 nobody nobody    60 2014-06-11 18:06 com.io7m.examples.HelloWorld.p/
+drwxr-xr-x  2 nobody nobody   320 2014-06-11 18:06 com.io7m.examples.HelloWorld.v/
 
-$ cat hello_world/glsl-110.v
+$ cat /tmp/shaders/com.io7m.examples.HelloWorld.v/glsl-110.v
 #version 110
 
 attribute vec4 v_position;
@@ -691,7 +668,7 @@ main (void)
   o = pl_position_clip;
 }
 
-$ cat hello_world/glsl-110.f
+$ cat /tmp/shaders/com.io7m.examples.HelloWorld.f/glsl-110.f
 #version 110
 
 void
@@ -701,7 +678,7 @@ main (void)
   gl_FragColor = pl_red;
 }
 
-$ cat hello_world/glsl-140.v
+$ cat /tmp/shaders/com.io7m.examples.HelloWorld.v/glsl-140.v
 #version 140
 
 in vec4 v_position;
@@ -717,7 +694,7 @@ main (void)
   o = pl_position_clip;
 }
 
-$ cat hello_world/glsl-140.f
+$ cat /tmp/shaders/com.io7m.examples.HelloWorld.f/glsl-140.f
 #version 140
 
 out vec4 o;
@@ -729,7 +706,7 @@ main (void)
   o = pl_red;
 }
 
-$ cat hello_world/glsl-es-100.v
+$ cat /tmp/shaders/com.io7m.examples.HelloWorld.v/glsl-es-100.v
 #version 100
 
 precision highp float;
@@ -748,7 +725,7 @@ main (void)
   o = pl_position_clip;
 }
 
-$ cat hello_world/glsl-es-100.f
+$ cat /tmp/shaders/com.io7m.examples.HelloWorld.f/glsl-es-100.f
 #version 100
 
 precision highp float;
@@ -788,7 +765,7 @@ main (void)
         <s:subsection-title>Overview</s:subsection-title>
         <s:formal-item s:kind="example">
           <s:formal-item-title>Options</s:formal-item-title>
-          <s:verbatim><![CDATA[parasol-c: [options] --compile output.pc shader         file0 [file1 ... fileN]
+          <s:verbatim><![CDATA[parasol-c: [options] --compile-one output.pc shader         file0 [file1 ... fileN]
         or [options] --compile-batch basedir batch-list source-list
         or [options] --check                            file0 [file1 ... fileN]
         or [options] --show-versions
@@ -798,12 +775,14 @@ main (void)
       <s:subsection xml:id="jparasol-c.compile">
         <s:subsection-title>Compile</s:subsection-title>
         <s:paragraph>
-          The <s:term s:type="command">--compile</s:term> command accepts an output directory 
+          The <s:term s:type="command">--compile-one</s:term> command accepts an output directory 
           <s:term s:type="variable">o</s:term>,
           the fully-qualified name of a program <s:term s:type="variable">p</s:term>, 
           and a list of one or more <s:term s:type="package">Parasol</s:term> source files. 
           The files are parsed and type-checked and then 
-          <s:term s:type="variable">p</s:term> is transformed to GLSL and written
+          <s:term s:type="variable">p</s:term>, 
+          and the constituent shaders of <s:term s:type="variable">p</s:term>,
+          are transformed to GLSL and written
           to <s:term s:type="variable">o</s:term> (creating the directory if it does not
           already exist).
         </s:paragraph>
@@ -905,15 +884,11 @@ version-range   := ('(' | '[') integer? ',' integer? (')' | ']')]]></s:verbatim>
         </s:paragraph>
         <s:formal-item s:kind="specification">
           <s:formal-item-title>Batches EBNF</s:formal-item-title>
-          <s:verbatim><![CDATA[batch := name , ":" , program_name]]></s:verbatim>
+          <s:verbatim><![CDATA[batch := [ name ] , ":" , program_name]]></s:verbatim>
         </s:formal-item>
         <s:paragraph>
-          Where <s:term s:type="variable">name</s:term> is a valid
-          file name
-          <s:footnote>
-            What constitutes a valid file name is obviously operating system
-            specific.
-          </s:footnote>, and
+          Where <s:term s:type="variable">name</s:term> is an optional
+          output name, and
           <s:term s:type="variable">program_name</s:term> is the
           fully qualified name of a program (consisting of a package, module,
           and program name). An example

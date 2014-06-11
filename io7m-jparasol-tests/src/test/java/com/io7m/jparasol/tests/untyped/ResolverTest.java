@@ -432,6 +432,16 @@ import com.io7m.junreachable.UnreachableCodeException;
         ResolverError.Code.RESOLVER_TERM_NONEXISTENT);
   }
 
+  @Test(expected = ResolverError.class) public
+    void
+    testFragmentShaderNonexistentOutput0()
+      throws ResolverError
+  {
+    ResolverTest.checkMustFailWithCode(
+      new String[] { "resolver/fragment-shader-nonexistent-output-0.p" },
+      ResolverError.Code.RESOLVER_SHADER_OUTPUT_NONEXISTENT);
+  }
+
   @Test public void testFragmentShaderOK0()
     throws ResolverError
   {
@@ -912,6 +922,16 @@ import com.io7m.junreachable.UnreachableCodeException;
       ResolverError.Code.RESOLVER_TERM_NONEXISTENT);
   }
 
+  @Test(expected = ResolverError.class) public
+    void
+    testVertexShaderNonexistentOutput0()
+      throws ResolverError
+  {
+    ResolverTest.checkMustFailWithCode(
+      new String[] { "resolver/vertex-shader-nonexistent-output-0.p" },
+      ResolverError.Code.RESOLVER_SHADER_OUTPUT_NONEXISTENT);
+  }
+
   @Test public void testVertexShaderOK0()
     throws ResolverError
   {
@@ -932,26 +952,6 @@ import com.io7m.junreachable.UnreachableCodeException;
       .get(0)
       .getName()
       .getCurrent());
-  }
-
-  @Test(expected = ResolverError.class) public
-    void
-    testFragmentShaderNonexistentOutput0()
-      throws ResolverError
-  {
-    ResolverTest.checkMustFailWithCode(
-      new String[] { "resolver/fragment-shader-nonexistent-output-0.p" },
-      ResolverError.Code.RESOLVER_SHADER_OUTPUT_NONEXISTENT);
-  }
-
-  @Test(expected = ResolverError.class) public
-    void
-    testVertexShaderNonexistentOutput0()
-      throws ResolverError
-  {
-    ResolverTest.checkMustFailWithCode(
-      new String[] { "resolver/vertex-shader-nonexistent-output-0.p" },
-      ResolverError.Code.RESOLVER_SHADER_OUTPUT_NONEXISTENT);
   }
 
   @Test(expected = ResolverError.class) public

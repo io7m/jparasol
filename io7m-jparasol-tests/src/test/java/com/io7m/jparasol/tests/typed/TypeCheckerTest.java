@@ -116,16 +116,6 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 
   @Test(expected = TypeCheckerError.class) public
     void
-    testFragmentShaderDepthBadType_0()
-      throws TypeCheckerError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "typed/fragment-shader-depth-bad-type-0.p" },
-      Code.TYPE_ERROR_SHADER_DEPTH_NOT_FLOAT);
-  }
-
-  @Test(expected = TypeCheckerError.class) public
-    void
     testFragmentShaderAssignmentBadType_0()
       throws TypeCheckerError
   {
@@ -210,6 +200,36 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
     Assert.assertEquals(TVector4F.get(), v.getOutputs().get(0).getType());
     Assert.assertEquals("out_1", v.getOutputs().get(1).getName().getActual());
     Assert.assertEquals(TVector4F.get(), v.getOutputs().get(1).getType());
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderBadAttributeType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/fragment-shader-bad-attribute-type-0.p" },
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderBadAttributeType_1()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/fragment-shader-bad-attribute-type-1.p" },
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testFragmentShaderDepthBadType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/fragment-shader-depth-bad-type-0.p" },
+      Code.TYPE_ERROR_SHADER_DEPTH_NOT_FLOAT);
   }
 
   @Test(expected = TypeCheckerError.class) public
@@ -903,6 +923,16 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
       Code.TYPE_ERROR_FUNCTION_BODY_RETURN_INCOMPATIBLE);
   }
 
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermFunctionExternalTypeNotOK_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCodeInternal(
+      new String[] { "typed/term-function-external-type-not-ok-0.p" },
+      Code.TYPE_ERROR_FUNCTION_BODY_RETURN_INCOMPATIBLE);
+  }
+
   @Test public void testTermFunctionExternalTypeOK_0()
     throws TypeCheckerError
   {
@@ -935,16 +965,6 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
     Assert.assertEquals(TInteger.get(), f.getType().getReturnType());
 
     System.out.println(f.getType().getName());
-  }
-
-  @Test(expected = TypeCheckerError.class) public
-    void
-    testTermFunctionExternalTypeNotOK_0()
-      throws TypeCheckerError
-  {
-    TypeCheckerTest.checkMustFailWithCodeInternal(
-      new String[] { "typed/term-function-external-type-not-ok-0.p" },
-      Code.TYPE_ERROR_FUNCTION_BODY_RETURN_INCOMPATIBLE);
   }
 
   @Test public void testTermFunctionTypeOK_0()
@@ -1191,46 +1211,6 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
       Code.TYPE_ERROR_SHADER_ASSIGNMENT_BAD_TYPE);
   }
 
-  @Test(expected = TypeCheckerError.class) public
-    void
-    testVertexShaderBadAttributeType_0()
-      throws TypeCheckerError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "typed/vertex-shader-bad-attribute-type-0.p" },
-      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
-  }
-
-  @Test(expected = TypeCheckerError.class) public
-    void
-    testVertexShaderBadAttributeType_1()
-      throws TypeCheckerError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "typed/vertex-shader-bad-attribute-type-1.p" },
-      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
-  }
-
-  @Test(expected = TypeCheckerError.class) public
-    void
-    testFragmentShaderBadAttributeType_0()
-      throws TypeCheckerError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "typed/fragment-shader-bad-attribute-type-0.p" },
-      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
-  }
-
-  @Test(expected = TypeCheckerError.class) public
-    void
-    testFragmentShaderBadAttributeType_1()
-      throws TypeCheckerError
-  {
-    TypeCheckerTest.checkMustFailWithCode(
-      new String[] { "typed/fragment-shader-bad-attribute-type-1.p" },
-      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
-  }
-
   @Test public void testVertexShaderAssignmentOK_0()
     throws TypeCheckerError
   {
@@ -1251,6 +1231,26 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
     Assert.assertEquals(TVector4F.get(), v.getParameters().get(0).getType());
     Assert.assertEquals("out_0", v.getOutputs().get(0).getName().getActual());
     Assert.assertEquals(TVector4F.get(), v.getOutputs().get(0).getType());
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testVertexShaderBadAttributeType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/vertex-shader-bad-attribute-type-0.p" },
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testVertexShaderBadAttributeType_1()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/vertex-shader-bad-attribute-type-1.p" },
+      Code.TYPE_ERROR_SHADER_BAD_ATTRIBUTE_TYPE);
   }
 
   @Test(expected = TypeCheckerError.class) public

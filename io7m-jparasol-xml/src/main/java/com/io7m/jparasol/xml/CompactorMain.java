@@ -17,20 +17,11 @@
 package com.io7m.jparasol.xml;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Properties;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import nu.xom.ParsingException;
-import nu.xom.ValidityException;
-
-import org.xml.sax.SAXException;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jlog.Log;
-import com.io7m.jlog.LogPolicyProperties;
+import com.io7m.jlog.LogLevel;
+import com.io7m.jlog.LogPolicyAllOn;
 import com.io7m.jlog.LogPolicyType;
 import com.io7m.jlog.LogType;
 import com.io7m.jproperties.JPropertyException;
@@ -40,42 +31,22 @@ import com.io7m.junreachable.UnreachableCodeException;
  * The main compactor program.
  */
 
-@EqualityReference public final class PGLSLCompactorMain
+@EqualityReference public final class CompactorMain
 {
-  private PGLSLCompactorMain()
-  {
-    throw new UnreachableCodeException();
-  }
-
   /**
    * The main program.
    * 
    * @param args
    *          Command line arguments
-   * @throws ValidityException
-   *           On XML parser errors
-   * @throws ParsingException
-   *           On XML parser errors
-   * @throws IOException
-   *           On I/O errors
-   * @throws NoSuchAlgorithmException
-   *           On JVMs that don't support the required hashing algorithms
-   * @throws SAXException
-   *           On XML parser errors
-   * @throws ParserConfigurationException
-   *           On XML parser errors
    * @throws JPropertyException
    *           On malformed config files
+   * @throws CompactorException
+   *           On compaction errors.
    */
 
   public static void main(
     final String[] args)
-    throws ValidityException,
-      ParsingException,
-      IOException,
-      NoSuchAlgorithmException,
-      SAXException,
-      ParserConfigurationException,
+    throws CompactorException,
       JPropertyException
   {
     if (args.length != 2) {
@@ -84,11 +55,14 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     final File input = new File(args[0]);
     final File output = new File(args[1]);
-    final Properties props = new Properties();
 
-    final LogPolicyType policy =
-      LogPolicyProperties.newPolicy(props, "com.io7m.jparasol.xml");
+    final LogPolicyType policy = LogPolicyAllOn.newPolicy(LogLevel.LOG_DEBUG);
     final LogType logx = Log.newLog(policy, "compactor");
-    PGLSLCompactor.newCompactor(input, output, logx);
+    Compactor.compactShader(input, output, logx);
+  }
+
+  private CompactorMain()
+  {
+    throw new UnreachableCodeException();
   }
 }

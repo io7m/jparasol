@@ -38,7 +38,8 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 @EqualityStructural public final class TASTShaderNameFlat implements
   NameFlatType,
   TASTNameTypeShaderFlatType,
-  TASTNameTermShaderFlatType
+  TASTNameTermShaderFlatType,
+  Comparable<TASTShaderNameFlat>
 {
   /**
    * Flatten a shader name.
@@ -117,6 +118,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
   private final String         name;
   private final ModulePathFlat path;
+  private final String         show_text;
 
   /**
    * Construct a flattened shader name.
@@ -133,6 +135,22 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
   {
     this.path = NullCheck.notNull(in_path, "Path");
     this.name = NullCheck.notNull(in_name, "Name");
+
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append(this.path.getActual());
+      builder.append(".");
+      builder.append(this.name);
+      final String r = builder.toString();
+      assert r != null;
+      this.show_text = r;
+    }
+  }
+
+  @Override public int compareTo(
+    final TASTShaderNameFlat o)
+  {
+    return this.show_text.compareTo(o.show_text);
   }
 
   @Override public boolean equals(
@@ -198,13 +216,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
   @Override public String show()
   {
-    final StringBuilder builder = new StringBuilder();
-    builder.append(this.path.getActual());
-    builder.append(".");
-    builder.append(this.name);
-    final String r = builder.toString();
-    assert r != null;
-    return r;
+    return this.show_text;
   }
 
   @Override public String toString()

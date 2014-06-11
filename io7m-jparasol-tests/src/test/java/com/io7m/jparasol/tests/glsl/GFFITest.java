@@ -17,21 +17,22 @@
 package com.io7m.jparasol.tests.glsl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.io7m.jfunctional.Pair;
-import com.io7m.jparasol.UIError;
+import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.glsl.GFFI;
 import com.io7m.jparasol.glsl.GFFIError;
 import com.io7m.jparasol.glsl.GVersion;
 import com.io7m.jparasol.glsl.GVersion.GVersionES;
 import com.io7m.jparasol.glsl.GVersion.GVersionFull;
-import com.io7m.jparasol.glsl.GVersionCheckerError;
 import com.io7m.jparasol.glsl.GWriter;
 import com.io7m.jparasol.glsl.ast.GASTExpression;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
@@ -40,15 +41,321 @@ import com.io7m.jparasol.glsl.ast.GASTTermDeclaration;
 import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermFunction;
 import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermValue;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
+import com.io7m.jparasol.glsl.pipeline.GCompilation;
+import com.io7m.jparasol.glsl.pipeline.GCompiledProgram;
 import com.io7m.jparasol.glsl.pipeline.GPipeline;
 import com.io7m.jparasol.tests.TestPipeline;
 import com.io7m.jparasol.tests.TestUtilities;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
+import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
 @SuppressWarnings("static-method") public final class GFFITest
 {
+  private static void dumpFragment(
+    final GASTShaderFragment program)
+  {
+    System.err.println("Version: " + program.getGLSLVersion().getLongName());
+    System.err
+      .println("----------------------------------------------------------------------");
+    GWriter.writeFragmentShader(System.err, program);
+    System.err
+      .println("----------------------------------------------------------------------");
+  }
+
+  private static void dumpVertex(
+    final GASTShaderVertex program)
+  {
+    System.err.println("Version: " + program.getGLSLVersion().getLongName());
+    System.err
+      .println("----------------------------------------------------------------------");
+    GWriter.writeVertexShader(System.err, program);
+    System.err
+      .println("----------------------------------------------------------------------");
+  }
+
+  @Test public void testFloatIsInfinite_0()
+    throws CompilerError
+  {
+    final GPipeline gpipe =
+      TestPipeline
+        .makeGPipeline(new String[] { "glsl/ffi/float-is_infinite-0.p" });
+
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    final TASTShaderNameFlat program_name =
+      TestPipeline.shaderName("x.y.M", "p");
+    program_names.add(program_name);
+    final GCompilation comp =
+      gpipe.transformPrograms(
+        program_names,
+        new TreeSet<GVersionES>(),
+        new TreeSet<GVersionFull>());
+    final GCompiledProgram p = comp.getShadersProgram().get(program_name);
+
+    final Map<GVersion, GASTShaderVertex> vertex_shader =
+      p.getShadersVertex().values().iterator().next();
+
+    /**
+     * All versions of GLSL ES, and GLSL <= 120 must emit a replacement isinf
+     * function.
+     */
+
+    for (final GVersionES vn : GVersionES.ALL) {
+      final GASTShaderVertex program = vertex_shader.get(vn);
+      final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        program.getTerms().get(0);
+      Assert.assertEquals("p_com_io7m_parasol_Float_is_infinite", pf
+        .getLeft()
+        .show());
+      GFFITest.dumpVertex(program);
+    }
+
+    for (final GVersionFull vn : GVersionFull.ALL) {
+      final GASTShaderVertex program = vertex_shader.get(vn);
+      if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
+        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+          program.getTerms().get(0);
+        Assert.assertEquals("p_com_io7m_parasol_Float_is_infinite", pf
+          .getLeft()
+          .show());
+        Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
+      } else {
+        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+          program.getTerms().get(0);
+        Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
+        Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
+      }
+      GFFITest.dumpVertex(program);
+    }
+  }
+
+  @Test public void testFloatIsNan_0()
+    throws CompilerError
+  {
+    final GPipeline gpipe =
+      TestPipeline
+        .makeGPipeline(new String[] { "glsl/ffi/float-is_nan-0.p" });
+
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    final TASTShaderNameFlat program_name =
+      TestPipeline.shaderName("x.y.M", "p");
+    program_names.add(program_name);
+    final GCompilation comp =
+      gpipe.transformPrograms(
+        program_names,
+        new TreeSet<GVersionES>(),
+        new TreeSet<GVersionFull>());
+    final GCompiledProgram p = comp.getShadersProgram().get(program_name);
+
+    final Map<GVersion, GASTShaderVertex> vertex_shader =
+      p.getShadersVertex().values().iterator().next();
+
+    /**
+     * All versions of GLSL ES, and GLSL <= 120 must emit a replacement isnan
+     * function.
+     */
+
+    for (final GVersionES vn : GVersionES.ALL) {
+      final GASTShaderVertex vs = vertex_shader.get(vn);
+      final Pair<GTermNameGlobal, GASTTermDeclaration> terms =
+        vs.getTerms().get(0);
+      Assert.assertEquals("p_com_io7m_parasol_Float_is_nan", terms
+        .getLeft()
+        .show());
+      GFFITest.dumpVertex(vs);
+    }
+
+    for (final GVersionFull vn : GVersionFull.ALL) {
+      final GASTShaderVertex vs = vertex_shader.get(vn);
+      if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
+        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+          vs.getTerms().get(0);
+        Assert.assertEquals("p_com_io7m_parasol_Float_is_nan", pf
+          .getLeft()
+          .show());
+        Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
+      } else {
+        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+          vs.getTerms().get(0);
+        Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
+        Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
+      }
+      GFFITest.dumpVertex(vs);
+    }
+  }
+
+  @Test public void testFloatLib()
+    throws CompilerError
+  {
+    final GPipeline gpipe =
+      TestPipeline.makeGPipeline(new String[] { "glsl/ffi/float-lib.p" });
+
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    program_names.add(TestPipeline.shaderName("x.y.M", "p"));
+    final GCompilation comp =
+      gpipe
+        .transformPrograms(program_names, GVersionES.ALL, GVersionFull.ALL);
+  }
+
+  @Test public void testFloatSign_0()
+    throws CompilerError
+  {
+    final GPipeline gpipe =
+      TestPipeline.makeGPipeline(new String[] { "glsl/ffi/float-sign-0.p" });
+
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    final TASTShaderNameFlat program_name =
+      TestPipeline.shaderName("x.y.M", "p");
+    program_names.add(program_name);
+    final GCompilation comp =
+      gpipe.transformPrograms(
+        program_names,
+        new TreeSet<GVersionES>(),
+        new TreeSet<GVersionFull>());
+    final GCompiledProgram p = comp.getShadersProgram().get(program_name);
+
+    final Map<GVersion, GASTShaderVertex> vertex_shader =
+      p.getShadersVertex().values().iterator().next();
+
+    /**
+     * All versions of GLSL ES, and GLSL <= 120 must emit a replacement sign
+     * function.
+     */
+
+    for (final GVersionES vn : GVersionES.ALL) {
+      final GASTShaderVertex program = vertex_shader.get(vn);
+      final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        program.getTerms().get(0);
+      Assert.assertEquals("p_com_io7m_parasol_Float_sign", pf
+        .getLeft()
+        .show());
+      GFFITest.dumpVertex(program);
+    }
+
+    for (final GVersionFull vn : GVersionFull.ALL) {
+      final GASTShaderVertex program = vertex_shader.get(vn);
+      if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
+        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+          program.getTerms().get(0);
+        Assert.assertEquals("p_com_io7m_parasol_Float_sign", pf
+          .getLeft()
+          .show());
+        Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
+      } else {
+        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+          program.getTerms().get(0);
+        Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
+        Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
+      }
+      GFFITest.dumpVertex(program);
+    }
+  }
+
+  @Test public void testFloatTruncate_0()
+    throws CompilerError
+  {
+    final GPipeline gpipe =
+      TestPipeline
+        .makeGPipeline(new String[] { "glsl/ffi/float-truncate-0.p" });
+
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    final TASTShaderNameFlat program_name =
+      TestPipeline.shaderName("x.y.M", "p");
+    program_names.add(program_name);
+    final GCompilation comp =
+      gpipe.transformPrograms(
+        program_names,
+        new TreeSet<GVersionES>(),
+        new TreeSet<GVersionFull>());
+    final GCompiledProgram p = comp.getShadersProgram().get(program_name);
+
+    final Map<GVersion, GASTShaderVertex> vertex_shader =
+      p.getShadersVertex().values().iterator().next();
+
+    /**
+     * All versions of GLSL ES, and GLSL <= 120 must emit a replacement trunc
+     * function.
+     */
+
+    for (final GVersionES vn : GVersionES.ALL) {
+      final GASTShaderVertex program = vertex_shader.get(vn);
+      final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        program.getTerms().get(0);
+      Assert.assertEquals("p_com_io7m_parasol_Float_truncate", pf
+        .getLeft()
+        .show());
+      GFFITest.dumpVertex(program);
+    }
+
+    for (final GVersionFull vn : GVersionFull.ALL) {
+      final GASTShaderVertex program = vertex_shader.get(vn);
+      if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
+        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+          program.getTerms().get(0);
+        Assert.assertEquals("p_com_io7m_parasol_Float_truncate", pf
+          .getLeft()
+          .show());
+        Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
+      } else {
+        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+          program.getTerms().get(0);
+        Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
+        Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
+      }
+      GFFITest.dumpVertex(program);
+    }
+  }
+
+  @Test public void testFragmentCoordinate_0()
+    throws CompilerError
+  {
+    final GPipeline gpipe =
+      TestPipeline
+        .makeGPipeline(new String[] { "glsl/ffi/fragment-coordinate-0.p" });
+
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    final TASTShaderNameFlat program_name =
+      TestPipeline.shaderName("x.y.M", "p");
+    program_names.add(program_name);
+    final GCompilation comp =
+      gpipe.transformPrograms(
+        program_names,
+        new TreeSet<GVersionES>(),
+        new TreeSet<GVersionFull>());
+    final GCompiledProgram p = comp.getShadersProgram().get(program_name);
+
+    for (final GVersionES vn : GVersionES.ALL) {
+      final GASTShaderFragment program = p.getShaderFragment().get(vn);
+      GFFITest.dumpFragment(program);
+    }
+
+    for (final GVersionFull vn : GVersionFull.ALL) {
+      final GASTShaderFragment program = p.getShaderFragment().get(vn);
+      GFFITest.dumpFragment(program);
+    }
+  }
+
+  @Test public void testSamplerLib()
+    throws CompilerError
+  {
+    final GPipeline gpipe =
+      TestPipeline.makeGPipeline(new String[] { "glsl/ffi/sampler-lib.p" });
+
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    program_names.add(TestPipeline.shaderName("x.y.M", "p"));
+    final GCompilation comp =
+      gpipe
+        .transformPrograms(program_names, GVersionES.ALL, GVersionFull.ALL);
+  }
+
   @Test(expected = GFFIError.class) public
     void
     testUnknownExpressionExternal_0()
@@ -82,294 +389,18 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
     ffi.getValueDefinition(v, GVersion.GVersionFull.GLSL_110);
   }
 
-  @Test public void testFragmentCoordinate_0()
-    throws UIError,
-      GFFIError,
-      GVersionCheckerError
-  {
-    final GPipeline gpipe =
-      TestPipeline
-        .makeGPipeline(new String[] { "glsl/ffi/fragment-coordinate-0.p" });
-
-    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> p =
-      gpipe.makeProgram(
-        TestPipeline.shaderName("x.y.M", "p"),
-        new TreeSet<GVersionES>(),
-        new TreeSet<GVersionFull>());
-
-    for (final GVersionES vn : GVersionES.ALL) {
-      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
-      GFFITest.dumpFragment(program);
-    }
-
-    for (final GVersionFull vn : GVersionFull.ALL) {
-      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
-      GFFITest.dumpFragment(program);
-    }
-  }
-
-  @Test public void testFloatSign_0()
-    throws UIError,
-      GFFIError,
-      GVersionCheckerError
-  {
-    final GPipeline gpipe =
-      TestPipeline.makeGPipeline(new String[] { "glsl/ffi/float-sign-0.p" });
-
-    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> p =
-      gpipe.makeProgram(
-        TestPipeline.shaderName("x.y.M", "p"),
-        new TreeSet<GVersionES>(),
-        new TreeSet<GVersionFull>());
-
-    /**
-     * All versions of GLSL ES, and GLSL <= 120 must emit a replacement sign
-     * function.
-     */
-
-    for (final GVersionES vn : GVersionES.ALL) {
-      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
-      final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-        program.getLeft().getTerms().get(0);
-      Assert.assertEquals("p_com_io7m_parasol_Float_sign", pf
-        .getLeft()
-        .show());
-      GFFITest.dumpVertex(program);
-    }
-
-    for (final GVersionFull vn : GVersionFull.ALL) {
-      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
-      if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-          program.getLeft().getTerms().get(0);
-        Assert.assertEquals("p_com_io7m_parasol_Float_sign", pf
-          .getLeft()
-          .show());
-        Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
-      } else {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-          program.getLeft().getTerms().get(0);
-        Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
-        Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
-      }
-      GFFITest.dumpVertex(program);
-    }
-  }
-
-  @Test public void testFloatIsInfinite_0()
-    throws UIError,
-      GFFIError,
-      GVersionCheckerError
-  {
-    final GPipeline gpipe =
-      TestPipeline
-        .makeGPipeline(new String[] { "glsl/ffi/float-is_infinite-0.p" });
-
-    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> p =
-      gpipe.makeProgram(
-        TestPipeline.shaderName("x.y.M", "p"),
-        new TreeSet<GVersionES>(),
-        new TreeSet<GVersionFull>());
-
-    /**
-     * All versions of GLSL ES, and GLSL <= 120 must emit a replacement isinf
-     * function.
-     */
-
-    for (final GVersionES vn : GVersionES.ALL) {
-      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
-      final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-        program.getLeft().getTerms().get(0);
-      Assert.assertEquals("p_com_io7m_parasol_Float_is_infinite", pf
-        .getLeft()
-        .show());
-      GFFITest.dumpVertex(program);
-    }
-
-    for (final GVersionFull vn : GVersionFull.ALL) {
-      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
-      if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-          program.getLeft().getTerms().get(0);
-        Assert.assertEquals("p_com_io7m_parasol_Float_is_infinite", pf
-          .getLeft()
-          .show());
-        Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
-      } else {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-          program.getLeft().getTerms().get(0);
-        Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
-        Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
-      }
-      GFFITest.dumpVertex(program);
-    }
-  }
-
-  @Test public void testFloatTruncate_0()
-    throws UIError,
-      GFFIError,
-      GVersionCheckerError
-  {
-    final GPipeline gpipe =
-      TestPipeline
-        .makeGPipeline(new String[] { "glsl/ffi/float-truncate-0.p" });
-
-    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> p =
-      gpipe.makeProgram(
-        TestPipeline.shaderName("x.y.M", "p"),
-        new TreeSet<GVersionES>(),
-        new TreeSet<GVersionFull>());
-
-    /**
-     * All versions of GLSL ES, and GLSL <= 120 must emit a replacement trunc
-     * function.
-     */
-
-    for (final GVersionES vn : GVersionES.ALL) {
-      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
-      final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-        program.getLeft().getTerms().get(0);
-      Assert.assertEquals("p_com_io7m_parasol_Float_truncate", pf
-        .getLeft()
-        .show());
-      GFFITest.dumpVertex(program);
-    }
-
-    for (final GVersionFull vn : GVersionFull.ALL) {
-      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
-      if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-          program.getLeft().getTerms().get(0);
-        Assert.assertEquals("p_com_io7m_parasol_Float_truncate", pf
-          .getLeft()
-          .show());
-        Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
-      } else {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-          program.getLeft().getTerms().get(0);
-        Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
-        Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
-      }
-      GFFITest.dumpVertex(program);
-    }
-  }
-
-  @Test public void testFloatIsNan_0()
-    throws UIError,
-      GFFIError,
-      GVersionCheckerError
-  {
-    final GPipeline gpipe =
-      TestPipeline
-        .makeGPipeline(new String[] { "glsl/ffi/float-is_nan-0.p" });
-
-    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> p =
-      gpipe.makeProgram(
-        TestPipeline.shaderName("x.y.M", "p"),
-        new TreeSet<GVersionES>(),
-        new TreeSet<GVersionFull>());
-
-    /**
-     * All versions of GLSL ES, and GLSL <= 120 must emit a replacement isnan
-     * function.
-     */
-
-    for (final GVersionES vn : GVersionES.ALL) {
-      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
-      final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-        program.getLeft().getTerms().get(0);
-      Assert.assertEquals("p_com_io7m_parasol_Float_is_nan", pf
-        .getLeft()
-        .show());
-      GFFITest.dumpVertex(program);
-    }
-
-    for (final GVersionFull vn : GVersionFull.ALL) {
-      final Pair<GASTShaderVertex, GASTShaderFragment> program = p.get(vn);
-      if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-          program.getLeft().getTerms().get(0);
-        Assert.assertEquals("p_com_io7m_parasol_Float_is_nan", pf
-          .getLeft()
-          .show());
-        Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
-      } else {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
-          program.getLeft().getTerms().get(0);
-        Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
-        Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
-      }
-      GFFITest.dumpVertex(program);
-    }
-  }
-
-  private static void dumpVertex(
-    final Pair<GASTShaderVertex, GASTShaderFragment> program)
-  {
-    System.err.println("Version: "
-      + program.getLeft().getGLSLVersion().getLongName());
-    System.err
-      .println("----------------------------------------------------------------------");
-    GWriter.writeVertexShader(System.err, program.getLeft());
-    System.err
-      .println("----------------------------------------------------------------------");
-  }
-
-  private static void dumpFragment(
-    final Pair<GASTShaderVertex, GASTShaderFragment> program)
-  {
-    System.err.println("Version: "
-      + program.getLeft().getGLSLVersion().getLongName());
-    System.err
-      .println("----------------------------------------------------------------------");
-    GWriter.writeFragmentShader(System.err, program.getRight());
-    System.err
-      .println("----------------------------------------------------------------------");
-  }
-
-  @Test public void testFloatLib()
-    throws UIError,
-      GFFIError,
-      GVersionCheckerError
-  {
-    final GPipeline gpipe =
-      TestPipeline.makeGPipeline(new String[] { "glsl/ffi/float-lib.p" });
-
-    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> p =
-      gpipe.makeProgram(
-        TestPipeline.shaderName("x.y.M", "p"),
-        GVersionES.ALL,
-        GVersionFull.ALL);
-  }
-
   @Test public void testVectorLib()
-    throws UIError,
-      GFFIError,
-      GVersionCheckerError
+    throws CompilerError
   {
     final GPipeline gpipe =
       TestPipeline.makeGPipeline(new String[] { "glsl/ffi/vector-lib.p" });
 
-    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> p =
-      gpipe.makeProgram(
-        TestPipeline.shaderName("x.y.M", "p"),
-        GVersionES.ALL,
-        GVersionFull.ALL);
-  }
-
-  @Test public void testSamplerLib()
-    throws UIError,
-      GFFIError,
-      GVersionCheckerError
-  {
-    final GPipeline gpipe =
-      TestPipeline.makeGPipeline(new String[] { "glsl/ffi/sampler-lib.p" });
-
-    final Map<GVersion, Pair<GASTShaderVertex, GASTShaderFragment>> p =
-      gpipe.makeProgram(
-        TestPipeline.shaderName("x.y.M", "p"),
-        GVersionES.ALL,
-        GVersionFull.ALL);
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    program_names.add(TestPipeline.shaderName("x.y.M", "p"));
+    final GCompilation comp =
+      gpipe
+        .transformPrograms(program_names, GVersionES.ALL, GVersionFull.ALL);
   }
 
 }

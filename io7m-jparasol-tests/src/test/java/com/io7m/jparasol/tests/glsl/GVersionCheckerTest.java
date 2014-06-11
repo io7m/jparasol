@@ -39,6 +39,30 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 {
   @Test(expected = GVersionCheckerError.class) public
     void
+    testFragmentOutputsBad_ES100_0()
+      throws GVersionCheckerError
+  {
+    final TASTCompilation c =
+      TestPipeline
+        .completeTyped(new String[] { "glsl/version_checker/fragment-outputs-bad-es100-0.p" });
+    final TASTDModule m = TestPipeline.getModule(c, "x.y", "M");
+
+    final TASTDShaderFragment fs =
+      (TASTDShaderFragment) m.getShaders().get("f");
+
+    final GVersionChecker vc =
+      GVersionChecker.newVersionChecker(TestUtilities.getLog());
+    final SortedSet<GVersionFull> required_full =
+      new TreeSet<GVersion.GVersionFull>();
+    final SortedSet<GVersionES> required_es =
+      new TreeSet<GVersion.GVersionES>();
+    required_es.add(GVersionES.GLSL_ES_100);
+
+    vc.checkFragmentShader(fs, required_full, required_es);
+  }
+
+  @Test(expected = GVersionCheckerError.class) public
+    void
     testFragmentOutputsBadType_ES100_0()
       throws GVersionCheckerError
   {
@@ -86,6 +110,30 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
     vc.checkFragmentShader(fs, required_full, required_es);
   }
 
+  @Test public void testFragmentOutputsOK_ES100_0()
+    throws GVersionCheckerError
+  {
+    final TASTCompilation c =
+      TestPipeline
+        .completeTyped(new String[] { "glsl/version_checker/fragment-outputs-ok-es100-0.p" });
+    final TASTDModule m = TestPipeline.getModule(c, "x.y", "M");
+
+    final TASTDShaderFragment fs =
+      (TASTDShaderFragment) m.getShaders().get("f");
+
+    final GVersionChecker vc =
+      GVersionChecker.newVersionChecker(TestUtilities.getLog());
+    final SortedSet<GVersionFull> required_full =
+      new TreeSet<GVersion.GVersionFull>();
+    final SortedSet<GVersionES> required_es =
+      new TreeSet<GVersion.GVersionES>();
+    required_es.add(GVersionES.GLSL_ES_100);
+
+    final GVersionsSupported s =
+      vc.checkFragmentShader(fs, required_full, required_es);
+    Assert.assertTrue(s.getESVersions().contains(GVersionES.GLSL_ES_100));
+  }
+
   @Test(expected = GVersionCheckerError.class) public
     void
     testVertexAttributesBadType_ES100_0()
@@ -128,53 +176,5 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
     required_es.add(GVersionES.GLSL_ES_100);
 
     vc.checkVertexShader(fs, required_full, required_es);
-  }
-
-  @Test(expected = GVersionCheckerError.class) public
-    void
-    testFragmentOutputsBad_ES100_0()
-      throws GVersionCheckerError
-  {
-    final TASTCompilation c =
-      TestPipeline
-        .completeTyped(new String[] { "glsl/version_checker/fragment-outputs-bad-es100-0.p" });
-    final TASTDModule m = TestPipeline.getModule(c, "x.y", "M");
-
-    final TASTDShaderFragment fs =
-      (TASTDShaderFragment) m.getShaders().get("f");
-
-    final GVersionChecker vc =
-      GVersionChecker.newVersionChecker(TestUtilities.getLog());
-    final SortedSet<GVersionFull> required_full =
-      new TreeSet<GVersion.GVersionFull>();
-    final SortedSet<GVersionES> required_es =
-      new TreeSet<GVersion.GVersionES>();
-    required_es.add(GVersionES.GLSL_ES_100);
-
-    vc.checkFragmentShader(fs, required_full, required_es);
-  }
-
-  @Test public void testFragmentOutputsOK_ES100_0()
-    throws GVersionCheckerError
-  {
-    final TASTCompilation c =
-      TestPipeline
-        .completeTyped(new String[] { "glsl/version_checker/fragment-outputs-ok-es100-0.p" });
-    final TASTDModule m = TestPipeline.getModule(c, "x.y", "M");
-
-    final TASTDShaderFragment fs =
-      (TASTDShaderFragment) m.getShaders().get("f");
-
-    final GVersionChecker vc =
-      GVersionChecker.newVersionChecker(TestUtilities.getLog());
-    final SortedSet<GVersionFull> required_full =
-      new TreeSet<GVersion.GVersionFull>();
-    final SortedSet<GVersionES> required_es =
-      new TreeSet<GVersion.GVersionES>();
-    required_es.add(GVersionES.GLSL_ES_100);
-
-    final GVersionsSupported s =
-      vc.checkFragmentShader(fs, required_full, required_es);
-    Assert.assertTrue(s.getESVersions().contains(GVersionES.GLSL_ES_100));
   }
 }

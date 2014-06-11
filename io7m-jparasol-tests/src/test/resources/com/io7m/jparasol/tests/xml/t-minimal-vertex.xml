@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:meta-vertex g:version="4" xmlns:g="http://schemas.io7m.com/parasol/glsl-meta">
+  <g:program-name>com.io7m.example.p</g:program-name>
+  <g:supports>
+    <g:version g:number="110" g:api="glsl"/>
+  </g:supports>
+  <g:parameters-vertex>
+    <g:declared-vertex-parameters/>
+    <g:declared-vertex-inputs/>
+    <g:declared-vertex-outputs>
+      <g:output g:name="out_0" g:type="vec4"/>
+    </g:declared-vertex-outputs>
+  </g:parameters-vertex>
+</g:meta-vertex>

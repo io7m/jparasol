@@ -57,7 +57,8 @@ public final class ModuleStructureTest
     final @Nonnull String name)
   {
     final URL r =
-      ParserTest.class.getResource("/com/io7m/jparasol/tests/untyped/" + name);
+      ParserTest.class
+        .getResource("/com/io7m/jparasol/tests/untyped/" + name);
     return r != null;
   }
 
@@ -138,8 +139,8 @@ public final class ModuleStructureTest
   {
     try {
       final InputStream is =
-        ParserTest.class.getResourceAsStream("/com/io7m/jparasol/tests/untyped/"
-          + name);
+        ParserTest.class
+          .getResourceAsStream("/com/io7m/jparasol/tests/untyped/" + name);
       final Lexer lexer = new Lexer(is);
       if (internal) {
         final Parser p = Parser.newInternalParser(lexer);
