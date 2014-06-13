@@ -16,6 +16,10 @@
 
 package com.io7m.jparasol.frontend;
 
+/**
+ * A batch contained a duplicate shader.
+ */
+
 public final class JPBatchDuplicateShader extends JPBatchException
 {
   private static final long serialVersionUID;
@@ -23,6 +27,13 @@ public final class JPBatchDuplicateShader extends JPBatchException
   static {
     serialVersionUID = 9191655882066631383L;
   }
+
+  /**
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message.
+   */
 
   public JPBatchDuplicateShader(
     final String message)

@@ -16,6 +16,10 @@
 
 package com.io7m.jparasol.frontend;
 
+/**
+ * A batch contained a duplicate output.
+ */
+
 public final class JPBatchDuplicateOutput extends JPBatchException
 {
   private static final long serialVersionUID;
@@ -23,6 +27,13 @@ public final class JPBatchDuplicateOutput extends JPBatchException
   static {
     serialVersionUID = 9191655882066631383L;
   }
+
+  /**
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message.
+   */
 
   public JPBatchDuplicateOutput(
     final String message)

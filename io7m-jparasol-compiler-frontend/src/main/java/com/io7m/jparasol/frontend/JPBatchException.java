@@ -18,6 +18,10 @@ package com.io7m.jparasol.frontend;
 
 import com.io7m.jparasol.core.JParasolException;
 
+/**
+ * The type of exceptions indicating invalid batches.
+ */
+
 public abstract class JPBatchException extends JParasolException
 {
   private static final long serialVersionUID;
@@ -25,6 +29,13 @@ public abstract class JPBatchException extends JParasolException
   static {
     serialVersionUID = 9191655882066631383L;
   }
+
+  /**
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message.
+   */
 
   public JPBatchException(
     final String message)

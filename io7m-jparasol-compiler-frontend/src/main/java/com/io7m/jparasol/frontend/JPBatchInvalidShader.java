@@ -16,6 +16,10 @@
 
 package com.io7m.jparasol.frontend;
 
+/**
+ * A batch contained an invalid shader name.
+ */
+
 public final class JPBatchInvalidShader extends JPBatchException
 {
   private static final long serialVersionUID;
@@ -23,6 +27,13 @@ public final class JPBatchInvalidShader extends JPBatchException
   static {
     serialVersionUID = 9191655882066631383L;
   }
+
+  /**
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message.
+   */
 
   public JPBatchInvalidShader(
     final String message)

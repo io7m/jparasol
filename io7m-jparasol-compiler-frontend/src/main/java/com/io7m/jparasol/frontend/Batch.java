@@ -133,7 +133,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
   public void addShader(
     final TASTShaderNameFlat shader)
-    throws JPBatchException
+    throws JPBatchDuplicateShader
   {
     if (this.shaders.contains(shader)) {
       throw new JPBatchDuplicateShader(String.format(
@@ -162,7 +162,9 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
   public void addShaderWithOutputName(
     final TASTShaderNameFlat shader,
     final String name)
-    throws JPBatchException
+    throws JPBatchInvalidOutput,
+      JPBatchDuplicateShader,
+      JPBatchDuplicateOutput
   {
     if (this.shaders.contains(shader)) {
       throw new JPBatchDuplicateShader(String.format(

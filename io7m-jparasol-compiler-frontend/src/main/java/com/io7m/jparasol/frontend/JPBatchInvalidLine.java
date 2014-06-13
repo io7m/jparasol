@@ -16,6 +16,10 @@
 
 package com.io7m.jparasol.frontend;
 
+/**
+ * A batch contained a line that could not be parsed.
+ */
+
 public final class JPBatchInvalidLine extends JPBatchException
 {
   private static final long serialVersionUID;
@@ -23,6 +27,13 @@ public final class JPBatchInvalidLine extends JPBatchException
   static {
     serialVersionUID = 9191655882066631383L;
   }
+
+  /**
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message.
+   */
 
   public JPBatchInvalidLine(
     final String message)
