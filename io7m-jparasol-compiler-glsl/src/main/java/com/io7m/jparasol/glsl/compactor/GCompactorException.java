@@ -16,11 +16,13 @@
 
 package com.io7m.jparasol.glsl.compactor;
 
+import com.io7m.jparasol.core.JParasolException;
+
 /**
  * Exceptions that can occur during compaction.
  */
 
-public final class GCompactorException extends Exception
+public final class GCompactorException extends JParasolException
 {
   private static final long serialVersionUID;
 

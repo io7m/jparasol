@@ -75,20 +75,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   /**
-   * @return The current parameter as XML
-   */
-
-  public static Element serializeToXML(
-    final FragmentParameter i)
-  {
-    final String uri = XMLMeta.XML_URI_STRING;
-    final Element e = new Element("g:parameter", uri);
-    e.addAttribute(new Attribute("g:name", uri, i.getName()));
-    e.addAttribute(new Attribute("g:type", uri, i.getType()));
-    return e;
-  }
-
-  /**
    * @param vp
    *          The set of parameters.
    * @return The parameters as XML.
@@ -103,6 +89,20 @@ import com.io7m.junreachable.UnreachableCodeException;
       assert v != null;
       e.appendChild(XMLFragmentParameter.serializeToXML(v));
     }
+    return e;
+  }
+
+  /**
+   * @return The current parameter as XML
+   */
+
+  public static Element serializeToXML(
+    final FragmentParameter i)
+  {
+    final String uri = XMLMeta.XML_URI_STRING;
+    final Element e = new Element("g:parameter", uri);
+    e.addAttribute(new Attribute("g:name", uri, i.getName()));
+    e.addAttribute(new Attribute("g:type", uri, i.getType()));
     return e;
   }
 

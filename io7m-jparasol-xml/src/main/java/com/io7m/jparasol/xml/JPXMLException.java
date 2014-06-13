@@ -14,42 +14,45 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.core;
+package com.io7m.jparasol.xml;
 
-import java.util.SortedSet;
-
-import com.io7m.jfunctional.OptionType;
+import com.io7m.jparasol.core.JParasolException;
 
 /**
- * The type of compiled shader metadata.
+ * Exceptions related to XML.
  */
 
-public interface CompiledShaderMetaType
+public class JPXMLException extends JParasolException
 {
-  /**
-   * @return The fully-qualified name of the shader.
-   */
+  private static final long serialVersionUID;
 
-  String getName();
-
-  /**
-   * @return The supported versions of GLSL ES.
-   */
-
-  SortedSet<GVersionES> getSupportsES();
+  static {
+    serialVersionUID = 86493263982016319L;
+  }
 
   /**
-   * @return The supported versions of GLSL.
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message.
    */
 
-  SortedSet<GVersionFull> getSupportsFull();
+  public JPXMLException(
+    final String message)
+  {
+    super(message);
+  }
 
   /**
-   * @return The name of the GLSL source code file for the given version, or
-   *         {@link com.io7m.jfunctional.None} if there is no file for the
-   *         given version.
+   * Construct an exception.
+   * 
+   * @param cause
+   *          The cause.
    */
 
-  OptionType<String> getSourceCodeFilename(
-    final GVersionType v);
+  public JPXMLException(
+    final Throwable cause)
+  {
+    super(cause);
+  }
 }

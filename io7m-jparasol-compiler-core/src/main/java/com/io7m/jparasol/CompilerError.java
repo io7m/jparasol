@@ -20,34 +20,19 @@ import java.io.File;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
+import com.io7m.jparasol.core.JParasolException;
 import com.io7m.jparasol.lexer.Position;
 
 /**
  * The base type of compilation error.
  */
 
-@EqualityReference public abstract class CompilerError extends Exception
+@EqualityReference public abstract class CompilerError extends
+  JParasolException
 {
   private static final long serialVersionUID = -926502044525419698L;
   private final File        file;
   private final Position    position;
-
-  /**
-   * Construct a new compiler error.
-   * 
-   * @param in_file
-   *          The file
-   * @param in_position
-   *          The position
-   */
-
-  public CompilerError(
-    final File in_file,
-    final Position in_position)
-  {
-    this.file = NullCheck.notNull(in_file, "File");
-    this.position = NullCheck.notNull(in_position, "Position");
-  }
 
   /**
    * Construct a new compiler error.

@@ -19,8 +19,11 @@ package com.io7m.jparasol.core;
 import java.util.SortedSet;
 
 import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jfunctional.Option;
+import com.io7m.jfunctional.OptionType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
+import com.io7m.junreachable.UnreachableCodeException;
 
 /**
  * Metadata for a compiled vertex shader.
@@ -169,5 +172,44 @@ import com.io7m.jnull.Nullable;
     result = (prime * result) + this.vertex_outputs.hashCode();
     result = (prime * result) + this.vertex_parameters.hashCode();
     return result;
+  }
+
+  @SuppressWarnings({ "boxing", "synthetic-access" }) @Override public
+    OptionType<String>
+    getSourceCodeFilename(
+      final GVersionType v)
+  {
+    return v
+      .versionAccept(new GVersionVisitorType<OptionType<String>, UnreachableCodeException>() {
+        @Override public OptionType<String> versionVisitES(
+          final GVersionES ve)
+        {
+          if (UncompactedVertexShaderMeta.this.supports_es.contains(ve)) {
+            final String r =
+              String.format(
+                "%s-%s.v",
+                v.versionGetAPIName(),
+                v.versionGetNumber());
+            assert r != null;
+            return Option.some(r);
+          }
+          return Option.none();
+        }
+
+        @Override public OptionType<String> versionVisitFull(
+          final GVersionFull vf)
+        {
+          if (UncompactedVertexShaderMeta.this.supports_full.contains(vf)) {
+            final String r =
+              String.format(
+                "%s-%s.v",
+                v.versionGetAPIName(),
+                v.versionGetNumber());
+            assert r != null;
+            return Option.some(r);
+          }
+          return Option.none();
+        }
+      });
   }
 }

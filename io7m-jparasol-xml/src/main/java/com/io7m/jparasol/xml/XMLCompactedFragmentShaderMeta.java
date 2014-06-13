@@ -22,7 +22,6 @@ import java.util.TreeSet;
 
 import nu.xom.Attribute;
 import nu.xom.Element;
-import nu.xom.ValidityException;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jparasol.core.CompactedFragmentShaderMeta;
@@ -33,6 +32,7 @@ import com.io7m.jparasol.core.GVersion;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
+import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -43,13 +43,16 @@ import com.io7m.junreachable.UnreachableCodeException;
 {
   /**
    * @return A fragment shader from the given XML element.
-   * @throws ValidityException
+   * @throws JPXMLValidityException
    *           On parse errors.
+   * @throws JPMissingHash
+   *           On missing hashes for supported versions.
    */
 
   public static CompactedFragmentShaderMeta parseFromXML(
     final Element e)
-    throws ValidityException
+    throws JPXMLValidityException,
+      JPMissingHash
   {
     final String name = XMLMeta.parseName(e);
     final SortedSet<GVersionType> supports = XMLMeta.parseSupports(e);

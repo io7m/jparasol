@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.OptionType;
 import com.io7m.jnull.NullCheck;
 
 /**
@@ -70,6 +71,12 @@ import com.io7m.jnull.NullCheck;
   @Override public String getName()
   {
     return this.meta.getName();
+  }
+
+  @Override public OptionType<String> getSourceCodeFilename(
+    final GVersionType v)
+  {
+    return this.meta.getSourceCodeFilename(v);
   }
 
   @Override public Map<String, SourceLines> getSourcesByHash()

@@ -19,6 +19,8 @@ package com.io7m.jparasol.core;
 import java.util.SortedSet;
 
 import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jfunctional.Option;
+import com.io7m.jfunctional.OptionType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
 
@@ -118,6 +120,12 @@ import com.io7m.jnull.Nullable;
   @Override public String getName()
   {
     return this.name;
+  }
+
+  @Override public OptionType<String> getSourceCodeFilename(
+    final GVersionType v)
+  {
+    return Option.none();
   }
 
   @Override public SortedSet<GVersionES> getSupportsES()

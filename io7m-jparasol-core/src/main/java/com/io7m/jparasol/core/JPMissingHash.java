@@ -16,40 +16,29 @@
 
 package com.io7m.jparasol.core;
 
-import java.util.SortedSet;
-
-import com.io7m.jfunctional.OptionType;
-
 /**
- * The type of compiled shader metadata.
+ * A compacted shader is missing associated hash values for the set of
+ * supported versions.
  */
 
-public interface CompiledShaderMetaType
+public final class JPMissingHash extends JParasolException
 {
-  /**
-   * @return The fully-qualified name of the shader.
-   */
+  private static final long serialVersionUID;
 
-  String getName();
-
-  /**
-   * @return The supported versions of GLSL ES.
-   */
-
-  SortedSet<GVersionES> getSupportsES();
+  static {
+    serialVersionUID = 4784644452968214991L;
+  }
 
   /**
-   * @return The supported versions of GLSL.
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message.
    */
 
-  SortedSet<GVersionFull> getSupportsFull();
-
-  /**
-   * @return The name of the GLSL source code file for the given version, or
-   *         {@link com.io7m.jfunctional.None} if there is no file for the
-   *         given version.
-   */
-
-  OptionType<String> getSourceCodeFilename(
-    final GVersionType v);
+  public JPMissingHash(
+    final String message)
+  {
+    super(message);
+  }
 }

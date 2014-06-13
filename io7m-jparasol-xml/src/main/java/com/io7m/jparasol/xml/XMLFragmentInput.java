@@ -73,20 +73,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   /**
-   * @return The current input as XML
-   */
-
-  public static Element serializeToXML(
-    final FragmentInput i)
-  {
-    final String uri = XMLMeta.XML_URI_STRING;
-    final Element e = new Element("g:input", uri);
-    e.addAttribute(new Attribute("g:name", uri, i.getName()));
-    e.addAttribute(new Attribute("g:type", uri, i.getType()));
-    return e;
-  }
-
-  /**
    * @param vi
    *          The set of inputs.
    * @return The inputs as XML.
@@ -101,6 +87,20 @@ import com.io7m.junreachable.UnreachableCodeException;
       assert v != null;
       e.appendChild(XMLFragmentInput.serializeToXML(v));
     }
+    return e;
+  }
+
+  /**
+   * @return The current input as XML
+   */
+
+  public static Element serializeToXML(
+    final FragmentInput i)
+  {
+    final String uri = XMLMeta.XML_URI_STRING;
+    final Element e = new Element("g:input", uri);
+    e.addAttribute(new Attribute("g:name", uri, i.getName()));
+    e.addAttribute(new Attribute("g:type", uri, i.getType()));
     return e;
   }
 

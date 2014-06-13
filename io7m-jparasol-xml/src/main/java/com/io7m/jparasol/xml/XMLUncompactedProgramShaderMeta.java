@@ -22,7 +22,6 @@ import java.util.TreeSet;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Elements;
-import nu.xom.ValidityException;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jparasol.core.GVersion;
@@ -57,13 +56,13 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * @return A program shader from the given XML element.
-   * @throws ValidityException
+   * @throws JPXMLValidityException
    *           On parse errors.
    */
 
   public static UncompactedProgramShaderMeta parseFromXML(
     final Element e)
-    throws ValidityException
+    throws JPXMLValidityException
   {
     final String name = XMLMeta.parseName(e);
     final SortedSet<GVersionType> supports = XMLMeta.parseSupports(e);

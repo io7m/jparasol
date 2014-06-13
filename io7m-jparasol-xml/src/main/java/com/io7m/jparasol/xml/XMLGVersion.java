@@ -18,7 +18,6 @@ package com.io7m.jparasol.xml;
 
 import nu.xom.Attribute;
 import nu.xom.Element;
-import nu.xom.ValidityException;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jparasol.core.GVersionES;
@@ -32,24 +31,19 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @EqualityReference public final class XMLGVersion
 {
-  private XMLGVersion()
-  {
-    throw new UnreachableCodeException();
-  }
-
   /**
    * Parse a version number from the given element.
    * 
    * @param e
    *          The element.
    * @return A version number.
-   * @throws ValidityException
+   * @throws JPXMLValidityException
    *           If an error occurs during parsing.
    */
 
   public static GVersionType parseFromXML(
     final Element e)
-    throws ValidityException
+    throws JPXMLValidityException
   {
     final Attribute av = e.getAttribute("number", XMLMeta.XML_URI_STRING);
     final Attribute aa = e.getAttribute("api", XMLMeta.XML_URI_STRING);
@@ -65,13 +59,18 @@ import com.io7m.junreachable.UnreachableCodeException;
         return new GVersionFull(avi);
       }
 
-      throw new ValidityException(String.format(
+      throw new JPXMLValidityException(String.format(
         "API must be 'glsl-es' or 'glsl' (got '%s')",
         aas));
 
     } catch (final NumberFormatException x) {
-      throw new ValidityException(
+      throw new JPXMLValidityException(
         "Could not parse number attribute on version element");
     }
+  }
+
+  private XMLGVersion()
+  {
+    throw new UnreachableCodeException();
   }
 }

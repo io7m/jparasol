@@ -20,8 +20,11 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 
 import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jfunctional.Option;
+import com.io7m.jfunctional.OptionType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
+import com.io7m.junreachable.UnreachableCodeException;
 
 /**
  * Metadata for a compiled fragment shader.
@@ -171,5 +174,44 @@ import com.io7m.jnull.Nullable;
   @Override public SortedSet<GVersionFull> getSupportsFull()
   {
     return this.supports_full;
+  }
+
+  @SuppressWarnings({ "boxing", "synthetic-access" }) @Override public
+    OptionType<String>
+    getSourceCodeFilename(
+      final GVersionType v)
+  {
+    return v
+      .versionAccept(new GVersionVisitorType<OptionType<String>, UnreachableCodeException>() {
+        @Override public OptionType<String> versionVisitES(
+          final GVersionES ve)
+        {
+          if (UncompactedFragmentShaderMeta.this.supports_es.contains(ve)) {
+            final String r =
+              String.format(
+                "%s-%s.f",
+                v.versionGetAPIName(),
+                v.versionGetNumber());
+            assert r != null;
+            return Option.some(r);
+          }
+          return Option.none();
+        }
+
+        @Override public OptionType<String> versionVisitFull(
+          final GVersionFull vf)
+        {
+          if (UncompactedFragmentShaderMeta.this.supports_full.contains(vf)) {
+            final String r =
+              String.format(
+                "%s-%s.f",
+                v.versionGetAPIName(),
+                v.versionGetNumber());
+            assert r != null;
+            return Option.some(r);
+          }
+          return Option.none();
+        }
+      });
   }
 }

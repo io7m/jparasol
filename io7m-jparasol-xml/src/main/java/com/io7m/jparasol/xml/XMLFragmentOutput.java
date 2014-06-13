@@ -22,7 +22,6 @@ import java.util.TreeMap;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Elements;
-import nu.xom.ValidityException;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jparasol.core.FragmentOutput;
@@ -38,7 +37,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @param e
    *          The root element.
    * @return A set of declared fragment outputs.
-   * @throws ValidityException
+   * @throws JPXMLValidityException
    *           If a problem occurs during parsing.
    */
 
@@ -46,7 +45,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     SortedMap<Integer, FragmentOutput>
     parseDeclaredOutputsFromXML(
       final Element e)
-      throws ValidityException
+      throws JPXMLValidityException
   {
     final SortedMap<Integer, FragmentOutput> routputs =
       new TreeMap<Integer, FragmentOutput>();
@@ -66,13 +65,13 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * @return A fragment output from the given XML element.
-   * @throws ValidityException
+   * @throws JPXMLValidityException
    *           If a problem occurs whilst parsing.
    */
 
   public static FragmentOutput parseFromXML(
     final Element e)
-    throws ValidityException
+    throws JPXMLValidityException
   {
     final Attribute an = e.getAttribute("name", XMLMeta.XML_URI_STRING);
     final Attribute at = e.getAttribute("type", XMLMeta.XML_URI_STRING);
@@ -90,25 +89,10 @@ import com.io7m.junreachable.UnreachableCodeException;
 
       return FragmentOutput.newOutput(an_v, pi, at_v);
     } catch (final NumberFormatException x) {
-      throw new ValidityException(
+      throw new JPXMLValidityException(
         "Could not parse 'index' number on 'fragment-output' element: "
           + x.getMessage());
     }
-  }
-
-  /**
-   * @return The current output as XML
-   */
-
-  public static Element serializeToXML(
-    final FragmentOutput i)
-  {
-    final String uri = XMLMeta.XML_URI_STRING;
-    final Element e = new Element("g:fragment-output", uri);
-    e.addAttribute(new Attribute("g:name", uri, i.getName()));
-    e.addAttribute(new Attribute("g:type", uri, i.getType()));
-    e.addAttribute(new Attribute("g:index", uri, i.getIndex().toString()));
-    return e;
   }
 
   /**
@@ -128,6 +112,21 @@ import com.io7m.junreachable.UnreachableCodeException;
       assert o != null;
       e.appendChild(XMLFragmentOutput.serializeToXML(o));
     }
+    return e;
+  }
+
+  /**
+   * @return The current output as XML
+   */
+
+  public static Element serializeToXML(
+    final FragmentOutput i)
+  {
+    final String uri = XMLMeta.XML_URI_STRING;
+    final Element e = new Element("g:fragment-output", uri);
+    e.addAttribute(new Attribute("g:name", uri, i.getName()));
+    e.addAttribute(new Attribute("g:type", uri, i.getType()));
+    e.addAttribute(new Attribute("g:index", uri, i.getIndex().toString()));
     return e;
   }
 

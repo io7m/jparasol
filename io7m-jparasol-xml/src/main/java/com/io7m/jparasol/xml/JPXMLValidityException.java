@@ -14,42 +14,43 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.core;
-
-import java.util.SortedSet;
-
-import com.io7m.jfunctional.OptionType;
+package com.io7m.jparasol.xml;
 
 /**
- * The type of compiled shader metadata.
+ * Exceptions related to XML validation.
  */
 
-public interface CompiledShaderMetaType
+public final class JPXMLValidityException extends JPXMLException
 {
-  /**
-   * @return The fully-qualified name of the shader.
-   */
+  private static final long serialVersionUID;
 
-  String getName();
-
-  /**
-   * @return The supported versions of GLSL ES.
-   */
-
-  SortedSet<GVersionES> getSupportsES();
+  static {
+    serialVersionUID = 86493263982016319L;
+  }
 
   /**
-   * @return The supported versions of GLSL.
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message.
    */
 
-  SortedSet<GVersionFull> getSupportsFull();
+  public JPXMLValidityException(
+    final String message)
+  {
+    super(message);
+  }
 
   /**
-   * @return The name of the GLSL source code file for the given version, or
-   *         {@link com.io7m.jfunctional.None} if there is no file for the
-   *         given version.
+   * Construct an exception.
+   * 
+   * @param cause
+   *          The cause.
    */
 
-  OptionType<String> getSourceCodeFilename(
-    final GVersionType v);
+  public JPXMLValidityException(
+    final Throwable cause)
+  {
+    super(cause);
+  }
 }

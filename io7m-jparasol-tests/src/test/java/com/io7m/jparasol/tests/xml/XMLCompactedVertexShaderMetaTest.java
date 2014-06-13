@@ -22,44 +22,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import nu.xom.Document;
 import nu.xom.Element;
-import nu.xom.ParsingException;
 import nu.xom.Serializer;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 
 import com.io7m.jparasol.core.CompactedVertexShaderMeta;
 import com.io7m.jparasol.core.CompiledShaderMetaType;
+import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.tests.TestUtilities;
+import com.io7m.jparasol.xml.JPXMLException;
 import com.io7m.jparasol.xml.XMLCompactedVertexShaderMeta;
 import com.io7m.jparasol.xml.XMLMeta;
 import com.io7m.junreachable.UnreachableCodeException;
 
-public final class XMLCompactedVertexShaderMetaTest
+@SuppressWarnings({ "null", "resource", "static-method" }) public final class XMLCompactedVertexShaderMetaTest
 {
   private static CompiledShaderMetaType fromStream(
     final InputStream stream)
+    throws JPMissingHash
   {
     try {
       return XMLMeta.fromStream(stream, TestUtilities.getLog());
-    } catch (final ParsingException e) {
-      throw new UnreachableCodeException(e);
-    } catch (final IOException e) {
-      throw new UnreachableCodeException(e);
-    } catch (final SAXException e) {
-      throw new UnreachableCodeException(e);
-    } catch (final ParserConfigurationException e) {
+    } catch (final JPXMLException e) {
       throw new UnreachableCodeException(e);
     }
   }
 
   private static CompiledShaderMetaType getXML(
     final String name)
+    throws JPMissingHash
   {
     final InputStream stream =
       XMLCompactedVertexShaderMetaTest.class.getResourceAsStream(name);
@@ -82,7 +76,15 @@ public final class XMLCompactedVertexShaderMetaTest
     }
   }
 
+  @Test(expected = JPMissingHash.class) public void testMissingHash_0()
+    throws JPMissingHash
+  {
+    XMLCompactedVertexShaderMetaTest
+      .getXML("/com/io7m/jparasol/tests/xml/t-actual-vertex-compacted-missing.xml");
+  }
+
   @Test public void testRoundTrip_0()
+    throws JPMissingHash
   {
     final CompactedVertexShaderMeta meta0 =
       (CompactedVertexShaderMeta) XMLCompactedVertexShaderMetaTest

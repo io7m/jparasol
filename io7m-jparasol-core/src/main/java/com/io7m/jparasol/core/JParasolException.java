@@ -16,40 +16,57 @@
 
 package com.io7m.jparasol.core;
 
-import java.util.SortedSet;
-
-import com.io7m.jfunctional.OptionType;
-
 /**
- * The type of compiled shader metadata.
+ * The root type of exceptions thrown by the Parasol package.
  */
 
-public interface CompiledShaderMetaType
+public abstract class JParasolException extends Exception
 {
-  /**
-   * @return The fully-qualified name of the shader.
-   */
+  private static final long serialVersionUID;
 
-  String getName();
-
-  /**
-   * @return The supported versions of GLSL ES.
-   */
-
-  SortedSet<GVersionES> getSupportsES();
+  static {
+    serialVersionUID = 2582914394991728838L;
+  }
 
   /**
-   * @return The supported versions of GLSL.
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message
    */
 
-  SortedSet<GVersionFull> getSupportsFull();
+  public JParasolException(
+    final String message)
+  {
+    super(message);
+  }
 
   /**
-   * @return The name of the GLSL source code file for the given version, or
-   *         {@link com.io7m.jfunctional.None} if there is no file for the
-   *         given version.
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message
+   * @param cause
+   *          The cause
    */
 
-  OptionType<String> getSourceCodeFilename(
-    final GVersionType v);
+  public JParasolException(
+    final String message,
+    final Throwable cause)
+  {
+    super(message, cause);
+  }
+
+  /**
+   * Construct an exception.
+   * 
+   * @param cause
+   *          The cause
+   */
+
+  public JParasolException(
+    final Throwable cause)
+  {
+    super(cause);
+  }
 }

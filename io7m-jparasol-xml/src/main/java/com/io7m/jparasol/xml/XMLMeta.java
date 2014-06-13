@@ -58,6 +58,7 @@ import com.io7m.jparasol.core.FragmentParameter;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
+import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.core.VertexInput;
 import com.io7m.jparasol.core.VertexOutput;
 import com.io7m.jparasol.core.VertexParameter;
@@ -139,13 +140,13 @@ import com.io7m.junreachable.UnreachableCodeException;
    * 
    * @param root
    *          The root element.
-   * @throws ValidityException
+   * @throws JPXMLValidityException
    *           If the document is of the wrong version or invalid.
    */
 
   public static void checkVersion(
     final Element root)
-    throws ValidityException
+    throws JPXMLValidityException
   {
     final Attribute version =
       root.getAttribute("version", XMLMeta.XML_URI_STRING);
@@ -159,27 +160,30 @@ import com.io7m.junreachable.UnreachableCodeException;
         message.append(version_number);
         message.append(", supported versions are: ");
         message.append(XMLMeta.XML_VERSION);
-        throw new ValidityException(message.toString());
+        throw new JPXMLValidityException(message.toString());
       }
     } catch (final NumberFormatException x) {
       final StringBuilder message = new StringBuilder();
       message
         .append("Could not parse 'version' attribute as numeric value: ");
       message.append(x.getMessage());
-      throw new ValidityException(message.toString());
+      throw new JPXMLValidityException(message.toString());
     }
   }
 
   /**
    * Extract metadata from the given document.
    * 
-   * @throws ValidityException
+   * @throws JPXMLValidityException
    *           Iff the given document is not a valid metadata document.
+   * @throws JPMissingHash
+   *           On missing hashes for supported versions.
    */
 
   private static CompiledShaderMetaType fromDocument(
     final Document doc)
-    throws ValidityException
+    throws JPXMLValidityException,
+      JPMissingHash
   {
     NullCheck.notNull(doc, "Document");
 
@@ -212,7 +216,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       .append("Expected one of {'meta-vertex','meta-vertex-compacted','meta-fragment','meta-fragment-compacted','meta-program'} but got '");
     message.append(root.getLocalName());
     message.append("'");
-    throw new ValidityException(message.toString());
+    throw new JPXMLValidityException(message.toString());
   }
 
   /**
@@ -223,25 +227,31 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @param log
    *          A log interface
    * @return XML metadata
-   * @throws ParsingException
-   *           On parse errors
-   * @throws IOException
-   *           On I/O errors
-   * @throws SAXException
-   *           On parse errors
-   * @throws ParserConfigurationException
-   *           On parser configuration errors
+   * @throws JPXMLException
+   *           On XML-related errors.
+   * @throws JPMissingHash
+   *           On missing hashes for supported versions.
    */
 
   public static CompiledShaderMetaType fromStream(
     final InputStream stream,
     final LogUsableType log)
-    throws ParsingException,
-      IOException,
-      SAXException,
-      ParserConfigurationException
+    throws JPXMLException,
+      JPMissingHash
   {
-    return XMLMeta.fromDocument(XMLMeta.fromStreamValidate(stream, log));
+    try {
+      return XMLMeta.fromDocument(XMLMeta.fromStreamValidate(stream, log));
+    } catch (final ValidityException e) {
+      throw new JPXMLValidityException(e);
+    } catch (final SAXException e) {
+      throw new JPXMLException(e);
+    } catch (final ParserConfigurationException e) {
+      throw new JPXMLException(e);
+    } catch (final ParsingException e) {
+      throw new JPXMLException(e);
+    } catch (final IOException e) {
+      throw new JPXMLException(e);
+    }
   }
 
   static Document fromStreamValidate(
@@ -317,13 +327,13 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @param root
    *          The root element.
    * @return The set of supported versions.
-   * @throws ValidityException
+   * @throws JPXMLValidityException
    *           If an error occurs whilst parsing.
    */
 
   public static SortedSet<GVersionType> parseSupports(
     final Element root)
-    throws ValidityException
+    throws JPXMLValidityException
   {
     final SortedSet<GVersionType> versions = new TreeSet<GVersionType>();
 
@@ -347,13 +357,13 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @param root
    *          The root element.
    * @return The version → hash mappings.
-   * @throws ValidityException
+   * @throws JPXMLValidityException
    *           If an error occurs whilst parsing.
    */
 
   public static SortedMap<GVersionType, String> parseVersionHashes(
     final Element root)
-    throws ValidityException
+    throws JPXMLValidityException
   {
     final SortedMap<GVersionType, String> m =
       new TreeMap<GVersionType, String>();
@@ -381,12 +391,12 @@ import com.io7m.junreachable.UnreachableCodeException;
         } else if (v_api.equals(GVersionFull.API_NAME)) {
           v = new GVersionFull(Integer.parseInt(av.getValue()));
         } else {
-          throw new IllegalArgumentException("Unknown API '" + v_api + "'");
+          throw new JPXMLValidityException("Unknown API '" + v_api + "'");
         }
 
         m.put(v, hash);
       } catch (final NumberFormatException x) {
-        throw new ValidityException(
+        throw new JPXMLValidityException(
           "Could not parse 'version' number on 'mapping' element: "
             + x.getMessage());
       }

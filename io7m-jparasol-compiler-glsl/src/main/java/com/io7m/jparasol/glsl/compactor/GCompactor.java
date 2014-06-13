@@ -29,6 +29,7 @@ import com.io7m.jparasol.core.CompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.CompactedVertexShader;
 import com.io7m.jparasol.core.CompactedVertexShaderMeta;
 import com.io7m.jparasol.core.GVersionType;
+import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.core.SourceLines;
 import com.io7m.jparasol.core.UncompactedFragmentShader;
 import com.io7m.jparasol.core.UncompactedFragmentShaderMeta;
@@ -103,6 +104,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       throw new GCompactorException(e);
     } catch (final IOException e) {
       throw new GCompactorException(e);
+    } catch (final JPMissingHash e) {
+
+      /**
+       * The compactor should not lose versions! This would indicate a bug.
+       */
+
+      throw new UnreachableCodeException(e);
     }
   }
 
@@ -155,6 +163,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       throw new GCompactorException(e);
     } catch (final IOException e) {
       throw new GCompactorException(e);
+    } catch (final JPMissingHash e) {
+
+      /**
+       * The compactor should not lose versions! This would indicate a bug.
+       */
+
+      throw new UnreachableCodeException(e);
     }
   }
 

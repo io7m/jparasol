@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jfunctional.Option;
+import com.io7m.jfunctional.OptionType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
 
@@ -46,7 +48,12 @@ import com.io7m.jnull.Nullable;
    *          The declared outputs.
    * @param in_vertex_parameters
    *          The declared parameters.
-   * @return A shader.
+   * @param in_version_to_hash
+   *          A map from GLSL versions to file hashes.
+   * 
+   * @return Metadata.
+   * @throws JPMissingHash
+   *           If one or more versions are missing an associated hash value.
    */
 
   public static CompactedVertexShaderMeta newMetadata(
@@ -57,6 +64,7 @@ import com.io7m.jnull.Nullable;
     final SortedSet<VertexOutput> in_vertex_outputs,
     final SortedSet<VertexParameter> in_vertex_parameters,
     final Map<GVersionType, String> in_version_to_hash)
+    throws JPMissingHash
   {
     return new CompactedVertexShaderMeta(
       in_name,
@@ -84,6 +92,7 @@ import com.io7m.jnull.Nullable;
     final SortedSet<VertexOutput> in_vertex_outputs,
     final SortedSet<VertexParameter> in_vertex_parameters,
     final Map<GVersionType, String> in_version_to_hash)
+    throws JPMissingHash
   {
     this.name = NullCheck.notNull(in_name, "Name");
     this.supports_es =
@@ -98,6 +107,11 @@ import com.io7m.jnull.Nullable;
       NullCheck.notNullAll(in_vertex_parameters, "Vertex parameters");
     this.version_to_hash =
       NullCheck.notNull(in_version_to_hash, "Version to hash");
+
+    VersionsHash.checkComplete(
+      in_supports_es,
+      in_supports_full,
+      in_version_to_hash);
   }
 
   @Override public boolean equals(
@@ -155,6 +169,20 @@ import com.io7m.jnull.Nullable;
   @Override public String getName()
   {
     return this.name;
+  }
+
+  @Override public OptionType<String> getSourceCodeFilename(
+    final GVersionType v)
+  {
+    if (this.version_to_hash.containsKey(v) == false) {
+      return Option.none();
+    }
+
+    final String h = this.version_to_hash.get(v);
+    assert h != null;
+    final String r = String.format("%s.v", h);
+    assert r != null;
+    return Option.some(r);
   }
 
   @Override public SortedSet<GVersionES> getSupportsES()
