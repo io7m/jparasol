@@ -10,6 +10,7 @@
     <g:version g:number="110" g:api="glsl"/>
     <g:version g:number="410" g:api="glsl"/>
     <g:version g:number="430" g:api="glsl"/>
+    <g:version g:number="440" g:api="glsl"/>
     <g:version g:number="420" g:api="glsl"/>
     <g:version g:number="330" g:api="glsl"/>
     <g:version g:number="150" g:api="glsl"/>

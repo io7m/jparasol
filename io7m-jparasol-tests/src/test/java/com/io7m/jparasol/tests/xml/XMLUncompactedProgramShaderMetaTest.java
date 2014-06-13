@@ -28,7 +28,10 @@ import nu.xom.Serializer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.io7m.jfunctional.Option;
 import com.io7m.jparasol.core.CompiledShaderMetaType;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
 import com.io7m.jparasol.tests.TestUtilities;
@@ -81,6 +84,14 @@ import com.io7m.junreachable.UnreachableCodeException;
     final UncompactedProgramShaderMeta meta0 =
       (UncompactedProgramShaderMeta) XMLUncompactedProgramShaderMetaTest
         .getXML("/com/io7m/jparasol/tests/xml/t-actual-program.xml");
+
+    for (final GVersionFull v : GVersionFull.ALL) {
+      Assert.assertEquals(Option.none(), meta0.getSourceCodeFilename(v));
+    }
+
+    for (final GVersionES v : GVersionES.ALL) {
+      Assert.assertEquals(Option.none(), meta0.getSourceCodeFilename(v));
+    }
 
     UncompactedProgramShaderMeta meta = meta0;
     for (int index = 0; index < 3; ++index) {

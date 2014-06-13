@@ -29,6 +29,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.io7m.jparasol.core.CompiledShaderMetaType;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.core.UncompactedVertexShaderMeta;
 import com.io7m.jparasol.tests.TestUtilities;
@@ -85,6 +87,22 @@ import com.io7m.junreachable.UnreachableCodeException;
     Assert.assertEquals(2, meta0.getDeclaredVertexInputs().size());
     Assert.assertEquals(3, meta0.getDeclaredVertexOutputs().size());
     Assert.assertEquals(1, meta0.getDeclaredVertexParameters().size());
+
+    for (final GVersionFull v : GVersionFull.ALL) {
+      final String expected = "glsl-" + v.versionGetNumber() + ".v";
+      System.err.println("Expected " + expected);
+      Assert.assertEquals(
+        expected,
+        XMLUncompactedFragmentShaderMetaTest.sourceCodeName(meta0, v));
+    }
+
+    for (final GVersionES v : GVersionES.ALL) {
+      final String expected = "glsl-es-" + v.versionGetNumber() + ".v";
+      System.err.println("Expected " + expected);
+      Assert.assertEquals(
+        expected,
+        XMLUncompactedFragmentShaderMetaTest.sourceCodeName(meta0, v));
+    }
 
     UncompactedVertexShaderMeta meta = meta0;
     for (int index = 0; index < 3; ++index) {

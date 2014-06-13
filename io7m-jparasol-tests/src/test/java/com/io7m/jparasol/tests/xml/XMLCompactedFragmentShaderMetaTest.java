@@ -30,6 +30,8 @@ import org.junit.Test;
 
 import com.io7m.jparasol.core.CompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.CompiledShaderMetaType;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.tests.TestUtilities;
 import com.io7m.jparasol.xml.JPXMLException;
@@ -92,6 +94,74 @@ import com.io7m.junreachable.UnreachableCodeException;
     Assert.assertEquals(3, meta0.getDeclaredFragmentInputs().size());
     Assert.assertEquals(3, meta0.getDeclaredFragmentOutputs().size());
     Assert.assertEquals(3, meta0.getDeclaredFragmentParameters().size());
+
+    Assert.assertEquals(
+      "0cf3b92ad40b9e2a938bd7f2dd2207f067601575292325bdcb8653d6ae7481b4.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_110));
+    Assert.assertEquals(
+      "0cf3b92ad40b9e2a938bd7f2dd2207f067601575292325bdcb8653d6ae7481b4.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_120));
+
+    Assert.assertEquals(
+      "0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_130));
+    Assert.assertEquals(
+      "0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_140));
+    Assert.assertEquals(
+      "0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_150));
+    Assert.assertEquals(
+      "0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_330));
+    Assert.assertEquals(
+      "0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_400));
+    Assert.assertEquals(
+      "0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_410));
+    Assert.assertEquals(
+      "0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_420));
+    Assert.assertEquals(
+      "0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_430));
+    Assert.assertEquals(
+      "0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionFull.GLSL_440));
+
+    Assert.assertEquals(
+      "535cddb5c74a881501548a6fdf184ef0b8467aab1b603166745d65d6263ec08f.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionES.GLSL_ES_100));
+    Assert.assertEquals(
+      "ec62defa1b0b3a48b2725bed74fd6e96fbc24a2a519705d664fa6edab6a42a4e.f",
+      XMLUncompactedFragmentShaderMetaTest.sourceCodeName(
+        meta0,
+        GVersionES.GLSL_ES_300));
 
     CompactedFragmentShaderMeta meta = meta0;
     for (int index = 0; index < 3; ++index) {

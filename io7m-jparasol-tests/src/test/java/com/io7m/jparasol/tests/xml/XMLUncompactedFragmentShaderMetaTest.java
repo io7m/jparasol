@@ -28,7 +28,11 @@ import nu.xom.Serializer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.io7m.jfunctional.Some;
 import com.io7m.jparasol.core.CompiledShaderMetaType;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
+import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.core.UncompactedFragmentShaderMeta;
 import com.io7m.jparasol.tests.TestUtilities;
@@ -75,6 +79,14 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
+  public static String sourceCodeName(
+    final CompiledShaderMetaType meta,
+    final GVersionType v)
+  {
+    final Some<String> r = (Some<String>) meta.getSourceCodeFilename(v);
+    return r.get();
+  }
+
   @Test public void testRoundTrip_0()
     throws JPMissingHash
   {
@@ -85,6 +97,22 @@ import com.io7m.junreachable.UnreachableCodeException;
     Assert.assertEquals(3, meta0.getDeclaredFragmentInputs().size());
     Assert.assertEquals(3, meta0.getDeclaredFragmentOutputs().size());
     Assert.assertEquals(3, meta0.getDeclaredFragmentParameters().size());
+
+    for (final GVersionFull v : GVersionFull.ALL) {
+      final String expected = "glsl-" + v.versionGetNumber() + ".f";
+      System.err.println("Expected " + expected);
+      Assert.assertEquals(
+        expected,
+        XMLUncompactedFragmentShaderMetaTest.sourceCodeName(meta0, v));
+    }
+
+    for (final GVersionES v : GVersionES.ALL) {
+      final String expected = "glsl-es-" + v.versionGetNumber() + ".f";
+      System.err.println("Expected " + expected);
+      Assert.assertEquals(
+        expected,
+        XMLUncompactedFragmentShaderMetaTest.sourceCodeName(meta0, v));
+    }
 
     UncompactedFragmentShaderMeta meta = meta0;
     for (int index = 0; index < 3; ++index) {
