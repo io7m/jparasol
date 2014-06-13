@@ -81,10 +81,10 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 
   @EqualityReference public static final class UASTUDExternal
   {
+    private final OptionType<UASTUExpression> emulation;
     private final boolean                     fragment_shader_allowed;
     private final TokenIdentifierLower        name;
     private final boolean                     vertex_shader_allowed;
-    private final OptionType<UASTUExpression> emulation;
 
     public UASTUDExternal(
       final TokenIdentifierLower in_name,
@@ -889,6 +889,42 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
     }
   }
 
+  @EqualityReference public static final class UASTUDShaderFragmentOutputAssignment extends
+    UASTUDeclarationShaderLevel
+  {
+    private final TokenIdentifierLower name;
+    private final UASTUEVariable       variable;
+
+    public UASTUDShaderFragmentOutputAssignment(
+      final TokenIdentifierLower in_name,
+      final UASTUEVariable in_variable)
+    {
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.variable = NullCheck.notNull(in_variable, "Variable");
+    }
+
+    public TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    public UASTUEVariable getVariable()
+    {
+      return this.variable;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTUDShaderFragmentOutputAssignment ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.variable);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
   @EqualityReference public static final class UASTUDShaderFragmentOutputData extends
     UASTUDShaderFragmentOutput
   {
@@ -950,42 +986,6 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
         throws E
     {
       return v.fragmentShaderVisitOutputDepth(this);
-    }
-  }
-
-  @EqualityReference public static final class UASTUDShaderFragmentOutputAssignment extends
-    UASTUDeclarationShaderLevel
-  {
-    private final TokenIdentifierLower name;
-    private final UASTUEVariable       variable;
-
-    public UASTUDShaderFragmentOutputAssignment(
-      final TokenIdentifierLower in_name,
-      final UASTUEVariable in_variable)
-    {
-      this.name = NullCheck.notNull(in_name, "Name");
-      this.variable = NullCheck.notNull(in_variable, "Variable");
-    }
-
-    public TokenIdentifierLower getName()
-    {
-      return this.name;
-    }
-
-    public UASTUEVariable getVariable()
-    {
-      return this.variable;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTUDShaderFragmentOutputAssignment ");
-      builder.append(this.name);
-      builder.append(" ");
-      builder.append(this.variable);
-      builder.append("]");
-      return builder.toString();
     }
   }
 

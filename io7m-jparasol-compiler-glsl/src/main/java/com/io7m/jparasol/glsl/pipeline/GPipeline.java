@@ -75,6 +75,39 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
+  private static void collectVersions(
+    final Set<GVersionType> v_versions,
+    final Set<GVersionType> f_versions,
+    final SortedSet<GVersionES> versions_es,
+    final SortedSet<GVersionFull> versions_full)
+  {
+    final Set<GVersionES> v_es = new HashSet<GVersionES>();
+    final Set<GVersionFull> v_full = new HashSet<GVersionFull>();
+    final Set<GVersionES> f_es = new HashSet<GVersionES>();
+    final Set<GVersionFull> f_full = new HashSet<GVersionFull>();
+
+    for (final GVersionType v : v_versions) {
+      if (v instanceof GVersionES) {
+        v_es.add((GVersionES) v);
+      } else {
+        v_full.add((GVersionFull) v);
+      }
+    }
+
+    for (final GVersionType f : f_versions) {
+      if (f instanceof GVersionES) {
+        f_es.add((GVersionES) f);
+      } else {
+        f_full.add((GVersionFull) f);
+      }
+    }
+
+    versions_es.clear();
+    versions_es.addAll(GPipeline.setIntersection(v_es, f_es));
+    versions_full.clear();
+    versions_full.addAll(GPipeline.setIntersection(v_full, f_full));
+  }
+
   /**
    * Construct a new pipeline.
    * 
@@ -136,39 +169,6 @@ import com.io7m.junreachable.UnreachableCodeException;
         versions_es,
         versions_full);
     return r;
-  }
-
-  private static void collectVersions(
-    final Set<GVersionType> v_versions,
-    final Set<GVersionType> f_versions,
-    final SortedSet<GVersionES> versions_es,
-    final SortedSet<GVersionFull> versions_full)
-  {
-    final Set<GVersionES> v_es = new HashSet<GVersionES>();
-    final Set<GVersionFull> v_full = new HashSet<GVersionFull>();
-    final Set<GVersionES> f_es = new HashSet<GVersionES>();
-    final Set<GVersionFull> f_full = new HashSet<GVersionFull>();
-
-    for (final GVersionType v : v_versions) {
-      if (v instanceof GVersionES) {
-        v_es.add((GVersionES) v);
-      } else {
-        v_full.add((GVersionFull) v);
-      }
-    }
-
-    for (final GVersionType f : f_versions) {
-      if (f instanceof GVersionES) {
-        f_es.add((GVersionES) f);
-      } else {
-        f_full.add((GVersionFull) f);
-      }
-    }
-
-    versions_es.clear();
-    versions_es.addAll(GPipeline.setIntersection(v_es, f_es));
-    versions_full.clear();
-    versions_full.addAll(GPipeline.setIntersection(v_full, f_full));
   }
 
   private static <A> SortedSet<A> setIntersection(

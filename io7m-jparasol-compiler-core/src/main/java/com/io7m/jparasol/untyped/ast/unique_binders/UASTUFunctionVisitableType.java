@@ -16,11 +16,11 @@
 
 package com.io7m.jparasol.untyped.ast.unique_binders;
 
-//CHECKSTYLE_JAVADOC:OFF
+// CHECKSTYLE_JAVADOC:OFF
 
 public interface UASTUFunctionVisitableType
 {
-  <A, B, E extends Throwable, V extends UASTUFunctionVisitorType<A, B, E>>
+    <A, B, E extends Throwable, V extends UASTUFunctionVisitorType<A, B, E>>
     A
     functionVisitableAccept(
       final V v)

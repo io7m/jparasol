@@ -217,14 +217,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
-  public void statementTerminate()
-    throws ParserError,
-      LexerError,
-      IOException
-  {
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
-  }
-
   public UASTIDShaderFragment declarationFragmentShader()
     throws ParserError,
       IOException,
@@ -1690,6 +1682,14 @@ import com.io7m.junreachable.UnreachableCodeException;
       default:
         break;
     }
+  }
+
+  public void statementTerminate()
+    throws ParserError,
+      LexerError,
+      IOException
+  {
+    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
   }
 
   public UASTIUnit unit()

@@ -72,6 +72,12 @@ import com.io7m.jnull.NullCheck;
     return this.meta.getName();
   }
 
+  @Override public OptionType<String> getSourceCodeFilename(
+    final GVersionType v)
+  {
+    return this.meta.getSourceCodeFilename(v);
+  }
+
   /**
    * @return A read-only map of the shader sources, by version.
    */
@@ -103,11 +109,5 @@ import com.io7m.jnull.NullCheck;
     throws E
   {
     return v.fragmentShader(this);
-  }
-
-  @Override public OptionType<String> getSourceCodeFilename(
-    final GVersionType v)
-  {
-    return this.meta.getSourceCodeFilename(v);
   }
 }

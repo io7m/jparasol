@@ -80,10 +80,10 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
 
   @EqualityReference public static final class UASTRDExternal
   {
+    private final OptionType<UASTRExpression> emulation;
     private final boolean                     fragment_shader_allowed;
     private final TokenIdentifierLower        name;
     private final boolean                     vertex_shader_allowed;
-    private final OptionType<UASTRExpression> emulation;
 
     public UASTRDExternal(
       final TokenIdentifierLower in_name,
@@ -95,6 +95,11 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
       this.vertex_shader_allowed = in_vertex_shader_allowed;
       this.fragment_shader_allowed = in_fragment_shader_allowed;
       this.emulation = NullCheck.notNull(in_emulation, "Emulation");
+    }
+
+    public OptionType<UASTRExpression> getEmulation()
+    {
+      return this.emulation;
     }
 
     public TokenIdentifierLower getName()
@@ -110,11 +115,6 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
     public boolean isVertexShaderAllowed()
     {
       return this.vertex_shader_allowed;
-    }
-
-    public OptionType<UASTRExpression> getEmulation()
-    {
-      return this.emulation;
     }
 
     @Override public String toString()
@@ -933,83 +933,6 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
     }
   }
 
-  @EqualityReference public static final class UASTRDShaderFragmentOutputDepth extends
-    UASTRDShaderFragmentOutput
-  {
-    public UASTRDShaderFragmentOutputDepth(
-      final TokenIdentifierLower name,
-      final UASTRTypeName type)
-
-    {
-      super(name, type);
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTRDShaderFragmentOutputDepth ");
-      builder.append(super.getName().getActual());
-      builder.append(" ");
-      builder.append(super.getType());
-      builder.append("]");
-      return builder.toString();
-    }
-
-    @Override public
-      <O, E extends Throwable, V extends UASTRFragmentShaderOutputVisitorType<O, E>>
-      O
-      fragmentShaderOutputVisitableAccept(
-        final V v)
-        throws E
-    {
-      return v.fragmentShaderVisitOutputDepth(this);
-    }
-  }
-
-  @EqualityReference public static final class UASTRDShaderFragmentOutputData extends
-    UASTRDShaderFragmentOutput
-  {
-    private final int index;
-
-    public UASTRDShaderFragmentOutputData(
-      final TokenIdentifierLower name,
-      final UASTRTypeName type,
-      final int in_index)
-
-    {
-      super(name, type);
-      this.index = in_index;
-    }
-
-    public int getIndex()
-    {
-      return this.index;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTRDShaderFragmentOutputData ");
-      builder.append(super.getName().getActual());
-      builder.append(" ");
-      builder.append(super.getType());
-      builder.append(" ");
-      builder.append(this.index);
-      builder.append("]");
-      return builder.toString();
-    }
-
-    @Override public
-      <O, E extends Throwable, V extends UASTRFragmentShaderOutputVisitorType<O, E>>
-      O
-      fragmentShaderOutputVisitableAccept(
-        final V v)
-        throws E
-    {
-      return v.fragmentShaderVisitOutputData(this);
-    }
-  }
-
   @EqualityReference public static final class UASTRDShaderFragmentOutputAssignment extends
     UASTRDeclarationShaderLevel
   {
@@ -1041,6 +964,83 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
       builder.append(this.name.getActual());
       builder.append(" ");
       builder.append(this.variable);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
+  @EqualityReference public static final class UASTRDShaderFragmentOutputData extends
+    UASTRDShaderFragmentOutput
+  {
+    private final int index;
+
+    public UASTRDShaderFragmentOutputData(
+      final TokenIdentifierLower name,
+      final UASTRTypeName type,
+      final int in_index)
+
+    {
+      super(name, type);
+      this.index = in_index;
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends UASTRFragmentShaderOutputVisitorType<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.fragmentShaderVisitOutputData(this);
+    }
+
+    public int getIndex()
+    {
+      return this.index;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTRDShaderFragmentOutputData ");
+      builder.append(super.getName().getActual());
+      builder.append(" ");
+      builder.append(super.getType());
+      builder.append(" ");
+      builder.append(this.index);
+      builder.append("]");
+      return builder.toString();
+    }
+  }
+
+  @EqualityReference public static final class UASTRDShaderFragmentOutputDepth extends
+    UASTRDShaderFragmentOutput
+  {
+    public UASTRDShaderFragmentOutputDepth(
+      final TokenIdentifierLower name,
+      final UASTRTypeName type)
+
+    {
+      super(name, type);
+    }
+
+    @Override public
+      <O, E extends Throwable, V extends UASTRFragmentShaderOutputVisitorType<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.fragmentShaderVisitOutputDepth(this);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTRDShaderFragmentOutputDepth ");
+      builder.append(super.getName().getActual());
+      builder.append(" ");
+      builder.append(super.getType());
       builder.append("]");
       return builder.toString();
     }
@@ -1571,73 +1571,6 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
     @Override public abstract TokenIdentifierLower getName();
   }
 
-  @EqualityReference public static final class UASTRDValueExternal extends
-    UASTRDValue
-  {
-    private final UASTRTypeName        ascription;
-    private final UASTRDExternal       external;
-    private final TokenIdentifierLower name;
-
-    public UASTRDValueExternal(
-      final TokenIdentifierLower in_name,
-      final UASTRTypeName in_ascription,
-      final UASTRDExternal in_external)
-    {
-      this.name = NullCheck.notNull(in_name, "Name");
-      this.ascription = NullCheck.notNull(in_ascription, "Ascription");
-      this.external = NullCheck.notNull(in_external, "External");
-      assert this.external.getEmulation().isNone();
-    }
-
-    public UASTRTypeName getAscription()
-    {
-      return this.ascription;
-    }
-
-    public UASTRDExternal getExternal()
-    {
-      return this.external;
-    }
-
-    @Override public TokenIdentifierLower getName()
-    {
-      return this.name;
-    }
-
-    @Override public
-      <T, E extends Throwable, V extends UASTRTermVisitorType<T, E>>
-      T
-      termVisitableAccept(
-        final V v)
-        throws E
-    {
-      return v.termVisitValueExternal(this);
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[UASTRDValueExternal ");
-      builder.append(this.name.getActual());
-      builder.append(" ");
-      builder.append(this.ascription);
-      builder.append(" ");
-      builder.append(this.external);
-      builder.append("]");
-      return builder.toString();
-    }
-
-    @Override public
-      <A, E extends Throwable, V extends UASTRValueVisitorType<A, E>>
-      A
-      valueVisitableAccept(
-        final V v)
-        throws E
-    {
-      return v.valueVisitExternal(this);
-    }
-  }
-
   /**
    * Value declarations.
    */
@@ -1712,6 +1645,73 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
         throws E
     {
       return v.valueVisitDefined(this);
+    }
+  }
+
+  @EqualityReference public static final class UASTRDValueExternal extends
+    UASTRDValue
+  {
+    private final UASTRTypeName        ascription;
+    private final UASTRDExternal       external;
+    private final TokenIdentifierLower name;
+
+    public UASTRDValueExternal(
+      final TokenIdentifierLower in_name,
+      final UASTRTypeName in_ascription,
+      final UASTRDExternal in_external)
+    {
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.ascription = NullCheck.notNull(in_ascription, "Ascription");
+      this.external = NullCheck.notNull(in_external, "External");
+      assert this.external.getEmulation().isNone();
+    }
+
+    public UASTRTypeName getAscription()
+    {
+      return this.ascription;
+    }
+
+    public UASTRDExternal getExternal()
+    {
+      return this.external;
+    }
+
+    @Override public TokenIdentifierLower getName()
+    {
+      return this.name;
+    }
+
+    @Override public
+      <T, E extends Throwable, V extends UASTRTermVisitorType<T, E>>
+      T
+      termVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.termVisitValueExternal(this);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[UASTRDValueExternal ");
+      builder.append(this.name.getActual());
+      builder.append(" ");
+      builder.append(this.ascription);
+      builder.append(" ");
+      builder.append(this.external);
+      builder.append("]");
+      return builder.toString();
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends UASTRValueVisitorType<A, E>>
+      A
+      valueVisitableAccept(
+        final V v)
+        throws E
+    {
+      return v.valueVisitExternal(this);
     }
   }
 

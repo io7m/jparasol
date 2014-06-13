@@ -24,11 +24,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @EqualityReference final class VersionsHash
 {
-  private VersionsHash()
-  {
-    throw new UnreachableCodeException();
-  }
-
   static void checkComplete(
     final SortedSet<GVersionES> in_supports_es,
     final SortedSet<GVersionFull> in_supports_full,
@@ -62,5 +57,10 @@ import com.io7m.junreachable.UnreachableCodeException;
       assert r != null;
       throw new JPMissingHash(r);
     }
+  }
+
+  private VersionsHash()
+  {
+    throw new UnreachableCodeException();
   }
 }

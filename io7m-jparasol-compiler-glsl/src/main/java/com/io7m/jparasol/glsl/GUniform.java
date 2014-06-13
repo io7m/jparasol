@@ -50,11 +50,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @EqualityReference public final class GUniform
 {
-  private GUniform()
-  {
-    throw new UnreachableCodeException();
-  }
-
   @EqualityReference private static abstract class Expander implements
     TTypeVisitorType<List<Pair<String, TType>>, UnreachableCodeException>
   {
@@ -259,5 +254,10 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     b.append(name);
     return Pair.pair(b.toString(), (TType) type);
+  }
+
+  private GUniform()
+  {
+    throw new UnreachableCodeException();
   }
 }

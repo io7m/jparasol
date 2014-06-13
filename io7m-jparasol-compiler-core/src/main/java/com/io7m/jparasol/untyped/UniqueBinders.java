@@ -565,17 +565,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public
-      UASTUDShaderFragmentParameter
-      fragmentShaderVisitParameter(
-        final UASTCDShaderFragmentParameter p)
-        throws UniqueBindersError
-    {
-      final UniqueNameLocal name = this.context.addBinding(p.getName());
-      final UASTUTypePath type = UniqueBinders.mapTypePath(p.getType());
-      return new UASTUDShaderFragmentParameter(name, type);
-    }
-
-    @Override public
       UASTCFragmentShaderOutputVisitorType<UASTUDShaderFragmentOutput, UniqueBindersError>
       fragmentShaderVisitOutputsPre()
         throws UniqueBindersError
@@ -606,49 +595,16 @@ import com.io7m.junreachable.UnreachableCodeException;
         }
       };
     }
-  }
 
-  @EqualityReference private static final class ValueTransformer implements
-    UASTCValueVisitorType<UASTUDValue, UniqueBindersError>
-  {
-    private final Context context;
-
-    public ValueTransformer(
-      final Context c)
+    @Override public
+      UASTUDShaderFragmentParameter
+      fragmentShaderVisitParameter(
+        final UASTCDShaderFragmentParameter p)
+        throws UniqueBindersError
     {
-      this.context = c;
-    }
-
-    @Override public UASTUDValueDefined valueVisitDefined(
-      final UASTCDValueDefined v)
-      throws UniqueBindersError
-    {
-      final OptionType<UASTUTypePath> ascription =
-        UniqueBinders.mapAscription(v.getAscription());
-
-      final UASTUExpression expression =
-        v.getExpression().expressionVisitableAccept(
-          new ExpressionTransformer(this.context));
-
-      return new UASTUDValueDefined(v.getName(), ascription, expression);
-    }
-
-    @Override public UASTUDValueExternal valueVisitExternal(
-      final UASTCDValueExternal v)
-      throws UniqueBindersError
-    {
-      final UASTUTypePath ascription =
-        UniqueBinders.mapTypePath(v.getAscription());
-
-      final UASTCDExternal original_external = v.getExternal();
-      final OptionType<UASTUExpression> none = Option.none();
-      final UASTUDExternal external =
-        new UASTUDExternal(
-          original_external.getName(),
-          original_external.isVertexShaderAllowed(),
-          original_external.isFragmentShaderAllowed(),
-          none);
-      return new UASTUDValueExternal(v.getName(), ascription, external);
+      final UniqueNameLocal name = this.context.addBinding(p.getName());
+      final UASTUTypePath type = UniqueBinders.mapTypePath(p.getType());
+      return new UASTUDShaderFragmentParameter(name, type);
     }
   }
 
@@ -930,6 +886,14 @@ import com.io7m.junreachable.UnreachableCodeException;
       return v.valueVisitableAccept(new ValueTransformer(ctx));
     }
 
+    @Override public UASTUDTerm termVisitValueExternal(
+      final UASTCDValueExternal v)
+      throws UniqueBindersError
+    {
+      final Context ctx = Context.initialContext(this.context, v, this.log);
+      return v.valueVisitableAccept(new ValueTransformer(ctx));
+    }
+
     @Override public UASTUDTypeRecord typeVisitTypeRecord(
       final UASTCDTypeRecord r)
       throws UniqueBindersError
@@ -944,13 +908,49 @@ import com.io7m.junreachable.UnreachableCodeException;
 
       return new UASTUDTypeRecord(r.getName(), fields);
     }
+  }
 
-    @Override public UASTUDTerm termVisitValueExternal(
+  @EqualityReference private static final class ValueTransformer implements
+    UASTCValueVisitorType<UASTUDValue, UniqueBindersError>
+  {
+    private final Context context;
+
+    public ValueTransformer(
+      final Context c)
+    {
+      this.context = c;
+    }
+
+    @Override public UASTUDValueDefined valueVisitDefined(
+      final UASTCDValueDefined v)
+      throws UniqueBindersError
+    {
+      final OptionType<UASTUTypePath> ascription =
+        UniqueBinders.mapAscription(v.getAscription());
+
+      final UASTUExpression expression =
+        v.getExpression().expressionVisitableAccept(
+          new ExpressionTransformer(this.context));
+
+      return new UASTUDValueDefined(v.getName(), ascription, expression);
+    }
+
+    @Override public UASTUDValueExternal valueVisitExternal(
       final UASTCDValueExternal v)
       throws UniqueBindersError
     {
-      final Context ctx = Context.initialContext(this.context, v, this.log);
-      return v.valueVisitableAccept(new ValueTransformer(ctx));
+      final UASTUTypePath ascription =
+        UniqueBinders.mapTypePath(v.getAscription());
+
+      final UASTCDExternal original_external = v.getExternal();
+      final OptionType<UASTUExpression> none = Option.none();
+      final UASTUDExternal external =
+        new UASTUDExternal(
+          original_external.getName(),
+          original_external.isVertexShaderAllowed(),
+          original_external.isFragmentShaderAllowed(),
+          none);
+      return new UASTUDValueExternal(v.getName(), ascription, external);
     }
   }
 

@@ -68,43 +68,10 @@ import com.io7m.junreachable.UnreachableCodeException;
       in_fragment_parameters);
   }
 
-  @Override public int hashCode()
-  {
-    final int prime = 31;
-    int result = 1;
-    result = (prime * result) + this.fragment_inputs.hashCode();
-    result = (prime * result) + this.fragment_outputs.hashCode();
-    result = (prime * result) + this.fragment_parameters.hashCode();
-    result = (prime * result) + this.name.hashCode();
-    result = (prime * result) + this.supports_es.hashCode();
-    result = (prime * result) + this.supports_full.hashCode();
-    return result;
-  }
-
-  @Override public boolean equals(
-    final @Nullable Object obj)
-  {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
-    final UncompactedFragmentShaderMeta other =
-      (UncompactedFragmentShaderMeta) obj;
-    return this.fragment_inputs.equals(other.fragment_inputs)
-      && this.fragment_outputs.equals(other.fragment_outputs)
-      && this.fragment_parameters.equals(other.fragment_parameters)
-      && this.name.equals(other.name)
-      && this.supports_es.equals(other.supports_es)
-      && this.supports_full.equals(other.supports_full);
-  }
-
   private final SortedSet<FragmentInput>           fragment_inputs;
+
   private final SortedMap<Integer, FragmentOutput> fragment_outputs;
+
   private final SortedSet<FragmentParameter>       fragment_parameters;
   private final String                             name;
   private final SortedSet<GVersionES>              supports_es;
@@ -129,6 +96,28 @@ import com.io7m.junreachable.UnreachableCodeException;
       NullCheck.notNull(in_fragment_outputs, "Fragment outputs");
     this.fragment_parameters =
       NullCheck.notNullAll(in_fragment_parameters, "Fragment parameters");
+  }
+
+  @Override public boolean equals(
+    final @Nullable Object obj)
+  {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    final UncompactedFragmentShaderMeta other =
+      (UncompactedFragmentShaderMeta) obj;
+    return this.fragment_inputs.equals(other.fragment_inputs)
+      && this.fragment_outputs.equals(other.fragment_outputs)
+      && this.fragment_parameters.equals(other.fragment_parameters)
+      && this.name.equals(other.name)
+      && this.supports_es.equals(other.supports_es)
+      && this.supports_full.equals(other.supports_full);
   }
 
   /**
@@ -164,16 +153,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   @Override public String getName()
   {
     return this.name;
-  }
-
-  @Override public SortedSet<GVersionES> getSupportsES()
-  {
-    return this.supports_es;
-  }
-
-  @Override public SortedSet<GVersionFull> getSupportsFull()
-  {
-    return this.supports_full;
   }
 
   @SuppressWarnings({ "boxing", "synthetic-access" }) @Override public
@@ -213,5 +192,28 @@ import com.io7m.junreachable.UnreachableCodeException;
           return Option.none();
         }
       });
+  }
+
+  @Override public SortedSet<GVersionES> getSupportsES()
+  {
+    return this.supports_es;
+  }
+
+  @Override public SortedSet<GVersionFull> getSupportsFull()
+  {
+    return this.supports_full;
+  }
+
+  @Override public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = (prime * result) + this.fragment_inputs.hashCode();
+    result = (prime * result) + this.fragment_outputs.hashCode();
+    result = (prime * result) + this.fragment_parameters.hashCode();
+    result = (prime * result) + this.name.hashCode();
+    result = (prime * result) + this.supports_es.hashCode();
+    result = (prime * result) + this.supports_full.hashCode();
+    return result;
   }
 }

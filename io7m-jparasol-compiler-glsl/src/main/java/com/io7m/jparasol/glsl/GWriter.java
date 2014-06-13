@@ -99,11 +99,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @SuppressWarnings("synthetic-access") @EqualityReference public final class GWriter
 {
-  private GWriter()
-  {
-    throw new UnreachableCodeException();
-  }
-
   @EqualityReference private static final class ExpressionWriter implements
     GASTExpressionVisitorType<String, UnreachableCodeException>
   {
@@ -1255,5 +1250,10 @@ import com.io7m.junreachable.UnreachableCodeException;
     GWriter.writeVertexOutputs(writer, v.getOutputs(), version);
     GWriter.writeVertexMain(writer, v.getMain());
     writer.flush();
+  }
+
+  private GWriter()
+  {
+    throw new UnreachableCodeException();
   }
 }

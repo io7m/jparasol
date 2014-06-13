@@ -75,6 +75,32 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
   }
 
   /**
+   * Produce a flattened version of the given shader (a shader with the
+   * majority of the semantic information stripped out, ready for
+   * serialization).
+   * 
+   * @param log
+   *          A log interface.
+   * @return A flattened shader.
+   */
+
+  public UncompactedProgramShaderMeta flatten(
+    final LogUsableType log)
+  {
+    final SortedSet<String> vertex_names = new TreeSet<String>();
+    for (final TASTShaderNameFlat v_name : this.shaders_vertex.keySet()) {
+      vertex_names.add(v_name.show());
+    }
+
+    return UncompactedProgramShaderMeta.newMetadata(
+      this.name.show(),
+      this.versions_es,
+      this.versions_full,
+      this.shader_fragment.getName().show(),
+      vertex_names);
+  }
+
+  /**
    * @return The current program's fully-qualified name.
    */
 
@@ -134,31 +160,5 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     result = (prime * result) + this.versions_es.hashCode();
     result = (prime * result) + this.versions_full.hashCode();
     return result;
-  }
-
-  /**
-   * Produce a flattened version of the given shader (a shader with the
-   * majority of the semantic information stripped out, ready for
-   * serialization).
-   * 
-   * @param log
-   *          A log interface.
-   * @return A flattened shader.
-   */
-
-  public UncompactedProgramShaderMeta flatten(
-    final LogUsableType log)
-  {
-    final SortedSet<String> vertex_names = new TreeSet<String>();
-    for (final TASTShaderNameFlat v_name : this.shaders_vertex.keySet()) {
-      vertex_names.add(v_name.show());
-    }
-
-    return UncompactedProgramShaderMeta.newMetadata(
-      this.name.show(),
-      this.versions_es,
-      this.versions_full,
-      this.shader_fragment.getName().show(),
-      vertex_names);
   }
 }

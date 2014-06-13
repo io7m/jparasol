@@ -32,14 +32,14 @@ public interface InputType
   File getFile();
 
   /**
-   * @return <code>true</code> if the file is "internal" (standard library).
-   */
-
-  boolean isInternal();
-
-  /**
    * @return The stream for the file.
    */
 
   InputStream getStream();
+
+  /**
+   * @return <code>true</code> if the file is "internal" (standard library).
+   */
+
+  boolean isInternal();
 }

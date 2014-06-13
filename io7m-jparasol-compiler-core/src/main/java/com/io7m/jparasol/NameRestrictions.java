@@ -31,11 +31,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @EqualityReference public final class NameRestrictions
 {
-  private NameRestrictions()
-  {
-    throw new UnreachableCodeException();
-  }
-
   /**
    * The result of examining a name to determine if it is restricted.
    */
@@ -118,6 +113,15 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     /**
+     * @return The error category
+     */
+
+    @Override public String getCategory()
+    {
+      return "name-restrictions";
+    }
+
+    /**
      * @return The error code
      */
 
@@ -133,15 +137,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     public TokenIdentifier getToken()
     {
       return this.token;
-    }
-
-    /**
-     * @return The error category
-     */
-
-    @Override public String getCategory()
-    {
-      return "name-restrictions";
     }
   }
 
@@ -478,5 +473,10 @@ import com.io7m.junreachable.UnreachableCodeException;
     final Set<String> r = Collections.unmodifiableSet(s);
     assert r != null;
     return r;
+  }
+
+  private NameRestrictions()
+  {
+    throw new UnreachableCodeException();
   }
 }

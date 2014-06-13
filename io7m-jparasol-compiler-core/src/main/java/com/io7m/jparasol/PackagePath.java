@@ -78,9 +78,11 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
       private final List<TokenIdentifierLower> components =
                                                             new ArrayList<Token.TokenIdentifierLower>();
 
-      @Override public PackagePath build()
+      @Override public void addComponent(
+        final TokenIdentifierLower c)
       {
-        return new PackagePath(this.components);
+        NullCheck.notNull(c, "Component");
+        this.components.add(c);
       }
 
       @Override public void addFakeComponent(
@@ -104,11 +106,9 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
         this.addComponent(token);
       }
 
-      @Override public void addComponent(
-        final TokenIdentifierLower c)
+      @Override public PackagePath build()
       {
-        NullCheck.notNull(c, "Component");
-        this.components.add(c);
+        return new PackagePath(this.components);
       }
     };
   }

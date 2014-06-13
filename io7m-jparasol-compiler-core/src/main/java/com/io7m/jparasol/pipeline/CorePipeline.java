@@ -132,6 +132,21 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
   }
 
   /**
+   * Close the pipeline, closing all inputs.
+   * 
+   * @throws IOException
+   *           If an I/O error occurs
+   */
+
+  public void pipeClose()
+    throws IOException
+  {
+    for (final InputType i : this.inputs) {
+      i.getStream().close();
+    }
+  }
+
+  /**
    * Run the compiler.
    * 
    * @return A type-checked AST.
@@ -177,20 +192,5 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
     final TypeChecker type_checker =
       TypeChecker.newTypeChecker(resolved, this.log);
     return type_checker.check();
-  }
-
-  /**
-   * Close the pipeline, closing all inputs.
-   * 
-   * @throws IOException
-   *           If an I/O error occurs
-   */
-
-  public void pipeClose()
-    throws IOException
-  {
-    for (final InputType i : this.inputs) {
-      i.getStream().close();
-    }
   }
 }

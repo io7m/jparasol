@@ -46,23 +46,6 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
 
 @EqualityReference public abstract class TASTExpression
 {
-  /**
-   * Accept a generic visitor.
-   * 
-   * @param v
-   *          The visitor
-   * @return A value of <code>A</code>
-   * @throws E
-   *           If <code>v</code> throws <code>E</code>
-   */
-
-  public abstract
-    <A, L, E extends Throwable, V extends TASTExpressionVisitorType<A, L, E>>
-    A
-    expressionVisitableAccept(
-      final V v)
-      throws E;
-
   @EqualityReference public static final class TASTEApplication extends
     TASTExpression
   {
@@ -750,6 +733,23 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
       return r;
     }
   }
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return A value of <code>A</code>
+   * @throws E
+   *           If <code>v</code> throws <code>E</code>
+   */
+
+  public abstract
+    <A, L, E extends Throwable, V extends TASTExpressionVisitorType<A, L, E>>
+    A
+    expressionVisitableAccept(
+      final V v)
+      throws E;
 
   public abstract TType getType();
 }

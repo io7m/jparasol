@@ -34,21 +34,95 @@ import com.io7m.jparasol.typed.TType;
 @EqualityReference public abstract class GASTExpression
 {
   /**
-   * Accept a generic visitor.
-   * 
-   * @param v
-   *          The visitor
-   * @return The value returned by the visitor
-   * @throws E
-   *           If the visitor raises <code>E</code>
+   * The type of function applications.
    */
 
-  public abstract
-    <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
-    A
-    expressionVisitableAccept(
-      final V v)
-      throws E;
+  @EqualityReference public static final class GASTEApplication extends
+    GASTExpression
+  {
+    private final List<GASTExpression> arguments;
+    private final GTermNameGlobal      name;
+    private final TType                type;
+
+    /**
+     * Construct an expression.
+     * 
+     * @param in_name
+     *          The function name
+     * @param in_type
+     *          The type of expression
+     * @param in_arguments
+     *          The arguments
+     */
+
+    public GASTEApplication(
+      final GTermNameGlobal in_name,
+      final TType in_type,
+      final List<GASTExpression> in_arguments)
+    {
+      this.name = NullCheck.notNull(in_name, "Name");
+      this.type = NullCheck.notNull(in_type, "Type");
+      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
+      A
+      expressionVisitableAccept(
+        final V v)
+        throws E
+    {
+      v.expressionApplicationVisitPre(this);
+      final List<A> args = new ArrayList<A>();
+      for (final GASTExpression a : this.arguments) {
+        final A x = a.expressionVisitableAccept(v);
+        args.add(x);
+      }
+      return v.expressionApplicationVisit(args, this);
+    }
+
+    /**
+     * @return The list of arguments
+     */
+
+    public List<GASTExpression> getArguments()
+    {
+      return this.arguments;
+    }
+
+    /**
+     * @return The function name
+     */
+
+    public GTermNameGlobal getName()
+    {
+      return this.name;
+    }
+
+    /**
+     * @return The return type
+     */
+
+    public TType getType()
+    {
+      return this.type;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[GASTEApplication ");
+      builder.append(this.name);
+      builder.append(" ");
+      builder.append(this.type);
+      builder.append(" ");
+      builder.append(this.arguments);
+      builder.append("]");
+      final String r = builder.toString();
+      assert r != null;
+      return r;
+    }
+  }
 
   /**
    * The type of (external) function applications.
@@ -129,97 +203,6 @@ import com.io7m.jparasol.typed.TType;
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("[GASTEApplicationExternal ");
-      builder.append(this.name);
-      builder.append(" ");
-      builder.append(this.type);
-      builder.append(" ");
-      builder.append(this.arguments);
-      builder.append("]");
-      final String r = builder.toString();
-      assert r != null;
-      return r;
-    }
-  }
-
-  /**
-   * The type of function applications.
-   */
-
-  @EqualityReference public static final class GASTEApplication extends
-    GASTExpression
-  {
-    private final List<GASTExpression> arguments;
-    private final GTermNameGlobal      name;
-    private final TType                type;
-
-    /**
-     * Construct an expression.
-     * 
-     * @param in_name
-     *          The function name
-     * @param in_type
-     *          The type of expression
-     * @param in_arguments
-     *          The arguments
-     */
-
-    public GASTEApplication(
-      final GTermNameGlobal in_name,
-      final TType in_type,
-      final List<GASTExpression> in_arguments)
-    {
-      this.name = NullCheck.notNull(in_name, "Name");
-      this.type = NullCheck.notNull(in_type, "Type");
-      this.arguments = NullCheck.notNull(in_arguments, "Arguments");
-    }
-
-    @Override public
-      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
-      A
-      expressionVisitableAccept(
-        final V v)
-        throws E
-    {
-      v.expressionApplicationVisitPre(this);
-      final List<A> args = new ArrayList<A>();
-      for (final GASTExpression a : this.arguments) {
-        final A x = a.expressionVisitableAccept(v);
-        args.add(x);
-      }
-      return v.expressionApplicationVisit(args, this);
-    }
-
-    /**
-     * @return The list of arguments
-     */
-
-    public List<GASTExpression> getArguments()
-    {
-      return this.arguments;
-    }
-
-    /**
-     * @return The function name
-     */
-
-    public GTermNameGlobal getName()
-    {
-      return this.name;
-    }
-
-    /**
-     * @return The return type
-     */
-
-    public TType getType()
-    {
-      return this.type;
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("[GASTEApplication ");
       builder.append(this.name);
       builder.append(" ");
       builder.append(this.type);
@@ -1264,4 +1247,21 @@ import com.io7m.jparasol.typed.TType;
       return r;
     }
   }
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return The value returned by the visitor
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
+    A
+    expressionVisitableAccept(
+      final V v)
+      throws E;
 }

@@ -528,13 +528,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     private final TokenIdentifierLower name;
 
-    public abstract
-      <T, E extends Throwable, V extends TASTShaderVisitorType<T, E>>
-      T
-      shaderVisitableAccept(
-        final V v)
-        throws E;
-
     protected TASTDShader(
       final TokenIdentifierLower in_name)
     {
@@ -545,6 +538,13 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       return this.name;
     }
+
+    public abstract
+      <T, E extends Throwable, V extends TASTShaderVisitorType<T, E>>
+      T
+      shaderVisitableAccept(
+        final V v)
+        throws E;
   }
 
   @EqualityReference public static final class TASTDShaderFragment extends
@@ -809,13 +809,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   @EqualityReference public static abstract class TASTDShaderFragmentOutput extends
     TASTDShaderFragmentParameters
   {
-    public abstract
-      <O, E extends Throwable, V extends TASTFragmentShaderOutputVisitorType<O, E>>
-      O
-      fragmentShaderOutputVisitableAccept(
-        final V v)
-        throws E;
-
     private final TokenIdentifierLower name;
 
     public TASTDShaderFragmentOutput(
@@ -825,6 +818,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       super(type);
       this.name = NullCheck.notNull(in_name, "Name");
     }
+
+    public abstract
+      <O, E extends Throwable, V extends TASTFragmentShaderOutputVisitorType<O, E>>
+      O
+      fragmentShaderOutputVisitableAccept(
+        final V v)
+        throws E;
 
     public final TokenIdentifierLower getName()
     {

@@ -57,67 +57,67 @@ import com.io7m.jnull.Nullable;
    * GLSL 1.30
    */
 
-  public static final GVersionFull GLSL_130;
+  public static final GVersionFull            GLSL_130;
 
   /**
    * GLSL 1.40
    */
 
-  public static final GVersionFull GLSL_140;
+  public static final GVersionFull            GLSL_140;
 
   /**
    * GLSL 1.50
    */
 
-  public static final GVersionFull GLSL_150;
+  public static final GVersionFull            GLSL_150;
 
   /**
    * GLSL 3.30
    */
 
-  public static final GVersionFull GLSL_330;
+  public static final GVersionFull            GLSL_330;
 
   /**
    * GLSL 4.00
    */
 
-  public static final GVersionFull GLSL_400;
+  public static final GVersionFull            GLSL_400;
 
   /**
    * GLSL 4.10
    */
 
-  public static final GVersionFull GLSL_410;
+  public static final GVersionFull            GLSL_410;
 
   /**
    * GLSL 4.20
    */
 
-  public static final GVersionFull GLSL_420;
+  public static final GVersionFull            GLSL_420;
 
   /**
    * GLSL 4.30
    */
 
-  public static final GVersionFull GLSL_430;
+  public static final GVersionFull            GLSL_430;
 
   /**
    * GLSL 4.40
    */
 
-  public static final GVersionFull GLSL_440;
+  public static final GVersionFull            GLSL_440;
 
   /**
    * The lowest GLSL version.
    */
 
-  public static final GVersionFull GLSL_LOWER;
+  public static final GVersionFull            GLSL_LOWER;
 
   /**
    * The highest GLSL version.
    */
 
-  public static final GVersionFull GLSL_UPPER;
+  public static final GVersionFull            GLSL_UPPER;
 
   static {
     GLSL_110 = new GVersionFull(110);

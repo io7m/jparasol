@@ -950,6 +950,12 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       name
         .termNameVisitableAccept(new TASTTermNameVisitorType<Unit, UnreachableCodeException>() {
+          @Override public Unit termNameVisitExternal(
+            final TASTTermNameExternal t)
+          {
+            return Unit.unit();
+          }
+
           @Override public Unit termNameVisitGlobal(
             final TASTTermNameGlobal t)
           {
@@ -961,12 +967,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
           @Override public Unit termNameVisitLocal(
             final TASTTermNameLocal t)
-          {
-            return Unit.unit();
-          }
-
-          @Override public Unit termNameVisitExternal(
-            final TASTTermNameExternal t)
           {
             return Unit.unit();
           }
@@ -1366,6 +1366,12 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       name
         .termNameVisitableAccept(new TASTTermNameVisitorType<Unit, UnreachableCodeException>() {
+          @Override public Unit termNameVisitExternal(
+            final TASTTermNameExternal t)
+          {
+            return Unit.unit();
+          }
+
           @Override public Unit termNameVisitGlobal(
             final TASTTermNameGlobal t)
           {
@@ -1377,12 +1383,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
           @Override public Unit termNameVisitLocal(
             final TASTTermNameLocal t)
-          {
-            return Unit.unit();
-          }
-
-          @Override public Unit termNameVisitExternal(
-            final TASTTermNameExternal t)
           {
             return Unit.unit();
           }

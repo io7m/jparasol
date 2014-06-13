@@ -32,6 +32,20 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 public interface GTermNameVisitorType<A, E extends Throwable>
 {
   /**
+   * Visit an external term name.
+   * 
+   * @param n
+   *          The name
+   * @return A value of <code>A</code>
+   * @throws E
+   *           If required
+   */
+
+  A termNameVisitExternal(
+    final GTermNameExternal n)
+    throws E;
+
+  /**
    * Visit a global term name.
    * 
    * @param n
@@ -57,19 +71,5 @@ public interface GTermNameVisitorType<A, E extends Throwable>
 
   A termNameVisitLocal(
     final GTermNameLocal n)
-    throws E;
-
-  /**
-   * Visit an external term name.
-   * 
-   * @param n
-   *          The name
-   * @return A value of <code>A</code>
-   * @throws E
-   *           If required
-   */
-
-  A termNameVisitExternal(
-    final GTermNameExternal n)
     throws E;
 }

@@ -151,29 +151,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     return this.name;
   }
 
-  @Override public SortedSet<GVersionES> getSupportsES()
-  {
-    return this.supports_es;
-  }
-
-  @Override public SortedSet<GVersionFull> getSupportsFull()
-  {
-    return this.supports_full;
-  }
-
-  @Override public int hashCode()
-  {
-    final int prime = 31;
-    int result = 1;
-    result = (prime * result) + this.name.hashCode();
-    result = (prime * result) + this.supports_es.hashCode();
-    result = (prime * result) + this.supports_full.hashCode();
-    result = (prime * result) + this.vertex_inputs.hashCode();
-    result = (prime * result) + this.vertex_outputs.hashCode();
-    result = (prime * result) + this.vertex_parameters.hashCode();
-    return result;
-  }
-
   @SuppressWarnings({ "boxing", "synthetic-access" }) @Override public
     OptionType<String>
     getSourceCodeFilename(
@@ -211,5 +188,28 @@ import com.io7m.junreachable.UnreachableCodeException;
           return Option.none();
         }
       });
+  }
+
+  @Override public SortedSet<GVersionES> getSupportsES()
+  {
+    return this.supports_es;
+  }
+
+  @Override public SortedSet<GVersionFull> getSupportsFull()
+  {
+    return this.supports_full;
+  }
+
+  @Override public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = (prime * result) + this.name.hashCode();
+    result = (prime * result) + this.supports_es.hashCode();
+    result = (prime * result) + this.supports_full.hashCode();
+    result = (prime * result) + this.vertex_inputs.hashCode();
+    result = (prime * result) + this.vertex_outputs.hashCode();
+    result = (prime * result) + this.vertex_parameters.hashCode();
+    return result;
   }
 }

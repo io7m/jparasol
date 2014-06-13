@@ -27,11 +27,6 @@ import com.io7m.jequality.annotations.EqualityReference;
 
 @EqualityReference public final class LexerTestMain
 {
-  private LexerTestMain()
-  {
-
-  }
-
   /**
    * The main entry point.
    * 
@@ -59,5 +54,10 @@ import com.io7m.jequality.annotations.EqualityReference;
         break;
       }
     }
+  }
+
+  private LexerTestMain()
+  {
+
   }
 }

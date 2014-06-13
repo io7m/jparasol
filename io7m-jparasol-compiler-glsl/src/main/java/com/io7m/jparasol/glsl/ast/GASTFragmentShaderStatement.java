@@ -27,23 +27,6 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 @EqualityReference public abstract class GASTFragmentShaderStatement
 {
   /**
-   * Accept a generic visitor.
-   * 
-   * @param v
-   *          The visitor
-   * @return The value returned by the visitor
-   * @throws E
-   *           If the visitor raises <code>E</code>
-   */
-
-  public abstract
-    <A, E extends Throwable, V extends GASTFragmentShaderStatementVisitorType<A, E>>
-    A
-    fragmentStatementVisitableAccept(
-      final V v)
-      throws E;
-
-  /**
    * The type of conditional discard statements.
    */
 
@@ -256,6 +239,15 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
       this.index = in_index;
     }
 
+    /**
+     * @return The output index
+     */
+
+    public int getIndex()
+    {
+      return this.index;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -265,15 +257,6 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
       final String r = builder.toString();
       assert r != null;
       return r;
-    }
-
-    /**
-     * @return The output index
-     */
-
-    public int getIndex()
-    {
-      return this.index;
     }
   }
 
@@ -301,4 +284,21 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
       super(name, value);
     }
   }
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor
+   * @return The value returned by the visitor
+   * @throws E
+   *           If the visitor raises <code>E</code>
+   */
+
+  public abstract
+    <A, E extends Throwable, V extends GASTFragmentShaderStatementVisitorType<A, E>>
+    A
+    fragmentStatementVisitableAccept(
+      final V v)
+      throws E;
 }

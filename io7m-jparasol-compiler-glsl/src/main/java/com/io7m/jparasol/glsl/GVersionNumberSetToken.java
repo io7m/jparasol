@@ -69,11 +69,6 @@ import com.io7m.jparasol.lexer.Position;
     }
   }
 
-  public interface TokenLiteralIntegerType
-  {
-    BigInteger getValue();
-  }
-
   @EqualityReference public static final class TokenLiteralIntegerDecimal extends
     GVersionNumberSetToken implements TokenLiteralIntegerType
   {
@@ -112,6 +107,11 @@ import com.io7m.jparasol.lexer.Position;
       builder.append("]");
       return builder.toString();
     }
+  }
+
+  public interface TokenLiteralIntegerType
+  {
+    BigInteger getValue();
   }
 
   @EqualityReference public static final class TokenRoundLeft extends

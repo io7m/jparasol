@@ -200,6 +200,11 @@ public final class ExternalsError extends CompilerError
     this.code = NullCheck.notNull(in_code, "Code");
   }
 
+  @Override public String getCategory()
+  {
+    return "externals-access";
+  }
+
   /**
    * @return The error code
    */
@@ -207,10 +212,5 @@ public final class ExternalsError extends CompilerError
   public Code getCode()
   {
     return this.code;
-  }
-
-  @Override public String getCategory()
-  {
-    return "externals-access";
   }
 }

@@ -131,26 +131,6 @@ import com.io7m.jnull.NullCheck;
     }
   }
 
-  @EqualityReference public static final class TokenDiscard extends Token
-  {
-    public TokenDiscard(
-      final File file,
-      final Position position)
-
-    {
-      super(Type.TOKEN_DISCARD, file, position);
-    }
-
-    @Override public String toString()
-    {
-      final StringBuilder builder = new StringBuilder();
-      builder.append("TokenDiscard []");
-      final String r = builder.toString();
-      assert r != null;
-      return r;
-    }
-  }
-
   @EqualityReference public static final class TokenDepth extends Token
   {
     public TokenDepth(
@@ -165,6 +145,26 @@ import com.io7m.jnull.NullCheck;
     {
       final StringBuilder builder = new StringBuilder();
       builder.append("TokenDepth []");
+      final String r = builder.toString();
+      assert r != null;
+      return r;
+    }
+  }
+
+  @EqualityReference public static final class TokenDiscard extends Token
+  {
+    public TokenDiscard(
+      final File file,
+      final Position position)
+
+    {
+      super(Type.TOKEN_DISCARD, file, position);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("TokenDiscard []");
       final String r = builder.toString();
       assert r != null;
       return r;
@@ -542,11 +542,6 @@ import com.io7m.jnull.NullCheck;
     }
   }
 
-  public interface TokenLiteralIntegerType
-  {
-    BigInteger getValue();
-  }
-
   @EqualityReference public static final class TokenLiteralIntegerDecimal extends
     Token implements TokenLiteralIntegerType
   {
@@ -588,6 +583,11 @@ import com.io7m.jnull.NullCheck;
       assert r != null;
       return r;
     }
+  }
+
+  public interface TokenLiteralIntegerType
+  {
+    BigInteger getValue();
   }
 
   @EqualityReference public static final class TokenLiteralReal extends Token

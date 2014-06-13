@@ -79,44 +79,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     return new GSerializerZip(in_stream, in_log);
   }
 
-  private void serializeCompactedFragmentShaderMeta(
-    final CompactedFragmentShaderMeta meta)
-    throws FileNotFoundException,
-      UnsupportedEncodingException,
-      IOException
-  {
-    final String name = String.format("%s/meta.xml", meta.getName());
-    assert name != null;
-    this.announceFile(name);
-
-    final ZipEntry entry = new ZipEntry(name);
-    entry.setMethod(ZipEntry.DEFLATED);
-    this.stream.putNextEntry(entry);
-
-    final Element root = XMLCompactedFragmentShaderMeta.serializeToXML(meta);
-    GSerializerZip.serializeDocument(this.stream, root);
-
-    this.stream.closeEntry();
-  }
-
-  private void serializeCompactedVertexShaderMeta(
-    final CompactedVertexShaderMeta meta)
-    throws IOException
-  {
-    final String name = String.format("%s/meta.xml", meta.getName());
-    assert name != null;
-    this.announceFile(name);
-
-    final ZipEntry entry = new ZipEntry(name);
-    entry.setMethod(ZipEntry.DEFLATED);
-    this.stream.putNextEntry(entry);
-
-    final Element root = XMLCompactedVertexShaderMeta.serializeToXML(meta);
-    GSerializerZip.serializeDocument(this.stream, root);
-
-    this.stream.closeEntry();
-  }
-
   private static void serializeDocument(
     final ZipOutputStream stream,
     final Element root)
@@ -129,65 +91,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     s.setMaxLength(160);
     s.write(doc);
     s.flush();
-  }
-
-  private void serializeUncompactedFragmentShaderMeta(
-    final UncompactedFragmentShaderMeta meta)
-    throws FileNotFoundException,
-      UnsupportedEncodingException,
-      IOException
-  {
-    final String name = String.format("%s/meta.xml", meta.getName());
-    assert name != null;
-    this.announceFile(name);
-
-    final ZipEntry entry = new ZipEntry(name);
-    entry.setMethod(ZipEntry.DEFLATED);
-    this.stream.putNextEntry(entry);
-
-    final Element root =
-      XMLUncompactedFragmentShaderMeta.serializeToXML(meta);
-    GSerializerZip.serializeDocument(this.stream, root);
-
-    this.stream.closeEntry();
-  }
-
-  private void serializeUncompactedProgramShaderMeta(
-    final UncompactedProgramShaderMeta meta)
-    throws FileNotFoundException,
-      UnsupportedEncodingException,
-      IOException
-  {
-    final String name = String.format("%s/meta.xml", meta.getName());
-    assert name != null;
-    this.announceFile(name);
-
-    final ZipEntry entry = new ZipEntry(name);
-    entry.setMethod(ZipEntry.DEFLATED);
-    this.stream.putNextEntry(entry);
-    final Element root = XMLUncompactedProgramShaderMeta.serializeToXML(meta);
-    GSerializerZip.serializeDocument(this.stream, root);
-    this.stream.closeEntry();
-  }
-
-  private void serializeUncompactedVertexShaderMeta(
-    final UncompactedVertexShaderMeta meta)
-    throws FileNotFoundException,
-      UnsupportedEncodingException,
-      IOException
-  {
-    final String name = String.format("%s/meta.xml", meta.getName());
-    assert name != null;
-    this.announceFile(name);
-
-    final ZipEntry entry = new ZipEntry(name);
-    entry.setMethod(ZipEntry.DEFLATED);
-    this.stream.putNextEntry(entry);
-
-    final Element root = XMLUncompactedVertexShaderMeta.serializeToXML(meta);
-    GSerializerZip.serializeDocument(this.stream, root);
-
-    this.stream.closeEntry();
   }
 
   private static String sourceNameForHash(
@@ -223,6 +126,193 @@ import com.io7m.junreachable.UnreachableCodeException;
           return r;
         }
       });
+  }
+
+  private final LogType         log;
+
+  private final ZipOutputStream stream;
+
+  private GSerializerZip(
+    final ZipOutputStream in_stream,
+    final LogUsableType in_log)
+  {
+    this.stream = NullCheck.notNull(in_stream, "Stream");
+    this.log = NullCheck.notNull(in_log, "Log").with("serializer-zip");
+  }
+
+  private void announceFile(
+    final String name)
+  {
+    this.log.debug(String.format("file %s", name));
+  }
+
+  private void announceShader(
+    final String name)
+  {
+    this.log.debug(String.format("shader %s", name));
+  }
+
+  @Override public void close()
+    throws IOException
+  {
+    this.log.debug("closing");
+    this.stream.flush();
+    this.stream.close();
+  }
+
+  @Override public void serializeCompactedFragmentShader(
+    final CompactedFragmentShader shader)
+    throws IOException
+  {
+    final CompactedFragmentShaderMeta meta = shader.getMeta();
+    assert meta != null;
+
+    this.announceShader(meta.getName());
+    this.serializeCompactedFragmentShaderMeta(meta);
+    this
+      .writeCompactedSources(meta.getName(), shader.getSourcesByHash(), "f");
+  }
+
+  private void serializeCompactedFragmentShaderMeta(
+    final CompactedFragmentShaderMeta meta)
+    throws FileNotFoundException,
+      UnsupportedEncodingException,
+      IOException
+  {
+    final String name = String.format("%s/meta.xml", meta.getName());
+    assert name != null;
+    this.announceFile(name);
+
+    final ZipEntry entry = new ZipEntry(name);
+    entry.setMethod(ZipEntry.DEFLATED);
+    this.stream.putNextEntry(entry);
+
+    final Element root = XMLCompactedFragmentShaderMeta.serializeToXML(meta);
+    GSerializerZip.serializeDocument(this.stream, root);
+
+    this.stream.closeEntry();
+  }
+
+  @Override public void serializeCompactedVertexShader(
+    final CompactedVertexShader shader)
+    throws IOException
+  {
+    final CompactedVertexShaderMeta meta = shader.getMeta();
+    assert meta != null;
+
+    this.announceShader(meta.getName());
+    this.serializeCompactedVertexShaderMeta(meta);
+    this
+      .writeCompactedSources(meta.getName(), shader.getSourcesByHash(), "v");
+  }
+
+  private void serializeCompactedVertexShaderMeta(
+    final CompactedVertexShaderMeta meta)
+    throws IOException
+  {
+    final String name = String.format("%s/meta.xml", meta.getName());
+    assert name != null;
+    this.announceFile(name);
+
+    final ZipEntry entry = new ZipEntry(name);
+    entry.setMethod(ZipEntry.DEFLATED);
+    this.stream.putNextEntry(entry);
+
+    final Element root = XMLCompactedVertexShaderMeta.serializeToXML(meta);
+    GSerializerZip.serializeDocument(this.stream, root);
+
+    this.stream.closeEntry();
+  }
+
+  @Override public void serializeUncompactedFragmentShader(
+    final UncompactedFragmentShader shader)
+    throws IOException
+  {
+    final UncompactedFragmentShaderMeta meta = shader.getMeta();
+    assert meta != null;
+
+    this.announceShader(meta.getName());
+    this.serializeUncompactedFragmentShaderMeta(meta);
+    this.writeUncompactedSources(meta.getName(), shader.getSources(), "f");
+  }
+
+  private void serializeUncompactedFragmentShaderMeta(
+    final UncompactedFragmentShaderMeta meta)
+    throws FileNotFoundException,
+      UnsupportedEncodingException,
+      IOException
+  {
+    final String name = String.format("%s/meta.xml", meta.getName());
+    assert name != null;
+    this.announceFile(name);
+
+    final ZipEntry entry = new ZipEntry(name);
+    entry.setMethod(ZipEntry.DEFLATED);
+    this.stream.putNextEntry(entry);
+
+    final Element root =
+      XMLUncompactedFragmentShaderMeta.serializeToXML(meta);
+    GSerializerZip.serializeDocument(this.stream, root);
+
+    this.stream.closeEntry();
+  }
+
+  @Override public void serializeUncompactedProgramShader(
+    final UncompactedProgramShaderMeta meta)
+    throws IOException
+  {
+    this.announceShader(meta.getName());
+    this.serializeUncompactedProgramShaderMeta(meta);
+  }
+
+  private void serializeUncompactedProgramShaderMeta(
+    final UncompactedProgramShaderMeta meta)
+    throws FileNotFoundException,
+      UnsupportedEncodingException,
+      IOException
+  {
+    final String name = String.format("%s/meta.xml", meta.getName());
+    assert name != null;
+    this.announceFile(name);
+
+    final ZipEntry entry = new ZipEntry(name);
+    entry.setMethod(ZipEntry.DEFLATED);
+    this.stream.putNextEntry(entry);
+    final Element root = XMLUncompactedProgramShaderMeta.serializeToXML(meta);
+    GSerializerZip.serializeDocument(this.stream, root);
+    this.stream.closeEntry();
+  }
+
+  @Override public void serializeUncompactedVertexShader(
+    final UncompactedVertexShader shader)
+    throws IOException
+  {
+    final UncompactedVertexShaderMeta meta = shader.getMeta();
+    assert meta != null;
+
+    this.announceShader(shader.getName());
+    this.serializeUncompactedVertexShaderMeta(meta);
+    this.writeUncompactedSources(meta.getName(), shader.getSources(), "v");
+  }
+
+  private void serializeUncompactedVertexShaderMeta(
+    final UncompactedVertexShaderMeta meta)
+    throws FileNotFoundException,
+      UnsupportedEncodingException,
+      IOException
+  {
+    final String name = String.format("%s/meta.xml", meta.getName());
+    assert name != null;
+    this.announceFile(name);
+
+    final ZipEntry entry = new ZipEntry(name);
+    entry.setMethod(ZipEntry.DEFLATED);
+    this.stream.putNextEntry(entry);
+
+    final Element root = XMLUncompactedVertexShaderMeta.serializeToXML(meta);
+    GSerializerZip.serializeDocument(this.stream, root);
+
+    this.stream.closeEntry();
   }
 
   private void writeCompactedSources(
@@ -281,94 +371,5 @@ import com.io7m.junreachable.UnreachableCodeException;
       assert file != null;
       this.writeSourcesOnce(file, source);
     }
-  }
-
-  private final ZipOutputStream stream;
-  private final LogType         log;
-
-  private GSerializerZip(
-    final ZipOutputStream in_stream,
-    final LogUsableType in_log)
-  {
-    this.stream = NullCheck.notNull(in_stream, "Stream");
-    this.log = NullCheck.notNull(in_log, "Log").with("serializer-zip");
-  }
-
-  @Override public void serializeCompactedFragmentShader(
-    final CompactedFragmentShader shader)
-    throws IOException
-  {
-    final CompactedFragmentShaderMeta meta = shader.getMeta();
-    assert meta != null;
-
-    this.announceShader(meta.getName());
-    this.serializeCompactedFragmentShaderMeta(meta);
-    this
-      .writeCompactedSources(meta.getName(), shader.getSourcesByHash(), "f");
-  }
-
-  @Override public void serializeCompactedVertexShader(
-    final CompactedVertexShader shader)
-    throws IOException
-  {
-    final CompactedVertexShaderMeta meta = shader.getMeta();
-    assert meta != null;
-
-    this.announceShader(meta.getName());
-    this.serializeCompactedVertexShaderMeta(meta);
-    this
-      .writeCompactedSources(meta.getName(), shader.getSourcesByHash(), "v");
-  }
-
-  @Override public void serializeUncompactedFragmentShader(
-    final UncompactedFragmentShader shader)
-    throws IOException
-  {
-    final UncompactedFragmentShaderMeta meta = shader.getMeta();
-    assert meta != null;
-
-    this.announceShader(meta.getName());
-    this.serializeUncompactedFragmentShaderMeta(meta);
-    this.writeUncompactedSources(meta.getName(), shader.getSources(), "f");
-  }
-
-  @Override public void serializeUncompactedProgramShader(
-    final UncompactedProgramShaderMeta meta)
-    throws IOException
-  {
-    this.announceShader(meta.getName());
-    this.serializeUncompactedProgramShaderMeta(meta);
-  }
-
-  @Override public void serializeUncompactedVertexShader(
-    final UncompactedVertexShader shader)
-    throws IOException
-  {
-    final UncompactedVertexShaderMeta meta = shader.getMeta();
-    assert meta != null;
-
-    this.announceShader(shader.getName());
-    this.serializeUncompactedVertexShaderMeta(meta);
-    this.writeUncompactedSources(meta.getName(), shader.getSources(), "v");
-  }
-
-  private void announceShader(
-    final String name)
-  {
-    this.log.debug(String.format("shader %s", name));
-  }
-
-  private void announceFile(
-    final String name)
-  {
-    this.log.debug(String.format("file %s", name));
-  }
-
-  @Override public void close()
-    throws IOException
-  {
-    this.log.debug("closing");
-    this.stream.flush();
-    this.stream.close();
   }
 }

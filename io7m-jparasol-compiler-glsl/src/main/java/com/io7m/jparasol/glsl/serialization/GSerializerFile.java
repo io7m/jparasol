@@ -127,6 +127,20 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
+  private static void serializeDocument(
+    final FileOutputStream out_meta_stream,
+    final Element root)
+    throws UnsupportedEncodingException,
+      IOException
+  {
+    final Document doc = new Document(root);
+    final Serializer s = new Serializer(out_meta_stream, "UTF-8");
+    s.setIndent(2);
+    s.setMaxLength(160);
+    s.write(doc);
+    s.flush();
+  }
+
   private static void serializeUncompactedFragmentShaderMeta(
     final UncompactedFragmentShaderMeta meta,
     final File out_dir)
@@ -177,20 +191,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     } finally {
       out_meta_stream.close();
     }
-  }
-
-  private static void serializeDocument(
-    final FileOutputStream out_meta_stream,
-    final Element root)
-    throws UnsupportedEncodingException,
-      IOException
-  {
-    final Document doc = new Document(root);
-    final Serializer s = new Serializer(out_meta_stream, "UTF-8");
-    s.setIndent(2);
-    s.setMaxLength(160);
-    s.write(doc);
-    s.flush();
   }
 
   private static String sourceNameForHash(
@@ -288,6 +288,12 @@ import com.io7m.junreachable.UnreachableCodeException;
     this.replace = in_replace;
   }
 
+  @Override public void close()
+    throws IOException
+  {
+    // Nothing.
+  }
+
   @Override public void serializeCompactedFragmentShader(
     final CompactedFragmentShader shader)
     throws IOException
@@ -369,11 +375,5 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     GSerializerFile
       .writeUncompactedSources(out_dir, shader.getSources(), "v");
-  }
-
-  @Override public void close()
-    throws IOException
-  {
-    // Nothing.
   }
 }

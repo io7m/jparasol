@@ -635,6 +635,18 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
     }
   }
 
+  @EqualityReference public static abstract class UASTIDShaderFragmentOutput extends
+    UASTIDShaderFragmentParameters implements
+    UASTIFragmentShaderOutputVisitableType
+  {
+    public UASTIDShaderFragmentOutput(
+      final TokenIdentifierLower name,
+      final UASTITypePath type)
+    {
+      super(name, type);
+    }
+  }
+
   @EqualityReference public static final class UASTIDShaderFragmentOutputAssignment extends
     UASTIDeclarationShaderLevel
   {
@@ -657,18 +669,6 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
     public UASTIEVariable getVariable()
     {
       return this.variable;
-    }
-  }
-
-  @EqualityReference public static abstract class UASTIDShaderFragmentOutput extends
-    UASTIDShaderFragmentParameters implements
-    UASTIFragmentShaderOutputVisitableType
-  {
-    public UASTIDShaderFragmentOutput(
-      final TokenIdentifierLower name,
-      final UASTITypePath type)
-    {
-      super(name, type);
     }
   }
 

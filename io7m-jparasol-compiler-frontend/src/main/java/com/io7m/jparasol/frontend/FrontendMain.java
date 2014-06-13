@@ -24,11 +24,6 @@ import com.io7m.jlog.LogUsableType;
 
 public final class FrontendMain
 {
-  private FrontendMain()
-  {
-
-  }
-
   /**
    * Run the compiler, exiting on errors.
    * 
@@ -45,5 +40,10 @@ public final class FrontendMain
     } catch (final Exception e) {
       System.exit(1);
     }
+  }
+
+  private FrontendMain()
+  {
+
   }
 }

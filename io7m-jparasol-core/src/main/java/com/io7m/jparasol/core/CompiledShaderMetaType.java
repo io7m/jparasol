@@ -33,6 +33,15 @@ public interface CompiledShaderMetaType
   String getName();
 
   /**
+   * @return The name of the GLSL source code file for the given version, or
+   *         {@link com.io7m.jfunctional.None} if there is no file for the
+   *         given version.
+   */
+
+  OptionType<String> getSourceCodeFilename(
+    final GVersionType v);
+
+  /**
    * @return The supported versions of GLSL ES.
    */
 
@@ -43,13 +52,4 @@ public interface CompiledShaderMetaType
    */
 
   SortedSet<GVersionFull> getSupportsFull();
-
-  /**
-   * @return The name of the GLSL source code file for the given version, or
-   *         {@link com.io7m.jfunctional.None} if there is no file for the
-   *         given version.
-   */
-
-  OptionType<String> getSourceCodeFilename(
-    final GVersionType v);
 }

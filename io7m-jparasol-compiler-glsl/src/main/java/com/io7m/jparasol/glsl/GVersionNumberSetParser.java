@@ -115,11 +115,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       private final int value;
 
-      int getValue()
-      {
-        return this.value;
-      }
-
       /**
        * Construct an atom.
        * 
@@ -132,6 +127,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       {
         this.value = in_value;
       }
+
+      int getValue()
+      {
+        return this.value;
+      }
     }
 
     /**
@@ -142,16 +142,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       private final Bound lower;
       private final Bound upper;
-
-      Bound getLower()
-      {
-        return this.lower;
-      }
-
-      Bound getUpper()
-      {
-        return this.upper;
-      }
 
       /**
        * Construct a range.
@@ -168,6 +158,16 @@ import com.io7m.junreachable.UnreachableCodeException;
       {
         this.lower = NullCheck.notNull(in_lower, "Lower bound");
         this.upper = NullCheck.notNull(in_upper, "Upper bound");
+      }
+
+      Bound getLower()
+      {
+        return this.lower;
+      }
+
+      Bound getUpper()
+      {
+        return this.upper;
       }
     }
   }
@@ -626,6 +626,15 @@ import com.io7m.junreachable.UnreachableCodeException;
     throw new UnreachableCodeException();
   }
 
+  /**
+   * @return <code>true</code> if the parser is at EOF
+   */
+
+  public boolean isAtEOF()
+  {
+    return this.token.getType() == Type.TOKEN_EOF;
+  }
+
   protected void parserConsumeAny()
     throws IOException,
       LexerError
@@ -745,15 +754,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     return new SegmentRange(lower, upper);
-  }
-
-  /**
-   * @return <code>true</code> if the parser is at EOF
-   */
-
-  public boolean isAtEOF()
-  {
-    return this.token.getType() == Type.TOKEN_EOF;
   }
 
   /**

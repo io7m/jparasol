@@ -97,8 +97,10 @@ public interface TASTVertexShaderVisitorType<V, PI, PP, PO, L, O, E extends Thro
    *           If required
    */
 
-  @Nullable TASTVertexShaderLocalVisitorType<L, E> vertexShaderVisitLocalsPre()
-    throws E;
+  @Nullable
+    TASTVertexShaderLocalVisitorType<L, E>
+    vertexShaderVisitLocalsPre()
+      throws E;
 
   /**
    * Visit a shader output.

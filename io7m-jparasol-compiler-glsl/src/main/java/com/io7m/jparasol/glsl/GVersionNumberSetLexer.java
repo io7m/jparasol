@@ -38,45 +38,87 @@ import com.io7m.jparasol.lexer.Position;
 {
 
   /** This character denotes the end of file */
-  private static final int    YYEOF              = -1;
-
-  /** initial size of the lookahead buffer */
-  private static final int    ZZ_BUFFERSIZE      = 16384;
+  private static final int    YYEOF                 = -1;
 
   /** lexical states */
-  private static final int    YYINITIAL          = 0;
+  private static final int    YYINITIAL             = 0;
+
+  /**
+   * Translates DFA states to action switch labels.
+   */
+  private static final int[]  ZZ_ACTION             = GVersionNumberSetLexer
+                                                      .zzUnpackAction();
+
+  private static final String ZZ_ACTION_PACKED_0    =
+                                                      "\1\0\1\1\1\2\1\1\1\2\1\3\1\4\1\5"
+                                                        + "\1\6\1\7\1\10";
+
+  /**
+   * ZZ_ATTRIBUTE[aState] contains the attributes of state <code>aState</code>
+   */
+  private static final int[]  ZZ_ATTRIBUTE          = GVersionNumberSetLexer
+                                                      .zzUnpackAttribute();
+
+  private static final String ZZ_ATTRIBUTE_PACKED_0 = "\1\0\2\11\2\1\6\11";
+
+  /** initial size of the lookahead buffer */
+  private static final int    ZZ_BUFFERSIZE         = 16384;
+
+  /**
+   * Translates characters to character classes
+   */
+  private static final char[] ZZ_CMAP               =
+                                                      GVersionNumberSetLexer
+                                                        .zzUnpackCMap(GVersionNumberSetLexer.ZZ_CMAP_PACKED);
+
+  /**
+   * Translates characters to character classes
+   */
+  private static final String ZZ_CMAP_PACKED        =
+                                                      "\11\0\1\4\1\4\1\0\2\4\22\0\1\4\7\0\1\5\1\6"
+                                                        + "\2\0\1\7\1\2\2\0\1\1\11\3\41\0\1\10\1\0\1\11"
+                                                        + "\uffa2\0";
+
+  /* error messages for the codes above */
+  private static final String ZZ_ERROR_MSG[]        = {
+    "Unkown internal scanner error",
+    "Error: could not match input",
+    "Error: pushback value was too large"          };
 
   /**
    * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
    * ZZ_LEXSTATE[l+1] is the state in the DFA for the lexical state l at the
    * beginning of a line l is of the form l = 2*k, k a non negative integer
    */
-  private static final int    ZZ_LEXSTATE[]      = { 0, 0 };
+  private static final int    ZZ_LEXSTATE[]         = { 0, 0 };
+
+  private static final int    ZZ_NO_MATCH           = 1;
+
+  private static final int    ZZ_PUSHBACK_2BIG      = 2;
 
   /**
-   * Translates characters to character classes
+   * Translates a state to a row index in the transition table
    */
-  private static final String ZZ_CMAP_PACKED     =
-                                                   "\11\0\1\4\1\4\1\0\2\4\22\0\1\4\7\0\1\5\1\6"
-                                                     + "\2\0\1\7\1\2\2\0\1\1\11\3\41\0\1\10\1\0\1\11"
-                                                     + "\uffa2\0";
+  private static final int[]  ZZ_ROWMAP             = GVersionNumberSetLexer
+                                                      .zzUnpackRowMap();
+
+  private static final String ZZ_ROWMAP_PACKED_0    =
+                                                      "\0\0\0\12\0\12\0\24\0\36\0\12\0\12\0\12"
+                                                        + "\0\12\0\12\0\12";
 
   /**
-   * Translates characters to character classes
+   * The transition table of the DFA
    */
-  private static final char[] ZZ_CMAP            =
-                                                   GVersionNumberSetLexer
-                                                     .zzUnpackCMap(GVersionNumberSetLexer.ZZ_CMAP_PACKED);
+  private static final int[]  ZZ_TRANS              = GVersionNumberSetLexer
+                                                      .zzUnpackTrans();
 
-  /**
-   * Translates DFA states to action switch labels.
-   */
-  private static final int[]  ZZ_ACTION          = GVersionNumberSetLexer
-                                                   .zzUnpackAction();
+  private static final String ZZ_TRANS_PACKED_0     =
+                                                      "\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11"
+                                                        + "\1\12\1\13\15\0\1\5\7\0\1\5\1\0\1\5"
+                                                        + "\6\0";
 
-  private static final String ZZ_ACTION_PACKED_0 =
-                                                   "\1\0\1\1\1\2\1\1\1\2\1\3\1\4\1\5"
-                                                     + "\1\6\1\7\1\10";
+  /* error codes */
+  private static final int    ZZ_UNKNOWN_ERROR      = 0;
 
   private static int[] zzUnpackAction()
   {
@@ -108,15 +150,58 @@ import com.io7m.jparasol.lexer.Position;
     return j;
   }
 
-  /**
-   * Translates a state to a row index in the transition table
-   */
-  private static final int[]  ZZ_ROWMAP          = GVersionNumberSetLexer
-                                                   .zzUnpackRowMap();
+  private static int[] zzUnpackAttribute()
+  {
+    final int[] result = new int[11];
+    int offset = 0;
+    offset =
+      GVersionNumberSetLexer.zzUnpackAttribute(
+        GVersionNumberSetLexer.ZZ_ATTRIBUTE_PACKED_0,
+        offset,
+        result);
+    return result;
+  }
 
-  private static final String ZZ_ROWMAP_PACKED_0 =
-                                                   "\0\0\0\12\0\12\0\24\0\36\0\12\0\12\0\12"
-                                                     + "\0\12\0\12\0\12";
+  private static int zzUnpackAttribute(
+    final String packed,
+    final int offset,
+    final int[] result)
+  {
+    int i = 0; /* index in packed string */
+    int j = offset; /* index in unpacked array */
+    final int l = packed.length();
+    while (i < l) {
+      int count = packed.charAt(i++);
+      final int value = packed.charAt(i++);
+      do {
+        result[j++] = value;
+      } while (--count > 0);
+    }
+    return j;
+  }
+
+  /**
+   * Unpacks the compressed character translation table.
+   * 
+   * @param packed
+   *          the packed character translation table
+   * @return the unpacked character translation table
+   */
+  private static char[] zzUnpackCMap(
+    final String packed)
+  {
+    final char[] map = new char[0x10000];
+    int i = 0; /* index in packed string */
+    int j = 0; /* index in unpacked array */
+    while (i < 42) {
+      int count = packed.charAt(i++);
+      final char value = packed.charAt(i++);
+      do {
+        map[j++] = value;
+      } while (--count > 0);
+    }
+    return map;
+  }
 
   private static int[] zzUnpackRowMap()
   {
@@ -144,17 +229,6 @@ import com.io7m.jparasol.lexer.Position;
     }
     return j;
   }
-
-  /**
-   * The transition table of the DFA
-   */
-  private static final int[]  ZZ_TRANS          = GVersionNumberSetLexer
-                                                  .zzUnpackTrans();
-
-  private static final String ZZ_TRANS_PACKED_0 =
-                                                  "\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11"
-                                                    + "\1\12\1\13\15\0\1\5\7\0\1\5\1\0\1\5"
-                                                    + "\6\0";
 
   private static int[] zzUnpackTrans()
   {
@@ -187,88 +261,7 @@ import com.io7m.jparasol.lexer.Position;
     return j;
   }
 
-  /* error codes */
-  private static final int    ZZ_UNKNOWN_ERROR      = 0;
-  private static final int    ZZ_NO_MATCH           = 1;
-  private static final int    ZZ_PUSHBACK_2BIG      = 2;
-
-  /* error messages for the codes above */
-  private static final String ZZ_ERROR_MSG[]        = {
-    "Unkown internal scanner error",
-    "Error: could not match input",
-    "Error: pushback value was too large"          };
-
-  /**
-   * ZZ_ATTRIBUTE[aState] contains the attributes of state <code>aState</code>
-   */
-  private static final int[]  ZZ_ATTRIBUTE          = GVersionNumberSetLexer
-                                                      .zzUnpackAttribute();
-
-  private static final String ZZ_ATTRIBUTE_PACKED_0 = "\1\0\2\11\2\1\6\11";
-
-  private static int[] zzUnpackAttribute()
-  {
-    final int[] result = new int[11];
-    int offset = 0;
-    offset =
-      GVersionNumberSetLexer.zzUnpackAttribute(
-        GVersionNumberSetLexer.ZZ_ATTRIBUTE_PACKED_0,
-        offset,
-        result);
-    return result;
-  }
-
-  private static int zzUnpackAttribute(
-    final String packed,
-    final int offset,
-    final int[] result)
-  {
-    int i = 0; /* index in packed string */
-    int j = offset; /* index in unpacked array */
-    final int l = packed.length();
-    while (i < l) {
-      int count = packed.charAt(i++);
-      final int value = packed.charAt(i++);
-      do {
-        result[j++] = value;
-      } while (--count > 0);
-    }
-    return j;
-  }
-
-  /** the input device */
-  private java.io.Reader zzReader;
-
-  /** the current state of the DFA */
-  private int            zzState;
-
-  /** the current lexical state */
-  private int            zzLexicalState = GVersionNumberSetLexer.YYINITIAL;
-
-  /**
-   * this buffer contains the current text to be matched and is the source of
-   * the yytext() string
-   */
-  private char           zzBuffer[]     =
-                                          new char[GVersionNumberSetLexer.ZZ_BUFFERSIZE];
-
-  /** the textposition at the last accepting state */
-  private int            zzMarkedPos;
-
-  /** the current text position in the buffer */
-  private int            zzCurrentPos;
-
-  /** startRead marks the beginning of the yytext() string in the buffer */
-  private int            zzStartRead;
-
-  /**
-   * endRead marks the last character in the buffer, that has been read from
-   * input
-   */
-  private int            zzEndRead;
-
-  /** number of newlines encountered up to the start of the matched text */
-  private int            yyline;
+  private final File     file           = new File("<stdin>");
 
   /** the number of characters up to the start of the matched text */
   private int            yychar;
@@ -279,6 +272,9 @@ import com.io7m.jparasol.lexer.Position;
    */
   private int            yycolumn;
 
+  /** number of newlines encountered up to the start of the matched text */
+  private int            yyline;
+
   /**
    * zzAtBOL == true <=> the scanner is currently at the beginning of a line
    */
@@ -287,42 +283,41 @@ import com.io7m.jparasol.lexer.Position;
   /** zzAtEOF == true <=> the scanner is at the EOF */
   private boolean        zzAtEOF;
 
+  /**
+   * this buffer contains the current text to be matched and is the source of
+   * the yytext() string
+   */
+  private char           zzBuffer[]     =
+                                          new char[GVersionNumberSetLexer.ZZ_BUFFERSIZE];
+
+  /** the current text position in the buffer */
+  private int            zzCurrentPos;
+
+  /**
+   * endRead marks the last character in the buffer, that has been read from
+   * input
+   */
+  private int            zzEndRead;
+
   /** denotes if the user-EOF-code has already been executed */
   private boolean        zzEOFDone;
 
+  /** the current lexical state */
+  private int            zzLexicalState = GVersionNumberSetLexer.YYINITIAL;
+
+  /** the textposition at the last accepting state */
+  private int            zzMarkedPos;
+
+  /** the input device */
+  private java.io.Reader zzReader;
+
   /* user code: */
 
-  public GVersionNumberSetToken token()
-    throws IOException,
-      LexerError
-  {
-    return this.yylex();
-  }
+  /** startRead marks the beginning of the yytext() string in the buffer */
+  private int            zzStartRead;
 
-  private Position getPosition()
-  {
-    return new Position(this.yyline + 1, this.yycolumn);
-  }
-
-  private final File file = new File("<stdin>");
-
-  public File getFile()
-  {
-    return this.file;
-  }
-
-  /**
-   * Creates a new scanner There is also a java.io.InputStream version of this
-   * constructor.
-   * 
-   * @param in
-   *          the java.io.Reader to read input from.
-   */
-  public GVersionNumberSetLexer(
-    final java.io.Reader in)
-  {
-    this.zzReader = in;
-  }
+  /** the current state of the DFA */
+  private int            zzState;
 
   /**
    * Creates a new scanner. There is also java.io.Reader version of this
@@ -338,129 +333,33 @@ import com.io7m.jparasol.lexer.Position;
   }
 
   /**
-   * Unpacks the compressed character translation table.
+   * Creates a new scanner There is also a java.io.InputStream version of this
+   * constructor.
    * 
-   * @param packed
-   *          the packed character translation table
-   * @return the unpacked character translation table
+   * @param in
+   *          the java.io.Reader to read input from.
    */
-  private static char[] zzUnpackCMap(
-    final String packed)
+  public GVersionNumberSetLexer(
+    final java.io.Reader in)
   {
-    final char[] map = new char[0x10000];
-    int i = 0; /* index in packed string */
-    int j = 0; /* index in unpacked array */
-    while (i < 42) {
-      int count = packed.charAt(i++);
-      final char value = packed.charAt(i++);
-      do {
-        map[j++] = value;
-      } while (--count > 0);
-    }
-    return map;
+    this.zzReader = in;
   }
 
-  /**
-   * Refills the input buffer.
-   * 
-   * @return <code>false</code>, iff there was new input.
-   * 
-   * @exception java.io.IOException
-   *              if any I/O-Error occurs
-   */
-  private boolean zzRefill()
-    throws java.io.IOException
+  public File getFile()
   {
-
-    /* first: make room (if you can) */
-    if (this.zzStartRead > 0) {
-      System.arraycopy(
-        this.zzBuffer,
-        this.zzStartRead,
-        this.zzBuffer,
-        0,
-        this.zzEndRead - this.zzStartRead);
-
-      /* translate stored positions */
-      this.zzEndRead -= this.zzStartRead;
-      this.zzCurrentPos -= this.zzStartRead;
-      this.zzMarkedPos -= this.zzStartRead;
-      this.zzStartRead = 0;
-    }
-
-    /* is the buffer big enough? */
-    if (this.zzCurrentPos >= this.zzBuffer.length) {
-      /* if not: blow it up */
-      final char newBuffer[] = new char[this.zzCurrentPos * 2];
-      System.arraycopy(this.zzBuffer, 0, newBuffer, 0, this.zzBuffer.length);
-      this.zzBuffer = newBuffer;
-    }
-
-    /* finally: fill the buffer with new input */
-    final int numRead =
-      this.zzReader.read(this.zzBuffer, this.zzEndRead, this.zzBuffer.length
-        - this.zzEndRead);
-
-    if (numRead > 0) {
-      this.zzEndRead += numRead;
-      return false;
-    }
-    // unlikely but not impossible: read 0 characters, but not at end of
-    // stream
-    if (numRead == 0) {
-      final int c = this.zzReader.read();
-      if (c == -1) {
-        return true;
-      }
-      this.zzBuffer[this.zzEndRead++] = (char) c;
-      return false;
-    }
-
-    // numRead < 0
-    return true;
+    return this.file;
   }
 
-  /**
-   * Closes the input stream.
-   */
-  private final void yyclose()
-    throws java.io.IOException
+  private Position getPosition()
   {
-    this.zzAtEOF = true; /* indicate end of file */
-    this.zzEndRead = this.zzStartRead; /* invalidate buffer */
-    this.zzReader.close();
+    return new Position(this.yyline + 1, this.yycolumn);
   }
 
-  /**
-   * Resets the scanner to read from a new input stream. Does not close the
-   * old reader.
-   * 
-   * All internal variables are reset, the old input stream <b>cannot</b> be
-   * reused (internal buffer is discarded and lost). Lexical state is set to
-   * <tt>ZZ_INITIAL</tt>.
-   * 
-   * @param reader
-   *          the new input stream
-   */
-  private final void yyreset(
-    final java.io.Reader reader)
+  public GVersionNumberSetToken token()
+    throws IOException,
+      LexerError
   {
-    this.zzReader = reader;
-    this.zzAtBOL = true;
-    this.zzAtEOF = false;
-    this.zzEOFDone = false;
-    this.zzEndRead = this.zzStartRead = 0;
-    this.zzCurrentPos = this.zzMarkedPos = 0;
-    this.yyline = this.yychar = this.yycolumn = 0;
-    this.zzLexicalState = GVersionNumberSetLexer.YYINITIAL;
-  }
-
-  /**
-   * Returns the current lexical state.
-   */
-  private final int yystate()
-  {
-    return this.zzLexicalState;
+    return this.yylex();
   }
 
   /**
@@ -473,15 +372,6 @@ import com.io7m.jparasol.lexer.Position;
     final int newState)
   {
     this.zzLexicalState = newState;
-  }
-
-  /**
-   * Returns the text matched by the current regular expression.
-   */
-  private final String yytext()
-  {
-    return new String(this.zzBuffer, this.zzStartRead, this.zzMarkedPos
-      - this.zzStartRead);
   }
 
   /**
@@ -502,58 +392,22 @@ import com.io7m.jparasol.lexer.Position;
   }
 
   /**
+   * Closes the input stream.
+   */
+  private final void yyclose()
+    throws java.io.IOException
+  {
+    this.zzAtEOF = true; /* indicate end of file */
+    this.zzEndRead = this.zzStartRead; /* invalidate buffer */
+    this.zzReader.close();
+  }
+
+  /**
    * Returns the length of the matched text region.
    */
   private final int yylength()
   {
     return this.zzMarkedPos - this.zzStartRead;
-  }
-
-  /**
-   * Reports an error that occured while scanning.
-   * 
-   * In a wellformed scanner (no or only correct usage of yypushback(int) and
-   * a match-all fallback rule) this method will only be called with things
-   * that "Can't Possibly Happen". If this method is called, something is
-   * seriously wrong (e.g. a JFlex bug producing a faulty scanner etc.).
-   * 
-   * Usual syntax/scanner level error handling should be done in error
-   * fallback rules.
-   * 
-   * @param errorCode
-   *          the code of the errormessage to display
-   */
-  private void zzScanError(
-    final int errorCode)
-  {
-    String message;
-    try {
-      message = GVersionNumberSetLexer.ZZ_ERROR_MSG[errorCode];
-    } catch (final ArrayIndexOutOfBoundsException e) {
-      message =
-        GVersionNumberSetLexer.ZZ_ERROR_MSG[GVersionNumberSetLexer.ZZ_UNKNOWN_ERROR];
-    }
-
-    throw new Error(message);
-  }
-
-  /**
-   * Pushes the specified amount of characters back into the input stream.
-   * 
-   * They will be read again by then next call of the scanning method
-   * 
-   * @param number
-   *          the number of characters to be read again. This number must not
-   *          be greater than yylength()!
-   */
-  private void yypushback(
-    final int number)
-  {
-    if (number > this.yylength()) {
-      this.zzScanError(GVersionNumberSetLexer.ZZ_PUSHBACK_2BIG);
-    }
-
-    this.zzMarkedPos -= number;
   }
 
   /**
@@ -772,6 +626,154 @@ import com.io7m.jparasol.lexer.Position;
           this.zzScanError(GVersionNumberSetLexer.ZZ_NO_MATCH);
       }
     }
+  }
+
+  /**
+   * Pushes the specified amount of characters back into the input stream.
+   * 
+   * They will be read again by then next call of the scanning method
+   * 
+   * @param number
+   *          the number of characters to be read again. This number must not
+   *          be greater than yylength()!
+   */
+  private void yypushback(
+    final int number)
+  {
+    if (number > this.yylength()) {
+      this.zzScanError(GVersionNumberSetLexer.ZZ_PUSHBACK_2BIG);
+    }
+
+    this.zzMarkedPos -= number;
+  }
+
+  /**
+   * Resets the scanner to read from a new input stream. Does not close the
+   * old reader.
+   * 
+   * All internal variables are reset, the old input stream <b>cannot</b> be
+   * reused (internal buffer is discarded and lost). Lexical state is set to
+   * <tt>ZZ_INITIAL</tt>.
+   * 
+   * @param reader
+   *          the new input stream
+   */
+  private final void yyreset(
+    final java.io.Reader reader)
+  {
+    this.zzReader = reader;
+    this.zzAtBOL = true;
+    this.zzAtEOF = false;
+    this.zzEOFDone = false;
+    this.zzEndRead = this.zzStartRead = 0;
+    this.zzCurrentPos = this.zzMarkedPos = 0;
+    this.yyline = this.yychar = this.yycolumn = 0;
+    this.zzLexicalState = GVersionNumberSetLexer.YYINITIAL;
+  }
+
+  /**
+   * Returns the current lexical state.
+   */
+  private final int yystate()
+  {
+    return this.zzLexicalState;
+  }
+
+  /**
+   * Returns the text matched by the current regular expression.
+   */
+  private final String yytext()
+  {
+    return new String(this.zzBuffer, this.zzStartRead, this.zzMarkedPos
+      - this.zzStartRead);
+  }
+
+  /**
+   * Refills the input buffer.
+   * 
+   * @return <code>false</code>, iff there was new input.
+   * 
+   * @exception java.io.IOException
+   *              if any I/O-Error occurs
+   */
+  private boolean zzRefill()
+    throws java.io.IOException
+  {
+
+    /* first: make room (if you can) */
+    if (this.zzStartRead > 0) {
+      System.arraycopy(
+        this.zzBuffer,
+        this.zzStartRead,
+        this.zzBuffer,
+        0,
+        this.zzEndRead - this.zzStartRead);
+
+      /* translate stored positions */
+      this.zzEndRead -= this.zzStartRead;
+      this.zzCurrentPos -= this.zzStartRead;
+      this.zzMarkedPos -= this.zzStartRead;
+      this.zzStartRead = 0;
+    }
+
+    /* is the buffer big enough? */
+    if (this.zzCurrentPos >= this.zzBuffer.length) {
+      /* if not: blow it up */
+      final char newBuffer[] = new char[this.zzCurrentPos * 2];
+      System.arraycopy(this.zzBuffer, 0, newBuffer, 0, this.zzBuffer.length);
+      this.zzBuffer = newBuffer;
+    }
+
+    /* finally: fill the buffer with new input */
+    final int numRead =
+      this.zzReader.read(this.zzBuffer, this.zzEndRead, this.zzBuffer.length
+        - this.zzEndRead);
+
+    if (numRead > 0) {
+      this.zzEndRead += numRead;
+      return false;
+    }
+    // unlikely but not impossible: read 0 characters, but not at end of
+    // stream
+    if (numRead == 0) {
+      final int c = this.zzReader.read();
+      if (c == -1) {
+        return true;
+      }
+      this.zzBuffer[this.zzEndRead++] = (char) c;
+      return false;
+    }
+
+    // numRead < 0
+    return true;
+  }
+
+  /**
+   * Reports an error that occured while scanning.
+   * 
+   * In a wellformed scanner (no or only correct usage of yypushback(int) and
+   * a match-all fallback rule) this method will only be called with things
+   * that "Can't Possibly Happen". If this method is called, something is
+   * seriously wrong (e.g. a JFlex bug producing a faulty scanner etc.).
+   * 
+   * Usual syntax/scanner level error handling should be done in error
+   * fallback rules.
+   * 
+   * @param errorCode
+   *          the code of the errormessage to display
+   */
+  private void zzScanError(
+    final int errorCode)
+  {
+    String message;
+    try {
+      message = GVersionNumberSetLexer.ZZ_ERROR_MSG[errorCode];
+    } catch (final ArrayIndexOutOfBoundsException e) {
+      message =
+        GVersionNumberSetLexer.ZZ_ERROR_MSG[GVersionNumberSetLexer.ZZ_UNKNOWN_ERROR];
+    }
+
+    throw new Error(message);
   }
 
 }
