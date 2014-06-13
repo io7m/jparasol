@@ -54,11 +54,11 @@
 
   <mailingLists>
     <mailingList>
-      <name>io7m-jparasol</name>
-      <subscribe>io7m-jparasol-join@lists.io7m.com</subscribe>
-      <unsubscribe>io7m-jparasol-leave@lists.io7m.com</unsubscribe>
-      <post>io7m-jparasol@lists.io7m.com</post>
-      <archive>http://lists.io7m.com/io7m-jparasol/archive</archive>
+      <name>io7m-parasol</name>
+      <subscribe>io7m-parasol-join@lists.io7m.com</subscribe>
+      <unsubscribe>io7m-parasol-leave@lists.io7m.com</unsubscribe>
+      <post>io7m-parasol@lists.io7m.com</post>
+      <archive>http://lists.io7m.com/io7m-parasol/archive</archive>
     </mailingList>
   </mailingLists>
 
