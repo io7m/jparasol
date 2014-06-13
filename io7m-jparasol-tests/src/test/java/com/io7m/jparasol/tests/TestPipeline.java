@@ -31,9 +31,9 @@ import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.PackagePath.BuilderType;
+import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.glsl.GFFIError;
 import com.io7m.jparasol.glsl.GTransform;
-import com.io7m.jparasol.glsl.GVersion;
 import com.io7m.jparasol.glsl.ast.GASTShader;
 import com.io7m.jparasol.glsl.pipeline.GPipeline;
 import com.io7m.jparasol.lexer.Lexer;
@@ -420,7 +420,7 @@ public final class TestPipeline
   public static GASTShader transformedFragment(
     final String[] names,
     final TASTShaderNameFlat shader,
-    final GVersion version)
+    final GVersionType version)
     throws GFFIError
   {
     final LogUsableType log = TestUtilities.getLog();
@@ -433,7 +433,7 @@ public final class TestPipeline
   public static GASTShader transformedFragmentInternal(
     final String[] names,
     final TASTShaderNameFlat shader,
-    final GVersion version)
+    final GVersionType version)
     throws GFFIError
   {
     final LogUsableType log = TestUtilities.getLog();
@@ -446,7 +446,7 @@ public final class TestPipeline
   public static GASTShader transformedVertex(
     final String[] names,
     final TASTShaderNameFlat shader,
-    final GVersion version)
+    final GVersionType version)
     throws GFFIError
   {
     final LogUsableType log = TestUtilities.getLog();
@@ -459,7 +459,7 @@ public final class TestPipeline
   public static GASTShader transformedVertexInternal(
     final String[] names,
     final TASTShaderNameFlat shader,
-    final GVersion version)
+    final GVersionType version)
     throws GFFIError
   {
     final LogUsableType log = TestUtilities.getLog();

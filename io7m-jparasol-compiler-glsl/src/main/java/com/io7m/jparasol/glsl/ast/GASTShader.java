@@ -21,7 +21,7 @@ import java.util.List;
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.Pair;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jparasol.glsl.GVersion;
+import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainFragment;
 import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainVertex;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
@@ -40,7 +40,7 @@ import com.io7m.jparasol.typed.TType;
   @EqualityReference public static final class GASTShaderFragment extends
     GASTShader
   {
-    private final GVersion                                         glsl_version;
+    private final GVersionType                                     glsl_version;
     private final List<GASTShaderFragmentInput>                    inputs;
     private final GASTShaderMainFragment                           main;
     private final List<GASTShaderFragmentOutput>                   outputs;
@@ -74,7 +74,7 @@ import com.io7m.jparasol.typed.TType;
       final List<GASTShaderFragmentParameter> in_parameter,
       final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_terms,
       final List<Pair<GTypeName, GASTTypeDeclaration>> in_types,
-      final GVersion in_glsl_version)
+      final GVersionType in_glsl_version)
     {
       this.inputs = NullCheck.notNullAll(in_inputs, "Inputs");
       this.main = NullCheck.notNull(in_main, "Main");
@@ -89,7 +89,7 @@ import com.io7m.jparasol.typed.TType;
      * @return The GLSL version
      */
 
-    public GVersion getGLSLVersion()
+    public GVersionType getGLSLVersion()
     {
       return this.glsl_version;
     }
@@ -400,7 +400,7 @@ import com.io7m.jparasol.typed.TType;
   @EqualityReference public static final class GASTShaderVertex extends
     GASTShader
   {
-    private final GVersion                                         glsl_version;
+    private final GVersionType                                     glsl_version;
     private final List<GASTShaderVertexInput>                      inputs;
     private final GASTShaderMainVertex                             main;
     private final List<GASTShaderVertexOutput>                     outputs;
@@ -434,7 +434,7 @@ import com.io7m.jparasol.typed.TType;
       final List<GASTShaderVertexParameter> in_parameter,
       final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_terms,
       final List<Pair<GTypeName, GASTTypeDeclaration>> in_types,
-      final GVersion in_glsl_version)
+      final GVersionType in_glsl_version)
     {
       this.inputs = NullCheck.notNullAll(in_inputs, "Inputs");
       this.main = NullCheck.notNull(in_main, "Main");
@@ -449,7 +449,7 @@ import com.io7m.jparasol.typed.TType;
      * @return The GLSL version
      */
 
-    public GVersion getGLSLVersion()
+    public GVersionType getGLSLVersion()
     {
       return this.glsl_version;
     }

@@ -30,8 +30,10 @@ import com.io7m.jfunctional.Unit;
 import com.io7m.jlog.LogLevel;
 import com.io7m.jlog.LogUsableType;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
+import com.io7m.jparasol.core.GVersionType;
+import com.io7m.jparasol.core.GVersionVisitorType;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.typed.TType.TFloat;
 import com.io7m.jparasol.typed.TType.TMatrix3x3F;
@@ -83,8 +85,8 @@ import com.io7m.junreachable.UnreachableCodeException;
   @EqualityReference private static final class CheckAttributeTypes implements
     CheckType
   {
-    private static final Set<TValueType> RESTRICTED_TYPES;
-    private static final Set<GVersion>   RESTRICTED_VERSIONS;
+    private static final Set<TValueType>   RESTRICTED_TYPES;
+    private static final Set<GVersionType> RESTRICTED_VERSIONS;
 
     static {
       RESTRICTED_TYPES = new HashSet<TValueType>();
@@ -95,7 +97,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       CheckAttributeTypes.RESTRICTED_TYPES.add(TMatrix3x3F.get());
       CheckAttributeTypes.RESTRICTED_TYPES.add(TMatrix4x4F.get());
 
-      RESTRICTED_VERSIONS = new HashSet<GVersion>();
+      RESTRICTED_VERSIONS = new HashSet<GVersionType>();
       CheckAttributeTypes.RESTRICTED_VERSIONS.add(GVersionES.GLSL_ES_100);
       CheckAttributeTypes.RESTRICTED_VERSIONS.add(GVersionFull.GLSL_110);
       CheckAttributeTypes.RESTRICTED_VERSIONS.add(GVersionFull.GLSL_120);
@@ -105,7 +107,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       final String attribute,
       final TokenIdentifierLower name,
       final TValueType type,
-      final GVersion version)
+      final GVersionType version)
       throws UnreachableCodeException
     {
       final StringBuilder m = new StringBuilder();
@@ -116,7 +118,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       m.append(" is of type ");
       m.append(type.getShowName());
       m.append(" but ");
-      m.append(version.getLongName());
+      m.append(version.versionGetLongName());
       m.append(" only permits the following types: ");
 
       for (final TValueType t : CheckAttributeTypes.RESTRICTED_TYPES) {
@@ -143,7 +145,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       for (final TASTDShaderFragmentInput i : fs.getInputs()) {
         final TValueType type = i.getType();
         if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
-          for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
+          for (final GVersionType v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
             v
               .versionAccept(new GVersionVisitorType<Unit, UnreachableCodeException>() {
                 @Override public Unit versionVisitES(
@@ -183,7 +185,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       for (final TASTDShaderFragmentOutput o : fs.getOutputs()) {
         final TValueType type = o.getType();
         if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
-          for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
+          for (final GVersionType v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
             v
               .versionAccept(new GVersionVisitorType<Unit, UnreachableCodeException>() {
                 @Override public Unit versionVisitES(
@@ -229,7 +231,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       for (final TASTDShaderVertexInput i : vs.getInputs()) {
         final TValueType type = i.getType();
         if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
-          for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
+          for (final GVersionType v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
             v
               .versionAccept(new GVersionVisitorType<Unit, UnreachableCodeException>() {
                 @Override public Unit versionVisitES(
@@ -269,7 +271,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       for (final TASTDShaderVertexOutput o : vs.getOutputs()) {
         final TValueType type = o.getType();
         if (CheckAttributeTypes.RESTRICTED_TYPES.contains(type) == false) {
-          for (final GVersion v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
+          for (final GVersionType v : CheckAttributeTypes.RESTRICTED_VERSIONS) {
             v
               .versionAccept(new GVersionVisitorType<Unit, UnreachableCodeException>() {
                 @Override public Unit versionVisitES(

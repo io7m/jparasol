@@ -125,21 +125,22 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.]]>
       <s:formal-item s:kind="example">
         <s:formal-item-title>Compiler example</s:formal-item-title>
         <s:verbatim><![CDATA[$ java -jar io7m-jparasol-compiler-frontend-${project.version}-jparasol-c.jar
-parasol-c: [options] --compile-one output-directory shader file0 [file1 ... fileN]
-        or [options] --compile-batch output-directory batch-list source-list
+parasol-c: [options] --compile-one output shader file0 [file1 ... fileN]
+        or [options] --compile-batch output batch-list source-list
         or [options] --check file0 [file1 ... fileN]
         or [options] --show-versions
         or [options] --version
 
-  Where: output-directory is a directory that will be populated with GLSL shaders
+  Where: output           is a directory (unless --zip is specified) that will be populated with GLSL shaders
          shader           is the fully-qualified name of a shading program
          batch-list       is a file containing (output , ':' , shader) tuples, separated by newlines
          source-list      is a file containing a set of filenames, separated by newlines
          file[0 .. N]     is a series of filenames containing source code
 
      --check                         Parse and type-check all source files, but do not produce GLSL source
-     --compile-one                   Compile a specific shader program to GLSL source
+     --compact                       Enable compaction (eliminates duplicate source files)
      --compile-batch                 Produce multiple GLSL programs from a set of sources
+     --compile-one                   Compile a specific shader program to GLSL source
      --debug                         Enable debugging (debug messages, exception backtraces)
   -h,--help                          Show this help message
      --require-es <version-set>      Require GLSL ES source code for the given set of GLSL ES versions, failing if any
@@ -149,6 +150,7 @@ parasol-c: [options] --compile-one output-directory shader file0 [file1 ... file
      --show-versions                 Show the available GLSL versions
      --threads <count>               Set the number of threads to use during code generation
      --version                       Display compiler version
+     --zip                           Write shaders to a zip archive instead of a directory
 
    Where: version-set     := version-segment ( ',' version-segment )*
           version-segment := version-exact | version-range
@@ -394,7 +396,7 @@ parasol-c: [options] --compile-one output-directory shader file0 [file1 ... file
           takes a similar view of the world as a typical GLSL program. That is,
           a <s:term s:type="term">program</s:term> consists of exactly one 
           <s:term s:type="term">vertex shader</s:term>
-          and exactly one <s:term s:type="term">vertex shader</s:term>.
+          and exactly one <s:term s:type="term">fragment shader</s:term>.
         </s:paragraph>
         <s:paragraph>
           In GLSL, the vertex shader is responsible for assigning values to
@@ -423,7 +425,11 @@ parasol-c: [options] --compile-one output-directory shader file0 [file1 ... file
           shader to assign multiple outputs. The <s:term s:type="expression">gl_FragColor</s:term>
           variable was essentially replaced with the
           <s:term s:type="expression">gl_FragData</s:term> variable, which is
-          of an array type.
+          of an array type. In modern OpenGL, the 
+          <s:term s:type="expression">gl_FragColor</s:term> and
+          <s:term s:type="expression">gl_FragData</s:term> variables have been
+          removed, and programmers are required to explicitly declare named
+          fragment shader outputs.
         </s:paragraph>
         <s:paragraph>
           In <s:term s:type="package">Parasol</s:term>, a fragment shader
@@ -765,17 +771,18 @@ main (void)
         <s:subsection-title>Overview</s:subsection-title>
         <s:formal-item s:kind="example">
           <s:formal-item-title>Options</s:formal-item-title>
-          <s:verbatim><![CDATA[parasol-c: [options] --compile-one output.pc shader         file0 [file1 ... fileN]
-        or [options] --compile-batch basedir batch-list source-list
-        or [options] --check                            file0 [file1 ... fileN]
-        or [options] --show-versions
-        or [options] --version]]></s:verbatim>
+          <s:verbatim><![CDATA[parasol-c: [options] --compile-one output shader file0 [file1 ... fileN]
+  or [options] --compile-batch output batch-list source-list
+  or [options] --check file0 [file1 ... fileN]
+  or [options] --show-versions
+  or [options] --version]]></s:verbatim>
         </s:formal-item>
       </s:subsection>
       <s:subsection xml:id="jparasol-c.compile">
         <s:subsection-title>Compile</s:subsection-title>
         <s:paragraph>
           The <s:term s:type="command">--compile-one</s:term> command accepts an output directory 
+          (or archive, see <s:link s:target="jparasol-c.zip">--zip</s:link>)
           <s:term s:type="variable">o</s:term>,
           the fully-qualified name of a program <s:term s:type="variable">p</s:term>, 
           and a list of one or more <s:term s:type="package">Parasol</s:term> source files. 
@@ -840,6 +847,42 @@ main (void)
           <s:term s:type="command">--threads</s:term> command specifies
           the number of threads that should be used during batch compilation,
           with <s:term s:type="constant">1</s:term> thread being the default.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection xml:id="jparasol-c.zip">
+        <s:subsection-title>Zip</s:subsection-title>
+        <s:paragraph>
+          When the <s:term s:type="parameter">--zip</s:term> parameter is
+          specified, the output path is instead assumed to be an archive
+          that will be created and populated with the resulting shading 
+          programs.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection xml:id="jparasol-c.compact">
+        <s:subsection-title>Compaction</s:subsection-title>
+        <s:paragraph>
+          Normally, one source file will be emitted per version of GLSL. Often,
+          these different source files will actually be identical in content
+          apart from a <s:term s:type="keyword">#version</s:term> directive on
+          the first line of the file.
+        </s:paragraph>
+        <s:paragraph>
+          When the <s:term s:type="parameter">--compact</s:term> parameter is
+          specified, shaders will be written in so-called 
+          <s:term s:type="term">compacted</s:term> form. Essentially, source
+          files are stripped of their version directives and then hashed with
+          <s:term s:type="function">SHA256</s:term>. Then, each source file
+          is renamed to its <s:term s:type="function">SHA256</s:term> hash
+          with the addition of its original suffix, and a set of mappings
+          from GLSL versions to <s:term s:type="function">SHA256</s:term> hashes
+          are written into the program's <s:term s:type="function">meta.xml</s:term>
+          file. The user is responsible for re-inserting the correct version
+          directive upon passing the program to a GLSL compiler.
+        </s:paragraph>
+        <s:paragraph>
+          The storage space savings of compaction are typically in the range 
+          60-70%. In rendering systems that use thousands of shaders, this can
+          be significant!
         </s:paragraph>
       </s:subsection>
       <s:subsection xml:id="jparasol-c.ranges">

@@ -25,20 +25,16 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import nu.xom.Document;
-import nu.xom.Serializer;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -50,29 +46,30 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
 import com.io7m.jfunctional.Pair;
-import com.io7m.jfunctional.Unit;
 import com.io7m.jlog.Log;
 import com.io7m.jlog.LogLevel;
 import com.io7m.jlog.LogPolicyAllOn;
 import com.io7m.jlog.LogUsableType;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.UIError;
-import com.io7m.jparasol.glsl.GFFIError;
-import com.io7m.jparasol.glsl.GMeta;
-import com.io7m.jparasol.glsl.GVersion;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
-import com.io7m.jparasol.glsl.GVersionCheckerError;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
+import com.io7m.jparasol.core.UncompactedFragmentShader;
+import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
+import com.io7m.jparasol.core.UncompactedVertexShader;
 import com.io7m.jparasol.glsl.GVersionNumberSetLexer;
 import com.io7m.jparasol.glsl.GVersionNumberSetParser;
 import com.io7m.jparasol.glsl.GVersionNumberSetParser.Segment;
-import com.io7m.jparasol.glsl.GVersionVisitorType;
-import com.io7m.jparasol.glsl.GWriter;
-import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
-import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertex;
+import com.io7m.jparasol.glsl.compactor.GCompactor;
+import com.io7m.jparasol.glsl.compactor.GCompactorException;
 import com.io7m.jparasol.glsl.pipeline.GCompilation;
+import com.io7m.jparasol.glsl.pipeline.GCompiledFragmentShader;
 import com.io7m.jparasol.glsl.pipeline.GCompiledProgram;
+import com.io7m.jparasol.glsl.pipeline.GCompiledVertexShader;
 import com.io7m.jparasol.glsl.pipeline.GPipeline;
+import com.io7m.jparasol.glsl.serialization.GSerializerFile;
+import com.io7m.jparasol.glsl.serialization.GSerializerType;
+import com.io7m.jparasol.glsl.serialization.GSerializerZip;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.parser.ParserError;
@@ -80,7 +77,6 @@ import com.io7m.jparasol.pipeline.CorePipeline;
 import com.io7m.jparasol.pipeline.FileInput;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
-import com.io7m.junreachable.UnreachableCodeException;
 
 /**
  * Command line compiler frontend.
@@ -115,7 +111,8 @@ import com.io7m.junreachable.UnreachableCodeException;
     final CommandLine line)
     throws IOException,
       CompilerError,
-      InterruptedException
+      NoSuchAlgorithmException,
+      GCompactorException
   {
     final SortedSet<GVersionES> require_es = Frontend.getRequiredES(line);
     final SortedSet<GVersionFull> require_full =
@@ -125,21 +122,35 @@ import com.io7m.junreachable.UnreachableCodeException;
     if (args.length < 3) {
       throw UIError.incorrectCommandLine("Too few arguments provided");
     }
-    final File basedir = new File(args[0]);
+    final File output = new File(args[0]);
     final File batch_file = new File(args[1]);
     final File source_file = new File(args[2]);
 
     final Batch batch = Batch.newBatchFromFile(batch_file);
     final List<File> sources = Frontend.parseSources(source_file);
 
+    GSerializerType serializer;
+    if (line.hasOption("zip")) {
+      @SuppressWarnings("resource") final ZipOutputStream zip_stream =
+        new ZipOutputStream(
+          new FileOutputStream(output),
+          Charset.forName("UTF-8"));
+      serializer = GSerializerZip.newSerializer(zip_stream, logx);
+    } else {
+      serializer = GSerializerFile.newSerializer(output, true);
+    }
+
     Frontend.runCompileActual(
       logx,
       exec,
       batch,
       sources,
-      basedir,
       require_es,
-      require_full);
+      require_full,
+      serializer,
+      line.hasOption("compact"));
+
+    serializer.close();
   }
 
   private static void commandCompileOne(
@@ -148,7 +159,8 @@ import com.io7m.junreachable.UnreachableCodeException;
     final CommandLine line)
     throws IOException,
       CompilerError,
-      InterruptedException
+      NoSuchAlgorithmException,
+      GCompactorException
   {
     final SortedSet<GVersionES> require_es = Frontend.getRequiredES(line);
     final SortedSet<GVersionFull> require_full =
@@ -159,7 +171,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       throw UIError.incorrectCommandLine("Too few arguments provided");
     }
 
-    final File output_directory = new File(args[0]);
+    final File output = new File(args[0]);
     final TASTShaderNameFlat name =
       TASTShaderNameFlat.parse(
         args[1],
@@ -172,14 +184,28 @@ import com.io7m.junreachable.UnreachableCodeException;
       sources.add(new File(args[index]));
     }
 
+    final GSerializerType serializer;
+    if (line.hasOption("zip")) {
+      @SuppressWarnings("resource") final ZipOutputStream zip_stream =
+        new ZipOutputStream(
+          new FileOutputStream(output),
+          Charset.forName("UTF-8"));
+      serializer = GSerializerZip.newSerializer(zip_stream, logx);
+    } else {
+      serializer = GSerializerFile.newSerializer(output, true);
+    }
+
     Frontend.runCompileActual(
       logx,
       exec,
       batch,
       sources,
-      output_directory,
       require_es,
-      require_full);
+      require_full,
+      serializer,
+      line.hasOption("compact"));
+
+    serializer.close();
   }
 
   private static void commandShowCompilerVersion(
@@ -194,10 +220,10 @@ import com.io7m.junreachable.UnreachableCodeException;
     final CommandLine line)
   {
     for (final GVersionFull v : GVersionFull.ALL) {
-      System.out.println(v.getLongName());
+      System.out.println(v.versionGetLongName());
     }
     for (final GVersionES v : GVersionES.ALL) {
-      System.out.println(v.getLongName());
+      System.out.println(v.versionGetLongName());
     }
   }
 
@@ -269,35 +295,6 @@ import com.io7m.junreachable.UnreachableCodeException;
       return "unavailable";
     }
     return pack;
-  }
-
-  private static void handleRunCompileMakeGLSLException(
-    final ExecutionException e)
-    throws UIError,
-      GFFIError,
-      GVersionCheckerError,
-      IOException
-  {
-    final Throwable cause = e.getCause();
-    assert cause != null;
-
-    if (cause instanceof UIError) {
-      throw (UIError) cause;
-    }
-
-    if (cause instanceof GFFIError) {
-      throw (GFFIError) cause;
-    }
-
-    if (cause instanceof GVersionCheckerError) {
-      throw (GVersionCheckerError) cause;
-    }
-
-    if (cause instanceof IOException) {
-      throw (IOException) cause;
-    }
-
-    throw new UnreachableCodeException(e);
   }
 
   private static Options makeOptions()
@@ -373,6 +370,20 @@ import com.io7m.junreachable.UnreachableCodeException;
       OptionBuilder.withLongOpt("debug");
       OptionBuilder
         .withDescription("Enable debugging (debug messages, exception backtraces)");
+      opts.addOption(OptionBuilder.create());
+    }
+
+    {
+      OptionBuilder.withLongOpt("compact");
+      OptionBuilder
+        .withDescription("Enable compaction (eliminates duplicate source files)");
+      opts.addOption(OptionBuilder.create());
+    }
+
+    {
+      OptionBuilder.withLongOpt("zip");
+      OptionBuilder
+        .withDescription("Write shaders to a zip archive instead of a directory");
       opts.addOption(OptionBuilder.create());
     }
 
@@ -469,7 +480,8 @@ import com.io7m.junreachable.UnreachableCodeException;
     throws ParseException,
       IOException,
       CompilerError,
-      InterruptedException
+      NoSuchAlgorithmException,
+      GCompactorException
   {
     LogUsableType logx = log;
 
@@ -530,39 +542,27 @@ import com.io7m.junreachable.UnreachableCodeException;
     final ExecutorService exec,
     final Batch batch,
     final List<File> sources,
-    final File base_directory,
     final SortedSet<GVersionES> require_es,
-    final SortedSet<GVersionFull> require_full)
+    final SortedSet<GVersionFull> require_full,
+    final GSerializerType serializer,
+    final boolean compact)
     throws CompilerError,
       IOException,
-      InterruptedException
+      NoSuchAlgorithmException,
+      GCompactorException
   {
     final TASTCompilation typed =
       Frontend.runCompileActualCore(logx, sources);
 
-    final ConcurrentLinkedQueue<Future<Unit>> exec_results =
-      new ConcurrentLinkedQueue<Future<Unit>>();
-
     Frontend.runCompileGenerateGLSL(
       logx,
       exec,
-      exec_results,
       batch,
-      sources,
-      base_directory,
       typed,
       require_es,
-      require_full);
-
-    for (final Future<Unit> e : exec_results) {
-      try {
-        e.get();
-      } catch (final InterruptedException x) {
-        throw x;
-      } catch (final ExecutionException x) {
-        throw (IOException) x.getCause();
-      }
-    }
+      require_full,
+      serializer,
+      compact);
   }
 
   private static TASTCompilation runCompileActualCore(
@@ -591,49 +591,57 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void runCompileGenerateGLSL(
     final LogUsableType logx,
     final ExecutorService exec,
-    final ConcurrentLinkedQueue<Future<Unit>> exec_results,
     final Batch batch,
-    final List<File> sources,
-    final File base_directory,
     final TASTCompilation typed,
     final SortedSet<GVersionES> require_es,
-    final SortedSet<GVersionFull> require_full)
+    final SortedSet<GVersionFull> require_full,
+    final GSerializerType serializer,
+    final boolean compact)
     throws CompilerError,
-      IOException
+      IOException,
+      NoSuchAlgorithmException,
+      GCompactorException
   {
     final GPipeline pipe = GPipeline.newPipeline(typed, exec, logx);
+
     final GCompilation results =
       pipe.transformPrograms(batch.getShaders(), require_es, require_full);
 
+    logx.debug("serializing");
+
     {
-      final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>> shaders =
+      final Map<TASTShaderNameFlat, GCompiledVertexShader> shaders =
         results.getShadersVertex();
 
       for (final TASTShaderNameFlat name : shaders.keySet()) {
-        final Map<GVersion, GASTShaderVertex> asts = shaders.get(name);
-        Frontend.writeVertexShader(
-          logx,
-          exec,
-          exec_results,
-          base_directory,
-          name,
-          asts);
+        final GCompiledVertexShader shader = shaders.get(name);
+        final UncompactedVertexShader flat =
+          shader.flatten(logx.with("flatten"));
+
+        if (compact) {
+          serializer.serializeCompactedVertexShader(GCompactor
+            .compactSerializedVertexShader(flat, logx.with("compactor")));
+        } else {
+          serializer.serializeUncompactedVertexShader(flat);
+        }
       }
     }
 
     {
-      final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderFragment>> shaders =
+      final Map<TASTShaderNameFlat, GCompiledFragmentShader> shaders =
         results.getShadersFragment();
 
       for (final TASTShaderNameFlat name : shaders.keySet()) {
-        final Map<GVersion, GASTShaderFragment> asts = shaders.get(name);
-        Frontend.writeFragmentShader(
-          logx,
-          exec,
-          exec_results,
-          base_directory,
-          name,
-          asts);
+        final GCompiledFragmentShader shader = shaders.get(name);
+        final UncompactedFragmentShader flat =
+          shader.flatten(logx.with("flatten"));
+
+        if (compact) {
+          serializer.serializeCompactedFragmentShader(GCompactor
+            .compactSerializedFragmentShader(flat, logx.with("compactor")));
+        } else {
+          serializer.serializeUncompactedFragmentShader(flat);
+        }
       }
     }
 
@@ -643,16 +651,8 @@ import com.io7m.junreachable.UnreachableCodeException;
 
       for (final TASTShaderNameFlat name : shaders.keySet()) {
         final GCompiledProgram program = shaders.get(name);
-
-        final Future<Unit> f = exec.submit(new Callable<Unit>() {
-          @Override public Unit call()
-            throws Exception
-          {
-            Frontend.writeProgramShader(logx, base_directory, name, program);
-            return Unit.unit();
-          }
-        });
-        exec_results.add(f);
+        final UncompactedProgramShaderMeta flat = program.flatten(logx);
+        serializer.serializeUncompactedProgramShader(flat);
       }
     }
   }
@@ -664,15 +664,15 @@ import com.io7m.junreachable.UnreachableCodeException;
     final String version = Frontend.getVersion();
 
     pw
-      .println("parasol-c: [options] --compile-one output-directory shader file0 [file1 ... fileN]");
+      .println("parasol-c: [options] --compile-one output shader file0 [file1 ... fileN]");
     pw
-      .println("        or [options] --compile-batch output-directory batch-list source-list");
+      .println("        or [options] --compile-batch output batch-list source-list");
     pw.println("        or [options] --check file0 [file1 ... fileN]");
     pw.println("        or [options] --show-versions");
     pw.println("        or [options] --version");
     pw.println();
     pw
-      .println("  Where: output-directory is a directory that will be populated with GLSL shaders");
+      .println("  Where: output           is a directory (unless --zip is specified) that will be populated with GLSL shaders");
     pw
       .println("         shader           is the fully-qualified name of a shading program");
     pw
@@ -710,233 +710,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     if (Frontend.DEBUG) {
       x.printStackTrace(System.err);
-    }
-  }
-
-  private static void writeFragmentShader(
-    final LogUsableType logx,
-    final ExecutorService exec,
-    final ConcurrentLinkedQueue<Future<Unit>> exec_results,
-    final File base_directory,
-    final TASTShaderNameFlat name,
-    final Map<GVersion, GASTShaderFragment> asts)
-    throws IOException
-  {
-    final File out = new File(base_directory, name.show());
-    logx.debug(String.format("Writing fragment shader to %s", out));
-
-    out.mkdirs();
-    if (out.isDirectory() == false) {
-      throw new IOException(String.format("Not a directory: %s", out));
-    }
-
-    for (final GVersion v : asts.keySet()) {
-      final Future<Unit> f = exec.submit(new Callable<Unit>() {
-        @Override public Unit call()
-          throws Exception
-        {
-          Frontend.writeFragmentShaderFileForVersion(asts, out, v);
-          return Unit.unit();
-        }
-      });
-      exec_results.add(f);
-    }
-
-    final Future<Unit> f = exec.submit(new Callable<Unit>() {
-      @Override public Unit call()
-        throws Exception
-      {
-        Frontend.writeFragmentShaderMeta(name, asts, out);
-        return Unit.unit();
-      }
-    });
-
-    exec_results.add(f);
-  }
-
-  private static void writeFragmentShaderFileForVersion(
-    final Map<GVersion, GASTShaderFragment> asts,
-    final File out,
-    final GVersion v)
-    throws FileNotFoundException,
-      IOException
-  {
-    final GASTShaderFragment shader_source = asts.get(v);
-    final String source_name =
-      v
-        .versionAccept(new GVersionVisitorType<String, UnreachableCodeException>() {
-          @Override public String versionVisitES(
-            final GVersionES ve)
-          {
-            return String.format("glsl-es-%d.f", ve.getNumber());
-          }
-
-          @Override public String versionVisitFull(
-            final GVersionFull vf)
-          {
-            return String.format("glsl-%d.f", vf.getNumber());
-          }
-        });
-
-    final File out_source = new File(out, source_name);
-    final FileOutputStream stream = new FileOutputStream(out_source);
-    try {
-      GWriter.writeFragmentShader(stream, shader_source);
-    } finally {
-      stream.close();
-    }
-  }
-
-  private static void writeFragmentShaderMeta(
-    final TASTShaderNameFlat name,
-    final Map<GVersion, GASTShaderFragment> asts,
-    final File out)
-    throws FileNotFoundException,
-      IOException
-  {
-    final Document meta = GMeta.ofFragmentShader(name, asts);
-    final File out_meta = new File(out, "meta.xml");
-    {
-      final FileOutputStream stream = new FileOutputStream(out_meta);
-      try {
-        final Serializer s = new Serializer(stream);
-        s.setIndent(2);
-        s.setMaxLength(160);
-        s.write(meta);
-        s.flush();
-      } finally {
-        stream.close();
-      }
-    }
-  }
-
-  private static void writeProgramShader(
-    final LogUsableType logx,
-    final File base_directory,
-    final TASTShaderNameFlat name,
-    final GCompiledProgram program)
-    throws IOException
-  {
-    final File out = new File(base_directory, name.show());
-    logx.debug(String.format("Writing program to %s", out));
-
-    out.mkdirs();
-    if (out.isDirectory() == false) {
-      throw new IOException(String.format("Not a directory: %s", out));
-    }
-
-    final Document meta = GMeta.ofProgram(program);
-    final File out_meta = new File(out, "meta.xml");
-
-    {
-      final FileOutputStream stream = new FileOutputStream(out_meta);
-      try {
-        final Serializer s = new Serializer(stream);
-        s.setIndent(2);
-        s.setMaxLength(160);
-        s.write(meta);
-        s.flush();
-      } finally {
-        stream.close();
-      }
-    }
-  }
-
-  private static void writeVertexShadeMeta(
-    final TASTShaderNameFlat name,
-    final Map<GVersion, GASTShaderVertex> asts,
-    final File out)
-    throws FileNotFoundException,
-      IOException
-  {
-    final Document meta = GMeta.ofVertexShader(name, asts);
-    final File out_meta = new File(out, "meta.xml");
-
-    {
-      final FileOutputStream stream = new FileOutputStream(out_meta);
-      try {
-        final Serializer s = new Serializer(stream);
-        s.setIndent(2);
-        s.setMaxLength(160);
-        s.write(meta);
-        s.flush();
-      } finally {
-        stream.close();
-      }
-    }
-  }
-
-  private static void writeVertexShader(
-    final LogUsableType logx,
-    final ExecutorService exec,
-    final ConcurrentLinkedQueue<Future<Unit>> exec_results,
-    final File base_directory,
-    final TASTShaderNameFlat name,
-    final Map<GVersion, GASTShaderVertex> asts)
-    throws FileNotFoundException,
-      IOException
-  {
-    final File out = new File(base_directory, name.show());
-    logx.debug(String.format("Writing vertex shader to %s", out));
-
-    out.mkdirs();
-    if (out.isDirectory() == false) {
-      throw new IOException(String.format("Not a directory: %s", out));
-    }
-
-    for (final GVersion v : asts.keySet()) {
-      final Future<Unit> f = exec.submit(new Callable<Unit>() {
-        @Override public Unit call()
-          throws Exception
-        {
-          Frontend.writeVertexShaderFileForVersion(asts, out, v);
-          return Unit.unit();
-        }
-      });
-      exec_results.add(f);
-    }
-
-    final Future<Unit> f = exec.submit(new Callable<Unit>() {
-      @Override public Unit call()
-        throws Exception
-      {
-        Frontend.writeVertexShadeMeta(name, asts, out);
-        return Unit.unit();
-      }
-    });
-    exec_results.add(f);
-  }
-
-  private static void writeVertexShaderFileForVersion(
-    final Map<GVersion, GASTShaderVertex> asts,
-    final File out,
-    final GVersion v)
-    throws FileNotFoundException,
-      IOException
-  {
-    final GASTShaderVertex shader_source = asts.get(v);
-    final String source_name =
-      v
-        .versionAccept(new GVersionVisitorType<String, UnreachableCodeException>() {
-          @Override public String versionVisitES(
-            final GVersionES ve)
-          {
-            return String.format("glsl-es-%d.v", ve.getNumber());
-          }
-
-          @Override public String versionVisitFull(
-            final GVersionFull vf)
-          {
-            return String.format("glsl-%d.v", vf.getNumber());
-          }
-        });
-
-    final File out_source = new File(out, source_name);
-    final FileOutputStream stream = new FileOutputStream(out_source);
-    try {
-      GWriter.writeVertexShader(stream, shader_source);
-    } finally {
-      stream.close();
     }
   }
 

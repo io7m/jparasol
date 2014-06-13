@@ -103,14 +103,14 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="compact-mappings">
+  <xs:element name="version-hashes">
     <xs:complexType>
       <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="g:mapping"/>
+        <xs:element maxOccurs="unbounded" ref="g:version-hash"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="mapping">
+  <xs:element name="version-hash">
     <xs:complexType>
       <xs:simpleContent>
         <xs:extension base="xs:token">
@@ -162,7 +162,17 @@
         <xs:element ref="g:program-name"/>
         <xs:element ref="g:supports"/>
         <xs:element ref="g:parameters-vertex"/>
-        <xs:element minOccurs="0" ref="g:compact-mappings"/>
+      </xs:sequence>
+      <xs:attribute name="version" use="required" form="qualified" type="xs:positiveInteger"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="meta-vertex-compacted">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="g:program-name"/>
+        <xs:element ref="g:supports"/>
+        <xs:element ref="g:parameters-vertex"/>
+        <xs:element ref="g:version-hashes"/>
       </xs:sequence>
       <xs:attribute name="version" use="required" form="qualified" type="xs:positiveInteger"/>
     </xs:complexType>
@@ -182,7 +192,17 @@
         <xs:element ref="g:program-name"/>
         <xs:element ref="g:supports"/>
         <xs:element ref="g:parameters-fragment"/>
-        <xs:element minOccurs="0" ref="g:compact-mappings"/>
+      </xs:sequence>
+      <xs:attribute name="version" use="required" form="qualified" type="xs:positiveInteger"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="meta-fragment-compacted">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="g:program-name"/>
+        <xs:element ref="g:supports"/>
+        <xs:element ref="g:parameters-fragment"/>
+        <xs:element ref="g:version-hashes"/>
       </xs:sequence>
       <xs:attribute name="version" use="required" form="qualified" type="xs:positiveInteger"/>
     </xs:complexType>

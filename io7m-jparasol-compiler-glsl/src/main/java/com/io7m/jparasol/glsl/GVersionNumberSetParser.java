@@ -29,8 +29,8 @@ import com.io7m.jfunctional.OptionType;
 import com.io7m.jfunctional.Some;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.UIError;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.glsl.GVersionNumberSetParser.Segment.SegmentAtom;
 import com.io7m.jparasol.glsl.GVersionNumberSetParser.Segment.SegmentRange;
 import com.io7m.jparasol.glsl.GVersionNumberSetToken.TokenLiteralIntegerDecimal;
@@ -220,7 +220,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final Some<Integer> some = (Some<Integer>) s.getLower().getValue();
           lower = new GVersionES(some.get().intValue() + 1);
         } else {
-          lower = new GVersionES(lower.getNumber() + 1);
+          lower = new GVersionES(lower.versionGetNumber() + 1);
         }
         break;
       }
@@ -248,7 +248,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final Some<Integer> some = (Some<Integer>) s.getLower().getValue();
           lower = new GVersionFull(some.get().intValue() + 1);
         } else {
-          lower = new GVersionFull(lower.getNumber() + 1);
+          lower = new GVersionFull(lower.versionGetNumber() + 1);
         }
         break;
       }
@@ -268,7 +268,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final SegmentRange s)
   {
     GVersionES upper =
-      new GVersionES(GVersionES.GLSL_ES_UPPER.getNumber() + 1);
+      new GVersionES(GVersionES.GLSL_ES_UPPER.versionGetNumber() + 1);
 
     switch (s.getUpper().getType()) {
       case BOUND_EXCLUSIVE:
@@ -277,7 +277,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final Some<Integer> some = (Some<Integer>) s.getUpper().getValue();
           upper = new GVersionES(some.get().intValue());
         } else {
-          upper = new GVersionES(upper.getNumber() - 1);
+          upper = new GVersionES(upper.versionGetNumber() - 1);
         }
         break;
       }
@@ -296,7 +296,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static GVersionFull rangeSetDecideUpperFull(
     final SegmentRange s)
   {
-    final int highest = GVersionFull.GLSL_UPPER.getNumber();
+    final int highest = GVersionFull.GLSL_UPPER.versionGetNumber();
 
     /**
      * Because the set function in Java take inclusive lower and exclusive

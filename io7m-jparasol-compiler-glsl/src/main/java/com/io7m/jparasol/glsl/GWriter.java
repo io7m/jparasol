@@ -25,8 +25,10 @@ import com.io7m.jfunctional.OptionType;
 import com.io7m.jfunctional.Pair;
 import com.io7m.jfunctional.PartialFunctionType;
 import com.io7m.jfunctional.Unit;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
+import com.io7m.jparasol.core.GVersionType;
+import com.io7m.jparasol.core.GVersionVisitorType;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplication;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplicationExternal;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpDivide;
@@ -564,7 +566,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void writeFragmentInput(
     final PrintWriter writer,
-    final GVersion version,
+    final GVersionType version,
     final GASTShaderFragmentInput i)
 
   {
@@ -622,7 +624,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writeFragmentInputs(
     final PrintWriter writer,
     final List<GASTShaderFragmentInput> inputs,
-    final GVersion version)
+    final GVersionType version)
 
   {
     for (final GASTShaderFragmentInput i : inputs) {
@@ -634,7 +636,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final PrintWriter writer,
     final GASTShaderMainFragment main,
     final int outputs,
-    final GVersion version)
+    final GVersionType version)
 
   {
     writer.println("void");
@@ -654,7 +656,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void writeFragmentOutput(
     final PrintWriter writer,
-    final GVersion version,
+    final GVersionType version,
     final GASTShaderFragmentOutput o)
 
   {
@@ -699,7 +701,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final PrintWriter writer,
     final int outputs,
     final GASTFragmentOutputDataAssignment w,
-    final GVersion version)
+    final GVersionType version)
 
   {
     final String value =
@@ -794,7 +796,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writeFragmentOutputs(
     final PrintWriter writer,
     final List<GASTShaderFragmentOutput> outputs,
-    final GVersion version)
+    final GVersionType version)
 
   {
     for (final GASTShaderFragmentOutput o : outputs) {
@@ -827,11 +829,14 @@ import com.io7m.junreachable.UnreachableCodeException;
    *          The stream
    * @param f
    *          The shader
+   * @param version_directive
+   *          <code>true</code> if a version directive should be written
    */
 
   public static void writeFragmentShader(
     final OutputStream out,
-    final GASTShaderFragment f)
+    final GASTShaderFragment f,
+    final boolean version_directive)
   {
 
     final PrintWriter writer = new PrintWriter(out);
@@ -839,8 +844,10 @@ import com.io7m.junreachable.UnreachableCodeException;
     final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
       f.getTerms();
 
-    final GVersion version = f.getGLSLVersion();
-    GWriter.writeVersionDirective(writer, version);
+    final GVersionType version = f.getGLSLVersion();
+    if (version_directive) {
+      GWriter.writeVersionDirective(writer, version);
+    }
     GWriter.writePrecision(writer, version);
     GWriter.writeTypes(writer, types);
     GWriter.writeTerms(writer, terms);
@@ -892,7 +899,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void writePrecision(
     final PrintWriter writer,
-    final GVersion version)
+    final GVersionType version)
 
   {
     version
@@ -996,15 +1003,15 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   @SuppressWarnings("boxing") private static void writeVersionDirective(
     final PrintWriter writer,
-    final GVersion version)
+    final GVersionType version)
   {
-    writer.println(String.format("#version %d", version.getNumber()));
+    writer.println(String.format("#version %d", version.versionGetNumber()));
     writer.println();
   }
 
   private static void writeVertexInput(
     final PrintWriter writer,
-    final GVersion version,
+    final GVersionType version,
     final GASTShaderVertexInput i)
 
   {
@@ -1054,7 +1061,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writeVertexInputs(
     final PrintWriter writer,
     final List<GASTShaderVertexInput> inputs,
-    final GVersion version)
+    final GVersionType version)
 
   {
     for (final GASTShaderVertexInput i : inputs) {
@@ -1082,7 +1089,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void writeVertexOutput(
     final PrintWriter writer,
-    final GVersion version,
+    final GVersionType version,
     final GASTShaderVertexOutput o)
 
   {
@@ -1189,7 +1196,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writeVertexOutputs(
     final PrintWriter writer,
     final List<GASTShaderVertexOutput> outputs,
-    final GVersion version)
+    final GVersionType version)
 
   {
     for (final GASTShaderVertexOutput o : outputs) {
@@ -1222,19 +1229,24 @@ import com.io7m.junreachable.UnreachableCodeException;
    *          The stream
    * @param v
    *          The shader
+   * @param version_directive
+   *          <code>true</code> if a version directive should be written
    */
 
   public static void writeVertexShader(
     final OutputStream out,
-    final GASTShaderVertex v)
+    final GASTShaderVertex v,
+    final boolean version_directive)
   {
     final PrintWriter writer = new PrintWriter(out);
     final List<Pair<GTypeName, GASTTypeDeclaration>> types = v.getTypes();
     final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
       v.getTerms();
 
-    final GVersion version = v.getGLSLVersion();
-    GWriter.writeVersionDirective(writer, version);
+    final GVersionType version = v.getGLSLVersion();
+    if (version_directive) {
+      GWriter.writeVersionDirective(writer, version);
+    }
     GWriter.writePrecision(writer, version);
     GWriter.writeTypes(writer, types);
     GWriter.writeTerms(writer, terms);

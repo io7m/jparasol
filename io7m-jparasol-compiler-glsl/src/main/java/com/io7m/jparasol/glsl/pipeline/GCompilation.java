@@ -20,9 +20,6 @@ import java.util.Map;
 
 import com.io7m.jequality.annotations.EqualityStructural;
 import com.io7m.jnull.Nullable;
-import com.io7m.jparasol.glsl.GVersion;
-import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
-import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
 /**
@@ -31,13 +28,13 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
 @EqualityStructural public final class GCompilation
 {
-  private final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderFragment>> shaders_fragment;
-  private final Map<TASTShaderNameFlat, GCompiledProgram>                  shaders_program;
-  private final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>>   shaders_vertex;
+  private final Map<TASTShaderNameFlat, GCompiledFragmentShader> shaders_fragment;
+  private final Map<TASTShaderNameFlat, GCompiledProgram>        shaders_program;
+  private final Map<TASTShaderNameFlat, GCompiledVertexShader>   shaders_vertex;
 
   GCompilation(
-    final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>> in_shaders_vertex,
-    final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderFragment>> in_shaders_fragment,
+    final Map<TASTShaderNameFlat, GCompiledVertexShader> in_shaders_vertex,
+    final Map<TASTShaderNameFlat, GCompiledFragmentShader> in_shaders_fragment,
     final Map<TASTShaderNameFlat, GCompiledProgram> in_shaders_program)
   {
     this.shaders_vertex = in_shaders_vertex;
@@ -68,7 +65,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
    */
 
   public
-    Map<TASTShaderNameFlat, Map<GVersion, GASTShaderFragment>>
+    Map<TASTShaderNameFlat, GCompiledFragmentShader>
     getShadersFragment()
   {
     return this.shaders_fragment;
@@ -87,9 +84,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
    * @return A map of the compiled vertex shaders.
    */
 
-  public
-    Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>>
-    getShadersVertex()
+  public Map<TASTShaderNameFlat, GCompiledVertexShader> getShadersVertex()
   {
     return this.shaders_vertex;
   }

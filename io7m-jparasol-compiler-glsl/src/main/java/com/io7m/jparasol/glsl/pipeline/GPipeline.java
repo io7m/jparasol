@@ -32,11 +32,11 @@ import com.io7m.jlog.LogUsableType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.UIError;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
+import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.glsl.GFFIError;
 import com.io7m.jparasol.glsl.GTransform;
-import com.io7m.jparasol.glsl.GVersion;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.glsl.GVersionChecker;
 import com.io7m.jparasol.glsl.GVersionCheckerError;
 import com.io7m.jparasol.glsl.GVersionsSupported;
@@ -61,18 +61,16 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static
     void
     cancelAll(
-      final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderVertex>>> futures_vertex,
-      final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderFragment>>> futures_fragment)
+      final Map<TASTShaderNameFlat, Future<GCompiledVertexShader>> futures_vertex,
+      final Map<TASTShaderNameFlat, Future<GCompiledFragmentShader>> futures_fragment)
   {
     for (final TASTShaderNameFlat name : futures_vertex.keySet()) {
-      final Future<Map<GVersion, GASTShaderVertex>> f =
-        futures_vertex.get(name);
+      final Future<GCompiledVertexShader> f = futures_vertex.get(name);
       f.cancel(true);
     }
 
     for (final TASTShaderNameFlat name : futures_fragment.keySet()) {
-      final Future<Map<GVersion, GASTShaderFragment>> f =
-        futures_fragment.get(name);
+      final Future<GCompiledFragmentShader> f = futures_fragment.get(name);
       f.cancel(true);
     }
   }
@@ -95,26 +93,25 @@ import com.io7m.junreachable.UnreachableCodeException;
     return new GPipeline(typed, exec, log);
   }
 
-  private static
-    GCompiledProgram
-    processProgram(
-      final Map<TASTShaderNameFlat, TASTDShaderProgram> shaders_program,
-      final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>> results_vertex,
-      final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderFragment>> results_fragment,
-      final TASTShaderNameFlat name)
+  private static GCompiledProgram processProgram(
+    final Map<TASTShaderNameFlat, TASTDShaderProgram> shaders_program,
+    final Map<TASTShaderNameFlat, GCompiledVertexShader> results_vertex,
+    final Map<TASTShaderNameFlat, GCompiledFragmentShader> results_fragment,
+    final TASTShaderNameFlat name)
   {
     final TASTDShaderProgram program = shaders_program.get(name);
+    assert program != null;
+
     final TASTShaderNameFlat v_name =
       TASTShaderNameFlat.fromShaderName(program.getVertexShader());
     final TASTShaderNameFlat f_name =
       TASTShaderNameFlat.fromShaderName(program.getFragmentShader());
 
-    final Map<GVersion, GASTShaderVertex> vertex = results_vertex.get(v_name);
-    final Map<GVersion, GASTShaderFragment> fragment =
-      results_fragment.get(f_name);
+    final GCompiledVertexShader vertex = results_vertex.get(v_name);
+    final GCompiledFragmentShader fragment = results_fragment.get(f_name);
 
-    final Set<GVersion> v_versions = vertex.keySet();
-    final Set<GVersion> f_versions = fragment.keySet();
+    final Set<GVersionType> v_versions = vertex.getSources().keySet();
+    final Set<GVersionType> f_versions = fragment.getSources().keySet();
     assert v_versions != null;
     assert f_versions != null;
 
@@ -127,15 +124,14 @@ import com.io7m.junreachable.UnreachableCodeException;
       versions_es,
       versions_full);
 
-    final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>> vertex_shaders =
-      new HashMap<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>>();
+    final Map<TASTShaderNameFlat, GCompiledVertexShader> vertex_shaders =
+      new HashMap<TASTShaderNameFlat, GCompiledVertexShader>();
     vertex_shaders.put(v_name, vertex);
 
     final GCompiledProgram r =
       new GCompiledProgram(
         vertex_shaders,
         fragment,
-        f_name,
         name,
         versions_es,
         versions_full);
@@ -143,8 +139,8 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   private static void collectVersions(
-    final Set<GVersion> v_versions,
-    final Set<GVersion> f_versions,
+    final Set<GVersionType> v_versions,
+    final Set<GVersionType> f_versions,
     final SortedSet<GVersionES> versions_es,
     final SortedSet<GVersionFull> versions_full)
   {
@@ -153,7 +149,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final Set<GVersionES> f_es = new HashSet<GVersionES>();
     final Set<GVersionFull> f_full = new HashSet<GVersionFull>();
 
-    for (final GVersion v : v_versions) {
+    for (final GVersionType v : v_versions) {
       if (v instanceof GVersionES) {
         v_es.add((GVersionES) v);
       } else {
@@ -161,7 +157,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
     }
 
-    for (final GVersion f : f_versions) {
+    for (final GVersionType f : f_versions) {
       if (f instanceof GVersionES) {
         f_es.add((GVersionES) f);
       } else {
@@ -252,7 +248,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     return this.exec;
   }
 
-  private Map<GVersion, GASTShaderFragment> makeFragmentShader(
+  private GCompiledFragmentShader makeFragmentShader(
     final TASTShaderNameFlat name,
     final TASTDShaderFragment f,
     final SortedSet<GVersionES> required_versions_es,
@@ -271,8 +267,8 @@ import com.io7m.junreachable.UnreachableCodeException;
         required_versions_full,
         required_versions_es);
 
-    final Map<GVersion, GASTShaderFragment> produced =
-      new HashMap<GVersion, GASTShaderFragment>();
+    final Map<GVersionType, GASTShaderFragment> produced =
+      new HashMap<GVersionType, GASTShaderFragment>();
 
     for (final GVersionES version : supported.getESVersions()) {
       assert version != null;
@@ -296,10 +292,10 @@ import com.io7m.junreachable.UnreachableCodeException;
         this.log));
     }
 
-    return produced;
+    return GCompiledFragmentShader.newShader(name, produced);
   }
 
-  private Map<GVersion, GASTShaderVertex> makeVertexShader(
+  private GCompiledVertexShader makeVertexShader(
     final TASTShaderNameFlat name,
     final TASTDShaderVertex v,
     final SortedSet<GVersionES> required_versions_es,
@@ -318,8 +314,8 @@ import com.io7m.junreachable.UnreachableCodeException;
         required_versions_full,
         required_versions_es);
 
-    final Map<GVersion, GASTShaderVertex> produced =
-      new HashMap<GVersion, GASTShaderVertex>();
+    final Map<GVersionType, GASTShaderVertex> produced =
+      new HashMap<GVersionType, GASTShaderVertex>();
 
     for (final GVersionES version : supported.getESVersions()) {
       assert version != null;
@@ -345,7 +341,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           this.log));
     }
 
-    return produced;
+    return GCompiledVertexShader.newShader(name, produced);
   }
 
   private GCompilation processAll(
@@ -356,10 +352,10 @@ import com.io7m.junreachable.UnreachableCodeException;
     final Map<TASTShaderNameFlat, TASTDShaderProgram> shaders_program)
     throws CompilerError
   {
-    final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderVertex>>> futures_vertex =
-      new HashMap<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderVertex>>>();
-    final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderFragment>>> futures_fragment =
-      new HashMap<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderFragment>>>();
+    final Map<TASTShaderNameFlat, Future<GCompiledVertexShader>> futures_vertex =
+      new HashMap<TASTShaderNameFlat, Future<GCompiledVertexShader>>();
+    final Map<TASTShaderNameFlat, Future<GCompiledFragmentShader>> futures_fragment =
+      new HashMap<TASTShaderNameFlat, Future<GCompiledFragmentShader>>();
 
     try {
       this.submitShadersVertex(
@@ -374,19 +370,18 @@ import com.io7m.junreachable.UnreachableCodeException;
         shaders_fragment,
         futures_fragment);
 
-      final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>> results_vertex =
-        new HashMap<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>>();
-      final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderFragment>> results_fragment =
-        new HashMap<TASTShaderNameFlat, Map<GVersion, GASTShaderFragment>>();
+      final Map<TASTShaderNameFlat, GCompiledVertexShader> results_vertex =
+        new HashMap<TASTShaderNameFlat, GCompiledVertexShader>();
+      final Map<TASTShaderNameFlat, GCompiledFragmentShader> results_fragment =
+        new HashMap<TASTShaderNameFlat, GCompiledFragmentShader>();
 
       for (final TASTShaderNameFlat name : futures_vertex.keySet()) {
         assert name != null;
         assert futures_vertex.containsKey(name);
-        final Future<Map<GVersion, GASTShaderVertex>> future =
-          futures_vertex.get(name);
+        final Future<GCompiledVertexShader> future = futures_vertex.get(name);
 
         try {
-          final Map<GVersion, GASTShaderVertex> r = future.get();
+          final GCompiledVertexShader r = future.get();
           results_vertex.put(name, r);
         } catch (final InterruptedException e) {
           throw new UnreachableCodeException(e);
@@ -399,11 +394,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       for (final TASTShaderNameFlat name : futures_fragment.keySet()) {
         assert name != null;
         assert futures_fragment.containsKey(name);
-        final Future<Map<GVersion, GASTShaderFragment>> future =
+        final Future<GCompiledFragmentShader> future =
           futures_fragment.get(name);
 
         try {
-          final Map<GVersion, GASTShaderFragment> r = future.get();
+          final GCompiledFragmentShader r = future.get();
           results_fragment.put(name, r);
         } catch (final InterruptedException e) {
           throw new UnreachableCodeException(e);
@@ -448,16 +443,16 @@ import com.io7m.junreachable.UnreachableCodeException;
       final SortedSet<GVersionES> required_versions_es,
       final SortedSet<GVersionFull> required_versions_full,
       final Map<TASTShaderNameFlat, TASTDShaderFragment> shaders_fragment,
-      final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderFragment>>> futures_fragment)
+      final Map<TASTShaderNameFlat, Future<GCompiledFragmentShader>> futures_fragment)
   {
     for (final TASTShaderNameFlat name : shaders_fragment.keySet()) {
       assert name != null;
       final TASTDShaderFragment f = shaders_fragment.get(name);
       assert f != null;
 
-      final Future<Map<GVersion, GASTShaderFragment>> future =
-        this.exec.submit(new Callable<Map<GVersion, GASTShaderFragment>>() {
-          @Override public Map<GVersion, GASTShaderFragment> call()
+      final Future<GCompiledFragmentShader> future =
+        this.exec.submit(new Callable<GCompiledFragmentShader>() {
+          @Override public GCompiledFragmentShader call()
             throws Exception
           {
             return GPipeline.this.makeFragmentShader(
@@ -478,16 +473,16 @@ import com.io7m.junreachable.UnreachableCodeException;
       final SortedSet<GVersionES> required_versions_es,
       final SortedSet<GVersionFull> required_versions_full,
       final Map<TASTShaderNameFlat, TASTDShaderVertex> shaders_vertex,
-      final Map<TASTShaderNameFlat, Future<Map<GVersion, GASTShaderVertex>>> futures_vertex)
+      final Map<TASTShaderNameFlat, Future<GCompiledVertexShader>> futures_vertex)
   {
     for (final TASTShaderNameFlat name : shaders_vertex.keySet()) {
       assert name != null;
       final TASTDShaderVertex v = shaders_vertex.get(name);
       assert v != null;
 
-      final Future<Map<GVersion, GASTShaderVertex>> future =
-        this.exec.submit(new Callable<Map<GVersion, GASTShaderVertex>>() {
-          @Override public Map<GVersion, GASTShaderVertex> call()
+      final Future<GCompiledVertexShader> future =
+        this.exec.submit(new Callable<GCompiledVertexShader>() {
+          @Override public GCompiledVertexShader call()
             throws Exception
           {
             return GPipeline.this.makeVertexShader(

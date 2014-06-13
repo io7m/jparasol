@@ -28,8 +28,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.io7m.jparasol.UIError;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.glsl.GVersionNumberSetLexer;
 import com.io7m.jparasol.glsl.GVersionNumberSetParser;
 import com.io7m.jparasol.glsl.GVersionNumberSetParser.Segment;
@@ -38,6 +38,7 @@ import com.io7m.jparasol.parser.ParserError;
 
 @SuppressWarnings("static-method") public final class GVersionNumberSetParserTest
 {
+
   @SuppressWarnings("resource") public static void main(
     final String args[])
     throws LexerError,

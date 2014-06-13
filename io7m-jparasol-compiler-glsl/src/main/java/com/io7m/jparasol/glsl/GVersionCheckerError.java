@@ -22,8 +22,8 @@ import java.util.Map;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jparasol.CompilerError;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.lexer.Position;
 
 /**
@@ -62,7 +62,7 @@ import com.io7m.jparasol.lexer.Position;
       final List<GVersionCheckExclusionReason> reasons =
         exclusions_full.get(v);
       m.append("Cannot run on ");
-      m.append(v.getLongName());
+      m.append(v.versionGetLongName());
       m.append(" because:\n");
       for (final GVersionCheckExclusionReason r : reasons) {
         m.append("  ");
@@ -78,7 +78,7 @@ import com.io7m.jparasol.lexer.Position;
     for (final GVersionES v : exclusions_es.keySet()) {
       final List<GVersionCheckExclusionReason> reasons = exclusions_es.get(v);
       m.append("Cannot run on ");
-      m.append(v.getLongName());
+      m.append(v.versionGetLongName());
       m.append(" because:\n");
       for (final GVersionCheckExclusionReason r : reasons) {
         m.append("  ");

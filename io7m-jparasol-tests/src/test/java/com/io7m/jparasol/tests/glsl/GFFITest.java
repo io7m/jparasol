@@ -19,7 +19,6 @@ package com.io7m.jparasol.tests.glsl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -28,11 +27,10 @@ import org.junit.Test;
 
 import com.io7m.jfunctional.Pair;
 import com.io7m.jparasol.CompilerError;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.glsl.GFFI;
 import com.io7m.jparasol.glsl.GFFIError;
-import com.io7m.jparasol.glsl.GVersion;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.glsl.GWriter;
 import com.io7m.jparasol.glsl.ast.GASTExpression;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
@@ -43,6 +41,7 @@ import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermValue;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.glsl.pipeline.GCompilation;
 import com.io7m.jparasol.glsl.pipeline.GCompiledProgram;
+import com.io7m.jparasol.glsl.pipeline.GCompiledVertexShader;
 import com.io7m.jparasol.glsl.pipeline.GPipeline;
 import com.io7m.jparasol.tests.TestPipeline;
 import com.io7m.jparasol.tests.TestUtilities;
@@ -56,10 +55,11 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
   private static void dumpFragment(
     final GASTShaderFragment program)
   {
-    System.err.println("Version: " + program.getGLSLVersion().getLongName());
+    System.err.println("Version: "
+      + program.getGLSLVersion().versionGetLongName());
     System.err
       .println("----------------------------------------------------------------------");
-    GWriter.writeFragmentShader(System.err, program);
+    GWriter.writeFragmentShader(System.err, program, true);
     System.err
       .println("----------------------------------------------------------------------");
   }
@@ -67,10 +67,11 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
   private static void dumpVertex(
     final GASTShaderVertex program)
   {
-    System.err.println("Version: " + program.getGLSLVersion().getLongName());
+    System.err.println("Version: "
+      + program.getGLSLVersion().versionGetLongName());
     System.err
       .println("----------------------------------------------------------------------");
-    GWriter.writeVertexShader(System.err, program);
+    GWriter.writeVertexShader(System.err, program, true);
     System.err
       .println("----------------------------------------------------------------------");
   }
@@ -94,7 +95,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
         new TreeSet<GVersionFull>());
     final GCompiledProgram p = comp.getShadersProgram().get(program_name);
 
-    final Map<GVersion, GASTShaderVertex> vertex_shader =
+    final GCompiledVertexShader vertex_shader =
       p.getShadersVertex().values().iterator().next();
 
     /**
@@ -103,7 +104,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
      */
 
     for (final GVersionES vn : GVersionES.ALL) {
-      final GASTShaderVertex program = vertex_shader.get(vn);
+      final GASTShaderVertex program = vertex_shader.getSources().get(vn);
       final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
         program.getTerms().get(0);
       Assert.assertEquals("p_com_io7m_parasol_Float_is_infinite", pf
@@ -113,7 +114,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     }
 
     for (final GVersionFull vn : GVersionFull.ALL) {
-      final GASTShaderVertex program = vertex_shader.get(vn);
+      final GASTShaderVertex program = vertex_shader.getSources().get(vn);
       if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
         final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
           program.getTerms().get(0);
@@ -150,7 +151,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
         new TreeSet<GVersionFull>());
     final GCompiledProgram p = comp.getShadersProgram().get(program_name);
 
-    final Map<GVersion, GASTShaderVertex> vertex_shader =
+    final GCompiledVertexShader vertex_shader =
       p.getShadersVertex().values().iterator().next();
 
     /**
@@ -159,7 +160,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
      */
 
     for (final GVersionES vn : GVersionES.ALL) {
-      final GASTShaderVertex vs = vertex_shader.get(vn);
+      final GASTShaderVertex vs = vertex_shader.getSources().get(vn);
       final Pair<GTermNameGlobal, GASTTermDeclaration> terms =
         vs.getTerms().get(0);
       Assert.assertEquals("p_com_io7m_parasol_Float_is_nan", terms
@@ -169,7 +170,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     }
 
     for (final GVersionFull vn : GVersionFull.ALL) {
-      final GASTShaderVertex vs = vertex_shader.get(vn);
+      final GASTShaderVertex vs = vertex_shader.getSources().get(vn);
       if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
         final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
           vs.getTerms().get(0);
@@ -219,7 +220,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
         new TreeSet<GVersionFull>());
     final GCompiledProgram p = comp.getShadersProgram().get(program_name);
 
-    final Map<GVersion, GASTShaderVertex> vertex_shader =
+    final GCompiledVertexShader vertex_shader =
       p.getShadersVertex().values().iterator().next();
 
     /**
@@ -228,7 +229,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
      */
 
     for (final GVersionES vn : GVersionES.ALL) {
-      final GASTShaderVertex program = vertex_shader.get(vn);
+      final GASTShaderVertex program = vertex_shader.getSources().get(vn);
       final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
         program.getTerms().get(0);
       Assert.assertEquals("p_com_io7m_parasol_Float_sign", pf
@@ -238,7 +239,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     }
 
     for (final GVersionFull vn : GVersionFull.ALL) {
-      final GASTShaderVertex program = vertex_shader.get(vn);
+      final GASTShaderVertex program = vertex_shader.getSources().get(vn);
       if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
         final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
           program.getTerms().get(0);
@@ -275,7 +276,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
         new TreeSet<GVersionFull>());
     final GCompiledProgram p = comp.getShadersProgram().get(program_name);
 
-    final Map<GVersion, GASTShaderVertex> vertex_shader =
+    final GCompiledVertexShader vertex_shader =
       p.getShadersVertex().values().iterator().next();
 
     /**
@@ -284,7 +285,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
      */
 
     for (final GVersionES vn : GVersionES.ALL) {
-      final GASTShaderVertex program = vertex_shader.get(vn);
+      final GASTShaderVertex program = vertex_shader.getSources().get(vn);
       final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
         program.getTerms().get(0);
       Assert.assertEquals("p_com_io7m_parasol_Float_truncate", pf
@@ -294,7 +295,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     }
 
     for (final GVersionFull vn : GVersionFull.ALL) {
-      final GASTShaderVertex program = vertex_shader.get(vn);
+      final GASTShaderVertex program = vertex_shader.getSources().get(vn);
       if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
         final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
           program.getTerms().get(0);
@@ -332,12 +333,14 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     final GCompiledProgram p = comp.getShadersProgram().get(program_name);
 
     for (final GVersionES vn : GVersionES.ALL) {
-      final GASTShaderFragment program = p.getShaderFragment().get(vn);
+      final GASTShaderFragment program =
+        p.getShaderFragment().getSources().get(vn);
       GFFITest.dumpFragment(program);
     }
 
     for (final GVersionFull vn : GVersionFull.ALL) {
-      final GASTShaderFragment program = p.getShaderFragment().get(vn);
+      final GASTShaderFragment program =
+        p.getShaderFragment().getSources().get(vn);
       GFFITest.dumpFragment(program);
     }
   }
@@ -372,7 +375,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     final List<GASTExpression> arguments = new ArrayList<GASTExpression>();
 
     final GFFI ffi = GFFI.newFFI(TestUtilities.getLog());
-    ffi.getExpression(f, arguments, GVersion.GVersionFull.GLSL_110);
+    ffi.getExpression(f, arguments, GVersionFull.GLSL_110);
   }
 
   @Test(expected = GFFIError.class) public void testUnknownValueExternal_0()
@@ -386,7 +389,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     assert v != null;
 
     final GFFI ffi = GFFI.newFFI(TestUtilities.getLog());
-    ffi.getValueDefinition(v, GVersion.GVersionFull.GLSL_110);
+    ffi.getValueDefinition(v, GVersionFull.GLSL_110);
   }
 
   @Test public void testVectorLib()

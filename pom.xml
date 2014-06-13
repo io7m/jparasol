@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.io7m.jparasol</groupId>
   <artifactId>io7m-jparasol</artifactId>
-  <version>0.6.1</version>
+  <version>0.7.0</version>
 
   <packaging>pom</packaging>
   <name>io7m-jparasol</name>
@@ -15,6 +15,7 @@
   <url>http://mvn.io7m.com/${project.artifactId}/</url>
 
   <modules>
+    <module>io7m-jparasol-core</module>
     <module>io7m-jparasol-compiler-core</module>
     <module>io7m-jparasol-compiler-frontend</module>
     <module>io7m-jparasol-compiler-glsl</module>

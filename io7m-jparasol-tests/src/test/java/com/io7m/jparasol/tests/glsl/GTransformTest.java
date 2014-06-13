@@ -27,9 +27,9 @@ import org.junit.Test;
 import com.io7m.jfunctional.Pair;
 import com.io7m.jlog.LogUsableType;
 import com.io7m.jparasol.CompilerError;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.glsl.GFFIError;
 import com.io7m.jparasol.glsl.GTransform;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
 import com.io7m.jparasol.glsl.GWriter;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplicationExternal;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
@@ -159,7 +159,7 @@ public final class GTransformTest
       Assert.assertEquals("max", app.getName().show());
     }
 
-    GWriter.writeVertexShader(System.out, s);
+    GWriter.writeVertexShader(System.out, s, true);
   }
 
   @SuppressWarnings("static-method") @Test public void testFragmentSimple_0()
@@ -179,7 +179,7 @@ public final class GTransformTest
         GVersionFull.GLSL_UPPER,
         p.log);
 
-    GWriter.writeFragmentShader(System.out, s);
+    GWriter.writeFragmentShader(System.out, s, true);
   }
 
   @SuppressWarnings("static-method") @Test public void testFragmentSimple_1()
@@ -199,7 +199,7 @@ public final class GTransformTest
         GVersionFull.GLSL_UPPER,
         p.log);
 
-    GWriter.writeFragmentShader(System.out, s);
+    GWriter.writeFragmentShader(System.out, s, true);
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -235,7 +235,7 @@ public final class GTransformTest
       Assert.assertEquals("float", p0.getRight().show());
     }
 
-    GWriter.writeFragmentShader(System.out, s);
+    GWriter.writeFragmentShader(System.out, s, true);
   }
 
   @SuppressWarnings("static-method") @Test public void testVertexSimple_0()
@@ -255,7 +255,7 @@ public final class GTransformTest
         GVersionFull.GLSL_UPPER,
         p.log);
 
-    GWriter.writeVertexShader(System.out, s);
+    GWriter.writeVertexShader(System.out, s, true);
   }
 
   @SuppressWarnings("static-method") @Test public
@@ -291,6 +291,6 @@ public final class GTransformTest
       Assert.assertEquals("float", p0.getRight().show());
     }
 
-    GWriter.writeVertexShader(System.out, s);
+    GWriter.writeVertexShader(System.out, s, true);
   }
 }

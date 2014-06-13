@@ -35,6 +35,7 @@ import com.io7m.jlog.LogUsableType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePathFlat;
+import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.glsl.GFFIExpression.GFFIExpressionBuiltIn;
 import com.io7m.jparasol.glsl.GFFIExpression.GFFIExpressionDefined;
 import com.io7m.jparasol.glsl.ast.GASTExpression;
@@ -429,13 +430,13 @@ import com.io7m.junreachable.UnreachableCodeException;
     private final Map<String, Binding>                             bindings;
     private final Context                                          context;
     private final List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
-    private final GVersion                                         version;
+    private final GVersionType                                     version;
 
     public ExpressionStatementTransformer(
       final Context in_context,
       final Map<String, Binding> in_bindings,
       final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_declarations,
-      final GVersion in_version)
+      final GVersionType in_version)
     {
       this.context = in_context;
       this.bindings = in_bindings;
@@ -752,13 +753,13 @@ import com.io7m.junreachable.UnreachableCodeException;
     private final Map<String, Binding>                             bindings;
     private final Context                                          context;
     private final List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
-    private final GVersion                                         version;
+    private final GVersionType                                     version;
 
     public ExpressionTransformer(
       final Context in_context,
       final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_declarations,
       final Map<String, Binding> in_bindings,
-      final GVersion in_version)
+      final GVersionType in_version)
     {
       this.context = in_context;
       this.declarations = in_declarations;
@@ -1183,13 +1184,13 @@ import com.io7m.junreachable.UnreachableCodeException;
     private final Context                                          context;
     private final List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
     private final TASTTermNameFlat                                 name;
-    private final GVersion                                         version;
+    private final GVersionType                                     version;
 
     public TermTransformer(
       final Context in_context,
       final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_declarations,
       final TASTTermNameFlat in_name,
-      final GVersion in_version)
+      final GVersionType in_version)
     {
       this.context = in_context;
       this.declarations = in_declarations;
@@ -1304,7 +1305,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final TASTCompilation compilation,
     final Topology topology,
     final TASTShaderNameFlat shader_name,
-    final GVersion version,
+    final GVersionType version,
     final LogUsableType log)
   {
     NullCheck.notNull(compilation, "Compilation");
@@ -1376,7 +1377,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final Context context,
     final TASTDShaderFragment fragment,
     final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
-    final GVersion version)
+    final GVersionType version)
     throws GFFIError
   {
     final List<GASTFragmentShaderStatement> statements =
@@ -1545,7 +1546,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static List<Pair<GTermNameGlobal, GASTTermDeclaration>> makeTerms(
     final Context context,
-    final GVersion version)
+    final GVersionType version)
     throws GFFIError
   {
     final TASTCompilation compilation = context.getCompilation();
@@ -1682,7 +1683,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final Context context,
     final TASTDShaderVertex vertex,
     final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
-    final GVersion version)
+    final GVersionType version)
     throws GFFIError
   {
     final List<GASTStatement> statements = new ArrayList<GASTStatement>();
@@ -1797,7 +1798,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final List<GASTFragmentShaderStatement> statements,
     final Map<String, Binding> bindings,
     final TASTDValueLocal b,
-    final GVersion version)
+    final GVersionType version)
     throws GFFIError
   {
     final GASTExpression ex =
@@ -1824,7 +1825,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final List<GASTStatement> statements,
     final Map<String, Binding> bindings,
     final TASTDValueLocal b,
-    final GVersion version)
+    final GVersionType version)
     throws GFFIError
   {
     final GASTExpression ex =
@@ -1860,7 +1861,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final List<GASTStatement> statements,
     final Map<String, Binding> bindings,
     final List<TASTDValueLocal> locals,
-    final GVersion version)
+    final GVersionType version)
     throws GFFIError
   {
     for (final TASTDValueLocal b : locals) {
@@ -1898,7 +1899,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final TASTCompilation compilation,
     final Topology topology,
     final TASTShaderNameFlat shader_name,
-    final GVersion version,
+    final GVersionType version,
     final LogUsableType log)
     throws GFFIError
   {
@@ -1924,7 +1925,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         String.format(
           "Transforming fragment shader %s for %s",
           shader_name.show(),
-          version.getLongName());
+          version.versionGetLongName());
       assert s != null;
       logx.debug(s);
     }
@@ -1979,7 +1980,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final TASTCompilation compilation,
     final Topology topology,
     final TASTShaderNameFlat shader_name,
-    final GVersion version,
+    final GVersionType version,
     final LogUsableType log)
     throws GFFIError
   {
@@ -2007,7 +2008,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         String.format(
           "Transforming vertex shader %s for %s",
           shader_name.show(),
-          version.getLongName());
+          version.versionGetLongName());
       assert s != null;
       logx.debug(s);
     }

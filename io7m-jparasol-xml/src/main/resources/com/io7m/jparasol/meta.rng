@@ -25,7 +25,9 @@
     <r:choice>
       <r:ref name="io7m.parasol.glsl-meta.meta-program"/>
       <r:ref name="io7m.parasol.glsl-meta.meta-vertex"/>
+      <r:ref name="io7m.parasol.glsl-meta.meta-vertex-compacted"/>
       <r:ref name="io7m.parasol.glsl-meta.meta-fragment"/>
+      <r:ref name="io7m.parasol.glsl-meta.meta-fragment-compacted"/>
     </r:choice>
   </r:start>
 
@@ -152,16 +154,16 @@
     </r:element>
   </r:define>
 
-  <r:define name="io7m.parasol.glsl-meta.compact-mappings">
-    <r:element name="g:compact-mappings">
+  <r:define name="io7m.parasol.glsl-meta.version-hashes">
+    <r:element name="g:version-hashes">
       <r:oneOrMore>
-        <r:ref name="io7m.parasol.glsl-meta.mapping"/>
+        <r:ref name="io7m.parasol.glsl-meta.version-hash"/>
       </r:oneOrMore>
     </r:element>
   </r:define>
 
-  <r:define name="io7m.parasol.glsl-meta.mapping">
-    <r:element name="g:mapping">
+  <r:define name="io7m.parasol.glsl-meta.version-hash">
+    <r:element name="g:version-hash">
       <r:attribute name="g:number">
         <r:data type="positiveInteger"/>
       </r:attribute>
@@ -223,9 +225,18 @@
       <r:ref name="io7m.parasol.glsl-meta.program-name"/>
       <r:ref name="io7m.parasol.glsl-meta.supports"/>
       <r:ref name="io7m.parasol.glsl-meta.parameters-vertex"/>
-      <r:optional>
-        <r:ref name="io7m.parasol.glsl-meta.compact-mappings"/>
-      </r:optional>
+    </r:element>
+  </r:define>
+  
+  <r:define name="io7m.parasol.glsl-meta.meta-vertex-compacted">
+    <r:element name="g:meta-vertex-compacted">
+      <r:attribute name="g:version">
+        <r:data type="positiveInteger"/>
+      </r:attribute>
+      <r:ref name="io7m.parasol.glsl-meta.program-name"/>
+      <r:ref name="io7m.parasol.glsl-meta.supports"/>
+      <r:ref name="io7m.parasol.glsl-meta.parameters-vertex"/>
+      <r:ref name="io7m.parasol.glsl-meta.version-hashes"/>
     </r:element>
   </r:define>
 
@@ -245,9 +256,18 @@
       <r:ref name="io7m.parasol.glsl-meta.program-name"/>
       <r:ref name="io7m.parasol.glsl-meta.supports"/>
       <r:ref name="io7m.parasol.glsl-meta.parameters-fragment"/>
-      <r:optional>
-        <r:ref name="io7m.parasol.glsl-meta.compact-mappings"/>
-      </r:optional>
+    </r:element>
+  </r:define>
+
+  <r:define name="io7m.parasol.glsl-meta.meta-fragment-compacted">
+    <r:element name="g:meta-fragment-compacted">
+      <r:attribute name="g:version">
+        <r:data type="positiveInteger"/>
+      </r:attribute>
+      <r:ref name="io7m.parasol.glsl-meta.program-name"/>
+      <r:ref name="io7m.parasol.glsl-meta.supports"/>
+      <r:ref name="io7m.parasol.glsl-meta.parameters-fragment"/>
+      <r:ref name="io7m.parasol.glsl-meta.version-hashes"/>
     </r:element>
   </r:define>
 

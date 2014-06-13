@@ -22,9 +22,8 @@ import java.util.TreeSet;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.io7m.jparasol.glsl.GVersion;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.glsl.GVersionChecker;
 import com.io7m.jparasol.glsl.GVersionCheckerError;
 import com.io7m.jparasol.glsl.GVersionsSupported;
@@ -52,10 +51,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 
     final GVersionChecker vc =
       GVersionChecker.newVersionChecker(TestUtilities.getLog());
-    final SortedSet<GVersionFull> required_full =
-      new TreeSet<GVersion.GVersionFull>();
-    final SortedSet<GVersionES> required_es =
-      new TreeSet<GVersion.GVersionES>();
+    final SortedSet<GVersionFull> required_full = new TreeSet<GVersionFull>();
+    final SortedSet<GVersionES> required_es = new TreeSet<GVersionES>();
     required_es.add(GVersionES.GLSL_ES_100);
 
     vc.checkFragmentShader(fs, required_full, required_es);
@@ -77,10 +74,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
     final GVersionChecker vc =
       GVersionChecker.newVersionChecker(TestUtilities.getLog());
 
-    final SortedSet<GVersionFull> required_full =
-      new TreeSet<GVersion.GVersionFull>();
-    final SortedSet<GVersionES> required_es =
-      new TreeSet<GVersion.GVersionES>();
+    final SortedSet<GVersionFull> required_full = new TreeSet<GVersionFull>();
+    final SortedSet<GVersionES> required_es = new TreeSet<GVersionES>();
     required_es.add(GVersionES.GLSL_ES_100);
 
     vc.checkFragmentShader(fs, required_full, required_es);
@@ -101,10 +96,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 
     final GVersionChecker vc =
       GVersionChecker.newVersionChecker(TestUtilities.getLog());
-    final SortedSet<GVersionFull> required_full =
-      new TreeSet<GVersion.GVersionFull>();
-    final SortedSet<GVersionES> required_es =
-      new TreeSet<GVersion.GVersionES>();
+    final SortedSet<GVersionFull> required_full = new TreeSet<GVersionFull>();
+    final SortedSet<GVersionES> required_es = new TreeSet<GVersionES>();
     required_es.add(GVersionES.GLSL_ES_100);
 
     vc.checkFragmentShader(fs, required_full, required_es);
@@ -123,10 +116,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 
     final GVersionChecker vc =
       GVersionChecker.newVersionChecker(TestUtilities.getLog());
-    final SortedSet<GVersionFull> required_full =
-      new TreeSet<GVersion.GVersionFull>();
-    final SortedSet<GVersionES> required_es =
-      new TreeSet<GVersion.GVersionES>();
+    final SortedSet<GVersionFull> required_full = new TreeSet<GVersionFull>();
+    final SortedSet<GVersionES> required_es = new TreeSet<GVersionES>();
     required_es.add(GVersionES.GLSL_ES_100);
 
     final GVersionsSupported s =
@@ -147,10 +138,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 
     final GVersionChecker vc =
       GVersionChecker.newVersionChecker(TestUtilities.getLog());
-    final SortedSet<GVersionFull> required_full =
-      new TreeSet<GVersion.GVersionFull>();
-    final SortedSet<GVersionES> required_es =
-      new TreeSet<GVersion.GVersionES>();
+    final SortedSet<GVersionFull> required_full = new TreeSet<GVersionFull>();
+    final SortedSet<GVersionES> required_es = new TreeSet<GVersionES>();
     required_es.add(GVersionES.GLSL_ES_100);
 
     vc.checkVertexShader(fs, required_full, required_es);
@@ -169,10 +158,8 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 
     final GVersionChecker vc =
       GVersionChecker.newVersionChecker(TestUtilities.getLog());
-    final SortedSet<GVersionFull> required_full =
-      new TreeSet<GVersion.GVersionFull>();
-    final SortedSet<GVersionES> required_es =
-      new TreeSet<GVersion.GVersionES>();
+    final SortedSet<GVersionFull> required_full = new TreeSet<GVersionFull>();
+    final SortedSet<GVersionES> required_es = new TreeSet<GVersionES>();
     required_es.add(GVersionES.GLSL_ES_100);
 
     vc.checkVertexShader(fs, required_full, required_es);

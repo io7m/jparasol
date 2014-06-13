@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:meta-vertex-compacted g:version="5" xmlns:g="http://schemas.io7m.com/parasol/glsl-meta">
+  <g:program-name>com.io7m.renderer.ForwardLitDirectionalSpecularNormalMapped.fwd_LD_S_N</g:program-name>
+
+  <g:supports>
+    <g:version g:number="130" g:api="glsl"/>
+    <g:version g:number="100" g:api="glsl-es"/>
+    <g:version g:number="400" g:api="glsl"/>
+    <g:version g:number="140" g:api="glsl"/>
+    <g:version g:number="110" g:api="glsl"/>
+    <g:version g:number="410" g:api="glsl"/>
+    <g:version g:number="430" g:api="glsl"/>
+    <g:version g:number="420" g:api="glsl"/>
+    <g:version g:number="330" g:api="glsl"/>
+    <g:version g:number="150" g:api="glsl"/>
+    <g:version g:number="120" g:api="glsl"/>
+    <g:version g:number="300" g:api="glsl-es"/>
+  </g:supports>
+
+  <g:parameters-vertex>
+    <g:declared-vertex-parameters>
+      <g:parameter g:name="something" g:type="int"/>
+    </g:declared-vertex-parameters>
+    <g:declared-vertex-inputs>
+      <g:input g:name="v_position" g:type="vec4"/>
+      <g:input g:name="v_normal" g:type="vec3"/>
+    </g:declared-vertex-inputs>
+    <g:declared-vertex-outputs>
+      <g:output g:name="f_position" g:type="vec4"/>
+      <g:output g:name="f_normal" g:type="vec3"/>
+      <g:output g:name="f_tangent" g:type="vec3"/>
+    </g:declared-vertex-outputs>
+  </g:parameters-vertex>
+
+  <g:version-hashes>
+    <g:version-hash g:number="140" g:api="glsl">0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a</g:version-hash>
+    <g:version-hash g:number="410" g:api="glsl">0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a</g:version-hash>
+    <g:version-hash g:number="110" g:api="glsl">0cf3b92ad40b9e2a938bd7f2dd2207f067601575292325bdcb8653d6ae7481b4</g:version-hash>
+    <g:version-hash g:number="440" g:api="glsl">0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a</g:version-hash>
+    <g:version-hash g:number="130" g:api="glsl">0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a</g:version-hash>
+    <g:version-hash g:number="100" g:api="glsl-es">535cddb5c74a881501548a6fdf184ef0b8467aab1b603166745d65d6263ec08f</g:version-hash>
+    <g:version-hash g:number="430" g:api="glsl">0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a</g:version-hash>
+    <g:version-hash g:number="400" g:api="glsl">0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a</g:version-hash>
+    <g:version-hash g:number="420" g:api="glsl">0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a</g:version-hash>
+    <g:version-hash g:number="330" g:api="glsl">0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a</g:version-hash>
+    <g:version-hash g:number="300" g:api="glsl-es">ec62defa1b0b3a48b2725bed74fd6e96fbc24a2a519705d664fa6edab6a42a4e</g:version-hash>
+    <g:version-hash g:number="150" g:api="glsl">0f8f29aba4f434708f7b850052d5d423cbbcd59b07b5861a8d17278561e8639a</g:version-hash>
+    <g:version-hash g:number="120" g:api="glsl">0cf3b92ad40b9e2a938bd7f2dd2207f067601575292325bdcb8653d6ae7481b4</g:version-hash>
+  </g:version-hashes>
+
+</g:meta-vertex-compacted>

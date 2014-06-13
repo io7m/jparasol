@@ -18,14 +18,14 @@ package com.io7m.jparasol.glsl.pipeline;
 
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.io7m.jequality.annotations.EqualityStructural;
+import com.io7m.jlog.LogUsableType;
 import com.io7m.jnull.Nullable;
-import com.io7m.jparasol.glsl.GVersion;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
-import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
-import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertex;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
+import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
 /**
@@ -34,24 +34,21 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
 @EqualityStructural public final class GCompiledProgram
 {
-  private final TASTShaderNameFlat                                       name;
-  private final Map<GVersion, GASTShaderFragment>                        shader_fragment;
-  private final TASTShaderNameFlat                                       shader_fragment_name;
-  private final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>> shaders_vertex;
-  private final SortedSet<GVersionES>                                    versions_es;
-  private final SortedSet<GVersionFull>                                  versions_full;
+  private final TASTShaderNameFlat                             name;
+  private final GCompiledFragmentShader                        shader_fragment;
+  private final Map<TASTShaderNameFlat, GCompiledVertexShader> shaders_vertex;
+  private final SortedSet<GVersionES>                          versions_es;
+  private final SortedSet<GVersionFull>                        versions_full;
 
   GCompiledProgram(
-    final Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>> in_shaders_vertex,
-    final Map<GVersion, GASTShaderFragment> in_shader_fragment,
-    final TASTShaderNameFlat in_shader_fragment_name,
+    final Map<TASTShaderNameFlat, GCompiledVertexShader> in_shaders_vertex,
+    final GCompiledFragmentShader in_shader_fragment,
     final TASTShaderNameFlat in_name,
     final SortedSet<GVersionES> in_versions_es,
     final SortedSet<GVersionFull> in_versions_full)
   {
     this.shaders_vertex = in_shaders_vertex;
     this.shader_fragment = in_shader_fragment;
-    this.shader_fragment_name = in_shader_fragment_name;
     this.name = in_name;
     this.versions_es = in_versions_es;
     this.versions_full = in_versions_full;
@@ -72,7 +69,6 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     final GCompiledProgram other = (GCompiledProgram) obj;
     return this.name.equals(other.name)
       && this.shader_fragment.equals(other.shader_fragment)
-      && this.shader_fragment_name.equals(other.shader_fragment_name)
       && this.shaders_vertex.equals(other.shaders_vertex)
       && this.versions_es.equals(other.versions_es)
       && this.versions_full.equals(other.versions_full);
@@ -91,18 +87,9 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
    * @return The current program's fragment shader.
    */
 
-  public Map<GVersion, GASTShaderFragment> getShaderFragment()
+  public GCompiledFragmentShader getShaderFragment()
   {
     return this.shader_fragment;
-  }
-
-  /**
-   * @return The name of the original fragment shader.
-   */
-
-  public TASTShaderNameFlat getShaderFragmentName()
-  {
-    return this.shader_fragment_name;
   }
 
   /**
@@ -110,9 +97,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
    *         fragment shader has been type checked.
    */
 
-  public
-    Map<TASTShaderNameFlat, Map<GVersion, GASTShaderVertex>>
-    getShadersVertex()
+  public Map<TASTShaderNameFlat, GCompiledVertexShader> getShadersVertex()
   {
     return this.shaders_vertex;
   }
@@ -145,10 +130,35 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     int result = 1;
     result = (prime * result) + this.name.hashCode();
     result = (prime * result) + this.shader_fragment.hashCode();
-    result = (prime * result) + this.shader_fragment_name.hashCode();
     result = (prime * result) + this.shaders_vertex.hashCode();
     result = (prime * result) + this.versions_es.hashCode();
     result = (prime * result) + this.versions_full.hashCode();
     return result;
+  }
+
+  /**
+   * Produce a flattened version of the given shader (a shader with the
+   * majority of the semantic information stripped out, ready for
+   * serialization).
+   * 
+   * @param log
+   *          A log interface.
+   * @return A flattened shader.
+   */
+
+  public UncompactedProgramShaderMeta flatten(
+    final LogUsableType log)
+  {
+    final SortedSet<String> vertex_names = new TreeSet<String>();
+    for (final TASTShaderNameFlat v_name : this.shaders_vertex.keySet()) {
+      vertex_names.add(v_name.show());
+    }
+
+    return UncompactedProgramShaderMeta.newMetadata(
+      this.name.show(),
+      this.versions_es,
+      this.versions_full,
+      this.shader_fragment.getName().show(),
+      vertex_names);
   }
 }

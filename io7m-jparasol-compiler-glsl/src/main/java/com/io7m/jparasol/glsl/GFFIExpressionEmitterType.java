@@ -18,6 +18,7 @@ package com.io7m.jparasol.glsl;
 
 import java.util.List;
 
+import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.glsl.ast.GASTExpression;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
 
@@ -42,5 +43,5 @@ public interface GFFIExpressionEmitterType
   GFFIExpression emitExpression(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
-    final GVersion version);
+    final GVersionType version);
 }

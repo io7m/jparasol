@@ -19,21 +19,21 @@ package com.io7m.jparasol.tests.glsl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.io7m.jparasol.CompilerError;
-import com.io7m.jparasol.glsl.GVersion;
-import com.io7m.jparasol.glsl.GVersion.GVersionES;
-import com.io7m.jparasol.glsl.GVersion.GVersionFull;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.glsl.GWriter;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertex;
 import com.io7m.jparasol.glsl.pipeline.GCompilation;
+import com.io7m.jparasol.glsl.pipeline.GCompiledFragmentShader;
 import com.io7m.jparasol.glsl.pipeline.GCompiledProgram;
+import com.io7m.jparasol.glsl.pipeline.GCompiledVertexShader;
 import com.io7m.jparasol.glsl.pipeline.GPipeline;
 import com.io7m.jparasol.tests.TestPipeline;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
@@ -63,22 +63,22 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
         .transformPrograms(program_names, GVersionES.ALL, GVersionFull.ALL);
     final GCompiledProgram p = comp.getShadersProgram().get(program_name);
 
-    final Map<GVersion, GASTShaderVertex> vertex_shader =
+    final GCompiledVertexShader vertex_shader =
       p.getShadersVertex().values().iterator().next();
-    final Map<GVersion, GASTShaderFragment> fragment_shader =
-      p.getShaderFragment();
+    final GCompiledFragmentShader fragment_shader = p.getShaderFragment();
 
-    final GASTShaderVertex vs_110 = vertex_shader.get(GVersionFull.GLSL_110);
+    final GASTShaderVertex vs_110 =
+      vertex_shader.getSources().get(GVersionFull.GLSL_110);
     final GASTShaderFragment fs_110 =
-      fragment_shader.get(GVersionFull.GLSL_110);
+      fragment_shader.getSources().get(GVersionFull.GLSL_110);
 
     final ByteArrayOutputStream vertex_out = new ByteArrayOutputStream();
     final ByteArrayOutputStream fragment_out = new ByteArrayOutputStream();
 
-    GWriter.writeVertexShader(System.out, vs_110);
-    GWriter.writeVertexShader(vertex_out, vs_110);
-    GWriter.writeFragmentShader(System.out, fs_110);
-    GWriter.writeFragmentShader(fragment_out, fs_110);
+    GWriter.writeVertexShader(System.out, vs_110, true);
+    GWriter.writeVertexShader(vertex_out, vs_110, true);
+    GWriter.writeFragmentShader(System.out, fs_110, true);
+    GWriter.writeFragmentShader(fragment_out, fs_110, true);
 
     final String vertex_text = new String(vertex_out.toByteArray());
     final String fragment_text = new String(fragment_out.toByteArray());
@@ -110,20 +110,20 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
         .transformPrograms(program_names, GVersionES.ALL, GVersionFull.ALL);
     final GCompiledProgram p = comp.getShadersProgram().get(program_name);
 
-    final Map<GVersion, GASTShaderVertex> vertex_shader =
+    final GCompiledVertexShader vertex_shader =
       p.getShadersVertex().values().iterator().next();
-    final Map<GVersion, GASTShaderFragment> fragment_shader =
-      p.getShaderFragment();
+    final GCompiledFragmentShader fragment_shader = p.getShaderFragment();
 
-    final GASTShaderVertex vs_110 = vertex_shader.get(GVersionFull.GLSL_110);
+    final GASTShaderVertex vs_110 =
+      vertex_shader.getSources().get(GVersionFull.GLSL_110);
     final GASTShaderFragment fs_110 =
-      fragment_shader.get(GVersionFull.GLSL_110);
+      fragment_shader.getSources().get(GVersionFull.GLSL_110);
 
     final ByteArrayOutputStream vertex_out = new ByteArrayOutputStream();
     final ByteArrayOutputStream fragment_out = new ByteArrayOutputStream();
 
-    GWriter.writeVertexShader(vertex_out, vs_110);
-    GWriter.writeFragmentShader(fragment_out, fs_110);
+    GWriter.writeVertexShader(vertex_out, vs_110, true);
+    GWriter.writeFragmentShader(fragment_out, fs_110, true);
 
     final String vertex_text = new String(vertex_out.toByteArray());
     final String fragment_text = new String(fragment_out.toByteArray());
