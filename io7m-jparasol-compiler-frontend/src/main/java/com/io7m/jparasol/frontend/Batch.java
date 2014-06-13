@@ -35,7 +35,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
  * A list of programs to be compiled.
  */
 
-public final class Batch
+@SuppressWarnings({ "boxing", "null" }) public final class Batch
 {
   /**
    * @return A new empty batch.
@@ -48,16 +48,17 @@ public final class Batch
 
   /**
    * @return A batch loaded from the given file.
-   * @throws UIError
-   *           If the batch file is invalid.
+   * 
    * @throws IOException
    *           On I/O errors.
+   * @throws JPBatchException
+   *           If the batch file is invalid.
    */
 
   public static Batch newBatchFromFile(
     final File batch_file)
-    throws UIError,
-      IOException
+    throws IOException,
+      JPBatchException
   {
     final BufferedReader reader =
       new BufferedReader(new FileReader(batch_file));
@@ -74,10 +75,13 @@ public final class Batch
         }
         final String[] segments = line.split(":");
         if (segments.length != 2) {
-          throw UIError.badBatch(
-            line_no,
-            batch_file,
-            "Format must be: [ output ] , ':' , shader-name");
+          final String r =
+            String
+              .format(
+                "Invalid batch at line %d: Format must be: [ output ] , ':' , shader-name",
+                line_no);
+          assert r != null;
+          throw new JPBatchInvalidLine(r);
         }
 
         final String output = segments[0].trim();
@@ -100,6 +104,8 @@ public final class Batch
       }
 
       return batch;
+    } catch (final UIError e) {
+      throw new JPBatchInvalidShader(e.getMessage());
     } finally {
       reader.close();
     }
@@ -121,16 +127,16 @@ public final class Batch
    * 
    * @param shader
    *          The name of the shader.
-   * @throws IllegalArgumentException
+   * @throws JPBatchDuplicateShader
    *           If the shader has already been added.
    */
 
   public void addShader(
     final TASTShaderNameFlat shader)
-    throws IllegalArgumentException
+    throws JPBatchException
   {
     if (this.shaders.contains(shader)) {
-      throw new IllegalArgumentException(String.format(
+      throw new JPBatchDuplicateShader(String.format(
         "Shader %s has already been added",
         shader.show()));
     }
@@ -145,24 +151,34 @@ public final class Batch
    *          The name of the shader.
    * @param name
    *          The output name of the shader.
-   * @throws IllegalArgumentException
-   *           If the shader has already been added, or the output name has
-   *           already been used.
+   * @throws JPBatchInvalidOutput
+   *           If the output name contains a dot.
+   * @throws JPBatchDuplicateShader
+   *           If the shader has already been added.
+   * @throws JPBatchDuplicateOutput
+   *           If the given output name has already been used.
    */
 
   public void addShaderWithOutputName(
     final TASTShaderNameFlat shader,
     final String name)
-    throws IllegalArgumentException
+    throws JPBatchException
   {
     if (this.shaders.contains(shader)) {
-      throw new IllegalArgumentException(String.format(
+      throw new JPBatchDuplicateShader(String.format(
         "Shader %s has already been added",
         shader.show()));
     }
 
+    if (name.contains(".")) {
+      throw new JPBatchInvalidOutput(String.format(
+        "Output %s contains '.' (for shader %s)",
+        name,
+        shader.show()));
+    }
+
     if (this.shaders_by_output.containsKey(name)) {
-      throw new IllegalArgumentException(String.format(
+      throw new JPBatchDuplicateOutput(String.format(
         "Output %s has already been added (for shader %s)",
         name,
         shader.show()));

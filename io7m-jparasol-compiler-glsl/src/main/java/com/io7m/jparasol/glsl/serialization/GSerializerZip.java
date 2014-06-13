@@ -29,6 +29,10 @@ import nu.xom.Element;
 import nu.xom.Serializer;
 
 import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.None;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.OptionVisitorType;
+import com.io7m.jfunctional.Some;
 import com.io7m.jlog.LogType;
 import com.io7m.jlog.LogUsableType;
 import com.io7m.jnull.NullCheck;
@@ -143,13 +147,17 @@ import com.io7m.junreachable.UnreachableCodeException;
   private void announceFile(
     final String name)
   {
-    this.log.debug(String.format("file %s", name));
+    final String r = String.format("file %s", name);
+    assert r != null;
+    this.log.debug(r);
   }
 
   private void announceShader(
     final String name)
   {
-    this.log.debug(String.format("shader %s", name));
+    final String r = String.format("shader %s", name);
+    assert r != null;
+    this.log.debug(r);
   }
 
   @Override public void close()
@@ -258,20 +266,37 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   @Override public void serializeUncompactedProgramShader(
-    final UncompactedProgramShaderMeta meta)
+    final UncompactedProgramShaderMeta meta,
+    final OptionType<String> name)
     throws IOException
   {
-    this.announceShader(meta.getName());
-    this.serializeUncompactedProgramShaderMeta(meta);
+    final String actual =
+      name.accept(new OptionVisitorType<String, String>() {
+        @Override public String none(
+          final None<String> n)
+        {
+          return meta.getName();
+        }
+
+        @Override public String some(
+          final Some<String> s)
+        {
+          return s.get();
+        }
+      });
+
+    this.announceShader(actual);
+    this.serializeUncompactedProgramShaderMeta(meta, actual);
   }
 
   private void serializeUncompactedProgramShaderMeta(
-    final UncompactedProgramShaderMeta meta)
+    final UncompactedProgramShaderMeta meta,
+    final String program_name)
     throws FileNotFoundException,
       UnsupportedEncodingException,
       IOException
   {
-    final String name = String.format("%s/meta.xml", meta.getName());
+    final String name = String.format("%s/meta.xml", program_name);
     assert name != null;
     this.announceFile(name);
 

@@ -19,6 +19,7 @@ package com.io7m.jparasol.glsl.serialization;
 import java.io.Closeable;
 import java.io.IOException;
 
+import com.io7m.jfunctional.OptionType;
 import com.io7m.jparasol.core.CompactedFragmentShader;
 import com.io7m.jparasol.core.CompactedVertexShader;
 import com.io7m.jparasol.core.UncompactedFragmentShader;
@@ -89,7 +90,8 @@ public interface GSerializerType extends Closeable
    */
 
   void serializeUncompactedProgramShader(
-    final UncompactedProgramShaderMeta meta)
+    final UncompactedProgramShaderMeta meta,
+    final OptionType<String> name)
     throws IOException;
 
   /**

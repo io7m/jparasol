@@ -29,6 +29,10 @@ import nu.xom.Element;
 import nu.xom.Serializer;
 
 import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.None;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.OptionVisitorType;
+import com.io7m.jfunctional.Some;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.core.CompactedFragmentShader;
 import com.io7m.jparasol.core.CompactedFragmentShaderMeta;
@@ -350,12 +354,27 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   @Override public void serializeUncompactedProgramShader(
-    final UncompactedProgramShaderMeta meta)
+    final UncompactedProgramShaderMeta meta,
+    final OptionType<String> name)
     throws IOException
   {
     NullCheck.notNull(meta, "Meta");
 
-    final File out_dir = new File(this.base, meta.getName());
+    @SuppressWarnings("synthetic-access") final File out_dir =
+      name.accept(new OptionVisitorType<String, File>() {
+        @Override public File none(
+          final None<String> n)
+        {
+          return new File(GSerializerFile.this.base, meta.getName());
+        }
+
+        @Override public File some(
+          final Some<String> s)
+        {
+          return new File(GSerializerFile.this.base, s.get());
+        }
+      });
+
     GSerializerFile.createOutputDirectory(this.replace, out_dir);
     GSerializerFile.serializeUncompactedProgramShaderMeta(meta, out_dir);
   }

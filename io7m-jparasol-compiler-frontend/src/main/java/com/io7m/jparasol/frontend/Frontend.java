@@ -30,6 +30,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
@@ -45,6 +46,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
+import com.io7m.jfunctional.OptionType;
 import com.io7m.jfunctional.Pair;
 import com.io7m.jlog.Log;
 import com.io7m.jlog.LogLevel;
@@ -82,7 +84,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
  * Command line compiler frontend.
  */
 
-@SuppressWarnings("synthetic-access") public final class Frontend
+public final class Frontend
 {
   private static boolean       DEBUG;
   private static final Options OPTIONS;
@@ -112,7 +114,8 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     throws IOException,
       CompilerError,
       NoSuchAlgorithmException,
-      GCompactorException
+      GCompactorException,
+      JPBatchException
   {
     final SortedSet<GVersionES> require_es = Frontend.getRequiredES(line);
     final SortedSet<GVersionFull> require_full =
@@ -160,7 +163,8 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     throws IOException,
       CompilerError,
       NoSuchAlgorithmException,
-      GCompactorException
+      GCompactorException,
+      JPBatchException
   {
     final SortedSet<GVersionES> require_es = Frontend.getRequiredES(line);
     final SortedSet<GVersionFull> require_full =
@@ -445,6 +449,10 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
       log.error(e.getMessage());
       Frontend.showHelp();
       throw e;
+    } catch (final JPBatchException e) {
+      log.error("invalid batch: " + e.getMessage());
+      Frontend.showStackTraceIfNecessary(e);
+      throw e;
     } catch (final CompilerError x) {
       final StringBuilder s = new StringBuilder();
       s.append(x.getFile());
@@ -481,7 +489,8 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
       IOException,
       CompilerError,
       NoSuchAlgorithmException,
-      GCompactorException
+      GCompactorException,
+      JPBatchException
   {
     LogUsableType logx = log;
 
@@ -648,11 +657,24 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     {
       final Map<TASTShaderNameFlat, GCompiledProgram> shaders =
         results.getShadersProgram();
+      final SortedMap<TASTShaderNameFlat, String> outputs =
+        batch.getOutputsByShader();
+      final OptionType<String> none = com.io7m.jfunctional.Option.none();
 
       for (final TASTShaderNameFlat name : shaders.keySet()) {
         final GCompiledProgram program = shaders.get(name);
         final UncompactedProgramShaderMeta flat = program.flatten(logx);
-        serializer.serializeUncompactedProgramShader(flat);
+
+        if (outputs.containsKey(name)) {
+          final String output = outputs.get(name);
+          assert output != null;
+
+          serializer.serializeUncompactedProgramShader(
+            flat,
+            com.io7m.jfunctional.Option.some(output));
+        } else {
+          serializer.serializeUncompactedProgramShader(flat, none);
+        }
       }
     }
   }
