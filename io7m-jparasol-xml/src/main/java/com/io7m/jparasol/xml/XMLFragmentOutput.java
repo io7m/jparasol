@@ -31,7 +31,7 @@ import com.io7m.junreachable.UnreachableCodeException;
  * Functions to convert {@link FragmentOutput} to/from XML.
  */
 
-@EqualityReference public final class XMLFragmentOutput
+@EqualityReference final class XMLFragmentOutput
 {
   /**
    * @param e
@@ -41,11 +41,9 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           If a problem occurs during parsing.
    */
 
-  public static
-    SortedMap<Integer, FragmentOutput>
-    parseDeclaredOutputsFromXML(
-      final Element e)
-      throws JPXMLValidityException
+  static SortedMap<Integer, FragmentOutput> parseDeclaredOutputsFromXML(
+    final Element e)
+    throws JPXMLValidityException
   {
     final SortedMap<Integer, FragmentOutput> routputs =
       new TreeMap<Integer, FragmentOutput>();
@@ -69,7 +67,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           If a problem occurs whilst parsing.
    */
 
-  public static FragmentOutput parseFromXML(
+  static FragmentOutput parseFromXML(
     final Element e)
     throws JPXMLValidityException
   {
@@ -101,7 +99,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The outputs as XML.
    */
 
-  public static Element serializeDeclaredFragmentOutputsToXML(
+  static Element serializeDeclaredFragmentOutputsToXML(
     final SortedMap<Integer, FragmentOutput> fo)
   {
     final String uri = XMLMeta.XML_URI_STRING;
@@ -119,7 +117,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The current output as XML
    */
 
-  public static Element serializeToXML(
+  static Element serializeToXML(
     final FragmentOutput i)
   {
     final String uri = XMLMeta.XML_URI_STRING;

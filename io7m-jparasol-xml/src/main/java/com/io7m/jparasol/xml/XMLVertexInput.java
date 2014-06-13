@@ -31,7 +31,7 @@ import com.io7m.junreachable.UnreachableCodeException;
  * Functions to convert {@link VertexInput} to/from XML.
  */
 
-@EqualityReference public final class XMLVertexInput
+@EqualityReference final class XMLVertexInput
 {
   /**
    * @param e
@@ -39,7 +39,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A set of declared vertex inputs.
    */
 
-  public static SortedSet<VertexInput> parseDeclaredInputsFromXML(
+  static SortedSet<VertexInput> parseDeclaredInputsFromXML(
     final Element e)
   {
     final SortedSet<VertexInput> rinputs = new TreeSet<VertexInput>();
@@ -60,7 +60,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A vertex input from the given XML element.
    */
 
-  public static VertexInput parseFromXML(
+  static VertexInput parseFromXML(
     final Element e)
   {
     final Attribute an = e.getAttribute("name", XMLMeta.XML_URI_STRING);
@@ -78,7 +78,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The inputs as XML.
    */
 
-  public static Element serializeDeclaredVertexInputsToXML(
+  static Element serializeDeclaredVertexInputsToXML(
     final SortedSet<VertexInput> vi)
   {
     final String uri = XMLMeta.XML_URI_STRING;
@@ -94,7 +94,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The current input as XML
    */
 
-  public static Element serializeToXML(
+  static Element serializeToXML(
     final VertexInput i)
   {
     final String uri = XMLMeta.XML_URI_STRING;

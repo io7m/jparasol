@@ -24,6 +24,7 @@ import nu.xom.Element;
 import nu.xom.Elements;
 
 import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.core.GVersion;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
@@ -43,7 +44,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The fragment shader name.
    */
 
-  public static String parseFragmentShaderName(
+  static String parseFragmentShaderName(
     final Element root)
   {
     final Elements f =
@@ -64,6 +65,8 @@ import com.io7m.junreachable.UnreachableCodeException;
     final Element e)
     throws JPXMLValidityException
   {
+    NullCheck.notNull(e, "Element");
+
     final String name = XMLMeta.parseName(e);
     final SortedSet<GVersionType> supports = XMLMeta.parseSupports(e);
     final SortedSet<GVersionES> supports_es = new TreeSet<GVersionES>();
@@ -89,7 +92,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The list of vertex shaders.
    */
 
-  public static SortedSet<String> parseVertexShaderNames(
+  static SortedSet<String> parseVertexShaderNames(
     final Element root)
   {
     final SortedSet<String> names = new TreeSet<String>();
@@ -115,7 +118,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The fragment shader name as XML.
    */
 
-  public static Element serializeFragmentShaderToXML(
+  static Element serializeFragmentShaderToXML(
     final String fragment_name)
   {
     final Element e =
@@ -131,6 +134,8 @@ import com.io7m.junreachable.UnreachableCodeException;
   public static Element serializeToXML(
     final UncompactedProgramShaderMeta f)
   {
+    NullCheck.notNull(f, "Metadata");
+
     final Element root =
       new Element("g:meta-program", XMLMeta.XML_URI_STRING);
     root.addAttribute(new Attribute(
@@ -156,7 +161,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The vertex shader names as XML.
    */
 
-  public static Element serializeVertexShadersToXML(
+  static Element serializeVertexShadersToXML(
     final SortedSet<String> vertex_names)
   {
     final Element e = new Element("g:shaders-vertex", XMLMeta.XML_URI_STRING);

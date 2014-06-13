@@ -31,7 +31,7 @@ import com.io7m.junreachable.UnreachableCodeException;
  * Functions to convert {@link VertexParameter} to/from XML.
  */
 
-@EqualityReference public final class XMLVertexParameter
+@EqualityReference final class XMLVertexParameter
 {
   /**
    * @param e
@@ -39,7 +39,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A set of declared vertex inputs.
    */
 
-  public static SortedSet<VertexParameter> parseDeclaredParametersFromXML(
+  static SortedSet<VertexParameter> parseDeclaredParametersFromXML(
     final Element e)
   {
     final SortedSet<VertexParameter> rinputs = new TreeSet<VertexParameter>();
@@ -61,7 +61,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A vertex parameter from the given XML element.
    */
 
-  public static VertexParameter parseFromXML(
+  static VertexParameter parseFromXML(
     final Element e)
   {
     final Attribute an = e.getAttribute("name", XMLMeta.XML_URI_STRING);
@@ -79,7 +79,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The parameters as XML.
    */
 
-  public static Element serializeDeclaredVertexParametersToXML(
+  static Element serializeDeclaredVertexParametersToXML(
     final SortedSet<VertexParameter> vp)
   {
     final String uri = XMLMeta.XML_URI_STRING;
@@ -95,7 +95,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The current parameter as XML
    */
 
-  public static Element serializeToXML(
+  static Element serializeToXML(
     final VertexParameter i)
   {
     final String uri = XMLMeta.XML_URI_STRING;

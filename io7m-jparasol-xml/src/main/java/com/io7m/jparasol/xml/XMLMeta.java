@@ -144,7 +144,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           If the document is of the wrong version or invalid.
    */
 
-  public static void checkVersion(
+  static void checkVersion(
     final Element root)
     throws JPXMLValidityException
   {
@@ -313,7 +313,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The program name.
    */
 
-  public static String parseName(
+  static String parseName(
     final Element root)
   {
     final Elements ename =
@@ -331,7 +331,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           If an error occurs whilst parsing.
    */
 
-  public static SortedSet<GVersionType> parseSupports(
+  static SortedSet<GVersionType> parseSupports(
     final Element root)
     throws JPXMLValidityException
   {
@@ -361,7 +361,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           If an error occurs whilst parsing.
    */
 
-  public static SortedMap<GVersionType, String> parseVersionHashes(
+  static SortedMap<GVersionType, String> parseVersionHashes(
     final Element root)
     throws JPXMLValidityException
   {
@@ -417,7 +417,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return An XML element.
    */
 
-  public static Element serializeParametersFragmentToXML(
+  static Element serializeParametersFragmentToXML(
     final SortedSet<FragmentParameter> fp,
     final SortedSet<FragmentInput> fi,
     final SortedMap<Integer, FragmentOutput> fo)
@@ -445,7 +445,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return An XML element.
    */
 
-  public static Element serializeParametersVertexToXML(
+  static Element serializeParametersVertexToXML(
     final SortedSet<VertexParameter> vp,
     final SortedSet<VertexInput> vi,
     final SortedSet<VertexOutput> vo)
@@ -467,7 +467,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return An XML element.
    */
 
-  public static Element serializeProgramName(
+  static Element serializeProgramName(
     final String name)
   {
     final Element e = new Element("g:program-name", XMLMeta.XML_URI_STRING);
@@ -485,7 +485,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return An XML element.
    */
 
-  public static Element serializeSupports(
+  static Element serializeSupports(
     final SortedSet<GVersionES> supports_es,
     final SortedSet<GVersionFull> supports_full)
   {
@@ -511,7 +511,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return An XML element.
    */
 
-  public static Element serializeVersionHash(
+  static Element serializeVersionHash(
     final GVersionType v,
     final String hash)
   {
@@ -532,7 +532,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return An XML element.
    */
 
-  public static Element serializeVersionHashes(
+  static Element serializeVersionHashes(
     final Map<GVersionType, String> version_to_hash)
   {
     final String uri = XMLMeta.XML_URI_STRING;

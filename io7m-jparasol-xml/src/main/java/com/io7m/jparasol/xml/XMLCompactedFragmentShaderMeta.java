@@ -24,6 +24,7 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 
 import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.core.CompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.FragmentInput;
 import com.io7m.jparasol.core.FragmentOutput;
@@ -54,6 +55,8 @@ import com.io7m.junreachable.UnreachableCodeException;
     throws JPXMLValidityException,
       JPMissingHash
   {
+    NullCheck.notNull(e, "Element");
+
     final String name = XMLMeta.parseName(e);
     final SortedSet<GVersionType> supports = XMLMeta.parseSupports(e);
     final SortedSet<GVersionES> supports_es = new TreeSet<GVersionES>();
@@ -116,6 +119,8 @@ import com.io7m.junreachable.UnreachableCodeException;
   public static Element serializeToXML(
     final CompactedFragmentShaderMeta f)
   {
+    NullCheck.notNull(f, "Metadata");
+
     final Element root =
       new Element("g:meta-fragment-compacted", XMLMeta.XML_URI_STRING);
     root.addAttribute(new Attribute(

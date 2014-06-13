@@ -27,7 +27,7 @@ import com.io7m.junreachable.UnreachableCodeException;
  * Serialization for {@link GVersionES}.
  */
 
-@EqualityReference public final class XMLGVersionES
+@EqualityReference final class XMLGVersionES
 {
   /**
    * Serialize the given version to XML.
@@ -37,7 +37,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return An XML element.
    */
 
-  public static Element serializeToXML(
+  static Element serializeToXML(
     final GVersionES v)
   {
     final String uri = XMLMeta.XML_URI_STRING;

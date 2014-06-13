@@ -31,7 +31,7 @@ import com.io7m.junreachable.UnreachableCodeException;
  * Functions to convert {@link FragmentParameter} to/from XML.
  */
 
-@EqualityReference public final class XMLFragmentParameter
+@EqualityReference final class XMLFragmentParameter
 {
   /**
    * @param e
@@ -39,7 +39,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A set of declared fragment inputs.
    */
 
-  public static SortedSet<FragmentParameter> parseDeclaredParametersFromXML(
+  static SortedSet<FragmentParameter> parseDeclaredParametersFromXML(
     final Element e)
   {
     final SortedSet<FragmentParameter> rinputs =
@@ -62,7 +62,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A fragment parameter from the given XML element.
    */
 
-  public static FragmentParameter parseFromXML(
+  static FragmentParameter parseFromXML(
     final Element e)
   {
     final Attribute an = e.getAttribute("name", XMLMeta.XML_URI_STRING);
@@ -80,7 +80,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The parameters as XML.
    */
 
-  public static Element serializeDeclaredFragmentParametersToXML(
+  static Element serializeDeclaredFragmentParametersToXML(
     final SortedSet<FragmentParameter> vp)
   {
     final String uri = XMLMeta.XML_URI_STRING;
@@ -96,7 +96,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The current parameter as XML
    */
 
-  public static Element serializeToXML(
+  static Element serializeToXML(
     final FragmentParameter i)
   {
     final String uri = XMLMeta.XML_URI_STRING;

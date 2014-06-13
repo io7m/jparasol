@@ -29,7 +29,7 @@ import com.io7m.junreachable.UnreachableCodeException;
  * Functions to convert {@link GVersionType} to/from XML.
  */
 
-@EqualityReference public final class XMLGVersion
+@EqualityReference final class XMLGVersion
 {
   /**
    * Parse a version number from the given element.
@@ -41,7 +41,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           If an error occurs during parsing.
    */
 
-  public static GVersionType parseFromXML(
+  static GVersionType parseFromXML(
     final Element e)
     throws JPXMLValidityException
   {

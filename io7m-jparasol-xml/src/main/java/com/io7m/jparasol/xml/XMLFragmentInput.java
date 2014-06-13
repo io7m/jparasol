@@ -31,7 +31,7 @@ import com.io7m.junreachable.UnreachableCodeException;
  * Functions to convert {@link FragmentInput} to/from XML.
  */
 
-@EqualityReference public final class XMLFragmentInput
+@EqualityReference final class XMLFragmentInput
 {
   /**
    * @param e
@@ -39,7 +39,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A set of declared fragment inputs.
    */
 
-  public static SortedSet<FragmentInput> parseDeclaredInputsFromXML(
+  static SortedSet<FragmentInput> parseDeclaredInputsFromXML(
     final Element e)
   {
     final SortedSet<FragmentInput> rinputs = new TreeSet<FragmentInput>();
@@ -60,7 +60,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A fragment input from the given XML element.
    */
 
-  public static FragmentInput parseFromXML(
+  static FragmentInput parseFromXML(
     final Element e)
   {
     final Attribute an = e.getAttribute("name", XMLMeta.XML_URI_STRING);
@@ -78,7 +78,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The inputs as XML.
    */
 
-  public static Element serializeDeclaredFragmentInputsToXML(
+  static Element serializeDeclaredFragmentInputsToXML(
     final SortedSet<FragmentInput> vi)
   {
     final String uri = XMLMeta.XML_URI_STRING;
@@ -94,7 +94,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return The current input as XML
    */
 
-  public static Element serializeToXML(
+  static Element serializeToXML(
     final FragmentInput i)
   {
     final String uri = XMLMeta.XML_URI_STRING;
