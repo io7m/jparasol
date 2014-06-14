@@ -16,13 +16,11 @@
 
 package com.io7m.jparasol.frontend;
 
-import com.io7m.jlog.LogUsableType;
-
 /**
  * Execute the frontend.
  */
 
-public final class FrontendMain
+public final class Main
 {
   /**
    * Run the compiler, exiting on errors.
@@ -35,14 +33,13 @@ public final class FrontendMain
     final String[] args)
   {
     try {
-      final LogUsableType log = Frontend.getLog(false);
-      Frontend.run(log, args);
+      CommandLineFrontend.run(args);
     } catch (final Exception e) {
       System.exit(1);
     }
   }
 
-  private FrontendMain()
+  private Main()
   {
 
   }

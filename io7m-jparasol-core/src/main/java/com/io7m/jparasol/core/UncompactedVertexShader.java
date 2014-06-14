@@ -16,6 +16,7 @@
 
 package com.io7m.jparasol.core;
 
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
@@ -42,17 +43,17 @@ import com.io7m.jnull.NullCheck;
 
   public static UncompactedVertexShader newShader(
     final UncompactedVertexShaderMeta in_meta,
-    final Map<GVersionType, SourceLines> in_sources)
+    final Map<GVersionType, List<String>> in_sources)
   {
     return new UncompactedVertexShader(in_meta, in_sources);
   }
 
-  private final UncompactedVertexShaderMeta    meta;
-  private final Map<GVersionType, SourceLines> sources;
+  private final UncompactedVertexShaderMeta     meta;
+  private final Map<GVersionType, List<String>> sources;
 
   private UncompactedVertexShader(
     final UncompactedVertexShaderMeta in_meta,
-    final Map<GVersionType, SourceLines> in_sources)
+    final Map<GVersionType, List<String>> in_sources)
   {
     this.sources = NullCheck.notNull(in_sources, "Sources");
     this.meta = NullCheck.notNull(in_meta, "Metadata");
@@ -82,7 +83,7 @@ import com.io7m.jnull.NullCheck;
    * @return A read-only map of the shader sources, by version.
    */
 
-  public Map<GVersionType, SourceLines> getSources()
+  public Map<GVersionType, List<String>> getSources()
   {
     return this.sources;
   }

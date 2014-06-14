@@ -35,15 +35,15 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
  * A list of programs to be compiled.
  */
 
-@SuppressWarnings({ "boxing", "null" }) public final class Batch
+@SuppressWarnings({ "boxing", "null" }) public final class CompilerBatch
 {
   /**
    * @return A new empty batch.
    */
 
-  public static Batch newBatch()
+  public static CompilerBatch newBatch()
   {
-    return new Batch();
+    return new CompilerBatch();
   }
 
   /**
@@ -55,7 +55,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
    *           If the batch file is invalid.
    */
 
-  public static Batch newBatchFromFile(
+  public static CompilerBatch newBatchFromFile(
     final File batch_file)
     throws IOException,
       JPBatchException
@@ -63,7 +63,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     final BufferedReader reader =
       new BufferedReader(new FileReader(batch_file));
 
-    final Batch batch = Batch.newBatch();
+    final CompilerBatch batch = CompilerBatch.newBatch();
 
     try {
       int line_no = 1;
@@ -115,7 +115,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
   private final SortedSet<TASTShaderNameFlat>         shaders;
   private final SortedMap<String, TASTShaderNameFlat> shaders_by_output;
 
-  private Batch()
+  private CompilerBatch()
   {
     this.shaders = new TreeSet<TASTShaderNameFlat>();
     this.outputs_by_shader = new TreeMap<TASTShaderNameFlat, String>();

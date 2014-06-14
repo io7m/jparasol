@@ -128,7 +128,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.]]>
 parasol-c: [options] --compile-one output shader file0 [file1 ... fileN]
         or [options] --compile-batch output batch-list source-list
         or [options] --check file0 [file1 ... fileN]
-        or [options] --show-versions
+        or [options] --show-glsl-versions
         or [options] --version
 
   Where: output           is a directory (unless --zip is specified) that will be populated with GLSL shaders
@@ -137,20 +137,21 @@ parasol-c: [options] --compile-one output shader file0 [file1 ... fileN]
          source-list      is a file containing a set of filenames, separated by newlines
          file[0 .. N]     is a series of filenames containing source code
 
-     --check                         Parse and type-check all source files, but do not produce GLSL source
-     --compact                       Enable compaction (eliminates duplicate source files)
-     --compile-batch                 Produce multiple GLSL programs from a set of sources
-     --compile-one                   Compile a specific shader program to GLSL source
-     --debug                         Enable debugging (debug messages, exception backtraces)
-  -h,--help                          Show this help message
-     --require-es <version-set>      Require GLSL ES source code for the given set of GLSL ES versions, failing if any
-                                     of the versions cannot be satisfied
-     --require-full <version-set>    Require GLSL source code for the given set of GLSL versions, failing if any of the
-                                     versions cannot be satisfied
-     --show-versions                 Show the available GLSL versions
-     --threads <count>               Set the number of threads to use during code generation
-     --version                       Display compiler version
-     --zip                           Write shaders to a zip archive instead of a directory
+     --check                            Parse and type-check all source files, but do not produce GLSL source
+     --compact                          Enable compaction (eliminates duplicate source files)
+     --compile-batch                    Produce multiple GLSL programs from a set of sources
+     --compile-one                      Compile a specific shader program to GLSL source
+  -h,--help                             Show this help message
+     --log-properties <properties>      Configure logging based on the given property file
+     --log-stack-traces                 Enable logging of exception stack traces
+     --require-glsl <version-set>       Require GLSL source code for the given set of GLSL versions, failing if any of
+                                        the versions cannot be satisfied
+     --require-glsl-es <version-set>    Require GLSL ES source code for the given set of GLSL ES versions, failing if
+                                        any of the versions cannot be satisfied
+     --show-glsl-versions               Show the available GLSL versions
+     --threads <count>                  Set the number of threads to use during code generation
+     --version                          Display compiler version
+     --zip                              Write shaders to a zip archive instead of a directory
 
    Where: version-set     := version-segment ( ',' version-segment )*
           version-segment := version-exact | version-range
@@ -635,7 +636,7 @@ end;]]></s:verbatim>
         </s:paragraph>
         <s:formal-item s:kind="examples">
           <s:formal-item-title>Compilation (versions)</s:formal-item-title>
-          <s:verbatim><![CDATA[$ java -jar jparasol-c.jar --require-full [,] --require-es [,] --compile-one /tmp/shaders com.io7m.examples.HelloWorld.p HelloWorld.txt]]></s:verbatim>
+          <s:verbatim><![CDATA[$ java -jar jparasol-c.jar --require-glsl [,] --require-glsl-es [,] --compile-one /tmp/shaders com.io7m.examples.HelloWorld.p HelloWorld.txt]]></s:verbatim>
         </s:formal-item>
         <s:paragraph>
           The <s:term s:type="expression">[,]</s:term> notation is standard
@@ -794,15 +795,15 @@ main (void)
           already exist).
         </s:paragraph>
         <s:paragraph>
-          The <s:term s:type="command">--require-full</s:term> and
-          <s:term s:type="command">--require-es</s:term> options specify the GLSL
+          The <s:term s:type="command">--require-glsl</s:term> and
+          <s:term s:type="command">--require-glsl-es</s:term> options specify the GLSL
           and GLSL ES versions for which the compiler <s:term s:type="term">must</s:term>
           generate code. The compiler will raise an error if the program cannot
-          be supported on one or more versions. The notation for specifying versions
-          is described <s:link s:target="jparasol-c.ranges">below</s:link>. If these
-          options are not specified, the compiler will attempt to generate code for
-          all versions but will not raise an error if code cannot be generated for
-          one or more versions.
+          be supported on one or more versions. The 
+          <s:link s:target="jparasol-c.ranges">notation</s:link> for specifying versions
+          is described below. If these options are not specified, the compiler will 
+          attempt to generate code for all versions but will not raise an error if 
+          code cannot be generated for one or more versions.
         </s:paragraph>
       </s:subsection>
       <s:subsection xml:id="jparasol-c.check">
@@ -829,22 +830,22 @@ main (void)
           of batches, the compiler will produce a GLSL program in <s:term s:type="file">b/p</s:term>.
         </s:paragraph>
         <s:paragraph>
-          The <s:term s:type="command">--require-full</s:term> and
-          <s:term s:type="command">--require-es</s:term> options specify the GLSL
+          The <s:term s:type="command">--require-glsl</s:term> and
+          <s:term s:type="command">--require-glsl-es</s:term> options specify the GLSL
           and GLSL ES versions for which the compiler <s:term s:type="term">must</s:term>
           generate code. The compiler will raise an error if the program cannot
-          be supported on one or more versions. The notation for specifying versions
-          is described <s:link s:target="jparasol-c.ranges">below</s:link>. If these
-          options are not specified, the compiler will attempt to generate code for
-          all versions but will not raise an error if code cannot be generated for
-          one or more versions.
+          be supported on one or more versions. The 
+          <s:link s:target="jparasol-c.ranges">notation</s:link> for specifying versions
+          is described below. If these options are not specified, the compiler will 
+          attempt to generate code for all versions but will not raise an error if 
+          code cannot be generated for one or more versions.
         </s:paragraph>
         <s:paragraph>
           The command is intended to be used to process thousands of
           programs. The compiler supports multi-threaded program processing
           and can, after parsing and type-checking, produce multiple GLSL
           programs from the resulting typed AST in parallel. The
-          <s:term s:type="command">--threads</s:term> command specifies
+          <s:term s:type="command">--threads</s:term> option specifies
           the number of threads that should be used during batch compilation,
           with <s:term s:type="constant">1</s:term> thread being the default.
         </s:paragraph>
@@ -944,6 +945,46 @@ version-range   := ('(' | '[') integer? ',' integer? (')' | ']')]]></s:verbatim>
         <s:paragraph>
           A batch file contains a list of batches, one per line.
         </s:paragraph>
+      </s:subsection>
+      <s:subsection xml:id="jparasol-c.logging">
+        <s:subsection-title>Logging</s:subsection-title>
+        <s:paragraph>
+          By default, the compiler remains silent except in the case of
+          errors. It is possible to enable more logging for the purposes
+          of debugging by providing a configuration file with
+          the <s:term s:type="command">--log-properties</s:term> option.
+          The configuration file is a set of Java properties that configure
+          the <s:link-external s:target="http://io7m.com/software/jlog">jlog</s:link-external>
+          package used internally by the compiler and so the documentation
+          of that package should be examined for the precise formats of the
+          properties.
+        </s:paragraph>
+        <s:paragraph>
+          To save some time, an example file that enables absolutely all
+          logging:
+        </s:paragraph>
+        <s:formal-item s:kind="example">
+          <s:formal-item-title>Maximum logging</s:formal-item-title>
+          <s:verbatim><![CDATA[
+com.io7m.jparasol.logs.compiler = true
+com.io7m.jparasol.level         = LOG_DEBUG]]></s:verbatim>
+        </s:formal-item>
+        <s:paragraph>
+          An example file that enables the minimum debug messages for
+          the frontend by disabling logging for all of the main compiler
+          components but leaving other messages enabled:
+        </s:paragraph>
+        <s:formal-item s:kind="example">
+          <s:formal-item-title>Minimal logging</s:formal-item-title>
+          <s:verbatim><![CDATA[
+com.io7m.jparasol.logs.compiler                 = true
+com.io7m.jparasol.logs.compiler.pipeline        = false
+com.io7m.jparasol.logs.compiler.gpipeline       = false
+com.io7m.jparasol.logs.compiler.compactor       = false
+com.io7m.jparasol.logs.compiler.serializer-zip  = false
+com.io7m.jparasol.logs.compiler.serializer-file = false
+com.io7m.jparasol.level                         = LOG_DEBUG]]></s:verbatim>
+        </s:formal-item>
       </s:subsection>
     </s:section>
   </s:part>

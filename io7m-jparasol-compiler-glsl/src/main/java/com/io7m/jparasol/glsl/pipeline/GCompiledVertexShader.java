@@ -19,9 +19,9 @@ package com.io7m.jparasol.glsl.pipeline;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -111,13 +111,10 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @param log
    *          A log interface.
    * @return A flattened shader.
-   * @throws NoSuchAlgorithmException
-   *           If the current JVM lacks support for the SHA-256 hash function.
    */
 
   public UncompactedVertexShader flatten(
     final LogUsableType log)
-    throws NoSuchAlgorithmException
   {
     try {
       final SortedSet<GVersionES> out_supports_es = new TreeSet<GVersionES>();
@@ -167,8 +164,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           vertex_outputs,
           vertex_parameters);
 
-      final Map<GVersionType, SourceLines> in_sources =
-        new HashMap<GVersionType, SourceLines>();
+      final Map<GVersionType, List<String>> in_sources =
+        new HashMap<GVersionType, List<String>>();
 
       for (final GVersionType v : versions) {
         final GASTShaderVertex source = this.sources.get(v);
@@ -178,7 +175,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         GWriter.writeVertexShader(stream, source, true);
         final ByteArrayInputStream input =
           new ByteArrayInputStream(stream.toByteArray());
-        final SourceLines lines = SourceLines.fromStream(input, log);
+        final List<String> lines = SourceLines.fromStream(input);
         in_sources.put(v, lines);
       }
 

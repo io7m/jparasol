@@ -14,19 +14,33 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jparasol.core;
+package com.io7m.jparasol.frontend;
 
-import java.util.Map;
+import com.io7m.jparasol.core.JParasolException;
 
 /**
- * The type of compiled, compacted shaders.
+ * Exception indicating that the person that wrote the compiler frontend
+ * forgot to set the serializer. This is a bug!
  */
 
-public interface CompactedShaderType extends CompiledShaderType
+public final class JPFrontendMissingSerializer extends JParasolException
 {
+  private static final long serialVersionUID;
+
+  static {
+    serialVersionUID = 2991072601015641056L;
+  }
+
   /**
-   * @return The sources by hash.
+   * Construct an exception.
+   * 
+   * @param message
+   *          The message.
    */
 
-  Map<String, HashedLines> getSourcesByHash();
+  public JPFrontendMissingSerializer(
+    final String message)
+  {
+    super(message);
+  }
 }

@@ -199,7 +199,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     this.typed = NullCheck.notNull(in_typed, "Typed AST");
     this.exec = NullCheck.notNull(in_exec, "Executor");
     this.log = NullCheck.notNull(in_log, "Log").with("gpipeline");
-    this.checker = GVersionChecker.newVersionChecker(in_log);
+    this.checker = GVersionChecker.newVersionChecker(this.log);
   }
 
   private void collectShaders(

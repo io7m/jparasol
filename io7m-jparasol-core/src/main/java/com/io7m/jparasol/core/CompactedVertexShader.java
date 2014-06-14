@@ -43,17 +43,17 @@ import com.io7m.jnull.NullCheck;
 
   public static CompactedVertexShader newShader(
     final CompactedVertexShaderMeta in_meta,
-    final Map<String, SourceLines> in_sources)
+    final Map<String, HashedLines> in_sources)
   {
     return new CompactedVertexShader(in_meta, in_sources);
   }
 
   private final CompactedVertexShaderMeta meta;
-  private final Map<String, SourceLines>  sources_hash;
+  private final Map<String, HashedLines>  sources_hash;
 
   private CompactedVertexShader(
     final CompactedVertexShaderMeta in_meta,
-    final Map<String, SourceLines> in_sources_hash)
+    final Map<String, HashedLines> in_sources_hash)
   {
     this.meta = NullCheck.notNull(in_meta, "Metadata");
     this.sources_hash = NullCheck.notNull(in_sources_hash, "Sources by hash");
@@ -79,9 +79,9 @@ import com.io7m.jnull.NullCheck;
     return this.meta.getSourceCodeFilename(v);
   }
 
-  @Override public Map<String, SourceLines> getSourcesByHash()
+  @Override public Map<String, HashedLines> getSourcesByHash()
   {
-    final Map<String, SourceLines> r =
+    final Map<String, HashedLines> r =
       Collections.unmodifiableMap(this.sources_hash);
     assert r != null;
     return r;

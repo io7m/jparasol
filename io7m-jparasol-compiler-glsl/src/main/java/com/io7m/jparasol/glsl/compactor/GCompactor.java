@@ -17,8 +17,8 @@
 package com.io7m.jparasol.glsl.compactor;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.io7m.jequality.annotations.EqualityReference;
@@ -29,8 +29,8 @@ import com.io7m.jparasol.core.CompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.CompactedVertexShader;
 import com.io7m.jparasol.core.CompactedVertexShaderMeta;
 import com.io7m.jparasol.core.GVersionType;
+import com.io7m.jparasol.core.HashedLines;
 import com.io7m.jparasol.core.JPMissingHash;
-import com.io7m.jparasol.core.SourceLines;
 import com.io7m.jparasol.core.UncompactedFragmentShader;
 import com.io7m.jparasol.core.UncompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.UncompactedVertexShader;
@@ -62,17 +62,19 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     try {
       final UncompactedFragmentShaderMeta meta = f.getMeta();
-      final Map<GVersionType, SourceLines> sources = f.getSources();
+      final Map<GVersionType, List<String>> sources = f.getSources();
 
-      final Map<String, SourceLines> new_sources =
-        new HashMap<String, SourceLines>();
+      final Map<String, HashedLines> new_sources =
+        new HashMap<String, HashedLines>();
       final Map<GVersionType, String> versions =
         new HashMap<GVersionType, String>();
 
       for (final GVersionType version : sources.keySet()) {
-        final SourceLines lines = sources.get(version);
-        final SourceLines new_lines =
-          SourceLines.newSourceStripped(lines.getLines(), in_log);
+        final List<String> lines = sources.get(version);
+        assert lines != null;
+
+        final HashedLines new_lines =
+          HashedLines.newSourceStripped(lines, in_log);
 
         final String hash = new_lines.getHash();
         new_sources.put(hash, new_lines);
@@ -100,8 +102,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           versions);
 
       return CompactedFragmentShader.newShader(new_meta, new_sources);
-    } catch (final NoSuchAlgorithmException e) {
-      throw new GCompactorException(e);
     } catch (final IOException e) {
       throw new GCompactorException(e);
     } catch (final JPMissingHash e) {
@@ -131,17 +131,19 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     try {
       final UncompactedVertexShaderMeta meta = v.getMeta();
-      final Map<GVersionType, SourceLines> sources = v.getSources();
+      final Map<GVersionType, List<String>> sources = v.getSources();
 
-      final Map<String, SourceLines> new_sources =
-        new HashMap<String, SourceLines>();
+      final Map<String, HashedLines> new_sources =
+        new HashMap<String, HashedLines>();
       final Map<GVersionType, String> versions =
         new HashMap<GVersionType, String>();
 
       for (final GVersionType version : sources.keySet()) {
-        final SourceLines lines = sources.get(version);
-        final SourceLines new_lines =
-          SourceLines.newSourceStripped(lines.getLines(), in_log);
+        final List<String> lines = sources.get(version);
+        assert lines != null;
+
+        final HashedLines new_lines =
+          HashedLines.newSourceStripped(lines, in_log);
 
         final String hash = new_lines.getHash();
         new_sources.put(hash, new_lines);
@@ -159,8 +161,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           versions);
 
       return CompactedVertexShader.newShader(new_meta, new_sources);
-    } catch (final NoSuchAlgorithmException e) {
-      throw new GCompactorException(e);
     } catch (final IOException e) {
       throw new GCompactorException(e);
     } catch (final JPMissingHash e) {

@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -44,7 +45,7 @@ import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.GVersionVisitorType;
-import com.io7m.jparasol.core.SourceLines;
+import com.io7m.jparasol.core.HashedLines;
 import com.io7m.jparasol.core.UncompactedFragmentShader;
 import com.io7m.jparasol.core.UncompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
@@ -342,24 +343,24 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private void writeCompactedSources(
     final String shader,
-    final Map<String, SourceLines> by_hash,
+    final Map<String, HashedLines> by_hash,
     final String suffix)
     throws IOException
   {
     for (final String version : by_hash.keySet()) {
       assert version != null;
-      final SourceLines source = by_hash.get(version);
+      final HashedLines source = by_hash.get(version);
       assert source != null;
       final String name = GSerializerZip.sourceNameForHash(version, suffix);
       final String file = String.format("%s/%s", shader, name);
       assert file != null;
-      this.writeSourcesOnce(file, source);
+      this.writeSourcesOnce(file, source.getLines());
     }
   }
 
   private void writeSourcesOnce(
     final String file,
-    final SourceLines source)
+    final List<String> sources)
     throws IOException
   {
     this.announceFile(file);
@@ -370,7 +371,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     final PrintWriter writer = new PrintWriter(this.stream);
     try {
-      for (final String l : source.getLines()) {
+      for (final String l : sources) {
         writer.println(l);
       }
     } finally {
@@ -382,19 +383,19 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private void writeUncompactedSources(
     final String shader,
-    final Map<GVersionType, SourceLines> sources,
+    final Map<GVersionType, List<String>> map,
     final String suffix)
     throws IOException
   {
-    for (final GVersionType version : sources.keySet()) {
+    for (final GVersionType version : map.keySet()) {
       assert version != null;
-      final SourceLines source = sources.get(version);
-      assert source != null;
+      final List<String> sources = map.get(version);
+      assert sources != null;
       final String name =
         GSerializerZip.sourceNameForVersion(version, suffix);
       final String file = String.format("%s/%s", shader, name);
       assert file != null;
-      this.writeSourcesOnce(file, source);
+      this.writeSourcesOnce(file, sources);
     }
   }
 }

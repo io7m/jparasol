@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 
 import nu.xom.Document;
@@ -42,7 +43,7 @@ import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.GVersionVisitorType;
-import com.io7m.jparasol.core.SourceLines;
+import com.io7m.jparasol.core.HashedLines;
 import com.io7m.jparasol.core.UncompactedFragmentShader;
 import com.io7m.jparasol.core.UncompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
@@ -234,28 +235,28 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void writeCompactedSources(
     final File out_dir,
-    final Map<String, SourceLines> by_hash,
+    final Map<String, HashedLines> by_hash,
     final String suffix)
     throws FileNotFoundException
   {
     for (final String version : by_hash.keySet()) {
       assert version != null;
-      final SourceLines source = by_hash.get(version);
+      final HashedLines source = by_hash.get(version);
       assert source != null;
       final String name = GSerializerFile.sourceNameForHash(version, suffix);
       final File file = new File(out_dir, name);
-      GSerializerFile.writeSourcesOnce(file, source);
+      GSerializerFile.writeSourcesOnce(file, source.getLines());
     }
   }
 
   private static void writeSourcesOnce(
     final File file,
-    final SourceLines source)
+    final List<String> sources)
     throws FileNotFoundException
   {
     final PrintWriter writer = new PrintWriter(file);
     try {
-      for (final String l : source.getLines()) {
+      for (final String l : sources) {
         writer.println(l);
       }
     } finally {
@@ -266,13 +267,13 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void writeUncompactedSources(
     final File out_dir,
-    final Map<GVersionType, SourceLines> sources,
+    final Map<GVersionType, List<String>> map,
     final String suffix)
     throws FileNotFoundException
   {
-    for (final GVersionType version : sources.keySet()) {
+    for (final GVersionType version : map.keySet()) {
       assert version != null;
-      final SourceLines source = sources.get(version);
+      final List<String> source = map.get(version);
       assert source != null;
       final String name =
         GSerializerFile.sourceNameForVersion(version, suffix);
