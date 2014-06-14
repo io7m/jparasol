@@ -55,7 +55,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
  * Mindlessly simple compiler frontend.
  */
 
-public final class Compiler
+@SuppressWarnings("boxing") public final class Compiler
 {
   private boolean                       compact;
   private final ExecutorService         exec;
@@ -144,7 +144,8 @@ public final class Compiler
     pipe.pipeAddStandardLibrary();
 
     for (final File file : sources) {
-      final FileInput input =
+      assert file != null;
+      @SuppressWarnings("resource") final FileInput input =
         new FileInput(false, file, new FileInputStream(file));
       pipe.pipeAddInput(input);
     }
@@ -155,7 +156,9 @@ public final class Compiler
     if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
       final double ended = System.nanoTime();
       final double seconds = (ended - started) / 1000000000.0;
-      this.log.debug(String.format("compilation complete in %fs", seconds));
+      final String s = String.format("compilation complete in %fs", seconds);
+      assert s != null;
+      this.log.debug(s);
     }
 
     return typed;
@@ -221,11 +224,19 @@ public final class Compiler
       GCompactorException
   {
     {
-      this.log.debug("starting serialization of fragment shaders");
-      final double started = System.nanoTime();
-
       final Map<TASTShaderNameFlat, GCompiledFragmentShader> shaders =
         results.getShadersFragment();
+
+      {
+        final String s =
+          String.format(
+            "starting serialization of %d fragment shaders",
+            shaders.size());
+        assert s != null;
+        this.log.debug(s);
+      }
+
+      final double started = System.nanoTime();
 
       for (final TASTShaderNameFlat name : shaders.keySet()) {
         final GCompiledFragmentShader shader = shaders.get(name);
@@ -246,9 +257,13 @@ public final class Compiler
       if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         final double ended = System.nanoTime();
         final double seconds = (ended - started) / 1000000000.0;
-        this.log.debug(String.format(
-          "serialization of fragment shaders complete in %fs",
-          seconds));
+        final String s =
+          String.format(
+            "serialization of %d fragment shaders complete in %fs",
+            shaders.size(),
+            seconds);
+        assert s != null;
+        this.log.debug(s);
       }
     }
   }
@@ -260,11 +275,20 @@ public final class Compiler
     throws IOException
   {
     {
-      this.log.debug("starting serialization of program shaders");
-      final double started = System.nanoTime();
-
       final Map<TASTShaderNameFlat, GCompiledProgram> shaders =
         results.getShadersProgram();
+
+      {
+        final String s =
+          String.format(
+            "starting serialization of %d fragment shaders",
+            shaders.size());
+        assert s != null;
+        this.log.debug(s);
+      }
+
+      final double started = System.nanoTime();
+
       final SortedMap<TASTShaderNameFlat, String> outputs =
         batch.getOutputsByShader();
       final OptionType<String> none = com.io7m.jfunctional.Option.none();
@@ -288,9 +312,13 @@ public final class Compiler
       if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         final double ended = System.nanoTime();
         final double seconds = (ended - started) / 1000000000.0;
-        this.log.debug(String.format(
-          "serialization of program shaders complete in %fs",
-          seconds));
+        final String s =
+          String.format(
+            "serialization of %d program shaders complete in %fs",
+            shaders.size(),
+            seconds);
+        assert s != null;
+        this.log.debug(s);
       }
     }
   }
@@ -302,11 +330,19 @@ public final class Compiler
       GCompactorException
   {
     {
-      this.log.debug("starting serialization of vertex shaders");
-      final double started = System.nanoTime();
-
       final Map<TASTShaderNameFlat, GCompiledVertexShader> shaders =
         results.getShadersVertex();
+
+      {
+        final String s =
+          String.format(
+            "starting serialization of %d vertex shaders",
+            shaders.size());
+        assert s != null;
+        this.log.debug(s);
+      }
+
+      final double started = System.nanoTime();
 
       for (final TASTShaderNameFlat name : shaders.keySet()) {
         final GCompiledVertexShader shader = shaders.get(name);
@@ -324,9 +360,13 @@ public final class Compiler
       if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         final double ended = System.nanoTime();
         final double seconds = (ended - started) / 1000000000.0;
-        this.log.debug(String.format(
-          "serialization of vertex shaders complete in %fs",
-          seconds));
+        final String s =
+          String.format(
+            "serialization of %d vertex shaders complete in %fs",
+            shaders.size(),
+            seconds);
+        assert s != null;
+        this.log.debug(s);
       }
     }
   }
@@ -338,21 +378,32 @@ public final class Compiler
   {
     final GCompilation results;
     {
-      this.log.debug("starting GLSL transform");
+      final SortedSet<TASTShaderNameFlat> shaders = batch.getShaders();
+
+      {
+        final String s =
+          String.format(
+            "starting GLSL transform of %d programs",
+            shaders.size());
+        assert s != null;
+        this.log.debug(s);
+      }
+
       final double started = System.nanoTime();
 
       results =
-        pipe.transformPrograms(
-          batch.getShaders(),
-          this.required_es,
-          this.required_full);
+        pipe.transformPrograms(shaders, this.required_es, this.required_full);
 
       if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
         final double ended = System.nanoTime();
         final double seconds = (ended - started) / 1000000000.0;
-        this.log.debug(String.format(
-          "GLSL transform complete in %fs",
-          seconds));
+        final String s =
+          String.format(
+            "GLSL transform of %d programs complete in %fs",
+            shaders.size(),
+            seconds);
+        assert s != null;
+        this.log.debug(s);
       }
     }
     return results;
