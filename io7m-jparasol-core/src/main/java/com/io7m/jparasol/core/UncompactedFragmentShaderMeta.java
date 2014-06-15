@@ -31,7 +31,8 @@ import com.io7m.junreachable.UnreachableCodeException;
  */
 
 @EqualityStructural public final class UncompactedFragmentShaderMeta implements
-  CompiledShaderMetaType
+  CompiledShaderMetaType,
+  FragmentShaderMetaType
 {
   /**
    * Construct a shader.
@@ -222,5 +223,12 @@ import com.io7m.junreachable.UnreachableCodeException;
     throws E
   {
     return v.uncompactedFragment(this);
+  }
+
+  @Override public <A, E extends Exception> A matchFragmentMeta(
+    final FragmentShaderMetaVisitorType<A, E> v)
+    throws E
+  {
+    return v.uncompacted(this);
   }
 }

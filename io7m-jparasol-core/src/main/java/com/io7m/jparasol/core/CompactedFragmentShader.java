@@ -29,7 +29,8 @@ import com.io7m.jnull.NullCheck;
  */
 
 @EqualityReference public final class CompactedFragmentShader implements
-  CompactedShaderType
+  CompactedShaderType,
+  FragmentShaderType
 {
   /**
    * Construct a shader.
@@ -109,5 +110,12 @@ import com.io7m.jnull.NullCheck;
     throws E
   {
     return v.compactedFragment(this.meta);
+  }
+
+  @Override public <A, E extends Exception> A matchFragment(
+    final FragmentShaderVisitorType<A, E> v)
+    throws E
+  {
+    return v.compacted(this);
   }
 }

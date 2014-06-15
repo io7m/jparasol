@@ -29,7 +29,8 @@ import com.io7m.jnull.NullCheck;
  */
 
 @EqualityReference public final class UncompactedVertexShader implements
-  UncompactedShaderType
+  UncompactedShaderType,
+  VertexShaderType
 {
   /**
    * Construct a shader.
@@ -117,5 +118,12 @@ import com.io7m.jnull.NullCheck;
     throws E
   {
     return v.vertexShader(this);
+  }
+
+  @Override public <A, E extends Exception> A matchVertex(
+    final VertexShaderVisitorType<A, E> v)
+    throws E
+  {
+    return v.uncompacted(this);
   }
 }

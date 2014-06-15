@@ -29,7 +29,8 @@ import com.io7m.jnull.NullCheck;
  */
 
 @EqualityReference public final class UncompactedFragmentShader implements
-  UncompactedShaderType
+  UncompactedShaderType,
+  FragmentShaderType
 {
   /**
    * Construct a shader.
@@ -117,5 +118,12 @@ import com.io7m.jnull.NullCheck;
     throws E
   {
     return v.fragmentShader(this);
+  }
+
+  @Override public <A, E extends Exception> A matchFragment(
+    final FragmentShaderVisitorType<A, E> v)
+    throws E
+  {
+    return v.uncompacted(this);
   }
 }

@@ -30,7 +30,8 @@ import com.io7m.junreachable.UnreachableCodeException;
  */
 
 @EqualityStructural public final class UncompactedVertexShaderMeta implements
-  CompiledShaderMetaType
+  CompiledShaderMetaType,
+  VertexShaderMetaType
 {
   /**
    * Construct a shader.
@@ -218,5 +219,12 @@ import com.io7m.junreachable.UnreachableCodeException;
     throws E
   {
     return v.uncompactedVertex(this);
+  }
+
+  @Override public <A, E extends Exception> A matchVertexMeta(
+    final VertexShaderMetaVisitorType<A, E> v)
+    throws E
+  {
+    return v.uncompacted(this);
   }
 }

@@ -31,7 +31,8 @@ import com.io7m.jnull.Nullable;
  */
 
 @EqualityStructural public final class CompactedVertexShaderMeta implements
-  CompiledShaderMetaType
+  CompiledShaderMetaType,
+  VertexShaderMetaType
 {
   /**
    * Construct a shader.
@@ -226,5 +227,12 @@ import com.io7m.jnull.Nullable;
     throws E
   {
     return v.compactedVertex(this);
+  }
+
+  @Override public <A, E extends Exception> A matchVertexMeta(
+    final VertexShaderMetaVisitorType<A, E> v)
+    throws E
+  {
+    return v.compacted(this);
   }
 }

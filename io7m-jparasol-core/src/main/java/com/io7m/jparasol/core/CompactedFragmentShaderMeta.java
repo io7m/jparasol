@@ -32,7 +32,8 @@ import com.io7m.jnull.Nullable;
  */
 
 @EqualityStructural public final class CompactedFragmentShaderMeta implements
-  CompiledShaderMetaType
+  CompiledShaderMetaType,
+  FragmentShaderMetaType
 {
   /**
    * Construct a shader.
@@ -228,5 +229,12 @@ import com.io7m.jnull.Nullable;
     throws E
   {
     return v.compactedFragment(this);
+  }
+
+  @Override public <A, E extends Exception> A matchFragmentMeta(
+    final FragmentShaderMetaVisitorType<A, E> v)
+    throws E
+  {
+    return v.compacted(this);
   }
 }

@@ -29,7 +29,8 @@ import com.io7m.jnull.NullCheck;
  */
 
 @EqualityReference public final class CompactedVertexShader implements
-  CompactedShaderType
+  CompactedShaderType,
+  VertexShaderType
 {
   /**
    * Construct a shader.
@@ -109,5 +110,12 @@ import com.io7m.jnull.NullCheck;
     throws E
   {
     return v.compactedVertex(this.meta);
+  }
+
+  @Override public <A, E extends Exception> A matchVertex(
+    final VertexShaderVisitorType<A, E> v)
+    throws E
+  {
+    return v.compacted(this);
   }
 }
