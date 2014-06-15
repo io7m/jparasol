@@ -25,15 +25,15 @@ import nu.xom.Element;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jparasol.core.CompactedVertexShaderMeta;
 import com.io7m.jparasol.core.GVersion;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
+import com.io7m.jparasol.core.JPCompactedVertexShaderMeta;
 import com.io7m.jparasol.core.JPMissingHash;
-import com.io7m.jparasol.core.VertexInput;
-import com.io7m.jparasol.core.VertexOutput;
-import com.io7m.jparasol.core.VertexParameter;
+import com.io7m.jparasol.core.JPVertexInput;
+import com.io7m.jparasol.core.JPVertexOutput;
+import com.io7m.jparasol.core.JPVertexParameter;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -50,7 +50,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           On missing hashes for supported versions.
    */
 
-  public static CompactedVertexShaderMeta parseFromXML(
+  public static JPCompactedVertexShaderMeta parseFromXML(
     final Element e)
     throws JPXMLValidityException,
       JPMissingHash
@@ -63,9 +63,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     final SortedSet<GVersionFull> supports_full = new TreeSet<GVersionFull>();
     GVersion.filterVersions(supports, supports_es, supports_full);
 
-    final SortedSet<VertexInput> vertex_inputs;
-    final SortedSet<VertexOutput> vertex_outputs;
-    final SortedSet<VertexParameter> vertex_parameters;
+    final SortedSet<JPVertexInput> vertex_inputs;
+    final SortedSet<JPVertexOutput> vertex_outputs;
+    final SortedSet<JPVertexParameter> vertex_parameters;
 
     final Element params =
       e.getFirstChildElement("parameters-vertex", XMLMeta.XML_URI_STRING);
@@ -102,7 +102,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final SortedMap<GVersionType, String> version_hash =
       XMLMeta.parseVersionHashes(e);
 
-    return CompactedVertexShaderMeta.newMetadata(
+    return JPCompactedVertexShaderMeta.newMetadata(
       name,
       supports_es,
       supports_full,
@@ -117,7 +117,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   public static Element serializeToXML(
-    final CompactedVertexShaderMeta v)
+    final JPCompactedVertexShaderMeta v)
   {
     NullCheck.notNull(v, "Metadata");
 

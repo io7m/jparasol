@@ -24,7 +24,7 @@ import nu.xom.Element;
 import nu.xom.Elements;
 
 import com.io7m.jequality.annotations.EqualityReference;
-import com.io7m.jparasol.core.VertexParameter;
+import com.io7m.jparasol.core.JPVertexParameter;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -39,10 +39,11 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A set of declared vertex inputs.
    */
 
-  static SortedSet<VertexParameter> parseDeclaredParametersFromXML(
+  static SortedSet<JPVertexParameter> parseDeclaredParametersFromXML(
     final Element e)
   {
-    final SortedSet<VertexParameter> rinputs = new TreeSet<VertexParameter>();
+    final SortedSet<JPVertexParameter> rinputs =
+      new TreeSet<JPVertexParameter>();
 
     final Elements eic =
       e.getChildElements("parameter", XMLMeta.XML_URI_STRING);
@@ -50,7 +51,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     for (int index = 0; index < eic.size(); ++index) {
       final Element ei = eic.get(index);
       assert ei != null;
-      final VertexParameter i = XMLVertexParameter.parseFromXML(ei);
+      final JPVertexParameter i = XMLVertexParameter.parseFromXML(ei);
       rinputs.add(i);
     }
 
@@ -61,7 +62,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A vertex parameter from the given XML element.
    */
 
-  static VertexParameter parseFromXML(
+  static JPVertexParameter parseFromXML(
     final Element e)
   {
     final Attribute an = e.getAttribute("name", XMLMeta.XML_URI_STRING);
@@ -70,7 +71,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     assert v_an != null;
     final String v_at = at.getValue();
     assert v_at != null;
-    return VertexParameter.newParameter(v_an, v_at);
+    return JPVertexParameter.newParameter(v_an, v_at);
   }
 
   /**
@@ -80,11 +81,11 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeDeclaredVertexParametersToXML(
-    final SortedSet<VertexParameter> vp)
+    final SortedSet<JPVertexParameter> vp)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:declared-vertex-parameters", uri);
-    for (final VertexParameter v : vp) {
+    for (final JPVertexParameter v : vp) {
       assert v != null;
       e.appendChild(XMLVertexParameter.serializeToXML(v));
     }
@@ -96,7 +97,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeToXML(
-    final VertexParameter i)
+    final JPVertexParameter i)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:parameter", uri);

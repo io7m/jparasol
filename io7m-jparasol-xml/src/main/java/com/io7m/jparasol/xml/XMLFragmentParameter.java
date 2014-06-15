@@ -24,7 +24,7 @@ import nu.xom.Element;
 import nu.xom.Elements;
 
 import com.io7m.jequality.annotations.EqualityReference;
-import com.io7m.jparasol.core.FragmentParameter;
+import com.io7m.jparasol.core.JPFragmentParameter;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -39,11 +39,11 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A set of declared fragment inputs.
    */
 
-  static SortedSet<FragmentParameter> parseDeclaredParametersFromXML(
+  static SortedSet<JPFragmentParameter> parseDeclaredParametersFromXML(
     final Element e)
   {
-    final SortedSet<FragmentParameter> rinputs =
-      new TreeSet<FragmentParameter>();
+    final SortedSet<JPFragmentParameter> rinputs =
+      new TreeSet<JPFragmentParameter>();
 
     final Elements eic =
       e.getChildElements("parameter", XMLMeta.XML_URI_STRING);
@@ -51,7 +51,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     for (int index = 0; index < eic.size(); ++index) {
       final Element ei = eic.get(index);
       assert ei != null;
-      final FragmentParameter i = XMLFragmentParameter.parseFromXML(ei);
+      final JPFragmentParameter i = XMLFragmentParameter.parseFromXML(ei);
       rinputs.add(i);
     }
 
@@ -62,7 +62,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A fragment parameter from the given XML element.
    */
 
-  static FragmentParameter parseFromXML(
+  static JPFragmentParameter parseFromXML(
     final Element e)
   {
     final Attribute an = e.getAttribute("name", XMLMeta.XML_URI_STRING);
@@ -71,7 +71,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     assert v_an != null;
     final String v_at = at.getValue();
     assert v_at != null;
-    return FragmentParameter.newParameter(v_an, v_at);
+    return JPFragmentParameter.newParameter(v_an, v_at);
   }
 
   /**
@@ -81,11 +81,11 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeDeclaredFragmentParametersToXML(
-    final SortedSet<FragmentParameter> vp)
+    final SortedSet<JPFragmentParameter> vp)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:declared-fragment-parameters", uri);
-    for (final FragmentParameter v : vp) {
+    for (final JPFragmentParameter v : vp) {
       assert v != null;
       e.appendChild(XMLFragmentParameter.serializeToXML(v));
     }
@@ -97,7 +97,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeToXML(
-    final FragmentParameter i)
+    final JPFragmentParameter i)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:parameter", uri);

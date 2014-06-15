@@ -24,7 +24,7 @@ import nu.xom.Element;
 import nu.xom.Elements;
 
 import com.io7m.jequality.annotations.EqualityReference;
-import com.io7m.jparasol.core.FragmentInput;
+import com.io7m.jparasol.core.JPFragmentInput;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -39,17 +39,17 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A set of declared fragment inputs.
    */
 
-  static SortedSet<FragmentInput> parseDeclaredInputsFromXML(
+  static SortedSet<JPFragmentInput> parseDeclaredInputsFromXML(
     final Element e)
   {
-    final SortedSet<FragmentInput> rinputs = new TreeSet<FragmentInput>();
+    final SortedSet<JPFragmentInput> rinputs = new TreeSet<JPFragmentInput>();
 
     final Elements eic = e.getChildElements("input", XMLMeta.XML_URI_STRING);
 
     for (int index = 0; index < eic.size(); ++index) {
       final Element ei = eic.get(index);
       assert ei != null;
-      final FragmentInput i = XMLFragmentInput.parseFromXML(ei);
+      final JPFragmentInput i = XMLFragmentInput.parseFromXML(ei);
       rinputs.add(i);
     }
 
@@ -60,7 +60,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A fragment input from the given XML element.
    */
 
-  static FragmentInput parseFromXML(
+  static JPFragmentInput parseFromXML(
     final Element e)
   {
     final Attribute an = e.getAttribute("name", XMLMeta.XML_URI_STRING);
@@ -69,7 +69,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     assert v_an != null;
     final String v_at = at.getValue();
     assert v_at != null;
-    return FragmentInput.newInput(v_an, v_at);
+    return JPFragmentInput.newInput(v_an, v_at);
   }
 
   /**
@@ -79,11 +79,11 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeDeclaredFragmentInputsToXML(
-    final SortedSet<FragmentInput> vi)
+    final SortedSet<JPFragmentInput> vi)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:declared-fragment-inputs", uri);
-    for (final FragmentInput v : vi) {
+    for (final JPFragmentInput v : vi) {
       assert v != null;
       e.appendChild(XMLFragmentInput.serializeToXML(v));
     }
@@ -95,7 +95,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeToXML(
-    final FragmentInput i)
+    final JPFragmentInput i)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:input", uri);

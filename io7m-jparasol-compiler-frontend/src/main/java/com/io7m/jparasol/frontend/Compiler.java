@@ -35,9 +35,9 @@ import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
-import com.io7m.jparasol.core.UncompactedFragmentShader;
-import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
-import com.io7m.jparasol.core.UncompactedVertexShader;
+import com.io7m.jparasol.core.JPUncompactedFragmentShader;
+import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
+import com.io7m.jparasol.core.JPUncompactedVertexShader;
 import com.io7m.jparasol.glsl.compactor.GCompactor;
 import com.io7m.jparasol.glsl.compactor.GCompactorException;
 import com.io7m.jparasol.glsl.pipeline.GCompilation;
@@ -240,7 +240,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
       for (final TASTShaderNameFlat name : shaders.keySet()) {
         final GCompiledFragmentShader shader = shaders.get(name);
-        final UncompactedFragmentShader flat =
+        final JPUncompactedFragmentShader flat =
           shader.flatten(this.log.with("flatten"));
 
         if (this.compact) {
@@ -295,7 +295,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
       for (final TASTShaderNameFlat name : shaders.keySet()) {
         final GCompiledProgram program = shaders.get(name);
-        final UncompactedProgramShaderMeta flat = program.flatten(this.log);
+        final JPUncompactedProgramShaderMeta flat = program.flatten(this.log);
 
         if (outputs.containsKey(name)) {
           final String output = outputs.get(name);
@@ -346,7 +346,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
       for (final TASTShaderNameFlat name : shaders.keySet()) {
         final GCompiledVertexShader shader = shaders.get(name);
-        final UncompactedVertexShader flat =
+        final JPUncompactedVertexShader flat =
           shader.flatten(this.log.with("flatten"));
 
         if (this.compact) {

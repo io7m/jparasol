@@ -29,12 +29,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.io7m.jfunctional.Some;
-import com.io7m.jparasol.core.CompiledShaderMetaType;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
+import com.io7m.jparasol.core.JPCompiledShaderMetaType;
 import com.io7m.jparasol.core.JPMissingHash;
-import com.io7m.jparasol.core.UncompactedFragmentShaderMeta;
+import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
 import com.io7m.jparasol.tests.TestUtilities;
 import com.io7m.jparasol.xml.JPXMLException;
 import com.io7m.jparasol.xml.XMLMeta;
@@ -43,7 +43,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @SuppressWarnings({ "null", "resource", "static-method" }) public final class XMLUncompactedFragmentShaderMetaTest
 {
-  private static CompiledShaderMetaType fromStream(
+  private static JPCompiledShaderMetaType fromStream(
     final InputStream stream)
     throws JPMissingHash
   {
@@ -54,7 +54,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
-  private static CompiledShaderMetaType getXML(
+  private static JPCompiledShaderMetaType getXML(
     final String name)
     throws JPMissingHash
   {
@@ -65,7 +65,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void serialize(
     final OutputStream bao,
-    final UncompactedFragmentShaderMeta meta)
+    final JPUncompactedFragmentShaderMeta meta)
   {
     try {
       final Serializer s = new Serializer(bao);
@@ -80,7 +80,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   public static String sourceCodeName(
-    final CompiledShaderMetaType meta,
+    final JPCompiledShaderMetaType meta,
     final GVersionType v)
   {
     final Some<String> r = (Some<String>) meta.getSourceCodeFilename(v);
@@ -90,8 +90,8 @@ import com.io7m.junreachable.UnreachableCodeException;
   @Test public void testRoundTrip_0()
     throws JPMissingHash
   {
-    final UncompactedFragmentShaderMeta meta0 =
-      (UncompactedFragmentShaderMeta) XMLUncompactedFragmentShaderMetaTest
+    final JPUncompactedFragmentShaderMeta meta0 =
+      (JPUncompactedFragmentShaderMeta) XMLUncompactedFragmentShaderMetaTest
         .getXML("/com/io7m/jparasol/tests/xml/t-actual-fragment.xml");
 
     Assert.assertEquals(3, meta0.getDeclaredFragmentInputs().size());
@@ -114,16 +114,16 @@ import com.io7m.junreachable.UnreachableCodeException;
         XMLUncompactedFragmentShaderMetaTest.sourceCodeName(meta0, v));
     }
 
-    UncompactedFragmentShaderMeta meta = meta0;
+    JPUncompactedFragmentShaderMeta meta = meta0;
     for (int index = 0; index < 3; ++index) {
-      final UncompactedFragmentShaderMeta meta_next;
+      final JPUncompactedFragmentShaderMeta meta_next;
       {
         final ByteArrayOutputStream bao = new ByteArrayOutputStream(1 << 14);
         XMLUncompactedFragmentShaderMetaTest.serialize(bao, meta);
         final ByteArrayInputStream bai =
           new ByteArrayInputStream(bao.toByteArray());
         meta_next =
-          (UncompactedFragmentShaderMeta) XMLUncompactedFragmentShaderMetaTest
+          (JPUncompactedFragmentShaderMeta) XMLUncompactedFragmentShaderMetaTest
             .fromStream(bai);
       }
 

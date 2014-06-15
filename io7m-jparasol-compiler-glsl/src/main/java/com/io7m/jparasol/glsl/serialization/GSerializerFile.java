@@ -35,20 +35,20 @@ import com.io7m.jfunctional.OptionType;
 import com.io7m.jfunctional.OptionVisitorType;
 import com.io7m.jfunctional.Some;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jparasol.core.CompactedFragmentShader;
-import com.io7m.jparasol.core.CompactedFragmentShaderMeta;
-import com.io7m.jparasol.core.CompactedVertexShader;
-import com.io7m.jparasol.core.CompactedVertexShaderMeta;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.GVersionVisitorType;
-import com.io7m.jparasol.core.HashedLines;
-import com.io7m.jparasol.core.UncompactedFragmentShader;
-import com.io7m.jparasol.core.UncompactedFragmentShaderMeta;
-import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
-import com.io7m.jparasol.core.UncompactedVertexShader;
-import com.io7m.jparasol.core.UncompactedVertexShaderMeta;
+import com.io7m.jparasol.core.JPCompactedFragmentShader;
+import com.io7m.jparasol.core.JPCompactedFragmentShaderMeta;
+import com.io7m.jparasol.core.JPCompactedVertexShader;
+import com.io7m.jparasol.core.JPCompactedVertexShaderMeta;
+import com.io7m.jparasol.core.JPHashedLines;
+import com.io7m.jparasol.core.JPUncompactedFragmentShader;
+import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
+import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
+import com.io7m.jparasol.core.JPUncompactedVertexShader;
+import com.io7m.jparasol.core.JPUncompactedVertexShaderMeta;
 import com.io7m.jparasol.xml.XMLCompactedFragmentShaderMeta;
 import com.io7m.jparasol.xml.XMLCompactedVertexShaderMeta;
 import com.io7m.jparasol.xml.XMLUncompactedFragmentShaderMeta;
@@ -98,7 +98,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   private static void serializeCompactedFragmentShaderMeta(
-    final CompactedFragmentShaderMeta meta,
+    final JPCompactedFragmentShaderMeta meta,
     final File out_dir)
     throws FileNotFoundException,
       UnsupportedEncodingException,
@@ -116,7 +116,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   private static void serializeCompactedVertexShaderMeta(
-    final CompactedVertexShaderMeta meta,
+    final JPCompactedVertexShaderMeta meta,
     final File out_dir)
     throws FileNotFoundException,
       UnsupportedEncodingException,
@@ -147,7 +147,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   private static void serializeUncompactedFragmentShaderMeta(
-    final UncompactedFragmentShaderMeta meta,
+    final JPUncompactedFragmentShaderMeta meta,
     final File out_dir)
     throws FileNotFoundException,
       UnsupportedEncodingException,
@@ -165,7 +165,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   private static void serializeUncompactedProgramShaderMeta(
-    final UncompactedProgramShaderMeta meta,
+    final JPUncompactedProgramShaderMeta meta,
     final File out_dir)
     throws IOException
   {
@@ -181,7 +181,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   private static void serializeUncompactedVertexShaderMeta(
-    final UncompactedVertexShaderMeta meta,
+    final JPUncompactedVertexShaderMeta meta,
     final File out_dir)
     throws FileNotFoundException,
       UnsupportedEncodingException,
@@ -235,13 +235,13 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void writeCompactedSources(
     final File out_dir,
-    final Map<String, HashedLines> by_hash,
+    final Map<String, JPHashedLines> by_hash,
     final String suffix)
     throws FileNotFoundException
   {
     for (final String version : by_hash.keySet()) {
       assert version != null;
-      final HashedLines source = by_hash.get(version);
+      final JPHashedLines source = by_hash.get(version);
       assert source != null;
       final String name = GSerializerFile.sourceNameForHash(version, suffix);
       final File file = new File(out_dir, name);
@@ -300,7 +300,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   @Override public void serializeCompactedFragmentShader(
-    final CompactedFragmentShader shader)
+    final JPCompactedFragmentShader shader)
     throws IOException
   {
     NullCheck.notNull(shader, "Shader");
@@ -319,7 +319,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   @Override public void serializeCompactedVertexShader(
-    final CompactedVertexShader shader)
+    final JPCompactedVertexShader shader)
     throws IOException
   {
     NullCheck.notNull(shader, "Shader");
@@ -338,7 +338,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   @Override public void serializeUncompactedFragmentShader(
-    final UncompactedFragmentShader shader)
+    final JPUncompactedFragmentShader shader)
     throws IOException
   {
     NullCheck.notNull(shader, "Shader");
@@ -355,7 +355,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   @Override public void serializeUncompactedProgramShader(
-    final UncompactedProgramShaderMeta meta,
+    final JPUncompactedProgramShaderMeta meta,
     final OptionType<String> name)
     throws IOException
   {
@@ -381,7 +381,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   @Override public void serializeUncompactedVertexShader(
-    final UncompactedVertexShader shader)
+    final JPUncompactedVertexShader shader)
     throws IOException
   {
     NullCheck.notNull(shader, "Shader");

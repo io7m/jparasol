@@ -29,10 +29,10 @@ import nu.xom.Serializer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.io7m.jparasol.core.CompactedVertexShaderMeta;
-import com.io7m.jparasol.core.CompiledShaderMetaType;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
+import com.io7m.jparasol.core.JPCompactedVertexShaderMeta;
+import com.io7m.jparasol.core.JPCompiledShaderMetaType;
 import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.tests.TestUtilities;
 import com.io7m.jparasol.xml.JPXMLException;
@@ -42,7 +42,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @SuppressWarnings({ "null", "resource", "static-method" }) public final class XMLCompactedVertexShaderMetaTest
 {
-  private static CompiledShaderMetaType fromStream(
+  private static JPCompiledShaderMetaType fromStream(
     final InputStream stream)
     throws JPMissingHash
   {
@@ -53,7 +53,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
-  private static CompiledShaderMetaType getXML(
+  private static JPCompiledShaderMetaType getXML(
     final String name)
     throws JPMissingHash
   {
@@ -64,7 +64,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void serialize(
     final OutputStream bao,
-    final CompactedVertexShaderMeta meta)
+    final JPCompactedVertexShaderMeta meta)
   {
     final Element root = XMLCompactedVertexShaderMeta.serializeToXML(meta);
     try {
@@ -88,8 +88,8 @@ import com.io7m.junreachable.UnreachableCodeException;
   @Test public void testRoundTrip_0()
     throws JPMissingHash
   {
-    final CompactedVertexShaderMeta meta0 =
-      (CompactedVertexShaderMeta) XMLCompactedVertexShaderMetaTest
+    final JPCompactedVertexShaderMeta meta0 =
+      (JPCompactedVertexShaderMeta) XMLCompactedVertexShaderMetaTest
         .getXML("/com/io7m/jparasol/tests/xml/t-actual-vertex-compacted.xml");
 
     Assert.assertEquals(2, meta0.getDeclaredVertexInputs().size());
@@ -164,9 +164,9 @@ import com.io7m.junreachable.UnreachableCodeException;
         meta0,
         GVersionES.GLSL_ES_300));
 
-    CompactedVertexShaderMeta meta = meta0;
+    JPCompactedVertexShaderMeta meta = meta0;
     for (int index = 0; index < 3; ++index) {
-      final CompactedVertexShaderMeta meta_next;
+      final JPCompactedVertexShaderMeta meta_next;
       {
         XMLCompactedVertexShaderMetaTest.serialize(System.out, meta);
 
@@ -175,7 +175,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         final ByteArrayInputStream bai =
           new ByteArrayInputStream(bao.toByteArray());
         meta_next =
-          (CompactedVertexShaderMeta) XMLCompactedVertexShaderMetaTest
+          (JPCompactedVertexShaderMeta) XMLCompactedVertexShaderMetaTest
             .fromStream(bai);
       }
 

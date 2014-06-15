@@ -20,11 +20,11 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import com.io7m.jfunctional.OptionType;
-import com.io7m.jparasol.core.CompactedFragmentShader;
-import com.io7m.jparasol.core.CompactedVertexShader;
-import com.io7m.jparasol.core.UncompactedFragmentShader;
-import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
-import com.io7m.jparasol.core.UncompactedVertexShader;
+import com.io7m.jparasol.core.JPCompactedFragmentShader;
+import com.io7m.jparasol.core.JPCompactedVertexShader;
+import com.io7m.jparasol.core.JPUncompactedFragmentShader;
+import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
+import com.io7m.jparasol.core.JPUncompactedVertexShader;
 
 /**
  * The type of serializers that can write shaders to serializer-specific
@@ -45,7 +45,7 @@ public interface GSerializerType extends Closeable
    */
 
   void serializeCompactedFragmentShader(
-    final CompactedFragmentShader shader)
+    final JPCompactedFragmentShader shader)
     throws IOException;
 
   /**
@@ -60,7 +60,7 @@ public interface GSerializerType extends Closeable
    */
 
   void serializeCompactedVertexShader(
-    final CompactedVertexShader shader)
+    final JPCompactedVertexShader shader)
     throws IOException;
 
   /**
@@ -75,7 +75,7 @@ public interface GSerializerType extends Closeable
    */
 
   void serializeUncompactedFragmentShader(
-    final UncompactedFragmentShader shader)
+    final JPUncompactedFragmentShader shader)
     throws IOException;
 
   /**
@@ -90,7 +90,7 @@ public interface GSerializerType extends Closeable
    */
 
   void serializeUncompactedProgramShader(
-    final UncompactedProgramShaderMeta meta,
+    final JPUncompactedProgramShaderMeta meta,
     final OptionType<String> name)
     throws IOException;
 
@@ -106,6 +106,6 @@ public interface GSerializerType extends Closeable
    */
 
   void serializeUncompactedVertexShader(
-    final UncompactedVertexShader shader)
+    final JPUncompactedVertexShader shader)
     throws IOException;
 }

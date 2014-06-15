@@ -25,14 +25,14 @@ import nu.xom.Element;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jparasol.core.FragmentInput;
-import com.io7m.jparasol.core.FragmentOutput;
-import com.io7m.jparasol.core.FragmentParameter;
 import com.io7m.jparasol.core.GVersion;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
-import com.io7m.jparasol.core.UncompactedFragmentShaderMeta;
+import com.io7m.jparasol.core.JPFragmentInput;
+import com.io7m.jparasol.core.JPFragmentOutput;
+import com.io7m.jparasol.core.JPFragmentParameter;
+import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -47,7 +47,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           On parse errors.
    */
 
-  public static UncompactedFragmentShaderMeta parseFromXML(
+  public static JPUncompactedFragmentShaderMeta parseFromXML(
     final Element e)
     throws JPXMLValidityException
   {
@@ -59,9 +59,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     final SortedSet<GVersionFull> supports_full = new TreeSet<GVersionFull>();
     GVersion.filterVersions(supports, supports_es, supports_full);
 
-    final SortedSet<FragmentInput> fragment_inputs;
-    final SortedMap<Integer, FragmentOutput> fragment_outputs;
-    final SortedSet<FragmentParameter> fragment_parameters;
+    final SortedSet<JPFragmentInput> fragment_inputs;
+    final SortedMap<Integer, JPFragmentOutput> fragment_outputs;
+    final SortedSet<JPFragmentParameter> fragment_parameters;
 
     final Element params =
       e.getFirstChildElement("parameters-fragment", XMLMeta.XML_URI_STRING);
@@ -95,7 +95,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         XMLFragmentParameter.parseDeclaredParametersFromXML(ep);
     }
 
-    return UncompactedFragmentShaderMeta.newMetadata(
+    return JPUncompactedFragmentShaderMeta.newMetadata(
       name,
       supports_es,
       supports_full,
@@ -109,7 +109,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   public static Element serializeToXML(
-    final UncompactedFragmentShaderMeta f)
+    final JPUncompactedFragmentShaderMeta f)
   {
     NullCheck.notNull(f, "Metadata");
 

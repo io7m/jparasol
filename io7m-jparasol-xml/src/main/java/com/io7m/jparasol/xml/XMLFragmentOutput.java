@@ -24,7 +24,7 @@ import nu.xom.Element;
 import nu.xom.Elements;
 
 import com.io7m.jequality.annotations.EqualityReference;
-import com.io7m.jparasol.core.FragmentOutput;
+import com.io7m.jparasol.core.JPFragmentOutput;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -41,12 +41,12 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           If a problem occurs during parsing.
    */
 
-  static SortedMap<Integer, FragmentOutput> parseDeclaredOutputsFromXML(
+  static SortedMap<Integer, JPFragmentOutput> parseDeclaredOutputsFromXML(
     final Element e)
     throws JPXMLValidityException
   {
-    final SortedMap<Integer, FragmentOutput> routputs =
-      new TreeMap<Integer, FragmentOutput>();
+    final SortedMap<Integer, JPFragmentOutput> routputs =
+      new TreeMap<Integer, JPFragmentOutput>();
 
     final Elements eoc =
       e.getChildElements("fragment-output", XMLMeta.XML_URI_STRING);
@@ -54,7 +54,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     for (int index = 0; index < eoc.size(); ++index) {
       final Element eo = eoc.get(index);
       assert eo != null;
-      final FragmentOutput o = XMLFragmentOutput.parseFromXML(eo);
+      final JPFragmentOutput o = XMLFragmentOutput.parseFromXML(eo);
       routputs.put(o.getIndex(), o);
     }
 
@@ -67,7 +67,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           If a problem occurs whilst parsing.
    */
 
-  static FragmentOutput parseFromXML(
+  static JPFragmentOutput parseFromXML(
     final Element e)
     throws JPXMLValidityException
   {
@@ -85,7 +85,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       final Integer pi = Integer.decode(ai_v);
       assert pi != null;
 
-      return FragmentOutput.newOutput(an_v, pi, at_v);
+      return JPFragmentOutput.newOutput(an_v, pi, at_v);
     } catch (final NumberFormatException x) {
       throw new JPXMLValidityException(
         "Could not parse 'index' number on 'fragment-output' element: "
@@ -100,13 +100,13 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeDeclaredFragmentOutputsToXML(
-    final SortedMap<Integer, FragmentOutput> fo)
+    final SortedMap<Integer, JPFragmentOutput> fo)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:declared-fragment-outputs", uri);
     for (final Integer i : fo.keySet()) {
       assert i != null;
-      final FragmentOutput o = fo.get(i);
+      final JPFragmentOutput o = fo.get(i);
       assert o != null;
       e.appendChild(XMLFragmentOutput.serializeToXML(o));
     }
@@ -118,7 +118,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeToXML(
-    final FragmentOutput i)
+    final JPFragmentOutput i)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:fragment-output", uri);

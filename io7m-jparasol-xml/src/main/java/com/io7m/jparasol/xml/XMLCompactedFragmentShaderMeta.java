@@ -25,14 +25,14 @@ import nu.xom.Element;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jparasol.core.CompactedFragmentShaderMeta;
-import com.io7m.jparasol.core.FragmentInput;
-import com.io7m.jparasol.core.FragmentOutput;
-import com.io7m.jparasol.core.FragmentParameter;
 import com.io7m.jparasol.core.GVersion;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
+import com.io7m.jparasol.core.JPCompactedFragmentShaderMeta;
+import com.io7m.jparasol.core.JPFragmentInput;
+import com.io7m.jparasol.core.JPFragmentOutput;
+import com.io7m.jparasol.core.JPFragmentParameter;
 import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.junreachable.UnreachableCodeException;
 
@@ -50,7 +50,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           On missing hashes for supported versions.
    */
 
-  public static CompactedFragmentShaderMeta parseFromXML(
+  public static JPCompactedFragmentShaderMeta parseFromXML(
     final Element e)
     throws JPXMLValidityException,
       JPMissingHash
@@ -63,9 +63,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     final SortedSet<GVersionFull> supports_full = new TreeSet<GVersionFull>();
     GVersion.filterVersions(supports, supports_es, supports_full);
 
-    final SortedSet<FragmentInput> fragment_inputs;
-    final SortedMap<Integer, FragmentOutput> fragment_outputs;
-    final SortedSet<FragmentParameter> fragment_parameters;
+    final SortedSet<JPFragmentInput> fragment_inputs;
+    final SortedMap<Integer, JPFragmentOutput> fragment_outputs;
+    final SortedSet<JPFragmentParameter> fragment_parameters;
 
     final Element params =
       e.getFirstChildElement("parameters-fragment", XMLMeta.XML_URI_STRING);
@@ -102,7 +102,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final SortedMap<GVersionType, String> version_hash =
       XMLMeta.parseVersionHashes(e);
 
-    return CompactedFragmentShaderMeta.newMetadata(
+    return JPCompactedFragmentShaderMeta.newMetadata(
       name,
       supports_es,
       supports_full,
@@ -117,7 +117,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   public static Element serializeToXML(
-    final CompactedFragmentShaderMeta f)
+    final JPCompactedFragmentShaderMeta f)
   {
     NullCheck.notNull(f, "Metadata");
 

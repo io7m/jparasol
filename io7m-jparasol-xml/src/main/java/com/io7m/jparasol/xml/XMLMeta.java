@@ -51,17 +51,17 @@ import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jlog.LogUsableType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
-import com.io7m.jparasol.core.CompiledShaderMetaType;
-import com.io7m.jparasol.core.FragmentInput;
-import com.io7m.jparasol.core.FragmentOutput;
-import com.io7m.jparasol.core.FragmentParameter;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
+import com.io7m.jparasol.core.JPCompiledShaderMetaType;
+import com.io7m.jparasol.core.JPFragmentInput;
+import com.io7m.jparasol.core.JPFragmentOutput;
+import com.io7m.jparasol.core.JPFragmentParameter;
 import com.io7m.jparasol.core.JPMissingHash;
-import com.io7m.jparasol.core.VertexInput;
-import com.io7m.jparasol.core.VertexOutput;
-import com.io7m.jparasol.core.VertexParameter;
+import com.io7m.jparasol.core.JPVertexInput;
+import com.io7m.jparasol.core.JPVertexOutput;
+import com.io7m.jparasol.core.JPVertexParameter;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -180,7 +180,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           On missing hashes for supported versions.
    */
 
-  private static CompiledShaderMetaType fromDocument(
+  private static JPCompiledShaderMetaType fromDocument(
     final Document doc)
     throws JPXMLValidityException,
       JPMissingHash
@@ -233,7 +233,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           On missing hashes for supported versions.
    */
 
-  public static CompiledShaderMetaType fromStream(
+  public static JPCompiledShaderMetaType fromStream(
     final InputStream stream,
     final LogUsableType log)
     throws JPXMLException,
@@ -418,9 +418,9 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeParametersFragmentToXML(
-    final SortedSet<FragmentParameter> fp,
-    final SortedSet<FragmentInput> fi,
-    final SortedMap<Integer, FragmentOutput> fo)
+    final SortedSet<JPFragmentParameter> fp,
+    final SortedSet<JPFragmentInput> fi,
+    final SortedMap<Integer, JPFragmentOutput> fo)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:parameters-fragment", uri);
@@ -446,9 +446,9 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeParametersVertexToXML(
-    final SortedSet<VertexParameter> vp,
-    final SortedSet<VertexInput> vi,
-    final SortedSet<VertexOutput> vo)
+    final SortedSet<JPVertexParameter> vp,
+    final SortedSet<JPVertexInput> vi,
+    final SortedSet<JPVertexOutput> vo)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:parameters-vertex", uri);

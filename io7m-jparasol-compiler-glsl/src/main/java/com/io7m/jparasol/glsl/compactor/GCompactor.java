@@ -24,17 +24,17 @@ import java.util.Map;
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jlog.LogLevel;
 import com.io7m.jlog.LogUsableType;
-import com.io7m.jparasol.core.CompactedFragmentShader;
-import com.io7m.jparasol.core.CompactedFragmentShaderMeta;
-import com.io7m.jparasol.core.CompactedVertexShader;
-import com.io7m.jparasol.core.CompactedVertexShaderMeta;
 import com.io7m.jparasol.core.GVersionType;
-import com.io7m.jparasol.core.HashedLines;
+import com.io7m.jparasol.core.JPCompactedFragmentShader;
+import com.io7m.jparasol.core.JPCompactedFragmentShaderMeta;
+import com.io7m.jparasol.core.JPCompactedVertexShader;
+import com.io7m.jparasol.core.JPCompactedVertexShaderMeta;
+import com.io7m.jparasol.core.JPHashedLines;
 import com.io7m.jparasol.core.JPMissingHash;
-import com.io7m.jparasol.core.UncompactedFragmentShader;
-import com.io7m.jparasol.core.UncompactedFragmentShaderMeta;
-import com.io7m.jparasol.core.UncompactedVertexShader;
-import com.io7m.jparasol.core.UncompactedVertexShaderMeta;
+import com.io7m.jparasol.core.JPUncompactedFragmentShader;
+import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
+import com.io7m.jparasol.core.JPUncompactedVertexShader;
+import com.io7m.jparasol.core.JPUncompactedVertexShaderMeta;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -55,17 +55,17 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           If an error occurs during compaction.
    */
 
-  public static CompactedFragmentShader compactSerializedFragmentShader(
-    final UncompactedFragmentShader f,
+  public static JPCompactedFragmentShader compactSerializedFragmentShader(
+    final JPUncompactedFragmentShader f,
     final LogUsableType in_log)
     throws GCompactorException
   {
     try {
-      final UncompactedFragmentShaderMeta meta = f.getMeta();
+      final JPUncompactedFragmentShaderMeta meta = f.getMeta();
       final Map<GVersionType, List<String>> sources = f.getSources();
 
-      final Map<String, HashedLines> new_sources =
-        new HashMap<String, HashedLines>();
+      final Map<String, JPHashedLines> new_sources =
+        new HashMap<String, JPHashedLines>();
       final Map<GVersionType, String> versions =
         new HashMap<GVersionType, String>();
 
@@ -73,8 +73,8 @@ import com.io7m.junreachable.UnreachableCodeException;
         final List<String> lines = sources.get(version);
         assert lines != null;
 
-        final HashedLines new_lines =
-          HashedLines.newSourceStripped(lines, in_log);
+        final JPHashedLines new_lines =
+          JPHashedLines.newSourceStripped(lines, in_log);
 
         final String hash = new_lines.getHash();
         new_sources.put(hash, new_lines);
@@ -91,8 +91,8 @@ import com.io7m.junreachable.UnreachableCodeException;
         in_log.debug(m);
       }
 
-      final CompactedFragmentShaderMeta new_meta =
-        CompactedFragmentShaderMeta.newMetadata(
+      final JPCompactedFragmentShaderMeta new_meta =
+        JPCompactedFragmentShaderMeta.newMetadata(
           meta.getName(),
           meta.getSupportsES(),
           meta.getSupportsFull(),
@@ -101,7 +101,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           meta.getDeclaredFragmentParameters(),
           versions);
 
-      return CompactedFragmentShader.newShader(new_meta, new_sources);
+      return JPCompactedFragmentShader.newShader(new_meta, new_sources);
     } catch (final IOException e) {
       throw new GCompactorException(e);
     } catch (final JPMissingHash e) {
@@ -124,17 +124,17 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           If an error occurs during compaction.
    */
 
-  public static CompactedVertexShader compactSerializedVertexShader(
-    final UncompactedVertexShader v,
+  public static JPCompactedVertexShader compactSerializedVertexShader(
+    final JPUncompactedVertexShader v,
     final LogUsableType in_log)
     throws GCompactorException
   {
     try {
-      final UncompactedVertexShaderMeta meta = v.getMeta();
+      final JPUncompactedVertexShaderMeta meta = v.getMeta();
       final Map<GVersionType, List<String>> sources = v.getSources();
 
-      final Map<String, HashedLines> new_sources =
-        new HashMap<String, HashedLines>();
+      final Map<String, JPHashedLines> new_sources =
+        new HashMap<String, JPHashedLines>();
       final Map<GVersionType, String> versions =
         new HashMap<GVersionType, String>();
 
@@ -142,16 +142,16 @@ import com.io7m.junreachable.UnreachableCodeException;
         final List<String> lines = sources.get(version);
         assert lines != null;
 
-        final HashedLines new_lines =
-          HashedLines.newSourceStripped(lines, in_log);
+        final JPHashedLines new_lines =
+          JPHashedLines.newSourceStripped(lines, in_log);
 
         final String hash = new_lines.getHash();
         new_sources.put(hash, new_lines);
         versions.put(version, hash);
       }
 
-      final CompactedVertexShaderMeta new_meta =
-        CompactedVertexShaderMeta.newMetadata(
+      final JPCompactedVertexShaderMeta new_meta =
+        JPCompactedVertexShaderMeta.newMetadata(
           meta.getName(),
           meta.getSupportsES(),
           meta.getSupportsFull(),
@@ -160,7 +160,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           meta.getDeclaredVertexParameters(),
           versions);
 
-      return CompactedVertexShader.newShader(new_meta, new_sources);
+      return JPCompactedVertexShader.newShader(new_meta, new_sources);
     } catch (final IOException e) {
       throw new GCompactorException(e);
     } catch (final JPMissingHash e) {

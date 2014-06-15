@@ -28,10 +28,10 @@ import com.io7m.jparasol.core.GVersion;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
-import com.io7m.jparasol.core.UncompactedVertexShaderMeta;
-import com.io7m.jparasol.core.VertexInput;
-import com.io7m.jparasol.core.VertexOutput;
-import com.io7m.jparasol.core.VertexParameter;
+import com.io7m.jparasol.core.JPUncompactedVertexShaderMeta;
+import com.io7m.jparasol.core.JPVertexInput;
+import com.io7m.jparasol.core.JPVertexOutput;
+import com.io7m.jparasol.core.JPVertexParameter;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -46,7 +46,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           On parse errors.
    */
 
-  public static UncompactedVertexShaderMeta parseFromXML(
+  public static JPUncompactedVertexShaderMeta parseFromXML(
     final Element e)
     throws JPXMLValidityException
   {
@@ -58,9 +58,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     final SortedSet<GVersionFull> supports_full = new TreeSet<GVersionFull>();
     GVersion.filterVersions(supports, supports_es, supports_full);
 
-    final SortedSet<VertexInput> vertex_inputs;
-    final SortedSet<VertexOutput> vertex_outputs;
-    final SortedSet<VertexParameter> vertex_parameters;
+    final SortedSet<JPVertexInput> vertex_inputs;
+    final SortedSet<JPVertexOutput> vertex_outputs;
+    final SortedSet<JPVertexParameter> vertex_parameters;
 
     final Element params =
       e.getFirstChildElement("parameters-vertex", XMLMeta.XML_URI_STRING);
@@ -94,7 +94,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         XMLVertexParameter.parseDeclaredParametersFromXML(ep);
     }
 
-    return UncompactedVertexShaderMeta.newMetadata(
+    return JPUncompactedVertexShaderMeta.newMetadata(
       name,
       supports_es,
       supports_full,
@@ -108,7 +108,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   public static Element serializeToXML(
-    final UncompactedVertexShaderMeta f)
+    final JPUncompactedVertexShaderMeta f)
   {
     NullCheck.notNull(f, "Metadata");
 

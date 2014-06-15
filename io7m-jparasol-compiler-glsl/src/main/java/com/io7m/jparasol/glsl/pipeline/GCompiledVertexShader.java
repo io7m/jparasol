@@ -36,12 +36,12 @@ import com.io7m.jparasol.core.GVersion;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
-import com.io7m.jparasol.core.SourceLines;
-import com.io7m.jparasol.core.UncompactedVertexShader;
-import com.io7m.jparasol.core.UncompactedVertexShaderMeta;
-import com.io7m.jparasol.core.VertexInput;
-import com.io7m.jparasol.core.VertexOutput;
-import com.io7m.jparasol.core.VertexParameter;
+import com.io7m.jparasol.core.JPSourceLines;
+import com.io7m.jparasol.core.JPUncompactedVertexShader;
+import com.io7m.jparasol.core.JPUncompactedVertexShaderMeta;
+import com.io7m.jparasol.core.JPVertexInput;
+import com.io7m.jparasol.core.JPVertexOutput;
+import com.io7m.jparasol.core.JPVertexParameter;
 import com.io7m.jparasol.glsl.GLSLTypeNames;
 import com.io7m.jparasol.glsl.GWriter;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertex;
@@ -113,7 +113,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A flattened shader.
    */
 
-  public UncompactedVertexShader flatten(
+  public JPUncompactedVertexShader flatten(
     final LogUsableType log)
   {
     try {
@@ -127,36 +127,37 @@ import com.io7m.junreachable.UnreachableCodeException;
 
       final GASTShaderVertex shader = this.sources.values().iterator().next();
 
-      final SortedSet<VertexParameter> vertex_parameters =
-        new TreeSet<VertexParameter>();
+      final SortedSet<JPVertexParameter> vertex_parameters =
+        new TreeSet<JPVertexParameter>();
 
       for (final GASTShaderVertexParameter p : shader.getParameters()) {
         for (final Pair<String, TType> x : p.getExpanded()) {
           final String p_name = x.getLeft();
           final GTypeName p_type = GLSLTypeNames.getTypeName(x.getRight());
-          vertex_parameters.add(VertexParameter.newParameter(
+          vertex_parameters.add(JPVertexParameter.newParameter(
             p_name,
             p_type.show()));
         }
       }
 
-      final SortedSet<VertexInput> vertex_inputs = new TreeSet<VertexInput>();
+      final SortedSet<JPVertexInput> vertex_inputs =
+        new TreeSet<JPVertexInput>();
       for (final GASTShaderVertexInput i : shader.getInputs()) {
         final String i_name = i.getName().show();
         final String i_type = i.getType().show();
-        vertex_inputs.add(VertexInput.newInput(i_name, i_type));
+        vertex_inputs.add(JPVertexInput.newInput(i_name, i_type));
       }
 
-      final SortedSet<VertexOutput> vertex_outputs =
-        new TreeSet<VertexOutput>();
+      final SortedSet<JPVertexOutput> vertex_outputs =
+        new TreeSet<JPVertexOutput>();
       for (final GASTShaderVertexOutput o : shader.getOutputs()) {
         final String o_name = o.getName().show();
         final String o_type = GLSLTypeNames.getTypeName(o.getType()).show();
-        vertex_outputs.add(VertexOutput.newOutput(o_name, o_type));
+        vertex_outputs.add(JPVertexOutput.newOutput(o_name, o_type));
       }
 
-      final UncompactedVertexShaderMeta in_meta =
-        UncompactedVertexShaderMeta.newMetadata(
+      final JPUncompactedVertexShaderMeta in_meta =
+        JPUncompactedVertexShaderMeta.newMetadata(
           this.name.show(),
           out_supports_es,
           out_supports_full,
@@ -175,11 +176,11 @@ import com.io7m.junreachable.UnreachableCodeException;
         GWriter.writeVertexShader(stream, source, true);
         final ByteArrayInputStream input =
           new ByteArrayInputStream(stream.toByteArray());
-        final List<String> lines = SourceLines.fromStream(input);
+        final List<String> lines = JPSourceLines.fromStream(input);
         in_sources.put(v, lines);
       }
 
-      return UncompactedVertexShader.newShader(in_meta, in_sources);
+      return JPUncompactedVertexShader.newShader(in_meta, in_sources);
     } catch (final IOException e) {
       throw new UnreachableCodeException(e);
     }

@@ -29,11 +29,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.io7m.jfunctional.Option;
-import com.io7m.jparasol.core.CompiledShaderMetaType;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
+import com.io7m.jparasol.core.JPCompiledShaderMetaType;
 import com.io7m.jparasol.core.JPMissingHash;
-import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
+import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
 import com.io7m.jparasol.tests.TestUtilities;
 import com.io7m.jparasol.xml.JPXMLException;
 import com.io7m.jparasol.xml.XMLMeta;
@@ -42,7 +42,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @SuppressWarnings({ "null", "resource", "static-method" }) public final class XMLUncompactedProgramShaderMetaTest
 {
-  private static CompiledShaderMetaType fromStream(
+  private static JPCompiledShaderMetaType fromStream(
     final InputStream stream)
     throws JPMissingHash
   {
@@ -53,7 +53,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
-  private static CompiledShaderMetaType getXML(
+  private static JPCompiledShaderMetaType getXML(
     final String name)
     throws JPMissingHash
   {
@@ -64,7 +64,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void serialize(
     final OutputStream bao,
-    final UncompactedProgramShaderMeta meta)
+    final JPUncompactedProgramShaderMeta meta)
   {
     try {
       final Serializer s = new Serializer(bao);
@@ -81,8 +81,8 @@ import com.io7m.junreachable.UnreachableCodeException;
   @Test public void testRoundTrip_0()
     throws JPMissingHash
   {
-    final UncompactedProgramShaderMeta meta0 =
-      (UncompactedProgramShaderMeta) XMLUncompactedProgramShaderMetaTest
+    final JPUncompactedProgramShaderMeta meta0 =
+      (JPUncompactedProgramShaderMeta) XMLUncompactedProgramShaderMetaTest
         .getXML("/com/io7m/jparasol/tests/xml/t-actual-program.xml");
 
     for (final GVersionFull v : GVersionFull.ALL) {
@@ -93,16 +93,16 @@ import com.io7m.junreachable.UnreachableCodeException;
       Assert.assertEquals(Option.none(), meta0.getSourceCodeFilename(v));
     }
 
-    UncompactedProgramShaderMeta meta = meta0;
+    JPUncompactedProgramShaderMeta meta = meta0;
     for (int index = 0; index < 3; ++index) {
-      final UncompactedProgramShaderMeta meta_next;
+      final JPUncompactedProgramShaderMeta meta_next;
       {
         final ByteArrayOutputStream bao = new ByteArrayOutputStream(1 << 14);
         XMLUncompactedProgramShaderMetaTest.serialize(bao, meta);
         final ByteArrayInputStream bai =
           new ByteArrayInputStream(bao.toByteArray());
         meta_next =
-          (UncompactedProgramShaderMeta) XMLUncompactedProgramShaderMetaTest
+          (JPUncompactedProgramShaderMeta) XMLUncompactedProgramShaderMetaTest
             .fromStream(bai);
       }
 

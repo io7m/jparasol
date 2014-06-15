@@ -24,7 +24,7 @@ import nu.xom.Element;
 import nu.xom.Elements;
 
 import com.io7m.jequality.annotations.EqualityReference;
-import com.io7m.jparasol.core.VertexOutput;
+import com.io7m.jparasol.core.JPVertexOutput;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -39,17 +39,17 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A set of declared vertex outputs.
    */
 
-  static SortedSet<VertexOutput> parseDeclaredOutputsFromXML(
+  static SortedSet<JPVertexOutput> parseDeclaredOutputsFromXML(
     final Element e)
   {
-    final SortedSet<VertexOutput> rinputs = new TreeSet<VertexOutput>();
+    final SortedSet<JPVertexOutput> rinputs = new TreeSet<JPVertexOutput>();
 
     final Elements eic = e.getChildElements("output", XMLMeta.XML_URI_STRING);
 
     for (int index = 0; index < eic.size(); ++index) {
       final Element ei = eic.get(index);
       assert ei != null;
-      final VertexOutput i = XMLVertexOutput.parseFromXML(ei);
+      final JPVertexOutput i = XMLVertexOutput.parseFromXML(ei);
       rinputs.add(i);
     }
 
@@ -60,7 +60,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A vertex output from the given XML element.
    */
 
-  static VertexOutput parseFromXML(
+  static JPVertexOutput parseFromXML(
     final Element e)
   {
     final Attribute an = e.getAttribute("name", XMLMeta.XML_URI_STRING);
@@ -69,7 +69,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     assert v_an != null;
     final String v_at = at.getValue();
     assert v_at != null;
-    return VertexOutput.newOutput(v_an, v_at);
+    return JPVertexOutput.newOutput(v_an, v_at);
   }
 
   /**
@@ -79,11 +79,11 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeDeclaredVertexOutputsToXML(
-    final SortedSet<VertexOutput> vo)
+    final SortedSet<JPVertexOutput> vo)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:declared-vertex-outputs", uri);
-    for (final VertexOutput v : vo) {
+    for (final JPVertexOutput v : vo) {
       assert v != null;
       e.appendChild(XMLVertexOutput.serializeToXML(v));
     }
@@ -95,7 +95,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   static Element serializeToXML(
-    final VertexOutput o)
+    final JPVertexOutput o)
   {
     final String uri = XMLMeta.XML_URI_STRING;
     final Element e = new Element("g:output", uri);

@@ -25,7 +25,7 @@ import com.io7m.jlog.LogUsableType;
 import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
-import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
+import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
 /**
@@ -84,7 +84,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
    * @return A flattened shader.
    */
 
-  public UncompactedProgramShaderMeta flatten(
+  public JPUncompactedProgramShaderMeta flatten(
     final LogUsableType log)
   {
     final SortedSet<String> vertex_names = new TreeSet<String>();
@@ -92,7 +92,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
       vertex_names.add(v_name.show());
     }
 
-    return UncompactedProgramShaderMeta.newMetadata(
+    return JPUncompactedProgramShaderMeta.newMetadata(
       this.name.show(),
       this.versions_es,
       this.versions_full,

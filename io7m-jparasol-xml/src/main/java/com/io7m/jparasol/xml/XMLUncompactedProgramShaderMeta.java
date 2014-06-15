@@ -29,7 +29,7 @@ import com.io7m.jparasol.core.GVersion;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
-import com.io7m.jparasol.core.UncompactedProgramShaderMeta;
+import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -61,7 +61,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    *           On parse errors.
    */
 
-  public static UncompactedProgramShaderMeta parseFromXML(
+  public static JPUncompactedProgramShaderMeta parseFromXML(
     final Element e)
     throws JPXMLValidityException
   {
@@ -78,7 +78,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     final SortedSet<String> vertex_names =
       XMLUncompactedProgramShaderMeta.parseVertexShaderNames(e);
 
-    return UncompactedProgramShaderMeta.newMetadata(
+    return JPUncompactedProgramShaderMeta.newMetadata(
       name,
       supports_es,
       supports_full,
@@ -132,7 +132,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   public static Element serializeToXML(
-    final UncompactedProgramShaderMeta f)
+    final JPUncompactedProgramShaderMeta f)
   {
     NullCheck.notNull(f, "Metadata");
 

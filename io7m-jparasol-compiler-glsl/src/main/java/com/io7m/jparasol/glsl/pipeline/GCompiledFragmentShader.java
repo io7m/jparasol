@@ -34,16 +34,16 @@ import com.io7m.jfunctional.Pair;
 import com.io7m.jlog.LogUsableType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
-import com.io7m.jparasol.core.FragmentInput;
-import com.io7m.jparasol.core.FragmentOutput;
-import com.io7m.jparasol.core.FragmentParameter;
 import com.io7m.jparasol.core.GVersion;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
-import com.io7m.jparasol.core.SourceLines;
-import com.io7m.jparasol.core.UncompactedFragmentShader;
-import com.io7m.jparasol.core.UncompactedFragmentShaderMeta;
+import com.io7m.jparasol.core.JPFragmentInput;
+import com.io7m.jparasol.core.JPFragmentOutput;
+import com.io7m.jparasol.core.JPFragmentParameter;
+import com.io7m.jparasol.core.JPSourceLines;
+import com.io7m.jparasol.core.JPUncompactedFragmentShader;
+import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
 import com.io7m.jparasol.glsl.GLSLTypeNames;
 import com.io7m.jparasol.glsl.GWriter;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
@@ -115,7 +115,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    * @return A flattened shader.
    */
 
-  public UncompactedFragmentShader flatten(
+  public JPUncompactedFragmentShader flatten(
     final LogUsableType log)
   {
     try {
@@ -130,40 +130,40 @@ import com.io7m.junreachable.UnreachableCodeException;
       final GASTShaderFragment shader =
         this.sources.values().iterator().next();
 
-      final SortedSet<FragmentParameter> fragment_parameters =
-        new TreeSet<FragmentParameter>();
+      final SortedSet<JPFragmentParameter> fragment_parameters =
+        new TreeSet<JPFragmentParameter>();
 
       for (final GASTShaderFragmentParameter p : shader.getParameters()) {
         for (final Pair<String, TType> x : p.getExpanded()) {
           final String p_name = x.getLeft();
           final GTypeName p_type = GLSLTypeNames.getTypeName(x.getRight());
-          fragment_parameters.add(FragmentParameter.newParameter(
+          fragment_parameters.add(JPFragmentParameter.newParameter(
             p_name,
             p_type.show()));
         }
       }
 
-      final SortedSet<FragmentInput> fragment_inputs =
-        new TreeSet<FragmentInput>();
+      final SortedSet<JPFragmentInput> fragment_inputs =
+        new TreeSet<JPFragmentInput>();
       for (final GASTShaderFragmentInput i : shader.getInputs()) {
         final String i_name = i.getName().show();
         final String i_type = GLSLTypeNames.getTypeName(i.getType()).show();
-        fragment_inputs.add(FragmentInput.newInput(i_name, i_type));
+        fragment_inputs.add(JPFragmentInput.newInput(i_name, i_type));
       }
 
-      final SortedMap<Integer, FragmentOutput> fragment_outputs =
-        new TreeMap<Integer, FragmentOutput>();
+      final SortedMap<Integer, JPFragmentOutput> fragment_outputs =
+        new TreeMap<Integer, JPFragmentOutput>();
       for (final GASTShaderFragmentOutput o : shader.getOutputs()) {
         final String o_name = o.getName().show();
         final int o_index = o.getIndex();
         final String o_type = o.getType().show();
-        final FragmentOutput ro =
-          FragmentOutput.newOutput(o_name, o_index, o_type);
+        final JPFragmentOutput ro =
+          JPFragmentOutput.newOutput(o_name, o_index, o_type);
         fragment_outputs.put(o_index, ro);
       }
 
-      final UncompactedFragmentShaderMeta in_meta =
-        UncompactedFragmentShaderMeta.newMetadata(
+      final JPUncompactedFragmentShaderMeta in_meta =
+        JPUncompactedFragmentShaderMeta.newMetadata(
           this.name.show(),
           out_supports_es,
           out_supports_full,
@@ -182,11 +182,11 @@ import com.io7m.junreachable.UnreachableCodeException;
         GWriter.writeFragmentShader(stream, source, true);
         final ByteArrayInputStream input =
           new ByteArrayInputStream(stream.toByteArray());
-        final List<String> lines = SourceLines.fromStream(input);
+        final List<String> lines = JPSourceLines.fromStream(input);
         in_sources.put(v, lines);
       }
 
-      return UncompactedFragmentShader.newShader(in_meta, in_sources);
+      return JPUncompactedFragmentShader.newShader(in_meta, in_sources);
     } catch (final IOException e) {
       throw new UnreachableCodeException(e);
     }
