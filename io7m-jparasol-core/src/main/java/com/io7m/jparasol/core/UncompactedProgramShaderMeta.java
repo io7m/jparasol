@@ -158,4 +158,11 @@ import com.io7m.jnull.Nullable;
     result = (prime * result) + this.vertex_shaders.hashCode();
     return result;
   }
+
+  @Override public <A, E extends Exception> A matchMeta(
+    final CompiledShaderMetaVisitorType<A, E> v)
+    throws E
+  {
+    return v.uncompactedProgram(this);
+  }
 }

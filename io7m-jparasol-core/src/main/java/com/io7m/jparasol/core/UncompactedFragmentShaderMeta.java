@@ -216,4 +216,11 @@ import com.io7m.junreachable.UnreachableCodeException;
     result = (prime * result) + this.supports_full.hashCode();
     return result;
   }
+
+  @Override public <A, E extends Exception> A matchMeta(
+    final CompiledShaderMetaVisitorType<A, E> v)
+    throws E
+  {
+    return v.uncompactedFragment(this);
+  }
 }

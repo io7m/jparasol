@@ -212,4 +212,11 @@ import com.io7m.junreachable.UnreachableCodeException;
     result = (prime * result) + this.vertex_parameters.hashCode();
     return result;
   }
+
+  @Override public <A, E extends Exception> A matchMeta(
+    final CompiledShaderMetaVisitorType<A, E> v)
+    throws E
+  {
+    return v.uncompactedVertex(this);
+  }
 }

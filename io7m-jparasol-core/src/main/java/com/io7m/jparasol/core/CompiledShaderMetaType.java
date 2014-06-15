@@ -52,4 +52,18 @@ public interface CompiledShaderMetaType
    */
 
   SortedSet<GVersionFull> getSupportsFull();
+
+  /**
+   * Accept a generic visitor.
+   * 
+   * @param v
+   *          The visitor.
+   * @return The value returned by the visitor.
+   * @throws E
+   *           If the visitor throws <code>E</code>.
+   */
+
+  <A, E extends Exception> A matchMeta(
+    final CompiledShaderMetaVisitorType<A, E> v)
+    throws E;
 }

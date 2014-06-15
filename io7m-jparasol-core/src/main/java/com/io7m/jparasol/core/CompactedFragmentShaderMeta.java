@@ -222,4 +222,11 @@ import com.io7m.jnull.Nullable;
     result = (prime * result) + this.version_to_hash.hashCode();
     return result;
   }
+
+  @Override public <A, E extends Exception> A matchMeta(
+    final CompiledShaderMetaVisitorType<A, E> v)
+    throws E
+  {
+    return v.compactedFragment(this);
+  }
 }

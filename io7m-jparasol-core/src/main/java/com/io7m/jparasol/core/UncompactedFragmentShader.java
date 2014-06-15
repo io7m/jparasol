@@ -105,6 +105,13 @@ import com.io7m.jnull.NullCheck;
     return v.uncompacted(this);
   }
 
+  @Override public <A, E extends Exception> A matchMeta(
+    final CompiledShaderMetaVisitorType<A, E> v)
+    throws E
+  {
+    return v.uncompactedFragment(this.meta);
+  }
+
   @Override public <A, E extends Exception> A matchUncompactedShader(
     final UncompactedShaderVisitorType<A, E> v)
     throws E

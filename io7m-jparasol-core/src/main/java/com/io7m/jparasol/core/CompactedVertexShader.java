@@ -103,4 +103,11 @@ import com.io7m.jnull.NullCheck;
   {
     return v.compacted(this);
   }
+
+  @Override public <A, E extends Exception> A matchMeta(
+    final CompiledShaderMetaVisitorType<A, E> v)
+    throws E
+  {
+    return v.compactedVertex(this.meta);
+  }
 }
