@@ -425,9 +425,9 @@ public final class TypeCheckerError extends CompilerError
         m.append(" : ");
         m.append(f.getType().getShowName());
         m.append(" has no matching vertex shader output\n");
-      } else {
-        assert wrong_types.containsKey(fi_name.getCurrent());
+      } else if (wrong_types.containsKey(fi_name.getCurrent())) {
         final TValueType type = wrong_types.get(fi_name.getCurrent());
+        assert type != null;
         m.append("  ");
         m.append(fi_name.getCurrent());
         m.append(" : ");
