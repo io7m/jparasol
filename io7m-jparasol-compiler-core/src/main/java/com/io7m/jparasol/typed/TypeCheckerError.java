@@ -414,7 +414,7 @@ public final class TypeCheckerError extends CompilerError
     final StringBuilder m = new StringBuilder();
     m.append("The shaders for program ");
     m.append(program.getActual());
-    m.append("are incompatible.\n");
+    m.append(" are incompatible.\n");
     m.append("Problems with each fragment shader input are indicated:\n");
 
     for (final TASTDShaderFragmentInput f : fs.getInputs()) {
