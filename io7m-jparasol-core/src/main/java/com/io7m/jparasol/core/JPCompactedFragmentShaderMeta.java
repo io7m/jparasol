@@ -138,32 +138,21 @@ import com.io7m.jnull.Nullable;
       && this.version_to_hash.equals(other.version_to_hash);
   }
 
-  /**
-   * @return The set of fragment shader inputs that were declared in the given
-   *         program.
-   */
-
-  public SortedSet<JPFragmentInput> getDeclaredFragmentInputs()
+  @Override public SortedSet<JPFragmentInput> getDeclaredFragmentInputs()
   {
     return this.fragment_inputs;
   }
 
-  /**
-   * @return The set of fragment shader outputs that were declared in the
-   *         given program.
-   */
-
-  public SortedMap<Integer, JPFragmentOutput> getDeclaredFragmentOutputs()
+  @Override public
+    SortedMap<Integer, JPFragmentOutput>
+    getDeclaredFragmentOutputs()
   {
     return this.fragment_outputs;
   }
 
-  /**
-   * @return The set of fragment shader parameters that were declared in the
-   *         given program.
-   */
-
-  public SortedSet<JPFragmentParameter> getDeclaredFragmentParameters()
+  @Override public
+    SortedSet<JPFragmentParameter>
+    getDeclaredFragmentParameters()
   {
     return this.fragment_parameters;
   }
@@ -223,6 +212,11 @@ import com.io7m.jnull.Nullable;
     return result;
   }
 
+  @Override public boolean isCompacted()
+  {
+    return true;
+  }
+
   @Override public <A, E extends Exception> A matchFragmentMeta(
     final JPFragmentShaderMetaVisitorType<A, E> v)
     throws E
@@ -235,10 +229,5 @@ import com.io7m.jnull.Nullable;
     throws E
   {
     return v.compactedFragment(this);
-  }
-
-  @Override public boolean isCompacted()
-  {
-    return true;
   }
 }

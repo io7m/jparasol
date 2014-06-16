@@ -118,32 +118,21 @@ import com.io7m.junreachable.UnreachableCodeException;
       && this.supports_full.equals(other.supports_full);
   }
 
-  /**
-   * @return The set of fragment shader inputs that were declared in the given
-   *         program.
-   */
-
-  public SortedSet<JPFragmentInput> getDeclaredFragmentInputs()
+  @Override public SortedSet<JPFragmentInput> getDeclaredFragmentInputs()
   {
     return this.fragment_inputs;
   }
 
-  /**
-   * @return The set of fragment shader outputs that were declared in the
-   *         given program.
-   */
-
-  public SortedMap<Integer, JPFragmentOutput> getDeclaredFragmentOutputs()
+  @Override public
+    SortedMap<Integer, JPFragmentOutput>
+    getDeclaredFragmentOutputs()
   {
     return this.fragment_outputs;
   }
 
-  /**
-   * @return The set of fragment shader parameters that were declared in the
-   *         given program.
-   */
-
-  public SortedSet<JPFragmentParameter> getDeclaredFragmentParameters()
+  @Override public
+    SortedSet<JPFragmentParameter>
+    getDeclaredFragmentParameters()
   {
     return this.fragment_parameters;
   }
@@ -215,6 +204,11 @@ import com.io7m.junreachable.UnreachableCodeException;
     return result;
   }
 
+  @Override public boolean isCompacted()
+  {
+    return false;
+  }
+
   @Override public <A, E extends Exception> A matchFragmentMeta(
     final JPFragmentShaderMetaVisitorType<A, E> v)
     throws E
@@ -227,10 +221,5 @@ import com.io7m.junreachable.UnreachableCodeException;
     throws E
   {
     return v.uncompactedFragment(this);
-  }
-
-  @Override public boolean isCompacted()
-  {
-    return false;
   }
 }

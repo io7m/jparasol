@@ -16,12 +16,35 @@
 
 package com.io7m.jparasol.core;
 
+import java.util.SortedSet;
+
 /**
  * The type of vertex shader metadata.
  */
 
 public interface JPVertexShaderMetaType extends JPCompiledShaderMetaType
 {
+  /**
+   * @return The set of vertex shader inputs that were declared in the given
+   *         program.
+   */
+
+  SortedSet<JPVertexInput> getDeclaredVertexInputs();
+
+  /**
+   * @return The set of vertex shader outputs that were declared in the given
+   *         program.
+   */
+
+  SortedSet<JPVertexOutput> getDeclaredVertexOutputs();
+
+  /**
+   * @return The set of vertex shader parameters that were declared in the
+   *         given program.
+   */
+
+  SortedSet<JPVertexParameter> getDeclaredVertexParameters();
+
   /**
    * Accept a generic visitor.
    * 

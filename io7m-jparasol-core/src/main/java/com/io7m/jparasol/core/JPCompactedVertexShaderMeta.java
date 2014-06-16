@@ -137,32 +137,17 @@ import com.io7m.jnull.Nullable;
       && this.version_to_hash.equals(other.version_to_hash);
   }
 
-  /**
-   * @return The set of vertex shader inputs that were declared in the given
-   *         program.
-   */
-
-  public SortedSet<JPVertexInput> getDeclaredVertexInputs()
+  @Override public SortedSet<JPVertexInput> getDeclaredVertexInputs()
   {
     return this.vertex_inputs;
   }
 
-  /**
-   * @return The set of vertex shader outputs that were declared in the given
-   *         program.
-   */
-
-  public SortedSet<JPVertexOutput> getDeclaredVertexOutputs()
+  @Override public SortedSet<JPVertexOutput> getDeclaredVertexOutputs()
   {
     return this.vertex_outputs;
   }
 
-  /**
-   * @return The set of vertex shader parameters that were declared in the
-   *         given program.
-   */
-
-  public SortedSet<JPVertexParameter> getDeclaredVertexParameters()
+  @Override public SortedSet<JPVertexParameter> getDeclaredVertexParameters()
   {
     return this.vertex_parameters;
   }
@@ -222,6 +207,11 @@ import com.io7m.jnull.Nullable;
     return result;
   }
 
+  @Override public boolean isCompacted()
+  {
+    return true;
+  }
+
   @Override public <A, E extends Exception> A matchMeta(
     final JPCompiledShaderMetaVisitorType<A, E> v)
     throws E
@@ -234,10 +224,5 @@ import com.io7m.jnull.Nullable;
     throws E
   {
     return v.compacted(this);
-  }
-
-  @Override public boolean isCompacted()
-  {
-    return true;
   }
 }

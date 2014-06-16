@@ -99,6 +99,11 @@ import com.io7m.jnull.NullCheck;
     return this.meta.getSupportsFull();
   }
 
+  @Override public boolean isCompacted()
+  {
+    return this.meta.isCompacted();
+  }
+
   @Override public <A, E extends Exception> A matchCompiledShader(
     final JPCompiledShaderVisitorType<A, E> v)
     throws E
@@ -125,10 +130,5 @@ import com.io7m.jnull.NullCheck;
     throws E
   {
     return v.fragmentShader(this);
-  }
-
-  @Override public boolean isCompacted()
-  {
-    return this.meta.isCompacted();
   }
 }

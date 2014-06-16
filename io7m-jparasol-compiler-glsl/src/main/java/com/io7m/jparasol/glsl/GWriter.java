@@ -653,7 +653,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     final PrintWriter writer,
     final GVersionType version,
     final GASTShaderFragmentOutput o)
-
   {
     final GTypeName type = o.getType();
     final GShaderOutputName name = o.getName();

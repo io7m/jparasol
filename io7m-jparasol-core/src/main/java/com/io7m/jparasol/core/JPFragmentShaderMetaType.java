@@ -16,12 +16,36 @@
 
 package com.io7m.jparasol.core;
 
+import java.util.SortedMap;
+import java.util.SortedSet;
+
 /**
  * The type of fragment shader metadata.
  */
 
 public interface JPFragmentShaderMetaType extends JPCompiledShaderMetaType
 {
+  /**
+   * @return The set of fragment shader inputs that were declared in the given
+   *         program.
+   */
+
+  SortedSet<JPFragmentInput> getDeclaredFragmentInputs();
+
+  /**
+   * @return The set of fragment shader outputs that were declared in the
+   *         given program.
+   */
+
+  SortedMap<Integer, JPFragmentOutput> getDeclaredFragmentOutputs();
+
+  /**
+   * @return The set of fragment shader parameters that were declared in the
+   *         given program.
+   */
+
+  SortedSet<JPFragmentParameter> getDeclaredFragmentParameters();
+
   /**
    * Accept a generic visitor.
    * 

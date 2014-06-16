@@ -159,15 +159,15 @@ import com.io7m.jnull.Nullable;
     return result;
   }
 
+  @Override public boolean isCompacted()
+  {
+    return false;
+  }
+
   @Override public <A, E extends Exception> A matchMeta(
     final JPCompiledShaderMetaVisitorType<A, E> v)
     throws E
   {
     return v.uncompactedProgram(this);
-  }
-
-  @Override public boolean isCompacted()
-  {
-    return false;
   }
 }

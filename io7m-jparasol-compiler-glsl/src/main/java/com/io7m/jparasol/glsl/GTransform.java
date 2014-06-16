@@ -1489,7 +1489,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static List<GASTShaderFragmentOutput> makeFragmentOutputs(
     final Context context,
     final List<TASTDShaderFragmentOutput> outputs)
-
   {
     final List<GASTShaderFragmentOutput> results =
       new ArrayList<GASTShaderFragmentOutput>();
@@ -1527,7 +1526,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static List<GASTShaderFragmentParameter> makeFragmentParameters(
     final Context context,
     final List<TASTDShaderFragmentParameter> parameters)
-
   {
     final List<GASTShaderFragmentParameter> results =
       new ArrayList<GASTShaderFragmentParameter>();
@@ -1600,7 +1598,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static List<Pair<GTypeName, GASTTypeDeclaration>> makeTypes(
     final Context context)
-
   {
     final TASTCompilation compilation = context.getCompilation();
     final Topology topology = context.getTopology();
