@@ -31,7 +31,6 @@ import com.io7m.jnull.Nullable;
  */
 
 @EqualityStructural public final class JPCompactedVertexShaderMeta implements
-  JPCompiledShaderMetaType,
   JPVertexShaderMetaType
 {
   /**

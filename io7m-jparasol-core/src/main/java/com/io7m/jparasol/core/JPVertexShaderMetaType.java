@@ -20,7 +20,7 @@ package com.io7m.jparasol.core;
  * The type of vertex shader metadata.
  */
 
-public interface JPVertexShaderMetaType
+public interface JPVertexShaderMetaType extends JPCompiledShaderMetaType
 {
   /**
    * Accept a generic visitor.

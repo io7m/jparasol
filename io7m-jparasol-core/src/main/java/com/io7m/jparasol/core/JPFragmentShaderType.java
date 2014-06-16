@@ -20,7 +20,7 @@ package com.io7m.jparasol.core;
  * The type of fragment shaders.
  */
 
-public interface JPFragmentShaderType
+public interface JPFragmentShaderType extends JPCompiledShaderType
 {
   /**
    * Accept a generic visitor.

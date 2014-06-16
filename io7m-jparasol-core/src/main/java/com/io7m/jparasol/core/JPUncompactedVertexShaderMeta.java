@@ -30,7 +30,6 @@ import com.io7m.junreachable.UnreachableCodeException;
  */
 
 @EqualityStructural public final class JPUncompactedVertexShaderMeta implements
-  JPCompiledShaderMetaType,
   JPVertexShaderMetaType
 {
   /**

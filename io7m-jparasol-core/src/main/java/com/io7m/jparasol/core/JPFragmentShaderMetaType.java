@@ -20,7 +20,7 @@ package com.io7m.jparasol.core;
  * The type of fragment shader metadata.
  */
 
-public interface JPFragmentShaderMetaType
+public interface JPFragmentShaderMetaType extends JPCompiledShaderMetaType
 {
   /**
    * Accept a generic visitor.

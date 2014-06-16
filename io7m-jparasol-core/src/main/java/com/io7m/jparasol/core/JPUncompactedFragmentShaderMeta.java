@@ -31,7 +31,6 @@ import com.io7m.junreachable.UnreachableCodeException;
  */
 
 @EqualityStructural public final class JPUncompactedFragmentShaderMeta implements
-  JPCompiledShaderMetaType,
   JPFragmentShaderMetaType
 {
   /**

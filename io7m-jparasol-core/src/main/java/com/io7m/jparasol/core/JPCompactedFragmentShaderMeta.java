@@ -32,7 +32,6 @@ import com.io7m.jnull.Nullable;
  */
 
 @EqualityStructural public final class JPCompactedFragmentShaderMeta implements
-  JPCompiledShaderMetaType,
   JPFragmentShaderMetaType
 {
   /**
