@@ -91,6 +91,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       (JPCompactedFragmentShaderMeta) XMLCompactedFragmentShaderMetaTest
         .getXML("/com/io7m/jparasol/tests/xml/t-actual-fragment-compacted.xml");
 
+    Assert.assertTrue(meta0.isCompacted());
     Assert.assertEquals(3, meta0.getDeclaredFragmentInputs().size());
     Assert.assertEquals(3, meta0.getDeclaredFragmentOutputs().size());
     Assert.assertEquals(3, meta0.getDeclaredFragmentParameters().size());

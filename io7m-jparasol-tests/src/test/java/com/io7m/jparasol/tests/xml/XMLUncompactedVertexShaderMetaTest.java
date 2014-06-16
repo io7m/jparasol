@@ -84,6 +84,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       (JPUncompactedVertexShaderMeta) XMLUncompactedVertexShaderMetaTest
         .getXML("/com/io7m/jparasol/tests/xml/t-actual-vertex.xml");
 
+    Assert.assertFalse(meta0.isCompacted());
     Assert.assertEquals(2, meta0.getDeclaredVertexInputs().size());
     Assert.assertEquals(3, meta0.getDeclaredVertexOutputs().size());
     Assert.assertEquals(1, meta0.getDeclaredVertexParameters().size());

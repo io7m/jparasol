@@ -236,4 +236,9 @@ import com.io7m.jnull.Nullable;
   {
     return v.compactedFragment(this);
   }
+
+  @Override public boolean isCompacted()
+  {
+    return true;
+  }
 }

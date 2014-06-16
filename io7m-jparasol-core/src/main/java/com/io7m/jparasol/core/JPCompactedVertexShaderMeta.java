@@ -235,4 +235,9 @@ import com.io7m.jnull.Nullable;
   {
     return v.compacted(this);
   }
+
+  @Override public boolean isCompacted()
+  {
+    return true;
+  }
 }

@@ -228,4 +228,9 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     return v.uncompactedFragment(this);
   }
+
+  @Override public boolean isCompacted()
+  {
+    return false;
+  }
 }

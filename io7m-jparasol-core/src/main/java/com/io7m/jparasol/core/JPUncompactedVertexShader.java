@@ -126,4 +126,9 @@ import com.io7m.jnull.NullCheck;
   {
     return v.uncompacted(this);
   }
+
+  @Override public boolean isCompacted()
+  {
+    return this.meta.isCompacted();
+  }
 }

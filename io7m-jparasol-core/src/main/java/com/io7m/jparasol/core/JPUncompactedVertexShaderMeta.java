@@ -226,4 +226,9 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     return v.uncompacted(this);
   }
+
+  @Override public boolean isCompacted()
+  {
+    return false;
+  }
 }

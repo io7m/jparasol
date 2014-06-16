@@ -165,4 +165,9 @@ import com.io7m.jnull.Nullable;
   {
     return v.uncompactedProgram(this);
   }
+
+  @Override public boolean isCompacted()
+  {
+    return false;
+  }
 }

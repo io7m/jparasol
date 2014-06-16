@@ -85,6 +85,8 @@ import com.io7m.junreachable.UnreachableCodeException;
       (JPUncompactedProgramShaderMeta) XMLUncompactedProgramShaderMetaTest
         .getXML("/com/io7m/jparasol/tests/xml/t-actual-program.xml");
 
+    Assert.assertFalse(meta0.isCompacted());
+
     for (final GVersionFull v : GVersionFull.ALL) {
       Assert.assertEquals(Option.none(), meta0.getSourceCodeFilename(v));
     }

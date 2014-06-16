@@ -118,4 +118,9 @@ import com.io7m.jnull.NullCheck;
   {
     return v.compacted(this);
   }
+
+  @Override public boolean isCompacted()
+  {
+    return this.meta.isCompacted();
+  }
 }

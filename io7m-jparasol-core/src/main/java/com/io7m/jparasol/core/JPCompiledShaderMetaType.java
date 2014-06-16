@@ -54,6 +54,12 @@ public interface JPCompiledShaderMetaType
   SortedSet<GVersionFull> getSupportsFull();
 
   /**
+   * @return <code>true</code> if the shader is of a compacted type.
+   */
+
+  boolean isCompacted();
+
+  /**
    * Accept a generic visitor.
    * 
    * @param v
