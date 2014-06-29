@@ -97,7 +97,7 @@ import com.io7m.junreachable.UnreachableCodeException;
  * A GLSL shader serializer.
  */
 
-@SuppressWarnings("synthetic-access") @EqualityReference public final class GWriter
+@SuppressWarnings({ "boxing", "null", "synthetic-access" }) @EqualityReference public final class GWriter
 {
   @EqualityReference private static final class ExpressionWriter implements
     GASTExpressionVisitorType<String, UnreachableCodeException>
@@ -667,7 +667,8 @@ import com.io7m.junreachable.UnreachableCodeException;
             // Nothing
           } else {
             writer.println(String.format(
-              "out %s %s;",
+              "layout(location = %d) out %s %s;",
+              o.getIndex(),
               type.show(),
               name.show()));
           }
@@ -681,10 +682,18 @@ import com.io7m.junreachable.UnreachableCodeException;
           if (v.compareTo(GVersionFull.GLSL_130) < 0) {
             // Nothing
           } else {
-            writer.println(String.format(
-              "out %s %s;",
-              type.show(),
-              name.show()));
+            if (v.compareTo(GVersionFull.GLSL_330) < 0) {
+              writer.println(String.format(
+                "out %s %s;",
+                type.show(),
+                name.show()));
+            } else {
+              writer.println(String.format(
+                "layout(location = %d) out %s %s;",
+                o.getIndex(),
+                type.show(),
+                name.show()));
+            }
           }
           return Unit.unit();
         }
@@ -995,7 +1004,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     writer.println();
   }
 
-  @SuppressWarnings("boxing") private static void writeVersionDirective(
+  private static void writeVersionDirective(
     final PrintWriter writer,
     final GVersionType version)
   {

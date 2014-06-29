@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
 import com.io7m.junreachable.UnreachableCodeException;
 
@@ -30,7 +31,7 @@ import com.io7m.junreachable.UnreachableCodeException;
  * Utilities for reading sources from a stream.
  */
 
-public final class JPSourceLines
+@EqualityReference public final class JPSourceLines
 {
   /**
    * @param stream
