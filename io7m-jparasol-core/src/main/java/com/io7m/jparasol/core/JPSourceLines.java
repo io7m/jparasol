@@ -36,7 +36,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   /**
    * @param stream
    *          The stream.
-   * @return Lines of source code from the stream.
+   * @return Lines of source code from the stream, each terminated with '\n'.
    * @throws IOException
    *           On I/O errors.
    */
@@ -58,7 +58,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         if (line == null) {
           break;
         }
-        lines.add(line);
+        lines.add(line + "\n");
       }
 
       return lines;

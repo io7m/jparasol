@@ -184,7 +184,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         if (line == null) {
           break;
         }
-        lines.add(line);
+        lines.add(line + "\n");
       }
 
       return lines;
