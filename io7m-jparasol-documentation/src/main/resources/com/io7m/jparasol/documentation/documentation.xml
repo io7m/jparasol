@@ -858,6 +858,13 @@ main (void)
           that will be created and populated with the resulting shading 
           programs.
         </s:paragraph>
+        <s:paragraph>
+          By default, any file that exists at the named output path will
+          be replaced. When the <s:term s:type="parameter">--zip-append</s:term>
+          option is specified, the output path is assumed to refer to an
+          existing zip archive, which will be updated with the generated
+          files.
+        </s:paragraph>
       </s:subsection>
       <s:subsection xml:id="jparasol-c.compact">
         <s:subsection-title>Compaction</s:subsection-title>
