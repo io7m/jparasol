@@ -22,21 +22,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.cli.CommandLine;
@@ -55,7 +50,6 @@ import com.io7m.jlog.LogPolicyAllOn;
 import com.io7m.jlog.LogPolicyProperties;
 import com.io7m.jlog.LogPolicyType;
 import com.io7m.jlog.LogType;
-import com.io7m.jlog.LogUsableType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.UIError;
@@ -435,7 +429,7 @@ public final class CommandLineFrontend
     if (line.hasOption("zip")) {
       final ZipOutputStream zip_stream;
       if (line.hasOption("zip-append")) {
-        zip_stream = CommandLineFrontend.copyZip(log, output);
+        zip_stream = CopyZip.copyZip(log, output);
       } else {
         zip_stream =
           new ZipOutputStream(
@@ -450,65 +444,6 @@ public final class CommandLineFrontend
     }
     assert serializer != null;
     return serializer;
-  }
-
-  @SuppressWarnings("null") private static ZipOutputStream copyZip(
-    final LogUsableType log,
-    final File file)
-    throws ZipException,
-      IOException
-  {
-    final File in_zip_tmp =
-      new File(String.format("%s.tmp", file.toString()));
-    log.debug(String.format("renaming '%s' to '%s'", file, in_zip_tmp));
-
-    final boolean r = file.renameTo(in_zip_tmp);
-    if (r == false) {
-      throw new IOException(String.format(
-        "Renaming '%s' to '%s' failed",
-        file,
-        in_zip_tmp));
-    }
-
-    log.debug(String.format("copying '%s' to '%s'", in_zip_tmp, file));
-
-    final ZipFile in_zip = new ZipFile(in_zip_tmp);
-
-    final ZipOutputStream out_zip_stream =
-      new ZipOutputStream(
-        new FileOutputStream(file),
-        Charset.forName("UTF-8"));
-
-    final Enumeration<? extends ZipEntry> entries = in_zip.entries();
-    while (entries.hasMoreElements()) {
-      final ZipEntry e = entries.nextElement();
-      out_zip_stream.putNextEntry(e);
-      CommandLineFrontend.copyZipEntry(
-        in_zip.getInputStream(e),
-        out_zip_stream);
-      out_zip_stream.closeEntry();
-    }
-
-    in_zip.close();
-    return out_zip_stream;
-  }
-
-  private static void copyZipEntry(
-    final InputStream in,
-    final OutputStream out)
-    throws IOException
-  {
-    final byte[] buffer = new byte[65536];
-
-    for (;;) {
-      final int r = in.read(buffer);
-      if (r == -1) {
-        break;
-      }
-      out.write(buffer, 0, r);
-    }
-
-    out.flush();
   }
 
   private static List<File> parseSources(
