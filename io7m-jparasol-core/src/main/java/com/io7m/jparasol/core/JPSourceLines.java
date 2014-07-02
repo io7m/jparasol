@@ -58,7 +58,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         if (line == null) {
           break;
         }
-        lines.add(line + "\n");
+        lines.add(line);
       }
 
       return lines;
