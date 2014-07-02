@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.io7m.jparasol</groupId>
     <artifactId>io7m-jparasol</artifactId>
-    <version>0.9.7</version>
+    <version>0.9.8</version>
   </parent>
   <artifactId>io7m-jparasol-compiler-frontend</artifactId>
 
