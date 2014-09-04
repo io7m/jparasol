@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -28,7 +28,7 @@ import com.io7m.jnull.Nullable;
 /**
  * An extension of the {@link ArrayList} type that logs additions and
  * removals.
- * 
+ *
  * @param <T>
  *          The type of elements
  */
@@ -46,7 +46,7 @@ public final class GLoggingArrayList<T> extends ArrayList<T>
 
   /**
    * Construct a new logging array list.
-   * 
+   *
    * @param in_show
    *          The show function
    * @param in_log
@@ -64,28 +64,31 @@ public final class GLoggingArrayList<T> extends ArrayList<T>
 
   @Override public void add(
     final int index,
-    final T element)
+    final @Nullable T element)
   {
+    final T en = NullCheck.notNull(element, "Element");
     if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
-      this.log.debug(String.format("Added %s", this.show.call(element)));
+      this.log.debug(String.format("Added %s", this.show.call(en)));
     }
     super.add(index, element);
   }
 
   @Override public boolean add(
-    final T e)
+    final @Nullable T e)
   {
+    final T en = NullCheck.notNull(e, "Element");
     if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
-      this.log.debug(String.format("Added %s", this.show.call(e)));
+      this.log.debug(String.format("Added %s", this.show.call(en)));
     }
     return super.add(e);
   }
 
   @Override public boolean addAll(
-    final Collection<? extends T> c)
+    final @Nullable Collection<? extends T> c)
   {
+    final Collection<? extends T> cn = NullCheck.notNull(c, "Collection");
     if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
-      for (final T x : c) {
+      for (final T x : cn) {
         this.log.debug(String.format("Added %s", this.show.call(x)));
       }
     }
@@ -95,10 +98,11 @@ public final class GLoggingArrayList<T> extends ArrayList<T>
 
   @Override public boolean addAll(
     final int index,
-    final Collection<? extends T> c)
+    final @Nullable Collection<? extends T> c)
   {
+    final Collection<? extends T> cn = NullCheck.notNull(c, "Collection");
     if (this.log.wouldLog(LogLevel.LOG_DEBUG)) {
-      for (final T x : c) {
+      for (final T x : cn) {
         this.log.debug(String.format("Added %s", this.show.call(x)));
       }
     }

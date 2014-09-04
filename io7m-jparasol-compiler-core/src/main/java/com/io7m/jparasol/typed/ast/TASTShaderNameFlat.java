@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -43,7 +43,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 {
   /**
    * Flatten a shader name.
-   * 
+   *
    * @param name
    *          The name
    * @return A flattened name
@@ -61,7 +61,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
   /**
    * Parse a flattened shader name from a string, with associated metadata.
-   * 
+   *
    * @param name
    *          The string
    * @param meta
@@ -122,7 +122,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 
   /**
    * Construct a flattened shader name.
-   * 
+   *
    * @param in_path
    *          The flattened module path
    * @param in_name
@@ -148,9 +148,9 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
   }
 
   @Override public int compareTo(
-    final TASTShaderNameFlat o)
+    final @Nullable TASTShaderNameFlat o)
   {
-    return this.show_text.compareTo(o.show_text);
+    return this.show_text.compareTo(NullCheck.notNull(o, "Other").show_text);
   }
 
   @Override public boolean equals(

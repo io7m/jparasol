@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -445,7 +445,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTScope expressionVisitApplication(
-      final List<GASTScope> arguments,
+      final @Nullable List<GASTScope> arguments,
       final TASTEApplication e)
       throws GFFIError
     {
@@ -467,9 +467,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTScope expressionVisitConditional(
-      final GASTScope condition,
-      final GASTScope left,
-      final GASTScope right,
+      final @Nullable GASTScope condition,
+      final @Nullable GASTScope left,
+      final @Nullable GASTScope right,
       final TASTEConditional e)
       throws GFFIError
     {
@@ -562,8 +562,8 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTScope expressionVisitLet(
-      final List<TASTDValueLocal> k_bindings,
-      final GASTScope body,
+      final @Nullable List<TASTDValueLocal> k_bindings,
+      final @Nullable GASTScope body,
       final TASTELet e)
       throws GFFIError
     {
@@ -609,7 +609,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTScope expressionVisitNew(
-      final List<GASTScope> arguments,
+      final @Nullable List<GASTScope> arguments,
       final TASTENew e)
       throws GFFIError
     {
@@ -689,7 +689,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTScope expressionVisitRecordProjection(
-      final GASTScope body,
+      final @Nullable GASTScope body,
       final TASTERecordProjection e)
       throws GFFIError
     {
@@ -704,7 +704,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTScope expressionVisitSwizzle(
-      final GASTScope body,
+      final @Nullable GASTScope body,
       final TASTESwizzle e)
       throws GFFIError
     {
@@ -768,10 +768,13 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTExpression expressionVisitApplication(
-      final List<GASTExpression> arguments,
+      final @Nullable List<GASTExpression> arguments,
       final TASTEApplication e)
       throws GFFIError
     {
+      final List<GASTExpression> as =
+        NullCheck.notNull(arguments, "Arguments");
+
       return e.getName().termNameVisitableAccept(
         new TASTTermNameVisitorType<GASTExpression, GFFIError>() {
           @Override public GASTExpression termNameVisitExternal(
@@ -808,7 +811,7 @@ import com.io7m.junreachable.UnreachableCodeException;
                   throws GFFIError
                 {
                   return new GASTExpression.GASTEApplication(name, e
-                    .getType(), arguments);
+                    .getType(), as);
                 }
 
                 /**
@@ -826,7 +829,7 @@ import com.io7m.junreachable.UnreachableCodeException;
                   final GFFIExpression g =
                     ffi.getExpression(
                       f,
-                      arguments,
+                      as,
                       ExpressionTransformer.this.version);
 
                   return g
@@ -848,7 +851,7 @@ import com.io7m.junreachable.UnreachableCodeException;
                       {
                         final TValueType returns =
                           f.getType().getReturnType();
-                        return new GASTEApplication(name, returns, arguments);
+                        return new GASTEApplication(name, returns, as);
                       }
                     });
                 }
@@ -908,9 +911,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTExpression expressionVisitConditional(
-      final GASTExpression condition,
-      final GASTExpression left,
-      final GASTExpression right,
+      final @Nullable GASTExpression condition,
+      final @Nullable GASTExpression left,
+      final @Nullable GASTExpression right,
       final TASTEConditional e)
       throws GFFIError
     {
@@ -974,8 +977,8 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTExpression expressionVisitLet(
-      final List<TASTDValueLocal> let_bindings,
-      final GASTExpression body,
+      final @Nullable List<TASTDValueLocal> let_bindings,
+      final @Nullable GASTExpression body,
       final TASTELet e)
       throws GFFIError
     {
@@ -992,12 +995,14 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTExpression expressionVisitNew(
-      final List<GASTExpression> arguments,
+      final @Nullable List<GASTExpression> arguments,
       final TASTENew e)
       throws GFFIError
     {
+      final List<GASTExpression> as =
+        NullCheck.notNull(arguments, "Arguments");
       final GTypeName type = this.context.getTypeName(e.getType());
-      return new GASTEConstruction(type, arguments);
+      return new GASTEConstruction(type, as);
     }
 
     @Override public boolean expressionVisitNewPre(
@@ -1022,15 +1027,16 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTExpression expressionVisitRecordProjection(
-      final GASTExpression body,
+      final @Nullable GASTExpression body,
       final TASTERecordProjection e)
       throws GFFIError
     {
+      final GASTExpression b = NullCheck.notNull(body, "Body");
       final String a = e.getField().getActual();
       assert a != null;
       final GFieldName field = new GFieldName(a);
       final TType type = e.getType();
-      return new GASTEProjection(body, field, type);
+      return new GASTEProjection(b, field, type);
     }
 
     @Override public boolean expressionVisitRecordProjectionPre(
@@ -1041,10 +1047,11 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public GASTExpression expressionVisitSwizzle(
-      final GASTExpression body,
+      final @Nullable GASTExpression body,
       final TASTESwizzle e)
       throws GFFIError
     {
+      final GASTExpression b = NullCheck.notNull(body, "Body");
       final TType type = e.getType();
       final List<GFieldName> fields = new ArrayList<GFieldName>();
       for (final TokenIdentifierLower f : e.getFields()) {
@@ -1052,7 +1059,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         assert a != null;
         fields.add(new GFieldName(a));
       }
-      return new GASTESwizzle(body, fields, type);
+      return new GASTESwizzle(b, fields, type);
     }
 
     @Override public boolean expressionVisitSwizzlePre(
@@ -1876,7 +1883,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Transform a Parasol fragment shader to a GLSL fragment shader.
-   * 
+   *
    * @param compilation
    *          The AST
    * @param topology
@@ -1957,7 +1964,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Transform a Parasol vertex shader to a GLSL vertex shader.
-   * 
+   *
    * @param compilation
    *          The AST
    * @param topology

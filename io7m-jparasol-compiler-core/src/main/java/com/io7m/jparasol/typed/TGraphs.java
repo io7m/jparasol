@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -998,7 +998,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitApplication(
-      final List<TASTExpression> arguments,
+      final @Nullable List<TASTExpression> arguments,
       final TASTEApplication e)
     {
       this.addTermReference(e.getName());
@@ -1018,9 +1018,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitConditional(
-      final TASTExpression condition,
-      final TASTExpression left,
-      final TASTExpression right,
+      final @Nullable TASTExpression condition,
+      final @Nullable TASTExpression left,
+      final @Nullable TASTExpression right,
       final TASTEConditional e)
     {
       return e;
@@ -1075,8 +1075,8 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitLet(
-      final List<TASTDValueLocal> bindings,
-      final TASTExpression body,
+      final @Nullable List<TASTDValueLocal> bindings,
+      final @Nullable TASTExpression body,
       final TASTELet e)
     {
       return e;
@@ -1098,7 +1098,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitNew(
-      final List<TASTExpression> arguments,
+      final @Nullable List<TASTExpression> arguments,
       final TASTENew e)
     {
       this.addTypeReference(e.getType());
@@ -1125,10 +1125,10 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitRecordProjection(
-      final TASTExpression body,
+      final @Nullable TASTExpression body,
       final TASTERecordProjection e)
     {
-      this.addTypeReference(body.getType());
+      this.addTypeReference(NullCheck.notNull(body, "Body").getType());
       return e;
     }
 
@@ -1139,7 +1139,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitSwizzle(
-      final TASTExpression body,
+      final @Nullable TASTExpression body,
       final TASTESwizzle e)
     {
       return e;
@@ -1414,7 +1414,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitApplication(
-      final List<TASTExpression> arguments,
+      final @Nullable List<TASTExpression> arguments,
       final TASTEApplication e)
     {
       this.addTermReference(e.getName());
@@ -1434,9 +1434,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitConditional(
-      final TASTExpression condition,
-      final TASTExpression left,
-      final TASTExpression right,
+      final @Nullable TASTExpression condition,
+      final @Nullable TASTExpression left,
+      final @Nullable TASTExpression right,
       final TASTEConditional e)
     {
       return e;
@@ -1491,8 +1491,8 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitLet(
-      final List<TASTDValueLocal> bindings,
-      final TASTExpression body,
+      final @Nullable List<TASTDValueLocal> bindings,
+      final @Nullable TASTExpression body,
       final TASTELet e)
     {
       return e;
@@ -1524,7 +1524,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitNew(
-      final List<TASTExpression> arguments,
+      final @Nullable List<TASTExpression> arguments,
       final TASTENew e)
     {
       this.addTermTypeReference(e.getType());
@@ -1563,10 +1563,10 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitRecordProjection(
-      final TASTExpression body,
+      final @Nullable TASTExpression body,
       final TASTERecordProjection e)
     {
-      this.addTermTypeReference(body.getType());
+      this.addTermTypeReference(NullCheck.notNull(body, "Body").getType());
       return e;
     }
 
@@ -1577,7 +1577,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTExpression expressionVisitSwizzle(
-      final TASTExpression body,
+      final @Nullable TASTExpression body,
       final TASTESwizzle e)
     {
       return e;
