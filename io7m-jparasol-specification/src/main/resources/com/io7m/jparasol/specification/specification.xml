@@ -3874,7 +3874,7 @@ expression =
           <s:formal-item-title>interpolate Definition</s:formal-item-title>
           <s:verbatim>function interpolate (v0 : vector_2f, v1 : vector_2f, t : float) : vector_2f</s:verbatim>
         </s:formal-item>
-        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
+        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v1 ✕ t) + (v0 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -4004,7 +4004,7 @@ expression =
           <s:formal-item-title>interpolate Definition</s:formal-item-title>
           <s:verbatim>function interpolate (v0 : vector_2i, v1 : vector_2i, t : float) : vector_2i</s:verbatim>
         </s:formal-item>
-        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
+        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v1 ✕ t) + (v0 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -4140,7 +4140,7 @@ expression =
           <s:formal-item-title>interpolate Definition</s:formal-item-title>
           <s:verbatim>function interpolate (v0 : vector_3f, v1 : vector_3f, t : float) : vector_3f</s:verbatim>
         </s:formal-item>
-        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
+        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v1 ✕ t) + (v0 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -4270,7 +4270,7 @@ expression =
           <s:formal-item-title>interpolate Definition</s:formal-item-title>
           <s:verbatim>function interpolate (v0 : vector_3i, v1 : vector_3i, t : float) : vector_3i</s:verbatim>
         </s:formal-item>
-        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
+        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v1 ✕ t) + (v0 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -4400,7 +4400,7 @@ expression =
           <s:formal-item-title>interpolate Definition</s:formal-item-title>
           <s:verbatim>function interpolate (v0 : vector_4f, v1 : vector_4f, t : float) : vector_4f</s:verbatim>
         </s:formal-item>
-        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
+        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v1 ✕ t) + (v0 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
@@ -4530,7 +4530,7 @@ expression =
           <s:formal-item-title>interpolate Definition</s:formal-item-title>
           <s:verbatim>function interpolate (v0 : vector_4i, v1 : vector_4i, t : float) : vector_4i</s:verbatim>
         </s:formal-item>
-        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v0 ✕ t) + (v1 ✕ (1 - t))</s:term>.</s:paragraph>
+        <s:paragraph>Return the linear interpolation <s:term s:type="expression">(v1 ✕ t) + (v0 ✕ (1 - t))</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>magnitude</s:subsection-title>
