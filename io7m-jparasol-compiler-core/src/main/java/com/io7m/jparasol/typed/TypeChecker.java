@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -16,16 +16,20 @@
 
 package com.io7m.jparasol.typed;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.Option;
 import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.Pair;
 import com.io7m.jfunctional.PartialFunctionType;
 import com.io7m.jfunctional.Some;
 import com.io7m.jfunctional.Unit;
@@ -35,14 +39,17 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
 import com.io7m.jparasol.typed.TGraphs.GlobalGraph;
 import com.io7m.jparasol.typed.TType.TBoolean;
 import com.io7m.jparasol.typed.TType.TConstructor;
 import com.io7m.jparasol.typed.TType.TFloat;
 import com.io7m.jparasol.typed.TType.TFunction;
 import com.io7m.jparasol.typed.TType.TFunctionArgument;
+import com.io7m.jparasol.typed.TType.TInteger;
 import com.io7m.jparasol.typed.TType.TManifestType;
+import com.io7m.jparasol.typed.TType.TMatchType;
+import com.io7m.jparasol.typed.TType.TMatchVisitorType;
 import com.io7m.jparasol.typed.TType.TRecord;
 import com.io7m.jparasol.typed.TType.TRecordField;
 import com.io7m.jparasol.typed.TType.TValueType;
@@ -82,19 +89,23 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecordField;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
-import com.io7m.jparasol.typed.ast.TASTExpression;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEBoolean;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEConditional;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEInteger;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTELet;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTENew;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEReal;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecordProjection;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTESwizzle;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
+import com.io7m.jparasol.typed.ast.TASTEApplication;
+import com.io7m.jparasol.typed.ast.TASTEBoolean;
+import com.io7m.jparasol.typed.ast.TASTEConditional;
+import com.io7m.jparasol.typed.ast.TASTEInteger;
+import com.io7m.jparasol.typed.ast.TASTELet;
+import com.io7m.jparasol.typed.ast.TASTEMatchBoolean;
+import com.io7m.jparasol.typed.ast.TASTEMatchInteger;
+import com.io7m.jparasol.typed.ast.TASTEMatchType;
+import com.io7m.jparasol.typed.ast.TASTENew;
+import com.io7m.jparasol.typed.ast.TASTEReal;
+import com.io7m.jparasol.typed.ast.TASTERecord;
+import com.io7m.jparasol.typed.ast.TASTERecordProjection;
+import com.io7m.jparasol.typed.ast.TASTESwizzle;
+import com.io7m.jparasol.typed.ast.TASTEVariable;
+import com.io7m.jparasol.typed.ast.TASTExpressionMatchConstantType;
+import com.io7m.jparasol.typed.ast.TASTExpressionType;
+import com.io7m.jparasol.typed.ast.TASTRecordFieldAssignment;
 import com.io7m.jparasol.typed.ast.TASTShaderName;
 import com.io7m.jparasol.typed.ast.TASTTermName;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
@@ -129,24 +140,26 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDTypeRecordF
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueDefined;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueExternal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREApplication;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREBoolean;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREConditional;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREInteger;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRELet;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRENew;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREReal;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRERecord;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRERecordProjection;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRESwizzle;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREVariable;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRRecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREApplication;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREBoolean;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREConditional;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREInteger;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRELet;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREMatch;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRENew;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREReal;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRERecord;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRERecordProjection;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRESwizzle;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREVariable;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRExpressionMatchConstantVisitorType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRExpressionType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpressionVisitorType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderLocalVisitorType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderOutputVisitorType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRFragmentShaderVisitorType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRLocalLevelVisitorType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderVisitorType;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName;
@@ -224,12 +237,35 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
+  @EqualityReference private static final class MatchConstantChecker implements
+    UASTRExpressionMatchConstantVisitorType<TASTExpressionMatchConstantType, TypeCheckerError>
+  {
+    public MatchConstantChecker()
+    {
+      // Nothing
+    }
+
+    @Override public TASTExpressionMatchConstantType expressionVisitBoolean(
+      final UASTREBoolean e)
+      throws TypeCheckerError
+    {
+      return new TASTEBoolean(e.getToken());
+    }
+
+    @Override public TASTExpressionMatchConstantType expressionVisitInteger(
+      final UASTREInteger e)
+      throws TypeCheckerError
+    {
+      return new TASTEInteger(e.getToken());
+    }
+  }
+
   /**
    * Expression type checker.
    */
 
   @EqualityReference private static final class TypeCheckerExpression implements
-    UASTRExpressionVisitorType<TASTExpression, TASTDValueLocal, TypeCheckerError>
+    UASTRExpressionVisitorType<TASTExpressionType, TASTExpressionMatchConstantType, TASTDValueLocal, TypeCheckerError>
   {
     private final Map<ModulePathFlat, TASTDModule> checked_modules;
     private final Map<String, TASTDTerm>           checked_terms;
@@ -255,7 +291,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTEApplication expressionVisitApplication(
-      final List<TASTExpression> arguments,
+      final List<TASTExpressionType> arguments,
       final UASTREApplication e)
       throws TypeCheckerError
     {
@@ -273,7 +309,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         if (arguments.size() == f_args.size()) {
           for (int index = 0; index < arguments.size(); ++index) {
             final TFunctionArgument exp = f_args.get(index);
-            final TASTExpression got = arguments.get(index);
+            final TASTExpressionType got = arguments.get(index);
 
             if (TTypeEquality.typesAreEqual(got.getType(), exp.getType()) == false) {
               throw TypeCheckerError.termExpressionApplicationBadTypes(
@@ -315,9 +351,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTEConditional expressionVisitConditional(
-      final TASTExpression condition,
-      final TASTExpression left,
-      final TASTExpression right,
+      final TASTExpressionType condition,
+      final TASTExpressionType left,
+      final TASTExpressionType right,
       final UASTREConditional e)
       throws TypeCheckerError
     {
@@ -379,7 +415,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     @Override public TASTELet expressionVisitLet(
       final List<TASTDValueLocal> bindings,
-      final TASTExpression body,
+      final TASTExpressionType body,
       final UASTRELet e)
       throws TypeCheckerError
     {
@@ -408,8 +444,240 @@ import com.io7m.junreachable.UnreachableCodeException;
         this.module);
     }
 
+    @Override public
+      TASTExpressionType
+      expressionVisitMatch(
+        final @Nullable TASTExpressionType discriminee,
+        final @Nullable List<Pair<TASTExpressionMatchConstantType, TASTExpressionType>> cases,
+        final @Nullable OptionType<TASTExpressionType> default_case,
+        final UASTREMatch m)
+        throws TypeCheckerError
+    {
+      assert discriminee != null;
+      assert cases != null;
+      assert default_case != null;
+
+      /**
+       * Check that the discriminee is actually of a type that allows
+       * matching.
+       */
+
+      final TType dt = discriminee.getType();
+      if ((dt instanceof TType.TMatchType) == false) {
+        throw TypeCheckerError.termExpressionMatchTypeNotDiscriminable(
+          m.getTokenMatch(),
+          dt);
+      }
+
+      /**
+       * Check that each match case constant is of the same type as the
+       * discriminee.
+       */
+
+      TType inferred_type = null;
+      for (final Pair<TASTExpressionMatchConstantType, TASTExpressionType> c : cases) {
+        final TASTExpressionMatchConstantType cl = c.getLeft();
+        final TASTExpressionType cr = c.getRight();
+        final TType mcct = cl.getType();
+        final TType mcet = cr.getType();
+
+        if (mcct.equals(dt) == false) {
+          throw TypeCheckerError.termExpressionMatchConstantBadType(
+            cl.getToken(),
+            dt,
+            mcct);
+        }
+
+        if (inferred_type == null) {
+          inferred_type = mcet;
+        } else {
+          if (mcet.equals(inferred_type) == false) {
+            throw TypeCheckerError.termExpressionMatchCaseBadType(
+              cr,
+              inferred_type,
+              mcct);
+          }
+        }
+      }
+
+      /**
+       * There must be more than one case; the grammar requires it.
+       */
+
+      final TType inferred_type_final = NullCheck.notNull(inferred_type);
+
+      if (default_case.isSome()) {
+        final TASTExpressionType dct =
+          ((Some<TASTExpressionType>) default_case).get();
+
+        if (dct.getType().equals(inferred_type) == false) {
+          throw TypeCheckerError.termExpressionMatchCaseBadType(
+            dct,
+            inferred_type_final,
+            dct.getType());
+        }
+      }
+
+      return ((TMatchType) dt)
+        .typeAccept(new TMatchVisitorType<TASTEMatchType, TypeCheckerError>() {
+          @Override public TASTEMatchType typeBoolean(
+            final TBoolean t)
+            throws TypeCheckerError
+          {
+            return TypeCheckerExpression
+              .expressionVisitMatchCheckCompleteBoolean(
+                discriminee,
+                cases,
+                default_case,
+                inferred_type_final);
+          }
+
+          @Override public TASTEMatchType typeInteger(
+            final TInteger t)
+            throws TypeCheckerError
+          {
+            return TypeCheckerExpression
+              .expressionVisitMatchCheckCompleteInteger(
+                discriminee,
+                cases,
+                default_case,
+                inferred_type_final);
+          }
+        });
+    }
+
+    private static
+      TASTEMatchType
+      expressionVisitMatchCheckCompleteBoolean(
+        final TASTExpressionType discriminee,
+        final List<Pair<TASTExpressionMatchConstantType, TASTExpressionType>> cases,
+        final OptionType<TASTExpressionType> default_case,
+        final TType inferred_type_final)
+        throws TypeCheckerError
+    {
+      Pair<TASTEBoolean, TASTExpressionType> r_case_true = null;
+      Pair<TASTEBoolean, TASTExpressionType> r_case_false = null;
+      final Set<Boolean> declared = new HashSet<Boolean>();
+
+      for (int index = 0; index < cases.size(); ++index) {
+        final Pair<TASTExpressionMatchConstantType, TASTExpressionType> c =
+          cases.get(index);
+        final TASTEBoolean cc = (TASTEBoolean) c.getLeft();
+        final Boolean value = Boolean.valueOf(cc.getValue());
+        if (declared.contains(value)) {
+          throw TypeCheckerError.termExpressionMatchOverlappingCase(cc);
+        }
+        declared.add(value);
+
+        if (value.booleanValue()) {
+          assert r_case_true == null;
+          r_case_true = Pair.pair(cc, c.getRight());
+        } else {
+          assert r_case_false == null;
+          r_case_false = Pair.pair(cc, c.getRight());
+        }
+      }
+
+      final boolean case_complete = declared.size() == 2;
+      if (case_complete) {
+        if (default_case.isSome()) {
+          final TASTExpressionType c =
+            ((Some<TASTExpressionType>) default_case).get();
+          throw TypeCheckerError.termExpressionMatchRedundantDefault(c);
+        }
+      } else {
+        if (default_case.isNone()) {
+          final Set<String> missing = new HashSet<String>();
+          if (declared.contains(Boolean.TRUE)) {
+            missing.add("false");
+          } else {
+            missing.add("true");
+          }
+
+          throw TypeCheckerError.termExpressionMatchIncomplete(
+            discriminee,
+            missing);
+        }
+      }
+
+      assert (r_case_false != null) || (r_case_true != null);
+
+      final OptionType<Pair<TASTEBoolean, TASTExpressionType>> s_case_true =
+        Option.of(r_case_true);
+      final OptionType<Pair<TASTEBoolean, TASTExpressionType>> s_case_false =
+        Option.of(r_case_false);
+
+      return new TASTEMatchBoolean(
+        discriminee,
+        s_case_true,
+        s_case_false,
+        default_case,
+        inferred_type_final);
+    }
+
+    private static
+      TASTEMatchType
+      expressionVisitMatchCheckCompleteInteger(
+        final TASTExpressionType discriminee,
+        final List<Pair<TASTExpressionMatchConstantType, TASTExpressionType>> cases,
+        final OptionType<TASTExpressionType> default_case,
+        final TType inferred_type_final)
+        throws TypeCheckerError
+    {
+      final NavigableSet<BigInteger> declared = new TreeSet<BigInteger>();
+      final List<Pair<TASTEInteger, TASTExpressionType>> r_cases =
+        new ArrayList<Pair<TASTEInteger, TASTExpressionType>>();
+
+      for (int index = 0; index < cases.size(); ++index) {
+        final Pair<TASTExpressionMatchConstantType, TASTExpressionType> c =
+          cases.get(index);
+        final TASTEInteger cc = (TASTEInteger) c.getLeft();
+        final BigInteger value = cc.getValue();
+        if (declared.contains(value)) {
+          throw TypeCheckerError.termExpressionMatchOverlappingCase(cc);
+        }
+        declared.add(value);
+        r_cases.add(Pair.pair(cc, c.getRight()));
+      }
+
+      if (default_case.isNone()) {
+        final Set<String> missing = new HashSet<String>();
+        missing.add(declared.last().add(BigInteger.ONE) + " .. infinity");
+        throw TypeCheckerError.termExpressionMatchIncomplete(
+          discriminee,
+          missing);
+      }
+
+      return new TASTEMatchInteger(
+        discriminee,
+        r_cases,
+        ((Some<TASTExpressionType>) default_case).get(),
+        inferred_type_final);
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePost()
+      throws TypeCheckerError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePre()
+      throws TypeCheckerError
+    {
+      // Nothing
+    }
+
+    @Override public @Nullable
+      UASTRExpressionMatchConstantVisitorType<TASTExpressionMatchConstantType, TypeCheckerError>
+      expressionVisitMatchPre(
+        final UASTREMatch m)
+        throws TypeCheckerError
+    {
+      return new MatchConstantChecker();
+    }
+
     @Override public TASTENew expressionVisitNew(
-      final List<TASTExpression> arguments,
+      final List<TASTExpressionType> arguments,
       final UASTRENew e)
       throws TypeCheckerError
     {
@@ -436,7 +704,10 @@ import com.io7m.junreachable.UnreachableCodeException;
               continue check_constructors;
             }
           }
-          return new TASTENew((TValueType) t, arguments);
+          return new TASTENew(
+            e.getName().getName(),
+            (TValueType) t,
+            arguments);
         }
       }
 
@@ -497,7 +768,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           throw TypeCheckerError.termExpressionRecordUnknownField(f_name, tr);
         }
 
-        final TASTExpression et =
+        final TASTExpressionType et =
           f.getExpression().expressionVisitableAccept(
             new TypeCheckerExpression(
               this.module,
@@ -535,11 +806,11 @@ import com.io7m.junreachable.UnreachableCodeException;
           unassigned);
       }
 
-      return new TASTERecord(tr, typed_assigns);
+      return new TASTERecord(e.getTypePath().getName(), tr, typed_assigns);
     }
 
     @Override public TASTERecordProjection expressionVisitRecordProjection(
-      final TASTExpression body,
+      final TASTExpressionType body,
       final UASTRERecordProjection e)
       throws TypeCheckerError
     {
@@ -570,7 +841,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public TASTESwizzle expressionVisitSwizzle(
-      final TASTExpression body,
+      final TASTExpressionType body,
       final UASTRESwizzle e)
       throws TypeCheckerError
     {
@@ -855,7 +1126,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         final UASTRDShaderFragmentLocalDiscard d)
         throws TypeCheckerError
     {
-      final TASTExpression e =
+      final TASTExpressionType e =
         d.getExpression().expressionVisitableAccept(
           new TypeCheckerExpression(
             this.module,
@@ -923,7 +1194,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       final UASTRDValueLocal v)
       throws TypeCheckerError
     {
-      final TASTExpression e =
+      final TASTExpressionType e =
         v.getExpression().expressionVisitableAccept(
           new TypeCheckerExpression(
             this.module,
@@ -993,7 +1264,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     /**
      * Type-check the given module
-     * 
+     *
      * @return A typed module
      * @throws TypeCheckerError
      *           If a type error occurs
@@ -1400,7 +1671,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           this.checked_types,
           f.getReturnType());
 
-      final TASTExpression body =
+      final TASTExpressionType body =
         f.getBody().expressionVisitableAccept(
           new TypeCheckerExpression(
             this.module,
@@ -1465,13 +1736,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       final TFunction tf = new TFunction(f_arguments, (TValueType) treturn);
       final UASTRDExternal orig_ext = f.getExternal();
 
-      final OptionType<UASTRExpression> orig_emulation =
+      final OptionType<UASTRExpressionType> orig_emulation =
         orig_ext.getEmulation();
-      final OptionType<TASTExpression> emulation =
+      final OptionType<TASTExpressionType> emulation =
         orig_emulation
-          .mapPartial(new PartialFunctionType<UASTRExpression, TASTExpression, TypeCheckerError>() {
-            @Override public TASTExpression call(
-              final UASTRExpression e)
+          .mapPartial(new PartialFunctionType<UASTRExpressionType, TASTExpressionType, TypeCheckerError>() {
+            @Override public TASTExpressionType call(
+              final UASTRExpressionType e)
               throws TypeCheckerError
             {
               return e.expressionVisitableAccept(new TypeCheckerExpression(
@@ -1492,7 +1763,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           emulation);
 
       if (emulation.isSome()) {
-        final Some<TASTExpression> some = (Some<TASTExpression>) emulation;
+        final Some<TASTExpressionType> some =
+          (Some<TASTExpressionType>) emulation;
         final TType emu_type = some.get().getType();
 
         if (TTypeEquality.typesAreEqual(emu_type, tf.getReturnType())) {
@@ -1514,7 +1786,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       final LocalTypes locals = LocalTypes.initial();
 
-      final TASTExpression e =
+      final TASTExpressionType e =
         v.getExpression().expressionVisitableAccept(
           new TypeCheckerExpression(
             this.module,
@@ -1559,7 +1831,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       throws TypeCheckerError
     {
       final UASTRDExternal original_external = v.getExternal();
-      final OptionType<TASTExpression> none = Option.none();
+      final OptionType<TASTExpressionType> none = Option.none();
       final TASTDExternal external =
         new TASTDExternal(
           original_external.getName(),
@@ -1981,7 +2253,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Construct a new type checker for the given AST.
-   * 
+   *
    * @param compilation
    *          The AST
    * @param log
@@ -2009,7 +2281,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Check the given AST.
-   * 
+   *
    * @return A typed AST
    * @throws TypeCheckerError
    *           If a type error occurs

@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -30,6 +30,7 @@ import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jequality.annotations.EqualityStructural;
 import com.io7m.jfunctional.Option;
 import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.Pair;
 import com.io7m.jfunctional.PartialFunctionType;
 import com.io7m.jfunctional.Some;
 import com.io7m.jfunctional.Unit;
@@ -39,8 +40,8 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 import com.io7m.jparasol.typed.TType;
 import com.io7m.jparasol.typed.TTypeName.TTypeNameBuiltIn;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRCompilation;
@@ -76,19 +77,21 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueDefine
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueExternal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDeclarationModuleLevel;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREApplication;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREBoolean;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREConditional;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREInteger;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRELet;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRENew;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREReal;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRERecord;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRERecordProjection;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRESwizzle;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREVariable;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRRecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREApplication;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREBoolean;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREConditional;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREInteger;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRELet;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREMatch;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRENew;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREReal;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRERecord;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRERecordProjection;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRESwizzle;
+import com.io7m.jparasol.untyped.ast.resolved.UASTREVariable;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRExpressionMatchConstantType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRExpressionType;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRShaderName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameGlobal;
@@ -127,25 +130,27 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDTypeR
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueDefined;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEApplication;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEBoolean;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEConditional;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEInteger;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUELet;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUENew;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEReal;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecord;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecordProjection;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUESwizzle;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTURecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEApplication;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEBoolean;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEConditional;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEInteger;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUELet;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEMatch;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUENew;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEReal;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUERecord;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUERecordProjection;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUESwizzle;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEVariable;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpressionMatchConstantVisitorType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpressionType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpressionVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderLocalVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderOutputVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUFragmentShaderVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTULocalLevelVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUModuleVisitorType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTURecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUShaderPath;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUShaderVisitorType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTermVisitorType;
@@ -165,7 +170,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
 @SuppressWarnings("synthetic-access") @EqualityReference public final class Resolver
 {
   @EqualityReference private static final class ExpressionResolver implements
-    UASTUExpressionVisitorType<UASTRExpression, UASTRDValueLocal, ResolverError>
+    UASTUExpressionVisitorType<UASTRExpressionType, UASTRExpressionMatchConstantType, UASTRDValueLocal, ResolverError>
   {
     private final UASTUDModule                      module;
     private final Map<ModulePathFlat, UASTUDModule> modules;
@@ -225,7 +230,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
     }
 
     @Override public UASTREApplication expressionVisitApplication(
-      final List<UASTRExpression> arguments,
+      final List<UASTRExpressionType> arguments,
       final UASTUEApplication e)
       throws ResolverError
     {
@@ -252,9 +257,9 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
     }
 
     @Override public UASTREConditional expressionVisitConditional(
-      final UASTRExpression condition,
-      final UASTRExpression left,
-      final UASTRExpression right,
+      final UASTRExpressionType condition,
+      final UASTRExpressionType left,
+      final UASTRExpressionType right,
       final UASTUEConditional e)
       throws ResolverError
     {
@@ -277,7 +282,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
 
     @Override public UASTRELet expressionVisitLet(
       final List<UASTRDValueLocal> bindings,
-      final UASTRExpression body,
+      final UASTRExpressionType body,
       final UASTUELet e)
       throws ResolverError
     {
@@ -298,7 +303,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
     }
 
     @Override public UASTRENew expressionVisitNew(
-      final List<UASTRExpression> arguments,
+      final List<UASTRExpressionType> arguments,
       final UASTUENew e)
       throws ResolverError
     {
@@ -350,7 +355,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
             this.module,
             this.modules,
             this.term_graph);
-        final UASTRExpression ex =
+        final UASTRExpressionType ex =
           a.getExpression().expressionVisitableAccept(er);
         assignments.add(new UASTRRecordFieldAssignment(a.getName(), ex));
       }
@@ -359,7 +364,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
     }
 
     @Override public UASTRERecordProjection expressionVisitRecordProjection(
-      final UASTRExpression body,
+      final UASTRExpressionType body,
       final UASTUERecordProjection e)
       throws ResolverError
     {
@@ -374,7 +379,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
     }
 
     @Override public UASTRESwizzle expressionVisitSwizzle(
-      final UASTRExpression body,
+      final UASTRExpressionType body,
       final UASTUESwizzle e)
       throws ResolverError
     {
@@ -398,6 +403,70 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
 
       this.checkTermReferenceRecursion(name);
       return new UASTREVariable(name);
+    }
+
+    @Override public
+      UASTRExpressionType
+      expressionVisitMatch(
+        final @Nullable UASTRExpressionType discriminee,
+        final @Nullable List<Pair<UASTRExpressionMatchConstantType, UASTRExpressionType>> cases,
+        final @Nullable OptionType<UASTRExpressionType> default_case,
+        final UASTUEMatch m)
+        throws ResolverError
+    {
+      assert discriminee != null;
+      assert cases != null;
+      assert default_case != null;
+
+      return new UASTREMatch(
+        m.getTokenMatch(),
+        discriminee,
+        cases,
+        default_case);
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePost()
+      throws ResolverError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePre()
+      throws ResolverError
+    {
+      // Nothing
+    }
+
+    @Override public @Nullable
+      UASTUExpressionMatchConstantVisitorType<UASTRExpressionMatchConstantType, ResolverError>
+      expressionVisitMatchPre(
+        final UASTUEMatch m)
+        throws ResolverError
+    {
+      return new MatchConstantResolver();
+    }
+  }
+
+  @EqualityReference private static final class MatchConstantResolver implements
+    UASTUExpressionMatchConstantVisitorType<UASTRExpressionMatchConstantType, ResolverError>
+  {
+    public MatchConstantResolver()
+    {
+      // Nothing
+    }
+
+    @Override public UASTRExpressionMatchConstantType expressionVisitBoolean(
+      final UASTUEBoolean e)
+      throws ResolverError
+    {
+      return new UASTREBoolean(e.getToken());
+    }
+
+    @Override public UASTRExpressionMatchConstantType expressionVisitInteger(
+      final UASTUEInteger e)
+      throws ResolverError
+    {
+      return new UASTREInteger(e.getToken());
     }
   }
 
@@ -427,7 +496,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
         final UASTUDShaderFragmentLocalDiscard d)
         throws ResolverError
     {
-      final UASTRExpression ex =
+      final UASTRExpressionType ex =
         d.getExpression().expressionVisitableAccept(
           new ExpressionResolver(null, this.module, this.modules, null));
 
@@ -832,7 +901,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
           this.modules,
           this.term_graph);
 
-      final UASTRExpression expression =
+      final UASTRExpressionType expression =
         v.getExpression().expressionVisitableAccept(exr);
 
       final TokenIdentifierLower original = v.getName().getOriginal();
@@ -1643,7 +1712,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
       final UASTUDFunctionDefined f)
       throws ResolverError
     {
-      final UASTRExpression ex =
+      final UASTRExpressionType ex =
         f.getBody().expressionVisitableAccept(
           new ExpressionResolver(
             this.term,
@@ -1716,13 +1785,13 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
       this.term_graph.addTerm(this.module.getPath(), f.getName());
 
       final UASTUDExternal ext = f.getExternal();
-      final OptionType<UASTUExpression> original_emulation =
+      final OptionType<UASTUExpressionType> original_emulation =
         ext.getEmulation();
-      final OptionType<UASTRExpression> emulation =
+      final OptionType<UASTRExpressionType> emulation =
         original_emulation
-          .mapPartial(new PartialFunctionType<UASTUExpression, UASTRExpression, ResolverError>() {
-            @Override public UASTRExpression call(
-              final UASTUExpression e)
+          .mapPartial(new PartialFunctionType<UASTUExpressionType, UASTRExpressionType, ResolverError>() {
+            @Override public UASTRExpressionType call(
+              final UASTUExpressionType e)
               throws ResolverError
             {
               return e.expressionVisitableAccept(new ExpressionResolver(
@@ -1765,7 +1834,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
               }
             });
 
-      final UASTRExpression ex =
+      final UASTRExpressionType ex =
         v.getExpression().expressionVisitableAccept(
           new ExpressionResolver(
             this.term,
@@ -1792,7 +1861,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
           type_name.getName());
 
       this.term_graph.addTerm(this.module.getPath(), v.getName());
-      final OptionType<UASTRExpression> none = Option.none();
+      final OptionType<UASTRExpressionType> none = Option.none();
       final UASTRDExternal external =
         new UASTRDExternal(
           original_external.getName(),
@@ -2332,7 +2401,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
 
   /**
    * Construct a new name resolver for the given AST.
-   * 
+   *
    * @param compilation
    *          The AST
    * @param log

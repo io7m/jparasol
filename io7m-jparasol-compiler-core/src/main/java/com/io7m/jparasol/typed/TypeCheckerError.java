@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -24,9 +24,11 @@ import java.util.Set;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.lexer.Token.TokenDiscard;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIf;
+import com.io7m.jparasol.lexer.PositionalType;
+import com.io7m.jparasol.lexer.TokenDiscard;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIf;
+import com.io7m.jparasol.lexer.TokenMatch;
 import com.io7m.jparasol.typed.TType.TBoolean;
 import com.io7m.jparasol.typed.TType.TConstructor;
 import com.io7m.jparasol.typed.TType.TFunctionArgument;
@@ -36,12 +38,17 @@ import com.io7m.jparasol.typed.TType.TRecordField;
 import com.io7m.jparasol.typed.TType.TValueType;
 import com.io7m.jparasol.typed.TType.TVector4F;
 import com.io7m.jparasol.typed.TType.TVectorType;
+import com.io7m.jparasol.typed.TTypeName.TTypeNameBuiltIn;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShader;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragment;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentInput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderProgram;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
-import com.io7m.jparasol.typed.ast.TASTExpression;
+import com.io7m.jparasol.typed.ast.TASTEBoolean;
+import com.io7m.jparasol.typed.ast.TASTEInteger;
+import com.io7m.jparasol.typed.ast.TASTExpressionMatchConstantType;
+import com.io7m.jparasol.typed.ast.TASTExpressionMatchConstantVisitorType;
+import com.io7m.jparasol.typed.ast.TASTExpressionType;
 import com.io7m.jparasol.typed.ast.TASTShaderVisitorType;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDShaderFragmentInput;
@@ -86,6 +93,12 @@ public final class TypeCheckerError extends CompilerError
      */
 
     TYPE_ERROR_EXPRESSION_CONDITION_NOT_BOOLEAN,
+
+    /**
+     * Non discriminable type used in match expression.
+     */
+
+    TYPE_ERROR_EXPRESSION_MATCH_NOT_DISCRIMINABLE,
 
     /**
      * No available constructor for the given list of expressions.
@@ -218,10 +231,70 @@ public final class TypeCheckerError extends CompilerError
      * Non-value type used where a value type is required.
      */
 
-    TYPE_ERROR_VALUE_NON_VALUE_TYPE
+    TYPE_ERROR_VALUE_NON_VALUE_TYPE,
+
+    /**
+     * The type of a match case constant does not match the type of the
+     * discriminee.
+     */
+
+    TYPE_ERROR_EXPRESSION_MATCH_CONSTANT_BAD_TYPE,
+
+    /**
+     * The type of a match case does not match the type of the discriminee.
+     */
+
+    TYPE_ERROR_EXPRESSION_MATCH_CASE_BAD_TYPE,
+
+    /**
+     * One or more cases of a match expression overlap.
+     */
+
+    TYPE_ERROR_EXPRESSION_MATCH_CASE_OVERLAPPING,
+
+    /**
+     * One or more cases of a match expression are missing.
+     */
+
+    TYPE_ERROR_EXPRESSION_MATCH_CASE_INCOMPLETE,
+
+    /**
+     * A match expression has a redundant default case.
+     */
+
+    TYPE_ERROR_EXPRESSION_MATCH_CASE_DEFAULT_REDUNDANT
   }
 
   private static final long serialVersionUID = 8186811920948826949L;
+
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionMatchTypeNotDiscriminable(
+    final TokenMatch token,
+    final TType type)
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("The given match expression discriminee is of type ");
+    m.append(type.getShowName());
+    m
+      .append(" but match expressions can only discriminate on values of types:\n");
+
+    for (final TTypeNameBuiltIn n : TType.getMatchTypesByName().keySet()) {
+      m.append("  ");
+      m.append(n.show());
+      m.append("\n");
+    }
+
+    final String r = m.toString();
+    assert r != null;
+    return new TypeCheckerError(
+      token.getFile(),
+      token.getPosition(),
+      Code.TYPE_ERROR_EXPRESSION_MATCH_NOT_DISCRIMINABLE,
+      r);
+  }
 
   /**
    * @return A type error
@@ -503,7 +576,7 @@ public final class TypeCheckerError extends CompilerError
   public static TypeCheckerError termExpressionApplicationBadTypes(
     final UASTRTermName name,
     final List<TFunctionArgument> expected,
-    final List<TASTExpression> got)
+    final List<TASTExpressionType> got)
   {
     final StringBuilder m = new StringBuilder();
     m.append("Incorrect argument types for application of function ");
@@ -555,7 +628,7 @@ public final class TypeCheckerError extends CompilerError
 
   public static TypeCheckerError termExpressionNewNoAppropriateConstructors(
     final UASTRTypeName name,
-    final List<TASTExpression> arguments,
+    final List<TASTExpressionType> arguments,
     final List<TConstructor> constructors)
   {
     final StringBuilder m = new StringBuilder();
@@ -722,7 +795,7 @@ public final class TypeCheckerError extends CompilerError
    */
 
   public static TypeCheckerError termExpressionRecordProjectionNotRecord(
-    final TASTExpression body,
+    final TASTExpressionType body,
     final TokenIdentifierLower field)
   {
     final StringBuilder m = new StringBuilder();
@@ -778,7 +851,7 @@ public final class TypeCheckerError extends CompilerError
    */
 
   public static TypeCheckerError termExpressionSwizzleNotVector(
-    final TASTExpression body,
+    final TASTExpressionType body,
     final TokenIdentifierLower first_field)
   {
     final StringBuilder m = new StringBuilder();
@@ -928,7 +1001,7 @@ public final class TypeCheckerError extends CompilerError
 
   public static TypeCheckerError typeConditionNotBoolean(
     final TokenIf token,
-    final TASTExpression condition)
+    final TASTExpressionType condition)
   {
     final StringBuilder m = new StringBuilder();
     m
@@ -1015,5 +1088,136 @@ public final class TypeCheckerError extends CompilerError
   public Code getCode()
   {
     return this.code;
+  }
+
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionMatchConstantBadType(
+    final PositionalType pos,
+    final TType expected,
+    final TType got)
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("The match case constant differs in type to the discriminee.\n");
+    m.append("Expected: ");
+    m.append(expected.getShowName());
+    m.append("\n");
+    m.append("Got:      ");
+    m.append(got.getShowName());
+    m.append("\n");
+
+    final String r = m.toString();
+    assert r != null;
+    return new TypeCheckerError(
+      pos.getFile(),
+      pos.getPosition(),
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CONSTANT_BAD_TYPE,
+      r);
+  }
+
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionMatchCaseBadType(
+    final PositionalType pos,
+    final TType expected,
+    final TType got)
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("The match case type differs in type to the first case.\n");
+    m.append("Expected: ");
+    m.append(expected.getShowName());
+    m.append("\n");
+    m.append("Got:      ");
+    m.append(got.getShowName());
+    m.append("\n");
+
+    final String r = m.toString();
+    assert r != null;
+    return new TypeCheckerError(
+      pos.getFile(),
+      pos.getPosition(),
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_BAD_TYPE,
+      r);
+  }
+
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionMatchOverlappingCase(
+    final TASTExpressionMatchConstantType cc)
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("Overlapping match expression case: ");
+    m
+      .append(cc
+        .matchConstantVisitableAccept(new TASTExpressionMatchConstantVisitorType<String, UnreachableCodeException>() {
+          @Override public String expressionVisitBoolean(
+            final TASTEBoolean e)
+          {
+            return Boolean.toString(e.getValue());
+          }
+
+          @Override public String expressionVisitInteger(
+            final TASTEInteger e)
+          {
+            return e.getValue().toString();
+          }
+        }));
+    m.append("\n");
+    final String r = m.toString();
+    assert r != null;
+    return new TypeCheckerError(
+      cc.getFile(),
+      cc.getPosition(),
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_OVERLAPPING,
+      r);
+  }
+
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionMatchIncomplete(
+    final PositionalType pos,
+    final Set<String> missing)
+  {
+    final StringBuilder m = new StringBuilder();
+    m
+      .append("Match expression has missing cases. Cases not covered by the match include:\n");
+    for (final String s : missing) {
+      m.append("  ");
+      m.append(s);
+      m.append("\n");
+    }
+    final String r = m.toString();
+    assert r != null;
+    return new TypeCheckerError(
+      pos.getFile(),
+      pos.getPosition(),
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_INCOMPLETE,
+      r);
+  }
+
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionMatchRedundantDefault(
+    final TASTExpressionType c)
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("Match expression has a redundant default case.\n");
+    final String r = m.toString();
+    assert r != null;
+    return new TypeCheckerError(
+      c.getFile(),
+      c.getPosition(),
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_DEFAULT_REDUNDANT,
+      r);
   }
 }

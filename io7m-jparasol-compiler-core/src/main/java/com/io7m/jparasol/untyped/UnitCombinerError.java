@@ -21,7 +21,7 @@ import java.io.File;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.NameRestrictions.NameRestrictionsException;
 import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDModule;
 
 /**

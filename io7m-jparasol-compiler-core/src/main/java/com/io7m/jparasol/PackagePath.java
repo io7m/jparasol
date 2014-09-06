@@ -25,8 +25,7 @@ import com.io7m.jequality.annotations.EqualityStructural;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.lexer.Token;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
 
 /**
  * The type of package paths.
@@ -76,7 +75,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
   {
     return new BuilderType() {
       private final List<TokenIdentifierLower> components =
-                                                            new ArrayList<Token.TokenIdentifierLower>();
+                                                            new ArrayList<TokenIdentifierLower>();
 
       @Override public void addComponent(
         final TokenIdentifierLower c)

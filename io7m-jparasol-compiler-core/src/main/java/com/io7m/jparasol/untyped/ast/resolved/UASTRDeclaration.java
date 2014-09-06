@@ -28,10 +28,9 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
-import com.io7m.jparasol.lexer.Token.TokenDiscard;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
-import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREVariable;
+import com.io7m.jparasol.lexer.TokenDiscard;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
 
 // CHECKSTYLE_JAVADOC:OFF
@@ -80,7 +79,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
 
   @EqualityReference public static final class UASTRDExternal
   {
-    private final OptionType<UASTRExpression> emulation;
+    private final OptionType<UASTRExpressionType> emulation;
     private final boolean                     fragment_shader_allowed;
     private final TokenIdentifierLower        name;
     private final boolean                     vertex_shader_allowed;
@@ -89,7 +88,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
       final TokenIdentifierLower in_name,
       final boolean in_vertex_shader_allowed,
       final boolean in_fragment_shader_allowed,
-      final OptionType<UASTRExpression> in_emulation)
+      final OptionType<UASTRExpressionType> in_emulation)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.vertex_shader_allowed = in_vertex_shader_allowed;
@@ -97,7 +96,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
       this.emulation = NullCheck.notNull(in_emulation, "Emulation");
     }
 
-    public OptionType<UASTRExpression> getEmulation()
+    public OptionType<UASTRExpressionType> getEmulation()
     {
       return this.emulation;
     }
@@ -184,7 +183,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
     UASTRDFunction
   {
     private final List<UASTRDFunctionArgument> arguments;
-    private final UASTRExpression              body;
+    private final UASTRExpressionType              body;
     private final TokenIdentifierLower         name;
     private final UASTRTypeName                return_type;
 
@@ -192,7 +191,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
       final TokenIdentifierLower in_name,
       final List<UASTRDFunctionArgument> in_arguments,
       final UASTRTypeName in_return_type,
-      final UASTRExpression in_body)
+      final UASTRExpressionType in_body)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.arguments = NullCheck.notNull(in_arguments, "Arguments");
@@ -221,7 +220,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
       return this.arguments;
     }
 
-    public UASTRExpression getBody()
+    public UASTRExpressionType getBody()
     {
       return this.body;
     }
@@ -837,11 +836,11 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
     UASTRDShaderFragmentLocal
   {
     private final TokenDiscard    discard;
-    private final UASTRExpression expression;
+    private final UASTRExpressionType expression;
 
     public UASTRDShaderFragmentLocalDiscard(
       final TokenDiscard in_discard,
-      final UASTRExpression in_expression)
+      final UASTRExpressionType in_expression)
     {
       this.discard = NullCheck.notNull(in_discard, "Discard");
       this.expression = NullCheck.notNull(in_expression, "Expression");
@@ -862,7 +861,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
       return this.discard;
     }
 
-    public UASTRExpression getExpression()
+    public UASTRExpressionType getExpression()
     {
       return this.expression;
     }
@@ -1579,13 +1578,13 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
     UASTRDValue
   {
     private final OptionType<UASTRTypeName> ascription;
-    private final UASTRExpression           expression;
+    private final UASTRExpressionType           expression;
     private final TokenIdentifierLower      name;
 
     public UASTRDValueDefined(
       final TokenIdentifierLower in_name,
       final OptionType<UASTRTypeName> in_ascription,
-      final UASTRExpression in_expression)
+      final UASTRExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.ascription = NullCheck.notNull(in_ascription, "Ascription");
@@ -1597,7 +1596,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
       return this.ascription;
     }
 
-    public UASTRExpression getExpression()
+    public UASTRExpressionType getExpression()
     {
       return this.expression;
     }
@@ -1723,13 +1722,13 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
     UASTRDTermLocal
   {
     private final OptionType<UASTRTypeName> ascription;
-    private final UASTRExpression           expression;
+    private final UASTRExpressionType           expression;
     private final UASTRTermNameLocal        name;
 
     public UASTRDValueLocal(
       final UASTRTermNameLocal in_name,
       final OptionType<UASTRTypeName> in_ascription,
-      final UASTRExpression in_expression)
+      final UASTRExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.ascription = NullCheck.notNull(in_ascription, "Ascription");
@@ -1741,7 +1740,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRTermName.UASTRTermNameLocal;
       return this.ascription;
     }
 
-    public UASTRExpression getExpression()
+    public UASTRExpressionType getExpression()
     {
       return this.expression;
     }

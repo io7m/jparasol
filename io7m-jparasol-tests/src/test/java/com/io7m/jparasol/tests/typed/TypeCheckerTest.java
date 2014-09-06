@@ -1,10 +1,10 @@
 /*
  * Copyright © 2013 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -49,15 +49,16 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderFragmentInput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertex;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDShaderVertexOutput;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecord;
+import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValue;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTENew;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTESwizzle;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
+import com.io7m.jparasol.typed.ast.TASTEApplication;
+import com.io7m.jparasol.typed.ast.TASTENew;
+import com.io7m.jparasol.typed.ast.TASTERecord;
+import com.io7m.jparasol.typed.ast.TASTESwizzle;
 import com.io7m.jparasol.typed.ast.TASTNameTermShaderFlatType;
 import com.io7m.jparasol.typed.ast.TASTNameTypeShaderFlatType;
 import com.io7m.jparasol.typed.ast.TASTNameTypeTermFlatType;
+import com.io7m.jparasol.typed.ast.TASTRecordFieldAssignment;
 import com.io7m.jparasol.typed.ast.TASTReference;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
@@ -1261,5 +1262,141 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
     TypeCheckerTest.checkMustFailWithCode(
       new String[] { "typed/vertex-shader-output-main-bad-type-0.p" },
       Code.TYPE_ERROR_SHADER_OUTPUT_MAIN_BAD_TYPE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatchNotDiscriminable_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/term-expression-match-not-discriminable-0.p" },
+      Code.TYPE_ERROR_EXPRESSION_MATCH_NOT_DISCRIMINABLE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatchCaseConstantBadType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest
+      .checkMustFailWithCode(
+        new String[] { "typed/term-expression-match-case-constant-bad-type-0.p" },
+        Code.TYPE_ERROR_EXPRESSION_MATCH_CONSTANT_BAD_TYPE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatchCaseExpressionBadType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest
+      .checkMustFailWithCode(
+        new String[] { "typed/term-expression-match-case-expression-bad-type-0.p" },
+        Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_BAD_TYPE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatchBooleanIncomplete_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/term-expression-match-boolean-incomplete-0.p" },
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_INCOMPLETE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatchBooleanIncomplete_1()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/term-expression-match-boolean-incomplete-1.p" },
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_INCOMPLETE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatchBooleanOverlapping_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/term-expression-match-boolean-overlapping-0.p" },
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_OVERLAPPING);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatchBooleanRedundant_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/term-expression-match-boolean-redundant-0.p" },
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_DEFAULT_REDUNDANT);
+  }
+
+  @Test public void testTermExpressionMatchBooleanOK_0()
+    throws TypeCheckerError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .typed(new String[] { "typed/term-expression-match-boolean-ok-0.p" });
+
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
+    final TASTDValue z = (TASTDValue) m.getTerms().get("z");
+  }
+
+  @Test public void testTermExpressionMatchBooleanOK_1()
+    throws TypeCheckerError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .typed(new String[] { "typed/term-expression-match-boolean-ok-1.p" });
+
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
+    final TASTDValue z = (TASTDValue) m.getTerms().get("z");
+  }
+
+  @Test public void testTermExpressionMatchBooleanOK_2()
+    throws TypeCheckerError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .typed(new String[] { "typed/term-expression-match-boolean-ok-2.p" });
+
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
+    final TASTDValue z = (TASTDValue) m.getTerms().get("z");
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatchIntegerIncomplete_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/term-expression-match-integer-incomplete-0.p" },
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_INCOMPLETE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatchIntegerOverlapping_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/term-expression-match-integer-overlapping-0.p" },
+      Code.TYPE_ERROR_EXPRESSION_MATCH_CASE_OVERLAPPING);
+  }
+
+  @Test public void testTermExpressionMatchIntegerOK_0()
+    throws TypeCheckerError
+  {
+    final TASTCompilation r =
+      TestPipeline
+        .typed(new String[] { "typed/term-expression-match-integer-ok-0.p" });
+
+    final TASTDModule m = TestPipeline.getModule(r, "x.y", "M");
+    final TASTDValue z = (TASTDValue) m.getTerms().get("z");
   }
 }

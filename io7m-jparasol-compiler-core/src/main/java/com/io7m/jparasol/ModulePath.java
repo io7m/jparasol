@@ -19,7 +19,7 @@ package com.io7m.jparasol;
 import com.io7m.jequality.annotations.EqualityStructural;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 
 /**
  * Paths to specific modules.

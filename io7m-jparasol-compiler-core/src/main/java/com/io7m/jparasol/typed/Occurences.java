@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- *
+ * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -21,25 +21,28 @@ import java.util.List;
 import java.util.Set;
 
 import com.io7m.jequality.annotations.EqualityReference;
+import com.io7m.jfunctional.Pair;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
-import com.io7m.jparasol.typed.ast.TASTExpression;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEBoolean;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEConditional;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEInteger;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTELet;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTENew;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEReal;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecordProjection;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTESwizzle;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
+import com.io7m.jparasol.typed.ast.TASTEApplication;
+import com.io7m.jparasol.typed.ast.TASTEBoolean;
+import com.io7m.jparasol.typed.ast.TASTEConditional;
+import com.io7m.jparasol.typed.ast.TASTEInteger;
+import com.io7m.jparasol.typed.ast.TASTELet;
+import com.io7m.jparasol.typed.ast.TASTEMatchType;
+import com.io7m.jparasol.typed.ast.TASTENew;
+import com.io7m.jparasol.typed.ast.TASTEReal;
+import com.io7m.jparasol.typed.ast.TASTERecord;
+import com.io7m.jparasol.typed.ast.TASTERecordProjection;
+import com.io7m.jparasol.typed.ast.TASTESwizzle;
+import com.io7m.jparasol.typed.ast.TASTEVariable;
+import com.io7m.jparasol.typed.ast.TASTExpressionMatchConstantType;
+import com.io7m.jparasol.typed.ast.TASTExpressionType;
 import com.io7m.jparasol.typed.ast.TASTExpressionVisitorType;
 import com.io7m.jparasol.typed.ast.TASTLocalLevelVisitorType;
+import com.io7m.jparasol.typed.ast.TASTRecordFieldAssignment;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameExternal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameGlobal;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
@@ -53,7 +56,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 @EqualityReference public final class Occurences
 {
   @EqualityReference private static final class Checker implements
-    TASTExpressionVisitorType<Unit, Unit, UnreachableCodeException>
+    TASTExpressionVisitorType<Unit, Unit, Unit, UnreachableCodeException>
   {
     private final Set<String> check_names;
     private final Set<String> found_names;
@@ -157,6 +160,38 @@ import com.io7m.junreachable.UnreachableCodeException;
         final TASTELet e)
     {
       return new LocalChecker(this.check_names, this.found_names);
+    }
+
+    @Override public Unit expressionVisitMatch(
+      @Nullable final Unit discriminee,
+      @Nullable final List<Pair<Unit, Unit>> cases,
+      @Nullable final Unit default_case,
+      final TASTEMatchType m)
+    {
+      return Unit.unit();
+    }
+
+    @Override public Unit expressionVisitMatchCase(
+      final TASTExpressionMatchConstantType c)
+      throws UnreachableCodeException
+    {
+      return Unit.unit();
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePost()
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePre()
+    {
+      // Nothing
+    }
+
+    @Override public boolean expressionVisitMatchPre(
+      final TASTEMatchType m)
+    {
+      return true;
     }
 
     @Override public Unit expressionVisitNew(
@@ -286,7 +321,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   public static Set<String> occursIn(
-    final TASTExpression e,
+    final TASTExpressionType e,
     final Set<String> names)
   {
     NullCheck.notNull(e, "Expression");

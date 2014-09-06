@@ -24,10 +24,9 @@ import com.io7m.jfunctional.OptionType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.PackagePath;
-import com.io7m.jparasol.lexer.Token.TokenDiscard;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
+import com.io7m.jparasol.lexer.TokenDiscard;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 
 // CHECKSTYLE_JAVADOC:OFF
 
@@ -75,7 +74,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
 
   @EqualityReference public static final class UASTIDExternal
   {
-    private final OptionType<UASTIExpression> emulation;
+    private final OptionType<UASTIExpressionType> emulation;
     private final boolean                     fragment_shader_allowed;
     private final TokenIdentifierLower        name;
     private final boolean                     vertex_shader_allowed;
@@ -84,7 +83,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
       final TokenIdentifierLower in_name,
       final boolean in_vertex_shader_allowed,
       final boolean in_fragment_shader_allowed,
-      final OptionType<UASTIExpression> in_emulation)
+      final OptionType<UASTIExpressionType> in_emulation)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.vertex_shader_allowed = in_vertex_shader_allowed;
@@ -92,7 +91,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
       this.emulation = NullCheck.notNull(in_emulation, "Emulation");
     }
 
-    public OptionType<UASTIExpression> getEmulation()
+    public OptionType<UASTIExpressionType> getEmulation()
     {
       return this.emulation;
     }
@@ -155,7 +154,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
     UASTIDFunction
   {
     private final List<UASTIDFunctionArgument> arguments;
-    private final UASTIExpression              body;
+    private final UASTIExpressionType              body;
     private final TokenIdentifierLower         name;
     private final UASTITypePath                return_type;
 
@@ -163,7 +162,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
       final TokenIdentifierLower in_name,
       final List<UASTIDFunctionArgument> in_arguments,
       final UASTITypePath in_return_type,
-      final UASTIExpression in_body)
+      final UASTIExpressionType in_body)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.arguments = NullCheck.notNull(in_arguments, "Arguments");
@@ -192,7 +191,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
       return this.arguments;
     }
 
-    public UASTIExpression getBody()
+    public UASTIExpressionType getBody()
     {
       return this.body;
     }
@@ -577,11 +576,11 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
     UASTIDShaderFragmentLocal
   {
     private final TokenDiscard    discard;
-    private final UASTIExpression expression;
+    private final UASTIExpressionType expression;
 
     public UASTIDShaderFragmentLocalDiscard(
       final TokenDiscard in_discard,
-      final UASTIExpression in_expression)
+      final UASTIExpressionType in_expression)
     {
       this.discard = NullCheck.notNull(in_discard, "Discard");
       this.expression = NullCheck.notNull(in_expression, "Expression");
@@ -602,7 +601,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
       return this.discard;
     }
 
-    public UASTIExpression getExpression()
+    public UASTIExpressionType getExpression()
     {
       return this.expression;
     }
@@ -1139,13 +1138,13 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
     UASTIDValue
   {
     private final OptionType<UASTITypePath> ascription;
-    private final UASTIExpression           expression;
+    private final UASTIExpressionType           expression;
     private final TokenIdentifierLower      name;
 
     public UASTIDValueDefined(
       final TokenIdentifierLower in_name,
       final OptionType<UASTITypePath> in_ascription,
-      final UASTIExpression in_expression)
+      final UASTIExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.ascription = NullCheck.notNull(in_ascription, "Ascription");
@@ -1157,7 +1156,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
       return this.ascription;
     }
 
-    public UASTIExpression getExpression()
+    public UASTIExpressionType getExpression()
     {
       return this.expression;
     }
@@ -1253,13 +1252,13 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
     UASTIDTermLocal
   {
     private final OptionType<UASTITypePath> ascription;
-    private final UASTIExpression           expression;
+    private final UASTIExpressionType           expression;
     private final TokenIdentifierLower      name;
 
     public UASTIDValueLocal(
       final TokenIdentifierLower in_name,
       final OptionType<UASTITypePath> in_ascription,
-      final UASTIExpression in_expression)
+      final UASTIExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.ascription = NullCheck.notNull(in_ascription, "Ascription");
@@ -1271,7 +1270,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
       return this.ascription;
     }
 
-    public UASTIExpression getExpression()
+    public UASTIExpressionType getExpression()
     {
       return this.expression;
     }

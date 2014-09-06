@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -40,17 +40,17 @@ import com.io7m.jparasol.typed.TType;
   @EqualityReference public static final class GASTShaderFragment extends
     GASTShader
   {
-    private final GVersionType                                     glsl_version;
-    private final List<GASTShaderFragmentInput>                    inputs;
-    private final GASTShaderMainFragment                           main;
-    private final List<GASTShaderFragmentOutput>                   outputs;
-    private final List<GASTShaderFragmentParameter>                parameter;
-    private final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms;
-    private final List<Pair<GTypeName, GASTTypeDeclaration>>       types;
+    private final GVersionType                                         glsl_version;
+    private final List<GASTShaderFragmentInput>                        inputs;
+    private final GASTShaderMainFragment                               main;
+    private final List<GASTShaderFragmentOutput>                       outputs;
+    private final List<GASTShaderFragmentParameter>                    parameter;
+    private final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms;
+    private final List<Pair<GTypeName, GASTTypeDeclaration>>           types;
 
     /**
      * Construct a fragment shader.
-     * 
+     *
      * @param in_inputs
      *          The inputs
      * @param in_main
@@ -72,7 +72,7 @@ import com.io7m.jparasol.typed.TType;
       final GASTShaderMainFragment in_main,
       final List<GASTShaderFragmentOutput> in_outputs,
       final List<GASTShaderFragmentParameter> in_parameter,
-      final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_terms,
+      final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> in_terms,
       final List<Pair<GTypeName, GASTTypeDeclaration>> in_types,
       final GVersionType in_glsl_version)
     {
@@ -134,7 +134,7 @@ import com.io7m.jparasol.typed.TType;
      * @return The terms
      */
 
-    public List<Pair<GTermNameGlobal, GASTTermDeclaration>> getTerms()
+    public List<Pair<GTermNameGlobal, GASTTermDeclarationType>> getTerms()
     {
       return this.terms;
     }
@@ -184,7 +184,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct an input.
-     * 
+     *
      * @param in_name
      *          The name
      * @param in_type_name
@@ -256,7 +256,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct an output.
-     * 
+     *
      * @param in_name
      *          The name
      * @param in_index
@@ -330,7 +330,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct a fragment shader parameter.
-     * 
+     *
      * @param in_name
      *          The name
      * @param in_type
@@ -400,17 +400,17 @@ import com.io7m.jparasol.typed.TType;
   @EqualityReference public static final class GASTShaderVertex extends
     GASTShader
   {
-    private final GVersionType                                     glsl_version;
-    private final List<GASTShaderVertexInput>                      inputs;
-    private final GASTShaderMainVertex                             main;
-    private final List<GASTShaderVertexOutput>                     outputs;
-    private final List<GASTShaderVertexParameter>                  parameter;
-    private final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms;
-    private final List<Pair<GTypeName, GASTTypeDeclaration>>       types;
+    private final GVersionType                                         glsl_version;
+    private final List<GASTShaderVertexInput>                          inputs;
+    private final GASTShaderMainVertex                                 main;
+    private final List<GASTShaderVertexOutput>                         outputs;
+    private final List<GASTShaderVertexParameter>                      parameter;
+    private final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms;
+    private final List<Pair<GTypeName, GASTTypeDeclaration>>           types;
 
     /**
      * Construct a vertex shader.
-     * 
+     *
      * @param in_inputs
      *          The inputs
      * @param in_main
@@ -432,7 +432,7 @@ import com.io7m.jparasol.typed.TType;
       final GASTShaderMainVertex in_main,
       final List<GASTShaderVertexOutput> in_outputs,
       final List<GASTShaderVertexParameter> in_parameter,
-      final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_terms,
+      final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> in_terms,
       final List<Pair<GTypeName, GASTTypeDeclaration>> in_types,
       final GVersionType in_glsl_version)
     {
@@ -494,7 +494,7 @@ import com.io7m.jparasol.typed.TType;
      * @return The terms
      */
 
-    public List<Pair<GTermNameGlobal, GASTTermDeclaration>> getTerms()
+    public List<Pair<GTermNameGlobal, GASTTermDeclarationType>> getTerms()
     {
       return this.terms;
     }
@@ -543,7 +543,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct an input.
-     * 
+     *
      * @param in_name
      *          The name
      * @param in_type
@@ -602,7 +602,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct an output.
-     * 
+     *
      * @param in_name
      *          The name
      * @param in_type_name
@@ -674,7 +674,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct a parameter.
-     * 
+     *
      * @param in_name
      *          The name
      * @param in_type

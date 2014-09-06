@@ -19,9 +19,8 @@ package com.io7m.jparasol.untyped.ast.checked;
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.OptionType;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jparasol.lexer.Token;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 
 /**
  * A path to a shader.
@@ -31,8 +30,8 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
 @EqualityReference public final class UASTCShaderPath
 {
-  private final OptionType<Token.TokenIdentifierUpper> module;
-  private final Token.TokenIdentifierLower             name;
+  private final OptionType<TokenIdentifierUpper> module;
+  private final TokenIdentifierLower             name;
 
   public UASTCShaderPath(
     final OptionType<TokenIdentifierUpper> in_module,
@@ -42,12 +41,12 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
     this.name = NullCheck.notNull(in_name, "Name");
   }
 
-  public OptionType<Token.TokenIdentifierUpper> getModule()
+  public OptionType<TokenIdentifierUpper> getModule()
   {
     return this.module;
   }
 
-  public Token.TokenIdentifierLower getName()
+  public TokenIdentifierLower getName()
   {
     return this.name;
   }

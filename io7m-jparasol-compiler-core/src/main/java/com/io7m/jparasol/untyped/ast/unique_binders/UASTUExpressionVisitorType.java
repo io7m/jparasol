@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -18,21 +18,13 @@ package com.io7m.jparasol.untyped.ast.unique_binders;
 
 import java.util.List;
 
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEApplication;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEBoolean;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEConditional;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEInteger;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUELet;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUENew;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEReal;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecord;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecordProjection;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUESwizzle;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.Pair;
+import com.io7m.jnull.Nullable;
 
 // CHECKSTYLE_JAVADOC:OFF
 
-public interface UASTUExpressionVisitorType<A, L, E extends Throwable>
+public interface UASTUExpressionVisitorType<A, C, L, E extends Throwable>
 {
   A expressionVisitApplication(
     final List<A> arguments,
@@ -110,4 +102,23 @@ public interface UASTUExpressionVisitorType<A, L, E extends Throwable>
   A expressionVisitVariable(
     final UASTUEVariable e)
     throws E;
+
+  A expressionVisitMatch(
+    final @Nullable A discriminee,
+    final @Nullable List<Pair<C, A>> cases,
+    final @Nullable OptionType<A> default_case,
+    final UASTUEMatch m)
+    throws E;
+
+  void expressionVisitMatchDiscrimineePost()
+    throws E;
+
+  void expressionVisitMatchDiscrimineePre()
+    throws E;
+
+  @Nullable
+    UASTUExpressionMatchConstantVisitorType<C, E>
+    expressionVisitMatchPre(
+      final UASTUEMatch m)
+      throws E;
 }

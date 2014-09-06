@@ -18,7 +18,7 @@ package com.io7m.jparasol.glsl;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jparasol.glsl.ast.GASTExpression;
+import com.io7m.jparasol.glsl.ast.GASTExpressionType;
 
 /**
  * The type of FFI expressions.
@@ -33,7 +33,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression;
   @EqualityReference public static final class GFFIExpressionBuiltIn extends
     GFFIExpression
   {
-    private final GASTExpression expression;
+    private final GASTExpressionType expression;
 
     /**
      * Construct an expression.
@@ -43,7 +43,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression;
      */
 
     public GFFIExpressionBuiltIn(
-      final GASTExpression in_expression)
+      final GASTExpressionType in_expression)
     {
       this.expression = NullCheck.notNull(in_expression, "Expression");
     }
@@ -62,7 +62,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression;
      * @return The expression
      */
 
-    public GASTExpression getExpression()
+    public GASTExpressionType getExpression()
     {
       return this.expression;
     }

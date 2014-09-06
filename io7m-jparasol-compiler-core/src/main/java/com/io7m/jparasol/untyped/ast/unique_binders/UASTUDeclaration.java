@@ -29,10 +29,9 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
-import com.io7m.jparasol.lexer.Token.TokenDiscard;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
+import com.io7m.jparasol.lexer.TokenDiscard;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 
 // CHECKSTYLE:OFF
@@ -81,7 +80,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 
   @EqualityReference public static final class UASTUDExternal
   {
-    private final OptionType<UASTUExpression> emulation;
+    private final OptionType<UASTUExpressionType> emulation;
     private final boolean                     fragment_shader_allowed;
     private final TokenIdentifierLower        name;
     private final boolean                     vertex_shader_allowed;
@@ -90,7 +89,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
       final TokenIdentifierLower in_name,
       final boolean in_vertex_shader_allowed,
       final boolean in_fragment_shader_allowed,
-      final OptionType<UASTUExpression> in_emulation)
+      final OptionType<UASTUExpressionType> in_emulation)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.vertex_shader_allowed = in_vertex_shader_allowed;
@@ -98,7 +97,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
       this.emulation = NullCheck.notNull(in_emulation, "Emulation");
     }
 
-    public OptionType<UASTUExpression> getEmulation()
+    public OptionType<UASTUExpressionType> getEmulation()
     {
       return this.emulation;
     }
@@ -185,7 +184,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
     UASTUDFunction
   {
     private final List<UASTUDFunctionArgument> arguments;
-    private final UASTUExpression              body;
+    private final UASTUExpressionType              body;
     private final TokenIdentifierLower         name;
     private final UASTUTypePath                return_type;
 
@@ -193,7 +192,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
       final TokenIdentifierLower in_name,
       final List<UASTUDFunctionArgument> in_arguments,
       final UASTUTypePath in_return_type,
-      final UASTUExpression in_body)
+      final UASTUExpressionType in_body)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.arguments = NullCheck.notNull(in_arguments, "Arguments");
@@ -222,7 +221,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
       return this.arguments;
     }
 
-    public UASTUExpression getBody()
+    public UASTUExpressionType getBody()
     {
       return this.body;
     }
@@ -810,11 +809,11 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
     UASTUDShaderFragmentLocal
   {
     private final TokenDiscard    discard;
-    private final UASTUExpression expression;
+    private final UASTUExpressionType expression;
 
     public UASTUDShaderFragmentLocalDiscard(
       final TokenDiscard in_discard,
-      final UASTUExpression in_expression)
+      final UASTUExpressionType in_expression)
     {
       this.discard = NullCheck.notNull(in_discard, "Discard");
       this.expression = NullCheck.notNull(in_expression, "Expression");
@@ -835,7 +834,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
       return this.discard;
     }
 
-    public UASTUExpression getExpression()
+    public UASTUExpressionType getExpression()
     {
       return this.expression;
     }
@@ -1515,13 +1514,13 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
     UASTUDValue
   {
     private final OptionType<UASTUTypePath> ascription;
-    private final UASTUExpression           expression;
+    private final UASTUExpressionType           expression;
     private final TokenIdentifierLower      name;
 
     public UASTUDValueDefined(
       final TokenIdentifierLower in_name,
       final OptionType<UASTUTypePath> in_ascription,
-      final UASTUExpression in_expression)
+      final UASTUExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.ascription = NullCheck.notNull(in_ascription, "Ascription");
@@ -1533,7 +1532,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
       return this.ascription;
     }
 
-    public UASTUExpression getExpression()
+    public UASTUExpressionType getExpression()
     {
       return this.expression;
     }
@@ -1663,13 +1662,13 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
     UASTUDTermLocal
   {
     private final OptionType<UASTUTypePath> ascription;
-    private final UASTUExpression           expression;
+    private final UASTUExpressionType           expression;
     private final UniqueNameLocal           name;
 
     public UASTUDValueLocal(
       final UniqueNameLocal in_name,
       final OptionType<UASTUTypePath> in_ascription,
-      final UASTUExpression in_expression)
+      final UASTUExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.ascription = NullCheck.notNull(in_ascription, "Ascription");
@@ -1681,7 +1680,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
       return this.ascription;
     }
 
-    public UASTUExpression getExpression()
+    public UASTUExpressionType getExpression()
     {
       return this.expression;
     }

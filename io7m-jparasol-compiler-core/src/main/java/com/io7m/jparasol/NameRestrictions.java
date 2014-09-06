@@ -22,7 +22,7 @@ import java.util.Set;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jparasol.lexer.Token.TokenIdentifier;
+import com.io7m.jparasol.lexer.TokenIdentifierType;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -88,7 +88,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     private final NameRestricted  code;
-    private final TokenIdentifier token;
+    private final TokenIdentifierType token;
 
     /**
      * Construct a new error.
@@ -103,7 +103,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     public NameRestrictionsException(
       final NameRestricted in_code,
-      final TokenIdentifier in_token,
+      final TokenIdentifierType in_token,
       final String message)
     {
       super(message, NullCheck.notNull(in_token, "Token").getFile(), in_token
@@ -134,7 +134,7 @@ import com.io7m.junreachable.UnreachableCodeException;
      * @return The token
      */
 
-    public TokenIdentifier getToken()
+    public TokenIdentifierType getToken()
     {
       return this.token;
     }
@@ -190,7 +190,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   public static void checkRestrictedExceptional(
-    final TokenIdentifier token)
+    final TokenIdentifierType token)
     throws NameRestrictionsException
   {
     final String actual = token.getActual();

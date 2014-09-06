@@ -1,0 +1,26 @@
+#version 330
+
+float
+p_x_y_M_get (
+  in int pl_x
+) {
+  switch (pl_x) {
+    case 0:
+      return 0.0;
+    case 1:
+      return 1.0;
+    case 2:
+      return 2.0;
+    case 3:
+      return 3.0;
+  }
+}
+
+layout(location = 0) out vec4 out_0;
+
+void
+main (void)
+{
+  vec4 pl_rgba = vec4 (p_x_y_M_get (0), p_x_y_M_get (1), p_x_y_M_get (2), p_x_y_M_get (3));
+  out_0 = pl_rgba;
+}

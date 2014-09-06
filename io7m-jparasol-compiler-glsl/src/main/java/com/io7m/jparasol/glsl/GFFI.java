@@ -32,16 +32,17 @@ import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.GVersionVisitorType;
-import com.io7m.jparasol.glsl.ast.GASTExpression;
+import com.io7m.jparasol.glsl.ast.GASTExpressionType;
 import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
 import com.io7m.jparasol.typed.ast.TASTDeclaration;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDExternal;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionDefined;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDFunctionExternal;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
-import com.io7m.jparasol.typed.ast.TASTExpression;
+import com.io7m.jparasol.typed.ast.TASTEVariable;
+import com.io7m.jparasol.typed.ast.TASTExpressionType;
 import com.io7m.jparasol.typed.ast.TASTTermName;
 import com.io7m.junreachable.UnreachableCodeException;
 
@@ -85,7 +86,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   private static final Map<String, FunctionType<GVersionType, Boolean>>              DECLARATION_FUNCTION_REQUIRED;
-  private static final Map<String, FunctionType<TASTDValueExternal, TASTExpression>> DECLARATION_VALUE_EXPRESSIONS;
+  private static final Map<String, FunctionType<TASTDValueExternal, TASTExpressionType>> DECLARATION_VALUE_EXPRESSIONS;
   private static final Map<String, GFFIExpressionEmitterType>                        EXPRESSION_EMITTERS;
   private static final FunctionType<GVersionType, Boolean>                           GLSL_ES_OR_LT_GLSL120;
 
@@ -109,11 +110,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       GFFI.GLSL_ES_OR_LT_GLSL120);
 
     DECLARATION_VALUE_EXPRESSIONS =
-      new HashMap<String, FunctionType<TASTDValueExternal, TASTExpression>>();
+      new HashMap<String, FunctionType<TASTDValueExternal, TASTExpressionType>>();
     GFFI.DECLARATION_VALUE_EXPRESSIONS.put(
       "com_io7m_parasol_fragment_coordinate",
-      new FunctionType<TASTDeclaration.TASTDValueExternal, TASTExpression>() {
-        @Override public TASTExpression call(
+      new FunctionType<TASTDeclaration.TASTDValueExternal, TASTExpressionType>() {
+        @Override public TASTExpressionType call(
           final TASTDValueExternal x)
         {
           final File file = new File("<generated>");
@@ -121,7 +122,7 @@ import com.io7m.junreachable.UnreachableCodeException;
             new TokenIdentifierLower(file, Position.ZERO, "gl_FragCoord");
           final TASTTermName name =
             new TASTTermName.TASTTermNameExternal(original, "gl_FragCoord");
-          return new TASTExpression.TASTEVariable(x.getType(), name);
+          return new TASTEVariable(x.getType(), name);
         }
       });
 
@@ -136,7 +137,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -151,7 +152,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -166,7 +167,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -181,7 +182,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -196,7 +197,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -211,7 +212,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -226,7 +227,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -241,7 +242,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -256,7 +257,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -271,7 +272,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -286,7 +287,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -301,7 +302,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -316,7 +317,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -329,7 +330,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -344,7 +345,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -359,7 +360,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -374,7 +375,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -389,7 +390,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -402,7 +403,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -417,7 +418,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -432,7 +433,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -447,7 +448,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -462,7 +463,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -477,7 +478,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -492,7 +493,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -507,7 +508,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -522,7 +523,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -537,7 +538,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -552,7 +553,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -567,7 +568,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -582,7 +583,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -597,7 +598,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -612,7 +613,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -627,7 +628,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -642,7 +643,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -657,7 +658,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -673,7 +674,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -688,7 +689,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -704,7 +705,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -719,7 +720,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -735,7 +736,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -751,7 +752,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -764,7 +765,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -779,7 +780,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -794,7 +795,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -809,7 +810,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -822,7 +823,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -837,7 +838,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -852,7 +853,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -865,7 +866,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -880,7 +881,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -895,7 +896,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -910,7 +911,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -925,7 +926,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -940,7 +941,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -955,7 +956,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -970,7 +971,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -985,7 +986,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -998,7 +999,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1013,7 +1014,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1028,7 +1029,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1041,7 +1042,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1056,7 +1057,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1071,7 +1072,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1086,7 +1087,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1101,7 +1102,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1116,7 +1117,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1131,7 +1132,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1146,7 +1147,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1161,7 +1162,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1176,7 +1177,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1189,7 +1190,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1204,7 +1205,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1219,7 +1220,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1232,7 +1233,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1247,7 +1248,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1262,7 +1263,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1277,7 +1278,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1292,7 +1293,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1307,7 +1308,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1322,7 +1323,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1337,7 +1338,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1352,7 +1353,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1365,7 +1366,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1380,7 +1381,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1395,7 +1396,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1408,7 +1409,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1423,7 +1424,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1438,7 +1439,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1453,7 +1454,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1468,7 +1469,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1483,7 +1484,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1498,7 +1499,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1513,7 +1514,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1528,7 +1529,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1541,7 +1542,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1556,7 +1557,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1571,7 +1572,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1584,7 +1585,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1599,7 +1600,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1614,7 +1615,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1629,7 +1630,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1644,7 +1645,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
 
         {
@@ -1659,7 +1660,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_add(
@@ -1673,7 +1674,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_add_scalar(
@@ -1687,7 +1688,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_dot(
@@ -1701,7 +1702,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -1713,7 +1714,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_magnitude(
@@ -1727,7 +1728,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_multiply(
@@ -1741,7 +1742,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -1753,7 +1754,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_negate(
@@ -1767,7 +1768,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_normalize(
@@ -1781,7 +1782,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_reflect(
@@ -1795,7 +1796,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_refract(
@@ -1809,7 +1810,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_subtract(
@@ -1824,7 +1825,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -1836,7 +1837,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -1849,7 +1850,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -1861,7 +1862,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -1874,7 +1875,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -1886,7 +1887,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -1899,7 +1900,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2f_divide(
@@ -1913,7 +1914,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector2i_divide(
@@ -1928,7 +1929,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3f_divide(
@@ -1942,7 +1943,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector3i_divide(
@@ -1957,7 +1958,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4f_divide(
@@ -1971,7 +1972,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters.com_io7m_parasol_vector4i_divide(
@@ -1986,7 +1987,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -1998,7 +1999,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -2011,7 +2012,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -2023,7 +2024,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -2036,7 +2037,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -2048,7 +2049,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
           final TASTDFunctionExternal f,
-          final List<GASTExpression> arguments,
+          final List<GASTExpressionType> arguments,
           final GVersionType version)
         {
           return GFFIExpressionEmitters
@@ -2097,7 +2098,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   public GFFIExpression getExpression(
     final TASTDFunctionExternal f,
-    final List<GASTExpression> arguments,
+    final List<GASTExpressionType> arguments,
     final GVersionType version)
     throws GFFIError
   {
@@ -2160,8 +2161,8 @@ import com.io7m.junreachable.UnreachableCodeException;
         }
 
         assert ext.getEmulation().isSome();
-        final Some<TASTExpression> emu =
-          (Some<TASTExpression>) ext.getEmulation();
+        final Some<TASTExpressionType> emu =
+          (Some<TASTExpressionType>) ext.getEmulation();
         return new TASTDFunctionDefined(
           f.getName(),
           f.getArguments(),
@@ -2214,10 +2215,10 @@ import com.io7m.junreachable.UnreachableCodeException;
       throw GFFIError.unknownExternal(ext);
     }
 
-    final FunctionType<TASTDValueExternal, TASTExpression> emitter =
+    final FunctionType<TASTDValueExternal, TASTExpressionType> emitter =
       GFFI.DECLARATION_VALUE_EXPRESSIONS.get(name);
 
-    final TASTExpression exp = emitter.call(v);
+    final TASTExpressionType exp = emitter.call(v);
     assert exp.getType().equals(v.getType());
     return new TASTDValueDefined(v.getName(), exp);
   }

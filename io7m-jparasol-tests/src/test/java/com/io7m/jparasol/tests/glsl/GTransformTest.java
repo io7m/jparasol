@@ -31,14 +31,14 @@ import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.glsl.GFFIError;
 import com.io7m.jparasol.glsl.GTransform;
 import com.io7m.jparasol.glsl.GWriter;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplicationExternal;
+import com.io7m.jparasol.glsl.ast.GASTEApplicationExternal;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertex;
-import com.io7m.jparasol.glsl.ast.GASTStatement;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTReturn;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTScope;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermFunction;
+import com.io7m.jparasol.glsl.ast.GASTStatementReturn;
+import com.io7m.jparasol.glsl.ast.GASTStatementScope;
+import com.io7m.jparasol.glsl.ast.GASTStatementType;
+import com.io7m.jparasol.glsl.ast.GASTTermDeclarationType;
+import com.io7m.jparasol.glsl.ast.GASTTermFunction;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 import com.io7m.jparasol.glsl.ast.GTypeName;
@@ -135,24 +135,25 @@ public final class GTransformTest
         GVersionFull.GLSL_UPPER,
         p.log);
 
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms =
       s.getTerms();
     Assert.assertEquals(1, terms.size());
 
     {
-      final Pair<GTermNameGlobal, GASTTermDeclaration> t = terms.get(0);
-      final GASTTermDeclaration.GASTTermFunction f =
-        (GASTTermFunction) t.getRight();
+      final Pair<GTermNameGlobal, GASTTermDeclarationType> t = terms.get(0);
+      final GASTTermFunction f = (GASTTermFunction) t.getRight();
       Assert.assertEquals("p_x_y_M_f", t.getLeft().show());
       Assert.assertEquals(1, f.getParameters().size());
       final Pair<GTermNameLocal, GTypeName> p0 = f.getParameters().get(0);
       Assert.assertEquals("pl_x", p0.getLeft().show());
       Assert.assertEquals("float", p0.getRight().show());
 
-      final GASTScope scope = f.getStatement();
-      final List<GASTStatement> st = scope.getStatements();
-      final GASTScope ret_scope = (GASTScope) (st.get(st.size() - 1));
-      final GASTReturn ret = (GASTReturn) ret_scope.getStatements().get(0);
+      final GASTStatementScope scope = f.getStatement();
+      final List<GASTStatementType> st = scope.getStatements();
+      final GASTStatementScope ret_scope =
+        (GASTStatementScope) (st.get(st.size() - 1));
+      final GASTStatementReturn ret =
+        (GASTStatementReturn) ret_scope.getStatements().get(0);
 
       final GASTEApplicationExternal app =
         (GASTEApplicationExternal) ret.getExpression();
@@ -221,14 +222,13 @@ public final class GTransformTest
         GVersionFull.GLSL_UPPER,
         p.log);
 
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms =
       s.getTerms();
     Assert.assertEquals(1, terms.size());
 
     {
-      final Pair<GTermNameGlobal, GASTTermDeclaration> t = terms.get(0);
-      final GASTTermDeclaration.GASTTermFunction f =
-        (GASTTermFunction) t.getRight();
+      final Pair<GTermNameGlobal, GASTTermDeclarationType> t = terms.get(0);
+      final GASTTermFunction f = (GASTTermFunction) t.getRight();
       Assert.assertEquals("_tmp_2", t.getLeft().show());
       Assert.assertEquals(1, f.getParameters().size());
       final Pair<GTermNameLocal, GTypeName> p0 = f.getParameters().get(0);
@@ -277,14 +277,13 @@ public final class GTransformTest
         GVersionFull.GLSL_UPPER,
         p.log);
 
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms =
       s.getTerms();
     Assert.assertEquals(1, terms.size());
 
     {
-      final Pair<GTermNameGlobal, GASTTermDeclaration> t = terms.get(0);
-      final GASTTermDeclaration.GASTTermFunction f =
-        (GASTTermFunction) t.getRight();
+      final Pair<GTermNameGlobal, GASTTermDeclarationType> t = terms.get(0);
+      final GASTTermFunction f = (GASTTermFunction) t.getRight();
       Assert.assertEquals("_tmp_2", t.getLeft().show());
       Assert.assertEquals(1, f.getParameters().size());
       final Pair<GTermNameLocal, GTypeName> p0 = f.getParameters().get(0);

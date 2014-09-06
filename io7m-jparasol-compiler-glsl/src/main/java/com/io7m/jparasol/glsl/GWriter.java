@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- *
+ * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -25,29 +25,32 @@ import com.io7m.jfunctional.OptionType;
 import com.io7m.jfunctional.Pair;
 import com.io7m.jfunctional.PartialFunctionType;
 import com.io7m.jfunctional.Unit;
+import com.io7m.jnull.Nullable;
 import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.GVersionVisitorType;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplication;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplicationExternal;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpDivide;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpEqual;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpGreaterThan;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpGreaterThanOrEqual;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpLesserThan;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpLesserThanOrEqual;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpMultiply;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpPlus;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpSubtract;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBoolean;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEConstruction;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEFloat;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEInteger;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEProjection;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTESwizzle;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEUnaryOp.GASTEUnaryOpNegate;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEVariable;
+import com.io7m.jparasol.glsl.ast.GASTEApplication;
+import com.io7m.jparasol.glsl.ast.GASTEApplicationExternal;
+import com.io7m.jparasol.glsl.ast.GASTEBinaryOpDivide;
+import com.io7m.jparasol.glsl.ast.GASTEBinaryOpEqual;
+import com.io7m.jparasol.glsl.ast.GASTEBinaryOpGreaterThan;
+import com.io7m.jparasol.glsl.ast.GASTEBinaryOpGreaterThanOrEqual;
+import com.io7m.jparasol.glsl.ast.GASTEBinaryOpLesserThan;
+import com.io7m.jparasol.glsl.ast.GASTEBinaryOpLesserThanOrEqual;
+import com.io7m.jparasol.glsl.ast.GASTEBinaryOpMultiply;
+import com.io7m.jparasol.glsl.ast.GASTEBinaryOpPlus;
+import com.io7m.jparasol.glsl.ast.GASTEBinaryOpSubtract;
+import com.io7m.jparasol.glsl.ast.GASTEBoolean;
+import com.io7m.jparasol.glsl.ast.GASTEConstruction;
+import com.io7m.jparasol.glsl.ast.GASTEFloat;
+import com.io7m.jparasol.glsl.ast.GASTEInteger;
+import com.io7m.jparasol.glsl.ast.GASTEProjection;
+import com.io7m.jparasol.glsl.ast.GASTESwizzle;
+import com.io7m.jparasol.glsl.ast.GASTEUnaryOp.GASTEUnaryOpNegate;
+import com.io7m.jparasol.glsl.ast.GASTEVariable;
+import com.io7m.jparasol.glsl.ast.GASTExpressionSwitchConstantType;
+import com.io7m.jparasol.glsl.ast.GASTExpressionSwitchConstantVisitorType;
 import com.io7m.jparasol.glsl.ast.GASTExpressionVisitorType;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentConditionalDiscard;
@@ -65,20 +68,21 @@ import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertexOutput;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertexParameter;
 import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainFragment;
 import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainVertex;
-import com.io7m.jparasol.glsl.ast.GASTStatement;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTConditional;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTLocalVariable;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTReturn;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTScope;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTVertexShaderStatement.GASTVertexOutputAssignment;
+import com.io7m.jparasol.glsl.ast.GASTStatementConditional;
+import com.io7m.jparasol.glsl.ast.GASTStatementLocalVariable;
+import com.io7m.jparasol.glsl.ast.GASTStatementReturn;
+import com.io7m.jparasol.glsl.ast.GASTStatementScope;
+import com.io7m.jparasol.glsl.ast.GASTStatementSwitch;
+import com.io7m.jparasol.glsl.ast.GASTStatementType;
 import com.io7m.jparasol.glsl.ast.GASTStatementVisitorType;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermFunction;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermValue;
+import com.io7m.jparasol.glsl.ast.GASTTermDeclarationType;
 import com.io7m.jparasol.glsl.ast.GASTTermDeclarationVisitorType;
+import com.io7m.jparasol.glsl.ast.GASTTermFunction;
+import com.io7m.jparasol.glsl.ast.GASTTermValue;
 import com.io7m.jparasol.glsl.ast.GASTTypeDeclaration;
 import com.io7m.jparasol.glsl.ast.GASTTypeDeclaration.GASTTypeRecord;
 import com.io7m.jparasol.glsl.ast.GASTTypeDeclarationVisitorType;
+import com.io7m.jparasol.glsl.ast.GASTVertexShaderStatement.GASTVertexOutputAssignment;
 import com.io7m.jparasol.glsl.ast.GFieldName;
 import com.io7m.jparasol.glsl.ast.GShaderInputName;
 import com.io7m.jparasol.glsl.ast.GShaderOutputName;
@@ -418,7 +422,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   @EqualityReference private static final class StatementWriter implements
-    GASTStatementVisitorType<Unit, UnreachableCodeException>
+    GASTStatementVisitorType<Unit, Unit, UnreachableCodeException>
   {
     private static String makeIndentText(
       final int m)
@@ -459,30 +463,26 @@ import com.io7m.junreachable.UnreachableCodeException;
     @Override public Unit statementVisitConditional(
       final Unit left,
       final Unit right,
-      final GASTConditional s)
-
+      final GASTStatementConditional s)
     {
       return Unit.unit();
     }
 
     @Override public void statementVisitConditionalLeftPost(
-      final GASTConditional s)
-
+      final GASTStatementConditional s)
     {
       this.indentDecrease();
       this.w.println(String.format("%s} else {", this.indent_text));
     }
 
     @Override public void statementVisitConditionalLeftPre(
-      final GASTConditional s)
-
+      final GASTStatementConditional s)
     {
       this.indentIncrease();
     }
 
     @Override public void statementVisitConditionalPre(
-      final GASTConditional s)
-
+      final GASTStatementConditional s)
     {
       final String etext =
         s.getCondition().expressionVisitableAccept(new ExpressionWriter());
@@ -490,23 +490,20 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public void statementVisitConditionalRightPost(
-      final GASTConditional s)
-
+      final GASTStatementConditional s)
     {
       this.indentDecrease();
       this.w.println(String.format("%s}", this.indent_text));
     }
 
     @Override public void statementVisitConditionalRightPre(
-      final GASTConditional s)
-
+      final GASTStatementConditional s)
     {
       this.indentIncrease();
     }
 
     @Override public Unit statementVisitLocalVariable(
-      final GASTLocalVariable s)
-
+      final GASTStatementLocalVariable s)
     {
       final String etext =
         s.getExpression().expressionVisitableAccept(new ExpressionWriter());
@@ -518,8 +515,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public Unit statementVisitReturn(
-      final GASTReturn s)
-
+      final GASTStatementReturn s)
     {
       final String text =
         s.getExpression().expressionVisitableAccept(new ExpressionWriter());
@@ -529,8 +525,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     @Override public Unit statementVisitScope(
       final List<Unit> statements,
-      final GASTScope s)
-
+      final GASTStatementScope s)
     {
       this.indentDecrease();
       this.w.println(String.format("%s}", this.indent_text));
@@ -538,11 +533,81 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public void statementVisitScopePre(
-      final GASTScope s)
-
+      final GASTStatementScope s)
     {
       this.w.println(String.format("%s{", this.indent_text));
       this.indentIncrease();
+    }
+
+    @Override public Unit statementVisitSwitch(
+      final @Nullable List<Pair<Unit, Unit>> in_cases,
+      final @Nullable Unit in_default_case,
+      final GASTStatementSwitch m)
+    {
+      return Unit.unit();
+    }
+
+    @Override public void statementVisitSwitchDiscrimineePost()
+    {
+      // Nothing
+    }
+
+    @Override public void statementVisitSwitchDiscrimineePre()
+    {
+      // Nothing
+    }
+
+    @Override public @Nullable
+      GASTExpressionSwitchConstantVisitorType<Unit, UnreachableCodeException>
+      statementVisitSwitchPre(
+        final GASTStatementSwitch m)
+    {
+      final String etext =
+        m.getDiscriminee().expressionVisitableAccept(new ExpressionWriter());
+
+      this.w.println(String
+        .format("%sswitch (%s) {", this.indent_text, etext));
+      this.indentIncrease();
+
+      final List<Pair<GASTExpressionSwitchConstantType, GASTStatementReturn>> cases =
+        m.getCases();
+      for (int index = 0; index < cases.size(); ++index) {
+        final Pair<GASTExpressionSwitchConstantType, GASTStatementReturn> cp =
+          cases.get(index);
+
+        final String ct =
+          cp.getLeft().expressionSwitchConstantVisitableAccept(
+            new SwitchCaseWriter());
+        this.w.println(String.format("%scase %s:", this.indent_text, ct));
+        this.indentIncrease();
+        cp.getRight().statementVisitableAccept(this);
+        this.indentDecrease();
+      }
+
+      this.indentDecrease();
+      this.w.println(String.format("%s}", this.indent_text));
+      return null;
+    }
+  }
+
+  @EqualityReference private static final class SwitchCaseWriter implements
+    GASTExpressionSwitchConstantVisitorType<String, UnreachableCodeException>
+  {
+    public SwitchCaseWriter()
+    {
+      // Nothing
+    }
+
+    @Override public String expressionBooleanVisit(
+      final GASTEBoolean e)
+    {
+      return Boolean.toString(e.getValue());
+    }
+
+    @Override public String expressionIntegerVisit(
+      final GASTEInteger e)
+    {
+      return e.getValue().toString();
     }
   }
 
@@ -620,7 +685,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     final PrintWriter writer,
     final List<GASTShaderFragmentInput> inputs,
     final GVersionType version)
-
   {
     for (final GASTShaderFragmentInput i : inputs) {
       GWriter.writeFragmentInput(writer, version, i);
@@ -632,7 +696,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     final GASTShaderMainFragment main,
     final int outputs,
     final GVersionType version)
-
   {
     writer.println("void");
     writer.println("main (void)");
@@ -705,7 +768,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     final int outputs,
     final GASTFragmentOutputDataAssignment w,
     final GVersionType version)
-
   {
     final String value =
       w.getValue().termNameVisitableAccept(
@@ -780,7 +842,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writeFragmentOutputDepth(
     final PrintWriter writer,
     final OptionType<GASTFragmentOutputDepthAssignment> write)
-
   {
     write
       .mapPartial(new PartialFunctionType<GASTFragmentOutputDepthAssignment, Unit, UnreachableCodeException>() {
@@ -800,7 +861,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     final PrintWriter writer,
     final List<GASTShaderFragmentOutput> outputs,
     final GVersionType version)
-
   {
     for (final GASTShaderFragmentOutput o : outputs) {
       GWriter.writeFragmentOutput(writer, version, o);
@@ -844,7 +904,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     final PrintWriter writer = new PrintWriter(out);
     final List<Pair<GTypeName, GASTTypeDeclaration>> types = f.getTypes();
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms =
       f.getTerms();
 
     final GVersionType version = f.getGLSLVersion();
@@ -870,7 +930,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writeFunction(
     final PrintWriter w,
     final GASTTermFunction term)
-
   {
     w.println(term.getReturns().show());
     w.print(term.getName().show());
@@ -903,7 +962,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writePrecision(
     final PrintWriter writer,
     final GVersionType version)
-
   {
     version
       .versionAccept(new GVersionVisitorType<Unit, UnreachableCodeException>() {
@@ -928,10 +986,9 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void writeTerms(
     final PrintWriter writer,
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms)
-
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms)
   {
-    for (final Pair<GTermNameGlobal, GASTTermDeclaration> t : terms) {
+    for (final Pair<GTermNameGlobal, GASTTermDeclarationType> t : terms) {
       t.getRight().termDeclarationVisitableAccept(
         new GASTTermDeclarationVisitorType<Unit, UnreachableCodeException>() {
           @Override public Unit termVisitFunction(
@@ -972,7 +1029,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writeTypes(
     final PrintWriter writer,
     final List<Pair<GTypeName, GASTTypeDeclaration>> types)
-
   {
     for (final Pair<GTypeName, GASTTypeDeclaration> t : types) {
       t.getRight().typeDeclarationVisitableAccept(
@@ -991,7 +1047,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writeValue(
     final PrintWriter writer,
     final GASTTermValue term)
-
   {
     final String type_name = term.getType().show();
     final String term_name = term.getName().show();
@@ -1016,7 +1071,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     final PrintWriter writer,
     final GVersionType version,
     final GASTShaderVertexInput i)
-
   {
     final GTypeName type = i.getType();
     final GShaderInputName name = i.getName();
@@ -1065,7 +1119,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     final PrintWriter writer,
     final List<GASTShaderVertexInput> inputs,
     final GVersionType version)
-
   {
     for (final GASTShaderVertexInput i : inputs) {
       GWriter.writeVertexInput(writer, version, i);
@@ -1075,13 +1128,12 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writeVertexMain(
     final PrintWriter writer,
     final GASTShaderMainVertex main)
-
   {
     writer.println();
     writer.println("void");
     writer.println("main (void)");
     writer.println("{");
-    for (final GASTStatement s : main.getStatements()) {
+    for (final GASTStatementType s : main.getStatements()) {
       s.statementVisitableAccept(new StatementWriter(writer, 1));
     }
     for (final GASTVertexOutputAssignment w : main.getWrites()) {
@@ -1094,7 +1146,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     final PrintWriter writer,
     final GVersionType version,
     final GASTShaderVertexOutput o)
-
   {
     final GTypeName type_name = o.getTypeName();
     final GShaderOutputName name = o.getName();
@@ -1165,7 +1216,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static void writeVertexOutputAssignment(
     final PrintWriter writer,
     final GASTVertexOutputAssignment w)
-
   {
     final String value =
       w.getValue().termNameVisitableAccept(
@@ -1200,7 +1250,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     final PrintWriter writer,
     final List<GASTShaderVertexOutput> outputs,
     final GVersionType version)
-
   {
     for (final GASTShaderVertexOutput o : outputs) {
       GWriter.writeVertexOutput(writer, version, o);
@@ -1243,7 +1292,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     final PrintWriter writer = new PrintWriter(out);
     final List<Pair<GTypeName, GASTTypeDeclaration>> types = v.getTypes();
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms =
       v.getTerms();
 
     final GVersionType version = v.getGLSLVersion();

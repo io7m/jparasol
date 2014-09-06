@@ -34,7 +34,7 @@ import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.GVersionVisitorType;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
 import com.io7m.jparasol.typed.TType.TFloat;
 import com.io7m.jparasol.typed.TType.TMatrix3x3F;
 import com.io7m.jparasol.typed.TType.TMatrix4x4F;

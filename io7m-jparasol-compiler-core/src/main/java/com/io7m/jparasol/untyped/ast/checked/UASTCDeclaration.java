@@ -27,10 +27,9 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
-import com.io7m.jparasol.lexer.Token.TokenDiscard;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
+import com.io7m.jparasol.lexer.TokenDiscard;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 
 // CHECKSTYLE_JAVADOC:OFF
 
@@ -78,7 +77,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
 
   @EqualityReference public static final class UASTCDExternal
   {
-    private final OptionType<UASTCExpression> emulation;
+    private final OptionType<UASTCExpressionType> emulation;
     private final boolean                     fragment_shader_allowed;
     private final TokenIdentifierLower        name;
     private final boolean                     vertex_shader_allowed;
@@ -87,7 +86,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
       final TokenIdentifierLower in_name,
       final boolean in_vertex_shader_allowed,
       final boolean in_fragment_shader_allowed,
-      final OptionType<UASTCExpression> in_emulation)
+      final OptionType<UASTCExpressionType> in_emulation)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.vertex_shader_allowed = in_vertex_shader_allowed;
@@ -95,7 +94,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
       this.emulation = NullCheck.notNull(in_emulation, "Emulation");
     }
 
-    public OptionType<UASTCExpression> getEmulation()
+    public OptionType<UASTCExpressionType> getEmulation()
     {
       return this.emulation;
     }
@@ -171,7 +170,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
     UASTCDFunction
   {
     private final List<UASTCDFunctionArgument> arguments;
-    private final UASTCExpression              body;
+    private final UASTCExpressionType              body;
     private final TokenIdentifierLower         name;
     private final UASTCTypePath                return_type;
 
@@ -179,7 +178,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
       final TokenIdentifierLower in_name,
       final List<UASTCDFunctionArgument> in_arguments,
       final UASTCTypePath in_return_type,
-      final UASTCExpression in_body)
+      final UASTCExpressionType in_body)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.arguments = NullCheck.notNull(in_arguments, "Arguments");
@@ -208,7 +207,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
       return this.arguments;
     }
 
-    public UASTCExpression getBody()
+    public UASTCExpressionType getBody()
     {
       return this.body;
     }
@@ -708,11 +707,11 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
     UASTCDShaderFragmentLocal
   {
     private final TokenDiscard    discard;
-    private final UASTCExpression expression;
+    private final UASTCExpressionType expression;
 
     public UASTCDShaderFragmentLocalDiscard(
       final TokenDiscard in_discard,
-      final UASTCExpression in_expression)
+      final UASTCExpressionType in_expression)
     {
       this.discard = NullCheck.notNull(in_discard, "Discard");
       this.expression = NullCheck.notNull(in_expression, "Expression");
@@ -733,7 +732,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
       return this.discard;
     }
 
-    public UASTCExpression getExpression()
+    public UASTCExpressionType getExpression()
     {
       return this.expression;
     }
@@ -1270,13 +1269,13 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
     UASTCDValue
   {
     private final OptionType<UASTCTypePath> ascription;
-    private final UASTCExpression           expression;
+    private final UASTCExpressionType           expression;
     private final TokenIdentifierLower      name;
 
     public UASTCDValueDefined(
       final TokenIdentifierLower in_name,
       final OptionType<UASTCTypePath> in_ascription,
-      final UASTCExpression in_expression)
+      final UASTCExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.ascription = NullCheck.notNull(in_ascription, "Ascription");
@@ -1288,7 +1287,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
       return this.ascription;
     }
 
-    public UASTCExpression getExpression()
+    public UASTCExpressionType getExpression()
     {
       return this.expression;
     }
@@ -1385,13 +1384,13 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
     UASTCDTermLocal
   {
     private final OptionType<UASTCTypePath> ascription;
-    private final UASTCExpression           expression;
+    private final UASTCExpressionType           expression;
     private final TokenIdentifierLower      name;
 
     public UASTCDValueLocal(
       final TokenIdentifierLower in_name,
       final OptionType<UASTCTypePath> in_ascription,
-      final UASTCExpression in_expression)
+      final UASTCExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.ascription = NullCheck.notNull(in_ascription, "Ascription");
@@ -1403,7 +1402,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
       return this.ascription;
     }
 
-    public UASTCExpression getExpression()
+    public UASTCExpressionType getExpression()
     {
       return this.expression;
     }

@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.Option;
 import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.Pair;
 import com.io7m.jfunctional.PartialFunctionType;
 import com.io7m.jlog.LogLevel;
 import com.io7m.jlog.LogUsableType;
@@ -34,8 +35,8 @@ import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.NameRestrictions;
 import com.io7m.jparasol.NameRestrictions.NameRestricted;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDExternal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunctionArgument;
@@ -65,19 +66,20 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValue;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueDefined;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueExternal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueLocal;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEApplication;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEBoolean;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEConditional;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEInteger;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCELet;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCENew;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEReal;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCERecord;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCERecordProjection;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCESwizzle;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCRecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEApplication;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEBoolean;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEConditional;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEInteger;
+import com.io7m.jparasol.untyped.ast.checked.UASTCELet;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEMatch;
+import com.io7m.jparasol.untyped.ast.checked.UASTCENew;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEReal;
+import com.io7m.jparasol.untyped.ast.checked.UASTCERecord;
+import com.io7m.jparasol.untyped.ast.checked.UASTCERecordProjection;
+import com.io7m.jparasol.untyped.ast.checked.UASTCESwizzle;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEVariable;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpressionMatchConstantVisitorType;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpressionType;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpressionVisitorType;
 import com.io7m.jparasol.untyped.ast.checked.UASTCFragmentShaderLocalVisitorType;
 import com.io7m.jparasol.untyped.ast.checked.UASTCFragmentShaderOutputVisitorType;
@@ -85,6 +87,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCFragmentShaderVisitorType;
 import com.io7m.jparasol.untyped.ast.checked.UASTCFunctionVisitorType;
 import com.io7m.jparasol.untyped.ast.checked.UASTCLocalLevelVisitorType;
 import com.io7m.jparasol.untyped.ast.checked.UASTCModuleVisitorType;
+import com.io7m.jparasol.untyped.ast.checked.UASTCRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.checked.UASTCShaderPath;
 import com.io7m.jparasol.untyped.ast.checked.UASTCShaderVisitorType;
 import com.io7m.jparasol.untyped.ast.checked.UASTCTermVisitorType;
@@ -130,19 +133,21 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValue
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueExternal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDeclarationModuleLevel;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEApplication;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEBoolean;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEConditional;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEInteger;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUELet;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUENew;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEReal;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecord;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecordProjection;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUESwizzle;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTURecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEApplication;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEBoolean;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEConditional;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEInteger;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUELet;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEMatch;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUENew;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEReal;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUERecord;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUERecordProjection;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUESwizzle;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEVariable;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpressionMatchConstantType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpressionType;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTURecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUShaderPath;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUTypePath;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName;
@@ -322,7 +327,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   @EqualityReference private static final class ExpressionTransformer implements
-    UASTCExpressionVisitorType<UASTUExpression, UASTUDValueLocal, UniqueBindersError>
+    UASTCExpressionVisitorType<UASTUExpressionType, UASTUExpressionMatchConstantType, UASTUDValueLocal, UniqueBindersError>
   {
     private Context context;
 
@@ -333,7 +338,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public UASTUEApplication expressionVisitApplication(
-      final List<UASTUExpression> arguments,
+      final List<UASTUExpressionType> arguments,
       final UASTCEApplication e)
       throws UniqueBindersError
     {
@@ -356,9 +361,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public UASTUEConditional expressionVisitConditional(
-      final UASTUExpression condition,
-      final UASTUExpression left,
-      final UASTUExpression right,
+      final UASTUExpressionType condition,
+      final UASTUExpressionType left,
+      final UASTUExpressionType right,
       final UASTCEConditional e)
       throws UniqueBindersError
     {
@@ -381,7 +386,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     @Override public UASTUELet expressionVisitLet(
       final List<UASTUDValueLocal> bindings,
-      final UASTUExpression body,
+      final UASTUExpressionType body,
       final UASTCELet e)
       throws UniqueBindersError
     {
@@ -402,7 +407,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public UASTUENew expressionVisitNew(
-      final List<UASTUExpression> arguments,
+      final List<UASTUExpressionType> arguments,
       final UASTCENew e)
       throws UniqueBindersError
     {
@@ -431,7 +436,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         new ArrayList<UASTURecordFieldAssignment>();
 
       for (final UASTCRecordFieldAssignment f : e.getAssignments()) {
-        final UASTUExpression ep =
+        final UASTUExpressionType ep =
           f.getExpression().expressionVisitableAccept(
             new ExpressionTransformer(this.context));
         fields.add(new UASTURecordFieldAssignment(f.getName(), ep));
@@ -443,7 +448,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public UASTUERecordProjection expressionVisitRecordProjection(
-      final UASTUExpression body,
+      final UASTUExpressionType body,
       final UASTCERecordProjection e)
       throws UniqueBindersError
     {
@@ -458,7 +463,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public UASTUESwizzle expressionVisitSwizzle(
-      final UASTUExpression body,
+      final UASTUExpressionType body,
       final UASTCESwizzle e)
       throws UniqueBindersError
     {
@@ -478,6 +483,70 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       final UniqueName name = this.context.getNameFromValuePath(e.getName());
       return new UASTUEVariable(name);
+    }
+
+    @Override public
+      UASTUExpressionType
+      expressionVisitMatch(
+        final @Nullable UASTUExpressionType discriminee,
+        final @Nullable List<Pair<UASTUExpressionMatchConstantType, UASTUExpressionType>> cases,
+        final @Nullable OptionType<UASTUExpressionType> default_case,
+        final UASTCEMatch m)
+        throws UniqueBindersError
+    {
+      assert discriminee != null;
+      assert cases != null;
+      assert default_case != null;
+
+      return new UASTUEMatch(
+        m.getTokenMatch(),
+        discriminee,
+        cases,
+        default_case);
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePost()
+      throws UniqueBindersError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePre()
+      throws UniqueBindersError
+    {
+      // Nothing
+    }
+
+    @Override public @Nullable
+      UASTCExpressionMatchConstantVisitorType<UASTUExpressionMatchConstantType, UniqueBindersError>
+      expressionVisitMatchPre(
+        final UASTCEMatch m)
+        throws UniqueBindersError
+    {
+      return new MatchConstantTransformer();
+    }
+  }
+
+  @EqualityReference private static final class MatchConstantTransformer implements
+    UASTCExpressionMatchConstantVisitorType<UASTUExpressionMatchConstantType, UniqueBindersError>
+  {
+    public MatchConstantTransformer()
+    {
+      // Nothing
+    }
+
+    @Override public UASTUExpressionMatchConstantType expressionVisitBoolean(
+      final UASTCEBoolean e)
+      throws UniqueBindersError
+    {
+      return new UASTUEBoolean(e.getToken());
+    }
+
+    @Override public UASTUExpressionMatchConstantType expressionVisitInteger(
+      final UASTCEInteger e)
+      throws UniqueBindersError
+    {
+      return new UASTUEInteger(e.getToken());
     }
   }
 
@@ -526,7 +595,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         final UASTCDShaderFragmentLocalDiscard d)
         throws UniqueBindersError
     {
-      final UASTUExpression ex =
+      final UASTUExpressionType ex =
         d.getExpression().expressionVisitableAccept(
           new ExpressionTransformer(this.context));
       return new UASTUDShaderFragmentLocalDiscard(d.getDiscard(), ex);
@@ -635,7 +704,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       final TokenIdentifierLower name = f.getName();
 
-      final UASTUExpression body =
+      final UASTUExpressionType body =
         f.getBody().expressionVisitableAccept(
           new ExpressionTransformer(this.context));
 
@@ -661,15 +730,15 @@ import com.io7m.junreachable.UnreachableCodeException;
       final UASTCDExternal ext = f.getExternal();
       final TokenIdentifierLower name = f.getName();
 
-      final OptionType<UASTCExpression> original_emulation =
+      final OptionType<UASTCExpressionType> original_emulation =
         ext.getEmulation();
-      final OptionType<UASTUExpression> emulation =
+      final OptionType<UASTUExpressionType> emulation =
         original_emulation
-          .mapPartial(new PartialFunctionType<UASTCExpression, UASTUExpression, UniqueBindersError>() {
+          .mapPartial(new PartialFunctionType<UASTCExpressionType, UASTUExpressionType, UniqueBindersError>() {
             @SuppressWarnings("synthetic-access") @Override public
-              UASTUExpression
+              UASTUExpressionType
               call(
-                final UASTCExpression x)
+                final UASTCExpressionType x)
                 throws UniqueBindersError
             {
               return x.expressionVisitableAccept(new ExpressionTransformer(
@@ -714,7 +783,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       final OptionType<UASTUTypePath> ascription =
         UniqueBinders.mapAscription(v.getAscription());
 
-      final UASTUExpression expression =
+      final UASTUExpressionType expression =
         v.getExpression().expressionVisitableAccept(
           new ExpressionTransformer(this.context));
 
@@ -928,7 +997,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       final OptionType<UASTUTypePath> ascription =
         UniqueBinders.mapAscription(v.getAscription());
 
-      final UASTUExpression expression =
+      final UASTUExpressionType expression =
         v.getExpression().expressionVisitableAccept(
           new ExpressionTransformer(this.context));
 
@@ -943,7 +1012,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         UniqueBinders.mapTypePath(v.getAscription());
 
       final UASTCDExternal original_external = v.getExternal();
-      final OptionType<UASTUExpression> none = Option.none();
+      final OptionType<UASTUExpressionType> none = Option.none();
       final UASTUDExternal external =
         new UASTUDExternal(
           original_external.getName(),
@@ -1072,7 +1141,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Construct a new unique binding processor.
-   * 
+   *
    * @param compilation
    *          The AST
    * @param log
@@ -1100,7 +1169,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Calculate new unique bindings for the current AST
-   * 
+   *
    * @return The AST
    * @throws UniqueBindersError
    *           If an error occurs

@@ -33,7 +33,7 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
   @EqualityReference public static final class GASTFragmentConditionalDiscard extends
     GASTFragmentShaderStatement
   {
-    private final GASTExpression condition;
+    private final GASTExpressionType condition;
 
     /**
      * Construct a statement.
@@ -43,7 +43,7 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
      */
 
     public GASTFragmentConditionalDiscard(
-      final GASTExpression in_condition)
+      final GASTExpressionType in_condition)
     {
       this.condition = NullCheck.notNull(in_condition, "Condition");
     }
@@ -62,7 +62,7 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
      * @return The expression
      */
 
-    public GASTExpression getCondition()
+    public GASTExpressionType getCondition()
     {
       return this.condition;
     }
@@ -86,7 +86,7 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
   @EqualityReference public static final class GASTFragmentLocalVariable extends
     GASTFragmentShaderStatement
   {
-    private final GASTExpression expression;
+    private final GASTExpressionType expression;
     private final GTermNameLocal name;
     private final GTypeName      type;
 
@@ -104,7 +104,7 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
     public GASTFragmentLocalVariable(
       final GTermNameLocal in_name,
       final GTypeName in_type,
-      final GASTExpression in_expression)
+      final GASTExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.type = NullCheck.notNull(in_type, "Type");
@@ -125,7 +125,7 @@ import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
      * @return The expression
      */
 
-    public GASTExpression getExpression()
+    public GASTExpressionType getExpression()
     {
       return this.expression;
     }

@@ -32,7 +32,7 @@ import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.PackagePathFlat;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 import com.io7m.jparasol.parser.Parser;
 import com.io7m.jparasol.parser.ParserError;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDExternal;
@@ -61,19 +61,20 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecord;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDTypeRecordField;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEInteger;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIELet;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIENew;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEReal;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecord;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProjection;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEApplication;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEBoolean;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEConditional;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEInteger;
+import com.io7m.jparasol.untyped.ast.initial.UASTIELet;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEMatch;
+import com.io7m.jparasol.untyped.ast.initial.UASTIENew;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEReal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIERecord;
+import com.io7m.jparasol.untyped.ast.initial.UASTIERecordProjection;
+import com.io7m.jparasol.untyped.ast.initial.UASTIESwizzle;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEVariable;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpressionType;
+import com.io7m.jparasol.untyped.ast.initial.UASTIRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
@@ -131,7 +132,6 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
   @Test public void testDFragmentShader_0()
     throws IOException,
       LexerError,
-
       ParserError
   {
     final Parser p = ParserTest.makeResourceParser("testDFragmentShader0.p");
@@ -393,8 +393,8 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
     Assert.assertEquals("xyz", ext.getName().getActual());
 
     Assert.assertTrue(ext.getEmulation().isSome());
-    final Some<UASTIExpression> exp =
-      (Some<UASTIExpression>) ext.getEmulation();
+    final Some<UASTIExpressionType> exp =
+      (Some<UASTIExpressionType>) ext.getEmulation();
     Assert.assertEquals("x", ((UASTIEVariable) exp.get())
       .getName()
       .getName()
@@ -1268,6 +1268,63 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
     Assert.assertEquals(24, ((UASTIEInteger) r.getBody())
       .getValue()
       .intValue());
+  }
+
+  @Test public void testEMatch_0()
+    throws IOException,
+      LexerError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testMatch0.p");
+
+    final UASTIEMatch m = p.expressionMatch();
+    Assert.assertTrue(m.getDefaultCase().isNone());
+    Assert.assertEquals(1, m.getCases().size());
+  }
+
+  @Test public void testEMatch_1()
+    throws IOException,
+      LexerError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testMatch1.p");
+
+    final UASTIEMatch m = p.expressionMatch();
+    Assert.assertTrue(m.getDefaultCase().isNone());
+    Assert.assertEquals(1, m.getCases().size());
+  }
+
+  @Test public void testEMatch_2()
+    throws IOException,
+      LexerError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testMatch2.p");
+
+    final UASTIEMatch m = p.expressionMatch();
+    Assert.assertTrue(m.getDefaultCase().isSome());
+    Assert.assertEquals(1, m.getCases().size());
+  }
+
+  @Test(expected = ParserError.class) public void testEMatch_3()
+    throws IOException,
+      LexerError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testMatch3.p");
+    p.expressionMatch();
+  }
+
+  @Test public void testEMatch_4()
+    throws IOException,
+      LexerError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeResourceParser("testMatch4.p");
+
+    final UASTIEMatch m = p.expressionMatch();
+    Assert.assertTrue(m.getDefaultCase().isSome());
+    Assert.assertEquals(2, m.getCases().size());
   }
 
   @Test(expected = ParserError.class) public void testENewNotOK_0()

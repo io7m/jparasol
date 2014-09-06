@@ -43,9 +43,9 @@ import java.io.IOException;
 
   private  File file = new File("<stdin>");
 
-  public void setFile(final  File file)
+  public void setFile(final File in_file)
   {
-    this.file = NullCheck.notNull(file, "File name");
+    this.file = NullCheck.notNull(in_file, "File name");
   }
 
   public  File getFile()
@@ -79,7 +79,9 @@ NameUpper = [A-Z] ([a-z] | [A-Z] | [0-9] | "_")*
 <YYINITIAL> ","         { return new Token.TokenComma (this.getFile(), this.position()); }
 <YYINITIAL> "{"         { return new Token.TokenCurlyLeft (this.getFile(), this.position()); }
 <YYINITIAL> "}"         { return new Token.TokenCurlyRight (this.getFile(), this.position()); }
+<YYINITIAL> "case"      { return new Token.TokenCase (this.getFile(), this.position()); }
 <YYINITIAL> "depth"     { return new Token.TokenDepth (this.getFile(), this.position()); }
+<YYINITIAL> "default"   { return new Token.TokenDefault (this.getFile(), this.position()); }
 <YYINITIAL> "discard"   { return new Token.TokenDiscard (this.getFile(), this.position()); }
 <YYINITIAL> "."         { return new Token.TokenDot (this.getFile(), this.position()); }
 <YYINITIAL> "else"      { return new Token.TokenElse (this.getFile(), this.position()); }
@@ -93,6 +95,7 @@ NameUpper = [A-Z] ([a-z] | [A-Z] | [0-9] | "_")*
 <YYINITIAL> "in"        { return new Token.TokenIn (this.getFile(), this.position()); }
 <YYINITIAL> "is"        { return new Token.TokenIs (this.getFile(), this.position()); }
 <YYINITIAL> "let"       { return new Token.TokenLet (this.getFile(), this.position()); }
+<YYINITIAL> "match"     { return new Token.TokenMatch (this.getFile(), this.position()); }
 <YYINITIAL> "module"    { return new Token.TokenModule (this.getFile(), this.position()); }
 <YYINITIAL> "new"       { return new Token.TokenNew (this.getFile(), this.position()); }
 <YYINITIAL> "out"       { return new Token.TokenOut (this.getFile(), this.position()); }

@@ -1,0 +1,14 @@
+#version 330
+
+in float a_f;
+uniform mat4 u_m4;
+out vec4 f_position_clip;
+
+void
+main (void)
+{
+  vec4 pl_k = vec4 (a_f, a_f, a_f, a_f);
+  vec4 pl_clip_position = (u_m4 * pl_k);
+  gl_Position = pl_clip_position;
+  f_position_clip = pl_clip_position;
+}

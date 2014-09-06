@@ -1,10 +1,10 @@
 /*
  * Copyright © 2013 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -32,12 +32,12 @@ import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.glsl.GFFI;
 import com.io7m.jparasol.glsl.GFFIError;
 import com.io7m.jparasol.glsl.GWriter;
-import com.io7m.jparasol.glsl.ast.GASTExpression;
+import com.io7m.jparasol.glsl.ast.GASTExpressionType;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderFragment;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertex;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermFunction;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermValue;
+import com.io7m.jparasol.glsl.ast.GASTTermDeclarationType;
+import com.io7m.jparasol.glsl.ast.GASTTermFunction;
+import com.io7m.jparasol.glsl.ast.GASTTermValue;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.glsl.pipeline.GCompilation;
 import com.io7m.jparasol.glsl.pipeline.GCompiledProgram;
@@ -105,7 +105,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
     for (final GVersionES vn : GVersionES.ALL) {
       final GASTShaderVertex program = vertex_shader.getSources().get(vn);
-      final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+      final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
         program.getTerms().get(0);
       Assert.assertEquals("p_com_io7m_parasol_Float_is_infinite", pf
         .getLeft()
@@ -116,14 +116,14 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     for (final GVersionFull vn : GVersionFull.ALL) {
       final GASTShaderVertex program = vertex_shader.getSources().get(vn);
       if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
           program.getTerms().get(0);
         Assert.assertEquals("p_com_io7m_parasol_Float_is_infinite", pf
           .getLeft()
           .show());
         Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
       } else {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
           program.getTerms().get(0);
         Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
         Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
@@ -161,7 +161,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
     for (final GVersionES vn : GVersionES.ALL) {
       final GASTShaderVertex vs = vertex_shader.getSources().get(vn);
-      final Pair<GTermNameGlobal, GASTTermDeclaration> terms =
+      final Pair<GTermNameGlobal, GASTTermDeclarationType> terms =
         vs.getTerms().get(0);
       Assert.assertEquals("p_com_io7m_parasol_Float_is_nan", terms
         .getLeft()
@@ -172,14 +172,14 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     for (final GVersionFull vn : GVersionFull.ALL) {
       final GASTShaderVertex vs = vertex_shader.getSources().get(vn);
       if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
           vs.getTerms().get(0);
         Assert.assertEquals("p_com_io7m_parasol_Float_is_nan", pf
           .getLeft()
           .show());
         Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
       } else {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
           vs.getTerms().get(0);
         Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
         Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
@@ -230,7 +230,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
     for (final GVersionES vn : GVersionES.ALL) {
       final GASTShaderVertex program = vertex_shader.getSources().get(vn);
-      final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+      final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
         program.getTerms().get(0);
       Assert.assertEquals("p_com_io7m_parasol_Float_sign", pf
         .getLeft()
@@ -241,14 +241,14 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     for (final GVersionFull vn : GVersionFull.ALL) {
       final GASTShaderVertex program = vertex_shader.getSources().get(vn);
       if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
           program.getTerms().get(0);
         Assert.assertEquals("p_com_io7m_parasol_Float_sign", pf
           .getLeft()
           .show());
         Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
       } else {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
           program.getTerms().get(0);
         Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
         Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
@@ -286,7 +286,7 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 
     for (final GVersionES vn : GVersionES.ALL) {
       final GASTShaderVertex program = vertex_shader.getSources().get(vn);
-      final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+      final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
         program.getTerms().get(0);
       Assert.assertEquals("p_com_io7m_parasol_Float_truncate", pf
         .getLeft()
@@ -297,14 +297,14 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     for (final GVersionFull vn : GVersionFull.ALL) {
       final GASTShaderVertex program = vertex_shader.getSources().get(vn);
       if (vn.compareTo(GVersionFull.GLSL_120) <= 0) {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
           program.getTerms().get(0);
         Assert.assertEquals("p_com_io7m_parasol_Float_truncate", pf
           .getLeft()
           .show());
         Assert.assertTrue(pf.getRight() instanceof GASTTermFunction);
       } else {
-        final Pair<GTermNameGlobal, GASTTermDeclaration> pf =
+        final Pair<GTermNameGlobal, GASTTermDeclarationType> pf =
           program.getTerms().get(0);
         Assert.assertEquals("p_x_y_M_x", pf.getLeft().show());
         Assert.assertTrue(pf.getRight() instanceof GASTTermValue);
@@ -372,7 +372,8 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
         .termName("x.y.M", "f"));
     assert f != null;
 
-    final List<GASTExpression> arguments = new ArrayList<GASTExpression>();
+    final List<GASTExpressionType> arguments =
+      new ArrayList<GASTExpressionType>();
 
     final GFFI ffi = GFFI.newFFI(TestUtilities.getLog());
     ffi.getExpression(f, arguments, GVersionFull.GLSL_110);

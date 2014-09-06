@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -24,6 +24,7 @@ import java.util.Map;
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.Option;
 import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.Pair;
 import com.io7m.jfunctional.PartialFunctionType;
 import com.io7m.jfunctional.Some;
 import com.io7m.jfunctional.Unit;
@@ -34,8 +35,8 @@ import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.NameRestrictions;
 import com.io7m.jparasol.NameRestrictions.NameRestrictionsException;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 import com.io7m.jparasol.untyped.ast.checked.UASTCCompilation;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDExternal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDFunction;
@@ -71,19 +72,21 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueDefined
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueExternal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDValueLocal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCDeclaration.UASTCDeclarationModuleLevel;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEApplication;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEBoolean;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEConditional;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEInteger;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCELet;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCENew;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEReal;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCERecord;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCERecordProjection;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCESwizzle;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCRecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEApplication;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEBoolean;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEConditional;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEInteger;
+import com.io7m.jparasol.untyped.ast.checked.UASTCELet;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEMatch;
+import com.io7m.jparasol.untyped.ast.checked.UASTCENew;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEReal;
+import com.io7m.jparasol.untyped.ast.checked.UASTCERecord;
+import com.io7m.jparasol.untyped.ast.checked.UASTCERecordProjection;
+import com.io7m.jparasol.untyped.ast.checked.UASTCESwizzle;
+import com.io7m.jparasol.untyped.ast.checked.UASTCEVariable;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpressionMatchConstantType;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpressionType;
+import com.io7m.jparasol.untyped.ast.checked.UASTCRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.checked.UASTCShaderPath;
 import com.io7m.jparasol.untyped.ast.checked.UASTCTypePath;
 import com.io7m.jparasol.untyped.ast.checked.UASTCValuePath;
@@ -118,19 +121,20 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValue;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueDefined;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEInteger;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIELet;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIENew;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEReal;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecord;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProjection;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEApplication;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEBoolean;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEConditional;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEInteger;
+import com.io7m.jparasol.untyped.ast.initial.UASTIELet;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEMatch;
+import com.io7m.jparasol.untyped.ast.initial.UASTIENew;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEReal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIERecord;
+import com.io7m.jparasol.untyped.ast.initial.UASTIERecordProjection;
+import com.io7m.jparasol.untyped.ast.initial.UASTIESwizzle;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEVariable;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpressionMatchConstantVisitorType;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpressionType;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpressionVisitorType;
 import com.io7m.jparasol.untyped.ast.initial.UASTIFragmentShaderLocalVisitorType;
 import com.io7m.jparasol.untyped.ast.initial.UASTIFragmentShaderOutputVisitorType;
@@ -139,6 +143,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIFunctionVisitorType;
 import com.io7m.jparasol.untyped.ast.initial.UASTILocalLevelVisitorType;
 import com.io7m.jparasol.untyped.ast.initial.UASTIModuleLevelDeclarationVisitorType;
 import com.io7m.jparasol.untyped.ast.initial.UASTIModuleVisitorType;
+import com.io7m.jparasol.untyped.ast.initial.UASTIRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIShaderPath;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
@@ -149,16 +154,16 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 /**
  * Reject insane modules. Specifically, reject:
- * 
+ *
  * For modules:
- * 
+ *
  * <ul>
  * <li>Module names that are restricted, according to {@link NameRestrictions}
  * .</li>
  * </ul>
- * 
+ *
  * For imports:
- * 
+ *
  * <ul>
  * <li>Duplicate imports (<code>import x.Y; import x.Y;</code>)</li>
  * <li>Duplicate renames for imports (
@@ -167,9 +172,9 @@ import com.io7m.junreachable.UnreachableCodeException;
  * <code>import x.Y as A; import x.A;</code>)</li>
  * <li>Redundant import renames (<code>import x.Y as Y;</code>)</li>
  * </ul>
- * 
+ *
  * For terms/types in modules:
- * 
+ *
  * <ul>
  * <li>Terms that have names that are restricted, according to
  * {@link NameRestrictions}.</li>
@@ -182,9 +187,9 @@ import com.io7m.junreachable.UnreachableCodeException;
  * <li>Record expressions with duplicate field names (
  * <code>{ x = 23, x = 23 }</code>)</li>
  * </ul>
- * 
+ *
  * For types in modules:
- * 
+ *
  * <ul>
  * <li>Multiple type declarations with the same name (
  * <code>type t ...; type t ...;</code>)</li>
@@ -193,9 +198,9 @@ import com.io7m.junreachable.UnreachableCodeException;
  * <li>Record type declarations with duplicate field names (
  * <code>type t is record x : int, x : int end</code>)</li>
  * </ul>
- * 
+ *
  * For shaders in modules:
- * 
+ *
  * <ul>
  * <li>Shaders with names that are restricted, according to
  * <code>NameRestrictions</code>.</li>
@@ -208,15 +213,15 @@ import com.io7m.junreachable.UnreachableCodeException;
  * <li>Multiple output assignments to the same name</li>
  * <li>Missing output assignments</li>
  * </ul>
- * 
+ *
  * For vertex shaders:
- * 
+ *
  * <ul>
  * <li>Require that exactly one "main" output exists</li>
  * </ul>
- * 
+ *
  * For fragment shaders:
- * 
+ *
  * <ul>
  * <li>Multiple outputs with the same index (
  * <code>out out0 : vector4f as 0; out out1 : vector4f as 0;</code>)</li>
@@ -226,9 +231,9 @@ import com.io7m.junreachable.UnreachableCodeException;
  * <li>Multiple fragment shader depth outputs (
  * <code>out depth out0 : float; out depth out1 : float;</code>)</li>
  * </ul>
- * 
+ *
  * For units:
- * 
+ *
  * <ul>
  * <li>Modules that import themselves (
  * <code>package x.y; module K is import x.y.K; end</code>)</li>
@@ -238,7 +243,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 @EqualityReference public final class ModuleStructure
 {
   @EqualityReference private static final class ExpressionChecker implements
-    UASTIExpressionVisitorType<UASTCExpression, UASTCDValueLocal, ModuleStructureError>
+    UASTIExpressionVisitorType<UASTCExpressionType, UASTCExpressionMatchConstantType, UASTCDValueLocal, ModuleStructureError>
   {
     public ExpressionChecker()
     {
@@ -246,7 +251,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public UASTCEApplication expressionVisitApplication(
-      final List<UASTCExpression> arguments,
+      final List<UASTCExpressionType> arguments,
       final UASTIEApplication e)
       throws ModuleStructureError
     {
@@ -270,9 +275,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public UASTCEConditional expressionVisitConditional(
-      final UASTCExpression condition,
-      final UASTCExpression left,
-      final UASTCExpression right,
+      final UASTCExpressionType condition,
+      final UASTCExpressionType left,
+      final UASTCExpressionType right,
       final UASTIEConditional e)
       throws ModuleStructureError
     {
@@ -295,7 +300,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     @Override public UASTCELet expressionVisitLet(
       final List<UASTCDValueLocal> bindings,
-      final UASTCExpression body,
+      final UASTCExpressionType body,
       final UASTIELet e)
       throws ModuleStructureError
     {
@@ -309,8 +314,49 @@ import com.io7m.junreachable.UnreachableCodeException;
       return new LocalChecker();
     }
 
+    @Override public
+      UASTCExpressionType
+      expressionVisitMatch(
+        @Nullable final UASTCExpressionType discriminee,
+        @Nullable final List<Pair<UASTCExpressionMatchConstantType, UASTCExpressionType>> cases,
+        @Nullable final OptionType<UASTCExpressionType> default_case,
+        final UASTIEMatch m)
+        throws ModuleStructureError
+    {
+      assert discriminee != null;
+      assert cases != null;
+      assert default_case != null;
+
+      return new UASTCEMatch(
+        m.getTokenMatch(),
+        discriminee,
+        cases,
+        default_case);
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePost()
+      throws ModuleStructureError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePre()
+      throws ModuleStructureError
+    {
+      // Nothing
+    }
+
+    @Override public @Nullable
+      UASTIExpressionMatchConstantVisitorType<UASTCExpressionMatchConstantType, ModuleStructureError>
+      expressionVisitMatchPre(
+        final UASTIEMatch m)
+        throws ModuleStructureError
+    {
+      return new MatchConstantChecker();
+    }
+
     @Override public UASTCENew expressionVisitNew(
-      final List<UASTCExpression> args,
+      final List<UASTCExpressionType> args,
       final UASTIENew e)
       throws ModuleStructureError
     {
@@ -352,9 +398,9 @@ import com.io7m.junreachable.UnreachableCodeException;
               fields.get(name));
           }
 
-          final UASTIExpression r = f.getExpression();
+          final UASTIExpressionType r = f.getExpression();
           final ExpressionChecker ec = new ExpressionChecker();
-          final UASTCExpression rx = r.expressionVisitableAccept(ec);
+          final UASTCExpressionType rx = r.expressionVisitableAccept(ec);
 
           assignments.add(new UASTCRecordFieldAssignment(f.getName(), rx));
           fields.put(name, f);
@@ -369,7 +415,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public UASTCERecordProjection expressionVisitRecordProjection(
-      final UASTCExpression body,
+      final UASTCExpressionType body,
       final UASTIERecordProjection e)
       throws ModuleStructureError
     {
@@ -384,7 +430,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public UASTCESwizzle expressionVisitSwizzle(
-      final UASTCExpression body,
+      final UASTCExpressionType body,
       final UASTIESwizzle e)
       throws ModuleStructureError
     {
@@ -675,7 +721,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         final UASTIDShaderFragmentLocalDiscard d)
         throws ModuleStructureError
     {
-      final UASTCExpression ex =
+      final UASTCExpressionType ex =
         d.getExpression().expressionVisitableAccept(new ExpressionChecker());
 
       return new UASTCDShaderFragmentLocalDiscard(d.getDiscard(), ex);
@@ -700,7 +746,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         this.locals.put(name, v);
 
         final ExpressionChecker ec = new ExpressionChecker();
-        final UASTCExpression ex =
+        final UASTCExpressionType ex =
           original.getExpression().expressionVisitableAccept(ec);
         final UASTCDValueLocal value =
           new UASTCDValueLocal(
@@ -753,7 +799,8 @@ import com.io7m.junreachable.UnreachableCodeException;
       throws ModuleStructureError
     {
       final ExpressionChecker ec = new ExpressionChecker();
-      final UASTCExpression ex = f.getBody().expressionVisitableAccept(ec);
+      final UASTCExpressionType ex =
+        f.getBody().expressionVisitableAccept(ec);
       return new UASTCDFunctionDefined(
         f.getName(),
         arguments,
@@ -775,13 +822,13 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       final UASTIDExternal ext = f.getExternal();
 
-      final OptionType<UASTIExpression> original_emulation =
+      final OptionType<UASTIExpressionType> original_emulation =
         ext.getEmulation();
-      final OptionType<UASTCExpression> emulation =
+      final OptionType<UASTCExpressionType> emulation =
         original_emulation
-          .mapPartial(new PartialFunctionType<UASTIExpression, UASTCExpression, ModuleStructureError>() {
-            @Override public UASTCExpression call(
-              final UASTIExpression x)
+          .mapPartial(new PartialFunctionType<UASTIExpressionType, UASTCExpressionType, ModuleStructureError>() {
+            @Override public UASTCExpressionType call(
+              final UASTIExpressionType x)
               throws ModuleStructureError
             {
               return x.expressionVisitableAccept(new ExpressionChecker());
@@ -824,13 +871,36 @@ import com.io7m.junreachable.UnreachableCodeException;
         NameRestrictions.checkRestrictedExceptional(name);
 
         final ExpressionChecker ec = new ExpressionChecker();
-        final UASTCExpression ex =
+        final UASTCExpressionType ex =
           v.getExpression().expressionVisitableAccept(ec);
         return new UASTCDValueLocal(name, ModuleStructure.mapTypePath(v
           .getAscription()), ex);
       } catch (final NameRestrictionsException x) {
         throw new ModuleStructureError(x);
       }
+    }
+  }
+
+  @EqualityReference private static final class MatchConstantChecker implements
+    UASTIExpressionMatchConstantVisitorType<UASTCExpressionMatchConstantType, ModuleStructureError>
+  {
+    public MatchConstantChecker()
+    {
+      // Nothing
+    }
+
+    @Override public UASTCExpressionMatchConstantType expressionVisitBoolean(
+      final UASTIEBoolean e)
+      throws ModuleStructureError
+    {
+      return new UASTCEBoolean(e.getToken());
+    }
+
+    @Override public UASTCExpressionMatchConstantType expressionVisitInteger(
+      final UASTIEInteger e)
+      throws ModuleStructureError
+    {
+      return new UASTCEInteger(e.getToken());
     }
   }
 
@@ -1221,7 +1291,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       final UASTIDValueDefined v)
       throws ModuleStructureError
     {
-      final UASTCExpression e =
+      final UASTCExpressionType e =
         v.getExpression().expressionVisitableAccept(new ExpressionChecker());
       final UASTCDValueDefined rv =
         new UASTCDValueDefined(v.getName(), ModuleStructure.mapTypePath(v
@@ -1244,7 +1314,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         throw ModuleStructureError.moduleValueExternalLacksAscription(v);
       }
 
-      final OptionType<UASTCExpression> none = Option.none();
+      final OptionType<UASTCExpressionType> none = Option.none();
       final UASTCDExternal external =
         new UASTCDExternal(
           original_external.getName(),
@@ -1453,7 +1523,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         this.locals.put(name, v);
 
         final ExpressionChecker ec = new ExpressionChecker();
-        final UASTCExpression ex =
+        final UASTCExpressionType ex =
           original.getExpression().expressionVisitableAccept(ec);
         final UASTCDValueLocal value =
           new UASTCDValueLocal(
@@ -1483,7 +1553,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Construct a new module structure checker.
-   * 
+   *
    * @param compilation
    *          The AST
    * @param log
@@ -1529,7 +1599,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Check the current AST
-   * 
+   *
    * @return A checked AST
    * @throws ModuleStructureError
    *           If an error occurs

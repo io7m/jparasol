@@ -18,21 +18,13 @@ package com.io7m.jparasol.untyped.ast.checked;
 
 import java.util.List;
 
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEApplication;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEBoolean;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEConditional;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEInteger;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCELet;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCENew;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEReal;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCERecord;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCERecordProjection;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCESwizzle;
-import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEVariable;
+import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.Pair;
+import com.io7m.jnull.Nullable;
 
 // CHECKSTYLE_JAVADOC:OFF
 
-public interface UASTCExpressionVisitorType<A, L, E extends Throwable>
+public interface UASTCExpressionVisitorType<A, C, L, E extends Throwable>
 {
   A expressionVisitApplication(
     final List<A> arguments,
@@ -110,4 +102,23 @@ public interface UASTCExpressionVisitorType<A, L, E extends Throwable>
   A expressionVisitVariable(
     final UASTCEVariable e)
     throws E;
+
+  A expressionVisitMatch(
+    final @Nullable A discriminee,
+    final @Nullable List<Pair<C, A>> cases,
+    final @Nullable OptionType<A> default_case,
+    final UASTCEMatch m)
+    throws E;
+
+  void expressionVisitMatchDiscrimineePost()
+    throws E;
+
+  void expressionVisitMatchDiscrimineePre()
+    throws E;
+
+  @Nullable
+    UASTCExpressionMatchConstantVisitorType<C, E>
+    expressionVisitMatchPre(
+      final UASTCEMatch m)
+      throws E;
 }

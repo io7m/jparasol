@@ -16,8 +16,6 @@
 
 package com.io7m.jparasol.glsl.ast;
 
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermFunction;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermValue;
 
 /**
  * The type of term declaration visitors.

@@ -39,7 +39,7 @@ import com.io7m.jparasol.glsl.pipeline.GPipeline;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 import com.io7m.jparasol.parser.Parser;
 import com.io7m.jparasol.parser.ParserError;
 import com.io7m.jparasol.pipeline.CorePipeline;

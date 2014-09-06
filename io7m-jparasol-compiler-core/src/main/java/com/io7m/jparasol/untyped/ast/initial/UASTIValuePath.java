@@ -22,9 +22,8 @@ import com.io7m.jfunctional.OptionType;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
-import com.io7m.jparasol.lexer.Token;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 
 /**
  * A path to a value.
@@ -34,8 +33,8 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
 @EqualityStructural public final class UASTIValuePath
 {
-  private final OptionType<Token.TokenIdentifierUpper> module;
-  private final Token.TokenIdentifierLower             name;
+  private final OptionType<TokenIdentifierUpper> module;
+  private final TokenIdentifierLower             name;
 
   public UASTIValuePath(
     final OptionType<TokenIdentifierUpper> in_module,
@@ -67,12 +66,12 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
     return true;
   }
 
-  public OptionType<Token.TokenIdentifierUpper> getModule()
+  public OptionType<TokenIdentifierUpper> getModule()
   {
     return this.module;
   }
 
-  public Token.TokenIdentifierLower getName()
+  public TokenIdentifierLower getName()
   {
     return this.name;
   }

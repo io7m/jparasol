@@ -1,10 +1,10 @@
 /*
  * Copyright © 2013 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -132,6 +132,50 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
       TestPipeline.getFileText("glsl/writer/everything_opt.v_exp");
     final String f_expected =
       TestPipeline.getFileText("glsl/writer/everything_opt.f_exp");
+
+    Assert.assertEquals(v_expected, vertex_text);
+    Assert.assertEquals(f_expected, fragment_text);
+  }
+
+  @Test public void testSwitch_0()
+    throws IOException,
+      CompilerError
+  {
+    final GPipeline gpipe =
+      TestPipeline.makeGPipeline(new String[] { "glsl/writer/switch.p" });
+
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    final TASTShaderNameFlat program_name =
+      TestPipeline.shaderName("x.y.M", "switch_demo");
+    program_names.add(program_name);
+    final GCompilation comp =
+      gpipe
+        .transformPrograms(program_names, GVersionES.ALL, GVersionFull.ALL);
+    final GCompiledProgram p = comp.getShadersProgram().get(program_name);
+
+    final GCompiledVertexShader vertex_shader =
+      p.getShadersVertex().values().iterator().next();
+    final GCompiledFragmentShader fragment_shader = p.getShaderFragment();
+
+    final GASTShaderVertex vs_330 =
+      vertex_shader.getSources().get(GVersionFull.GLSL_330);
+    final GASTShaderFragment fs_330 =
+      fragment_shader.getSources().get(GVersionFull.GLSL_330);
+
+    final ByteArrayOutputStream vertex_out = new ByteArrayOutputStream();
+    final ByteArrayOutputStream fragment_out = new ByteArrayOutputStream();
+
+    GWriter.writeVertexShader(vertex_out, vs_330, true);
+    GWriter.writeFragmentShader(fragment_out, fs_330, true);
+
+    final String vertex_text = new String(vertex_out.toByteArray());
+    final String fragment_text = new String(fragment_out.toByteArray());
+
+    final String v_expected =
+      TestPipeline.getFileText("glsl/writer/switch.v_exp");
+    final String f_expected =
+      TestPipeline.getFileText("glsl/writer/switch.f_exp");
 
     Assert.assertEquals(v_expected, vertex_text);
     Assert.assertEquals(f_expected, fragment_text);

@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -27,7 +27,7 @@ import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.typed.TTypeName.TTypeNameBuiltIn;
 import com.io7m.jparasol.typed.TTypeName.TTypeNameGlobal;
-import com.io7m.jparasol.typed.ast.TASTExpression;
+import com.io7m.jparasol.typed.ast.TASTExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -42,7 +42,8 @@ import com.io7m.junreachable.UnreachableCodeException;
    * The main boolean type.
    */
 
-  @EqualityReference public static final class TBoolean extends TManifestType
+  @EqualityReference public static final class TBoolean extends TManifestType implements
+    TMatchType
   {
     private final static TBoolean INSTANCE = new TBoolean();
 
@@ -100,6 +101,13 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       return v.typeVisitBoolean(this);
     }
+
+    @Override public <A, E extends Throwable> A typeAccept(
+      final TMatchVisitorType<A, E> v)
+      throws E
+    {
+      return v.typeBoolean(this);
+    }
   }
 
   /**
@@ -110,7 +118,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     /**
      * Construct a new constructor.
-     * 
+     *
      * @param parameters
      *          The types of the parameters
      * @return A constructor
@@ -270,7 +278,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     /**
      * Construct a function type.
-     * 
+     *
      * @param in_arguments
      *          The list of argument types
      * @param in_return_type
@@ -361,7 +369,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     /**
      * Construct a function argument.
-     * 
+     *
      * @param in_name
      *          The name
      * @param in_type
@@ -399,7 +407,8 @@ import com.io7m.junreachable.UnreachableCodeException;
    * The main integer type.
    */
 
-  @EqualityReference public static final class TInteger extends TManifestType
+  @EqualityReference public static final class TInteger extends TManifestType implements
+    TMatchType
   {
     private final static TInteger INSTANCE = new TInteger();
 
@@ -457,11 +466,18 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       return v.typeVisitInteger(this);
     }
+
+    @Override public <A, E extends Throwable> A typeAccept(
+      final TMatchVisitorType<A, E> v)
+      throws E
+    {
+      return v.typeInteger(this);
+    }
   }
 
   /**
    * Values of a manifest type can be used as record fields.
-   * 
+   *
    * Notably, texture samplers are not manifest types.
    */
 
@@ -469,6 +485,67 @@ import com.io7m.junreachable.UnreachableCodeException;
     TValueType
   {
     // Nothing
+  }
+
+  /**
+   * Types that can be used in match expressions.
+   */
+
+  public interface TMatchType
+  {
+    /**
+     * Accept a generic visitor.
+     *
+     * @param v
+     *          The visitor
+     * @return The value returned by the visitor
+     * @throws E
+     *           If the visitor raises <code>E</code>
+     */
+
+    <A, E extends Throwable> A typeAccept(
+      final TMatchVisitorType<A, E> v)
+      throws E;
+  }
+
+  /**
+   * The type of generic match type visitors.
+   *
+   * @param <A>
+   *          The type of returned values
+   * @param <E>
+   *          The type of raised exceptions
+   */
+
+  public interface TMatchVisitorType<A, E extends Throwable>
+  {
+    /**
+     * Visit a type.
+     *
+     * @param t
+     *          The type
+     * @return A value of <code>A</code>
+     * @throws E
+     *           If required
+     */
+
+    A typeBoolean(
+      TBoolean t)
+      throws E;
+
+    /**
+     * Visit a type.
+     *
+     * @param t
+     *          The type
+     * @return A value of <code>A</code>
+     * @throws E
+     *           If required
+     */
+
+    A typeInteger(
+      TInteger t)
+      throws E;
   }
 
   /**
@@ -615,7 +692,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     /**
      * Construct a record type.
-     * 
+     *
      * @param in_name
      *          The name of the type
      * @param in_fields
@@ -689,7 +766,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     /**
      * Construct a record field.
-     * 
+     *
      * @param in_name
      *          The field name
      * @param in_type
@@ -850,7 +927,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   /**
    * Values of a value type can be passed around as values; they can be passed
    * to functions as arguments, returned from functions, etc.
-   * 
+   *
    * Notably, values of function types are not values.
    */
 
@@ -1491,7 +1568,7 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   public static String formatTypeExpressionList(
-    final List<TASTExpression> es)
+    final List<TASTExpressionType> es)
   {
     final StringBuilder m = new StringBuilder();
     m.append("(");
@@ -1558,6 +1635,23 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   /**
+   * @return A map of the discriminable types, by name.
+   */
+
+  public static Map<TTypeNameBuiltIn, TMatchType> getMatchTypesByName()
+  {
+    final Map<TTypeNameBuiltIn, TMatchType> m =
+      new HashMap<TTypeNameBuiltIn, TMatchType>();
+
+    m.put(TBoolean.get().getName(), TBoolean.get());
+    m.put(TInteger.get().getName(), TInteger.get());
+    final Map<TTypeNameBuiltIn, TMatchType> r =
+      Collections.unmodifiableMap(m);
+    assert r != null;
+    return r;
+  }
+
+  /**
    * @return The number of components in the given type.
    */
 
@@ -1587,7 +1681,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Accept a generic visitor.
-   * 
+   *
    * @param v
    *          The visitor
    * @return The value returned by the visitor

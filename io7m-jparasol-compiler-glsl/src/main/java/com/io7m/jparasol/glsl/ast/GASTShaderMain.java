@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -22,7 +22,7 @@ import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.OptionType;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputDataAssignment;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentOutputDepthAssignment;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTVertexShaderStatement.GASTVertexOutputAssignment;
+import com.io7m.jparasol.glsl.ast.GASTVertexShaderStatement.GASTVertexOutputAssignment;
 
 /**
  * A shader main function.
@@ -43,7 +43,7 @@ import com.io7m.jparasol.glsl.ast.GASTStatement.GASTVertexShaderStatement.GASTVe
 
     /**
      * Construct a main function.
-     * 
+     *
      * @param in_statements
      *          The list of statements
      * @param in_writes
@@ -112,12 +112,12 @@ import com.io7m.jparasol.glsl.ast.GASTStatement.GASTVertexShaderStatement.GASTVe
   @EqualityReference public static final class GASTShaderMainVertex extends
     GASTShaderMain
   {
-    private final List<GASTStatement>              statements;
+    private final List<GASTStatementType>          statements;
     private final List<GASTVertexOutputAssignment> writes;
 
     /**
      * Construct a main function.
-     * 
+     *
      * @param in_statements
      *          The list of statements
      * @param in_writes
@@ -125,7 +125,7 @@ import com.io7m.jparasol.glsl.ast.GASTStatement.GASTVertexShaderStatement.GASTVe
      */
 
     public GASTShaderMainVertex(
-      final List<GASTStatement> in_statements,
+      final List<GASTStatementType> in_statements,
       final List<GASTVertexOutputAssignment> in_writes)
     {
       this.statements = in_statements;
@@ -136,7 +136,7 @@ import com.io7m.jparasol.glsl.ast.GASTStatement.GASTVertexShaderStatement.GASTVe
      * @return The list of statements
      */
 
-    public List<GASTStatement> getStatements()
+    public List<GASTStatementType> getStatements()
     {
       return this.statements;
     }

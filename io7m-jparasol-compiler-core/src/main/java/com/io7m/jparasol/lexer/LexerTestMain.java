@@ -48,9 +48,9 @@ import com.io7m.jequality.annotations.EqualityReference;
     final Lexer lex = new Lexer(s);
 
     for (;;) {
-      final Token t = lex.token();
+      final TokenType t = lex.token();
       System.out.println(t);
-      if (t.getType() == Token.Type.TOKEN_EOF) {
+      if (t.getType() == TokenTypeEnum.TOKEN_EOF) {
         break;
       }
     }

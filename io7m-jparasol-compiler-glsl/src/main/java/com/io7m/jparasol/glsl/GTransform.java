@@ -29,6 +29,7 @@ import com.io7m.jfunctional.FunctionType;
 import com.io7m.jfunctional.Option;
 import com.io7m.jfunctional.OptionType;
 import com.io7m.jfunctional.Pair;
+import com.io7m.jfunctional.PartialFunctionType;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jlog.LogLevel;
 import com.io7m.jlog.LogUsableType;
@@ -38,13 +39,16 @@ import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.glsl.GFFIExpression.GFFIExpressionBuiltIn;
 import com.io7m.jparasol.glsl.GFFIExpression.GFFIExpressionDefined;
-import com.io7m.jparasol.glsl.ast.GASTExpression;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplication;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBoolean;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEConstruction;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEProjection;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTESwizzle;
-import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEVariable;
+import com.io7m.jparasol.glsl.ast.GASTEApplication;
+import com.io7m.jparasol.glsl.ast.GASTEBoolean;
+import com.io7m.jparasol.glsl.ast.GASTEConstruction;
+import com.io7m.jparasol.glsl.ast.GASTEFloat;
+import com.io7m.jparasol.glsl.ast.GASTEInteger;
+import com.io7m.jparasol.glsl.ast.GASTEProjection;
+import com.io7m.jparasol.glsl.ast.GASTESwizzle;
+import com.io7m.jparasol.glsl.ast.GASTEVariable;
+import com.io7m.jparasol.glsl.ast.GASTExpressionSwitchConstantType;
+import com.io7m.jparasol.glsl.ast.GASTExpressionType;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentConditionalDiscard;
 import com.io7m.jparasol.glsl.ast.GASTFragmentShaderStatement.GASTFragmentLocalVariable;
@@ -60,16 +64,17 @@ import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertexOutput;
 import com.io7m.jparasol.glsl.ast.GASTShader.GASTShaderVertexParameter;
 import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainFragment;
 import com.io7m.jparasol.glsl.ast.GASTShaderMain.GASTShaderMainVertex;
-import com.io7m.jparasol.glsl.ast.GASTStatement;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTConditional;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTLocalVariable;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTReturn;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTScope;
-import com.io7m.jparasol.glsl.ast.GASTStatement.GASTVertexShaderStatement.GASTVertexOutputAssignment;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermFunction;
-import com.io7m.jparasol.glsl.ast.GASTTermDeclaration.GASTTermValue;
+import com.io7m.jparasol.glsl.ast.GASTStatementConditional;
+import com.io7m.jparasol.glsl.ast.GASTStatementLocalVariable;
+import com.io7m.jparasol.glsl.ast.GASTStatementReturn;
+import com.io7m.jparasol.glsl.ast.GASTStatementScope;
+import com.io7m.jparasol.glsl.ast.GASTStatementSwitch;
+import com.io7m.jparasol.glsl.ast.GASTStatementType;
+import com.io7m.jparasol.glsl.ast.GASTTermDeclarationType;
+import com.io7m.jparasol.glsl.ast.GASTTermFunction;
+import com.io7m.jparasol.glsl.ast.GASTTermValue;
 import com.io7m.jparasol.glsl.ast.GASTTypeDeclaration;
+import com.io7m.jparasol.glsl.ast.GASTVertexShaderStatement.GASTVertexOutputAssignment;
 import com.io7m.jparasol.glsl.ast.GFieldName;
 import com.io7m.jparasol.glsl.ast.GShaderInputName;
 import com.io7m.jparasol.glsl.ast.GShaderOutputName;
@@ -78,7 +83,7 @@ import com.io7m.jparasol.glsl.ast.GTermName;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameLocal;
 import com.io7m.jparasol.glsl.ast.GTypeName;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
 import com.io7m.jparasol.typed.Occurences;
 import com.io7m.jparasol.typed.TType;
 import com.io7m.jparasol.typed.TType.TRecord;
@@ -116,23 +121,29 @@ import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDTypeRecordField;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueDefined;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueExternal;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDValueLocal;
-import com.io7m.jparasol.typed.ast.TASTExpression;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEApplication;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEBoolean;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEConditional;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEInteger;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTELet;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTENew;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEReal;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecordProjection;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTESwizzle;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTRecordFieldAssignment;
+import com.io7m.jparasol.typed.ast.TASTEApplication;
+import com.io7m.jparasol.typed.ast.TASTEBoolean;
+import com.io7m.jparasol.typed.ast.TASTEConditional;
+import com.io7m.jparasol.typed.ast.TASTEInteger;
+import com.io7m.jparasol.typed.ast.TASTELet;
+import com.io7m.jparasol.typed.ast.TASTEMatchBoolean;
+import com.io7m.jparasol.typed.ast.TASTEMatchInteger;
+import com.io7m.jparasol.typed.ast.TASTEMatchType;
+import com.io7m.jparasol.typed.ast.TASTEMatchVisitorType;
+import com.io7m.jparasol.typed.ast.TASTENew;
+import com.io7m.jparasol.typed.ast.TASTEReal;
+import com.io7m.jparasol.typed.ast.TASTERecord;
+import com.io7m.jparasol.typed.ast.TASTERecordProjection;
+import com.io7m.jparasol.typed.ast.TASTESwizzle;
+import com.io7m.jparasol.typed.ast.TASTEVariable;
+import com.io7m.jparasol.typed.ast.TASTExpressionMatchConstantType;
+import com.io7m.jparasol.typed.ast.TASTExpressionMatchConstantVisitorType;
+import com.io7m.jparasol.typed.ast.TASTExpressionType;
 import com.io7m.jparasol.typed.ast.TASTExpressionVisitorType;
 import com.io7m.jparasol.typed.ast.TASTFragmentShaderLocalVisitorType;
 import com.io7m.jparasol.typed.ast.TASTFragmentShaderOutputVisitorType;
 import com.io7m.jparasol.typed.ast.TASTLocalLevelVisitorType;
+import com.io7m.jparasol.typed.ast.TASTRecordFieldAssignment;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jparasol.typed.ast.TASTTermName;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameExternal;
@@ -425,17 +436,17 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   @EqualityReference private static final class ExpressionStatementTransformer implements
-    TASTExpressionVisitorType<GASTScope, TASTDValueLocal, GFFIError>
+    TASTExpressionVisitorType<GASTStatementScope, GASTExpressionSwitchConstantType, TASTDValueLocal, GFFIError>
   {
-    private final Map<String, Binding>                             bindings;
-    private final Context                                          context;
-    private final List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
-    private final GVersionType                                     version;
+    private final Map<String, Binding>                                 bindings;
+    private final Context                                              context;
+    private final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> declarations;
+    private final GVersionType                                         version;
 
     public ExpressionStatementTransformer(
       final Context in_context,
       final Map<String, Binding> in_bindings,
-      final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_declarations,
+      final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> in_declarations,
       final GVersionType in_version)
     {
       this.context = in_context;
@@ -444,8 +455,8 @@ import com.io7m.junreachable.UnreachableCodeException;
       this.version = in_version;
     }
 
-    @Override public GASTScope expressionVisitApplication(
-      final @Nullable List<GASTScope> arguments,
+    @Override public GASTStatementScope expressionVisitApplication(
+      final @Nullable List<GASTStatementScope> arguments,
       final TASTEApplication e)
       throws GFFIError
     {
@@ -459,21 +470,21 @@ import com.io7m.junreachable.UnreachableCodeException;
       return false;
     }
 
-    @Override public GASTScope expressionVisitBoolean(
+    @Override public GASTStatementScope expressionVisitBoolean(
       final TASTEBoolean e)
       throws GFFIError
     {
       return this.wrapReturn(e);
     }
 
-    @Override public GASTScope expressionVisitConditional(
-      final @Nullable GASTScope condition,
-      final @Nullable GASTScope left,
-      final @Nullable GASTScope right,
+    @Override public GASTStatementScope expressionVisitConditional(
+      final @Nullable GASTStatementScope condition,
+      final @Nullable GASTStatementScope left,
+      final @Nullable GASTStatementScope right,
       final TASTEConditional e)
       throws GFFIError
     {
-      final GASTExpression ec =
+      final GASTExpressionType ec =
         e.getCondition().expressionVisitableAccept(
           new ExpressionTransformer(
             this.context,
@@ -481,7 +492,7 @@ import com.io7m.junreachable.UnreachableCodeException;
             this.bindings,
             this.version));
 
-      final GASTScope sl =
+      final GASTStatementScope sl =
         e.getLeft().expressionVisitableAccept(
           new ExpressionStatementTransformer(
             this.context,
@@ -489,7 +500,7 @@ import com.io7m.junreachable.UnreachableCodeException;
             this.declarations,
             this.version));
 
-      final GASTScope sr =
+      final GASTStatementScope sr =
         e.getRight().expressionVisitableAccept(
           new ExpressionStatementTransformer(
             this.context,
@@ -497,12 +508,13 @@ import com.io7m.junreachable.UnreachableCodeException;
             this.declarations,
             this.version));
 
-      final GASTConditional gc =
-        new GASTStatement.GASTConditional(ec, sl, sr);
+      final GASTStatementConditional gc =
+        new GASTStatementConditional(ec, sl, sr);
 
-      final List<GASTStatement> statements = new ArrayList<GASTStatement>();
+      final List<GASTStatementType> statements =
+        new ArrayList<GASTStatementType>();
       statements.add(gc);
-      return new GASTScope(statements);
+      return new GASTStatementScope(statements);
     }
 
     @Override public void expressionVisitConditionalConditionPost(
@@ -554,20 +566,21 @@ import com.io7m.junreachable.UnreachableCodeException;
       // Nothing
     }
 
-    @Override public GASTScope expressionVisitInteger(
+    @Override public GASTStatementScope expressionVisitInteger(
       final TASTEInteger e)
       throws GFFIError
     {
       return this.wrapReturn(e);
     }
 
-    @Override public GASTScope expressionVisitLet(
+    @Override public GASTStatementScope expressionVisitLet(
       final @Nullable List<TASTDValueLocal> k_bindings,
-      final @Nullable GASTScope body,
+      final @Nullable GASTStatementScope body,
       final TASTELet e)
       throws GFFIError
     {
-      final List<GASTStatement> statements = new ArrayList<GASTStatement>();
+      final List<GASTStatementType> statements =
+        new ArrayList<GASTStatementType>();
 
       final Map<String, Binding> bindings_new =
         new HashMap<String, Binding>(this.bindings);
@@ -587,7 +600,7 @@ import com.io7m.junreachable.UnreachableCodeException;
        * added by the previous locals.
        */
 
-      final GASTScope sbody =
+      final GASTStatementScope sbody =
         e.getBody().expressionVisitableAccept(
           new ExpressionStatementTransformer(
             this.context,
@@ -596,7 +609,7 @@ import com.io7m.junreachable.UnreachableCodeException;
             this.version));
 
       statements.add(sbody);
-      return new GASTScope(statements);
+      return new GASTStatementScope(statements);
     }
 
     @Override public @Nullable
@@ -608,8 +621,8 @@ import com.io7m.junreachable.UnreachableCodeException;
       return null;
     }
 
-    @Override public GASTScope expressionVisitNew(
-      final @Nullable List<GASTScope> arguments,
+    @Override public GASTStatementScope expressionVisitNew(
+      final @Nullable List<GASTStatementScope> arguments,
       final TASTENew e)
       throws GFFIError
     {
@@ -623,18 +636,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       return false;
     }
 
-    @Override public GASTScope expressionVisitReal(
+    @Override public GASTStatementScope expressionVisitReal(
       final TASTEReal e)
       throws GFFIError
     {
       return this.wrapReturn(e);
     }
 
-    @Override public GASTScope expressionVisitRecord(
+    @Override public GASTStatementScope expressionVisitRecord(
       final TASTERecord e)
       throws GFFIError
     {
-      final List<GASTStatement> statements = new ArrayList<GASTStatement>();
+      final List<GASTStatementType> statements =
+        new ArrayList<GASTStatementType>();
       final Map<String, GTermNameLocal> field_temporaries =
         new HashMap<String, GTermNameLocal>();
 
@@ -648,7 +662,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         final Binding binding = this.context.getFreshBindingTemporary(type);
         final GTermNameLocal t = new GTermNameLocal(binding.getCurrent());
 
-        final GASTExpression ae =
+        final GASTExpressionType ae =
           a.getExpression().expressionVisitableAccept(
             new ExpressionTransformer(
               this.context,
@@ -659,8 +673,8 @@ import com.io7m.junreachable.UnreachableCodeException;
         assert field_temporaries.containsKey(a.getName().getActual()) == false;
         field_temporaries.put(a.getName().getActual(), t);
 
-        final GASTStatement.GASTLocalVariable local_assign =
-          new GASTStatement.GASTLocalVariable(t, this.context.getTypeName(a
+        final GASTStatementLocalVariable local_assign =
+          new GASTStatementLocalVariable(t, this.context.getTypeName(a
             .getExpression()
             .getType()), ae);
         statements.add(local_assign);
@@ -671,8 +685,8 @@ import com.io7m.junreachable.UnreachableCodeException;
        * the order required to construct a new value of a record type.
        */
 
-      final List<GASTExpression> ordered_args =
-        new ArrayList<GASTExpression>();
+      final List<GASTExpressionType> ordered_args =
+        new ArrayList<GASTExpressionType>();
       final TRecord rt = (TRecord) e.getType();
       for (final TRecordField f : rt.getFields()) {
         assert field_temporaries.containsKey(f.getName());
@@ -684,12 +698,12 @@ import com.io7m.junreachable.UnreachableCodeException;
 
       final GASTEConstruction cons =
         new GASTEConstruction(this.context.getTypeName(rt), ordered_args);
-      statements.add(new GASTStatement.GASTReturn(cons));
-      return new GASTScope(statements);
+      statements.add(new GASTStatementReturn(cons));
+      return new GASTStatementScope(statements);
     }
 
-    @Override public GASTScope expressionVisitRecordProjection(
-      final @Nullable GASTScope body,
+    @Override public GASTStatementScope expressionVisitRecordProjection(
+      final @Nullable GASTStatementScope body,
       final TASTERecordProjection e)
       throws GFFIError
     {
@@ -703,8 +717,8 @@ import com.io7m.junreachable.UnreachableCodeException;
       return false;
     }
 
-    @Override public GASTScope expressionVisitSwizzle(
-      final @Nullable GASTScope body,
+    @Override public GASTStatementScope expressionVisitSwizzle(
+      final @Nullable GASTStatementScope body,
       final TASTESwizzle e)
       throws GFFIError
     {
@@ -718,26 +732,209 @@ import com.io7m.junreachable.UnreachableCodeException;
       return false;
     }
 
-    @Override public GASTScope expressionVisitVariable(
+    @Override public GASTStatementScope expressionVisitVariable(
       final TASTEVariable e)
       throws GFFIError
     {
       return this.wrapReturn(e);
     }
 
-    private GASTScope wrapReturn(
-      final TASTExpression e)
+    private GASTStatementScope wrapReturn(
+      final TASTExpressionType e)
       throws GFFIError
     {
-      final GASTExpression x =
+      final List<GASTStatementType> r = new ArrayList<GASTStatementType>();
+      r.add(this.wrapReturnWithoutScope(e));
+      return new GASTStatementScope(r);
+    }
+
+    private GASTStatementReturn wrapReturnWithoutScope(
+      final TASTExpressionType e)
+      throws GFFIError
+    {
+      final GASTExpressionType x =
         e.expressionVisitableAccept(new ExpressionTransformer(
           this.context,
           this.declarations,
           this.bindings,
           this.version));
-      final List<GASTStatement> r = new ArrayList<GASTStatement>();
-      r.add(new GASTReturn(x));
-      return new GASTScope(r);
+      return new GASTStatementReturn(x);
+    }
+
+    @Override public
+      GASTStatementScope
+      expressionVisitMatch(
+        @Nullable final GASTStatementScope unused0,
+        @Nullable final List<Pair<GASTExpressionSwitchConstantType, GASTStatementScope>> unused1,
+        @Nullable final GASTStatementScope unused2,
+        final TASTEMatchType m)
+        throws GFFIError
+    {
+      final GASTExpressionType discriminee_e =
+        m.getDiscriminee().expressionVisitableAccept(
+          new ExpressionTransformer(
+            ExpressionStatementTransformer.this.context,
+            ExpressionStatementTransformer.this.declarations,
+            ExpressionStatementTransformer.this.bindings,
+            ExpressionStatementTransformer.this.version));
+
+      return m
+        .matchVisitableAccept(new TASTEMatchVisitorType<GASTStatementScope, GFFIError>() {
+          @Override public GASTStatementScope visitBoolean(
+            final TASTEMatchBoolean mb)
+            throws GFFIError
+          {
+            final List<Pair<GASTExpressionSwitchConstantType, GASTStatementReturn>> r_cases =
+              new ArrayList<Pair<GASTExpressionSwitchConstantType, GASTStatementReturn>>();
+
+            mb
+              .getFalseCase()
+              .mapPartial(
+                new PartialFunctionType<Pair<TASTEBoolean, TASTExpressionType>, Unit, GFFIError>() {
+                  @Override public Unit call(
+                    final Pair<TASTEBoolean, TASTExpressionType> p)
+                    throws GFFIError
+                  {
+                    final GASTStatementReturn rs =
+                      ExpressionStatementTransformer.this
+                        .wrapReturnWithoutScope(p.getRight());
+                    final GASTEBoolean rc = new GASTEBoolean(false);
+                    final Pair<GASTExpressionSwitchConstantType, GASTStatementReturn> q =
+                      Pair.pair((GASTExpressionSwitchConstantType) rc, rs);
+                    r_cases.add(q);
+                    return Unit.unit();
+                  }
+                });
+
+            mb
+              .getTrueCase()
+              .mapPartial(
+                new PartialFunctionType<Pair<TASTEBoolean, TASTExpressionType>, Unit, GFFIError>() {
+                  @Override public Unit call(
+                    final Pair<TASTEBoolean, TASTExpressionType> p)
+                    throws GFFIError
+                  {
+                    final GASTStatementReturn rs =
+                      ExpressionStatementTransformer.this
+                        .wrapReturnWithoutScope(p.getRight());
+                    final GASTEBoolean rc = new GASTEBoolean(true);
+                    final Pair<GASTExpressionSwitchConstantType, GASTStatementReturn> q =
+                      Pair.pair((GASTExpressionSwitchConstantType) rc, rs);
+                    r_cases.add(q);
+                    return Unit.unit();
+                  }
+                });
+
+            final OptionType<GASTStatementReturn> r_default =
+              mb
+                .getDefaultCase()
+                .mapPartial(
+                  new PartialFunctionType<TASTExpressionType, GASTStatementReturn, GFFIError>() {
+                    @Override public GASTStatementReturn call(
+                      final TASTExpressionType x)
+                      throws GFFIError
+                    {
+                      return ExpressionStatementTransformer.this
+                        .wrapReturnWithoutScope(x);
+                    }
+                  });
+
+            final GASTStatementSwitch sw =
+              new GASTStatementSwitch(discriminee_e, r_cases, r_default);
+
+            final List<GASTStatementType> statements =
+              new ArrayList<GASTStatementType>();
+            statements.add(sw);
+            return new GASTStatementScope(statements);
+          }
+
+          @Override public GASTStatementScope visitInteger(
+            final TASTEMatchInteger mi)
+            throws GFFIError
+          {
+            final List<Pair<TASTEInteger, TASTExpressionType>> cases =
+              mi.getCases();
+            final List<Pair<GASTExpressionSwitchConstantType, GASTStatementReturn>> r_cases =
+              new ArrayList<Pair<GASTExpressionSwitchConstantType, GASTStatementReturn>>();
+
+            for (int index = 0; index < cases.size(); ++index) {
+              final Pair<TASTEInteger, TASTExpressionType> c =
+                cases.get(index);
+
+              final GASTExpressionSwitchConstantType rcc =
+                c.getLeft().matchConstantVisitableAccept(
+                  new MatchConstantTransformer());
+              final GASTStatementReturn rce =
+                ExpressionStatementTransformer.this.wrapReturnWithoutScope(c
+                  .getRight());
+
+              r_cases.add(Pair.pair(rcc, rce));
+            }
+
+            final OptionType<GASTStatementReturn> r_default =
+              Option.some(ExpressionStatementTransformer.this
+                .wrapReturnWithoutScope(mi.getDefaultCase()));
+
+            final GASTStatementSwitch sw =
+              new GASTStatementSwitch(discriminee_e, r_cases, r_default);
+
+            final List<GASTStatementType> statements =
+              new ArrayList<GASTStatementType>();
+            statements.add(sw);
+            return new GASTStatementScope(statements);
+          }
+        });
+    }
+
+    @Override public
+      GASTExpressionSwitchConstantType
+      expressionVisitMatchCase(
+        final TASTExpressionMatchConstantType c)
+        throws GFFIError
+    {
+      return c.matchConstantVisitableAccept(new MatchConstantTransformer());
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePost()
+      throws GFFIError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePre()
+      throws GFFIError
+    {
+      // Nothing
+    }
+
+    @Override public boolean expressionVisitMatchPre(
+      final TASTEMatchType m)
+      throws GFFIError
+    {
+      return false;
+    }
+  }
+
+  @EqualityReference private static final class MatchConstantTransformer implements
+    TASTExpressionMatchConstantVisitorType<GASTExpressionSwitchConstantType, GFFIError>
+  {
+    public MatchConstantTransformer()
+    {
+      // Nothing
+    }
+
+    @Override public GASTExpressionSwitchConstantType expressionVisitBoolean(
+      final TASTEBoolean e)
+      throws GFFIError
+    {
+      return new GASTEBoolean(e.getValue());
+    }
+
+    @Override public GASTExpressionSwitchConstantType expressionVisitInteger(
+      final TASTEInteger e)
+      throws GFFIError
+    {
+      return new GASTEInteger(e.getValue());
     }
   }
 
@@ -748,16 +945,17 @@ import com.io7m.junreachable.UnreachableCodeException;
    */
 
   @EqualityReference private static final class ExpressionTransformer implements
-    TASTExpressionVisitorType<GASTExpression, TASTDValueLocal, GFFIError>
+    TASTExpressionVisitorType<GASTExpressionType, GASTExpressionSwitchConstantType, TASTDValueLocal, GFFIError>
   {
-    private final Map<String, Binding>                             bindings;
-    private final Context                                          context;
-    private final List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
-    private final GVersionType                                     version;
+
+    private final Map<String, Binding>                                 bindings;
+    private final Context                                              context;
+    private final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> declarations;
+    private final GVersionType                                         version;
 
     public ExpressionTransformer(
       final Context in_context,
-      final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_declarations,
+      final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> in_declarations,
       final Map<String, Binding> in_bindings,
       final GVersionType in_version)
     {
@@ -767,24 +965,24 @@ import com.io7m.junreachable.UnreachableCodeException;
       this.version = in_version;
     }
 
-    @Override public GASTExpression expressionVisitApplication(
-      final @Nullable List<GASTExpression> arguments,
+    @Override public GASTExpressionType expressionVisitApplication(
+      final @Nullable List<GASTExpressionType> arguments,
       final TASTEApplication e)
       throws GFFIError
     {
-      final List<GASTExpression> as =
+      final List<GASTExpressionType> as =
         NullCheck.notNull(arguments, "Arguments");
 
       return e.getName().termNameVisitableAccept(
-        new TASTTermNameVisitorType<GASTExpression, GFFIError>() {
-          @Override public GASTExpression termNameVisitExternal(
+        new TASTTermNameVisitorType<GASTExpressionType, GFFIError>() {
+          @Override public GASTExpressionType termNameVisitExternal(
             final TASTTermNameExternal t)
             throws GFFIError
           {
             throw new UnreachableCodeException();
           }
 
-          @Override public GASTExpression termNameVisitGlobal(
+          @Override public GASTExpressionType termNameVisitGlobal(
             final TASTTermNameGlobal t)
             throws GFFIError
           {
@@ -800,18 +998,17 @@ import com.io7m.junreachable.UnreachableCodeException;
               ExpressionTransformer.this.context.getGlobalTermName(term_name);
 
             return term
-              .termVisitableAccept(new TASTTermVisitorType<GASTExpression, GFFIError>() {
+              .termVisitableAccept(new TASTTermVisitorType<GASTExpressionType, GFFIError>() {
 
                 /**
                  * The application of a defined function.
                  */
 
-                @Override public GASTExpression termVisitFunctionDefined(
+                @Override public GASTExpressionType termVisitFunctionDefined(
                   final TASTDFunctionDefined f)
                   throws GFFIError
                 {
-                  return new GASTExpression.GASTEApplication(name, e
-                    .getType(), as);
+                  return new GASTEApplication(name, e.getType(), as);
                 }
 
                 /**
@@ -820,9 +1017,11 @@ import com.io7m.junreachable.UnreachableCodeException;
                  * expression produced by the FFI.
                  */
 
-                @Override public GASTExpression termVisitFunctionExternal(
-                  final TASTDFunctionExternal f)
-                  throws GFFIError
+                @Override public
+                  GASTExpressionType
+                  termVisitFunctionExternal(
+                    final TASTDFunctionExternal f)
+                    throws GFFIError
                 {
                   final GFFI ffi =
                     ExpressionTransformer.this.context.getFFI();
@@ -833,9 +1032,9 @@ import com.io7m.junreachable.UnreachableCodeException;
                       ExpressionTransformer.this.version);
 
                   return g
-                    .ffiExpressionAccept(new GFFIExpressionVisitorType<GASTExpression, UnreachableCodeException>() {
+                    .ffiExpressionAccept(new GFFIExpressionVisitorType<GASTExpressionType, UnreachableCodeException>() {
                       @Override public
-                        GASTExpression
+                        GASTExpressionType
                         ffiExpressionVisitBuiltIn(
                           final GFFIExpressionBuiltIn ge)
 
@@ -844,7 +1043,7 @@ import com.io7m.junreachable.UnreachableCodeException;
                       }
 
                       @Override public
-                        GASTExpression
+                        GASTExpressionType
                         ffiExpressionVisitDefined(
                           final GFFIExpressionDefined ge)
 
@@ -861,7 +1060,7 @@ import com.io7m.junreachable.UnreachableCodeException;
                  * checker.
                  */
 
-                @Override public GASTExpression termVisitValueDefined(
+                @Override public GASTExpressionType termVisitValueDefined(
                   final TASTDValueDefined v)
                   throws GFFIError
                 {
@@ -873,7 +1072,7 @@ import com.io7m.junreachable.UnreachableCodeException;
                  * checker.
                  */
 
-                @Override public GASTExpression termVisitValueExternal(
+                @Override public GASTExpressionType termVisitValueExternal(
                   final TASTDValueExternal v)
                   throws GFFIError,
                     UnreachableCodeException
@@ -883,7 +1082,7 @@ import com.io7m.junreachable.UnreachableCodeException;
               });
           }
 
-          @Override public GASTExpression termNameVisitLocal(
+          @Override public GASTExpressionType termNameVisitLocal(
             final TASTTermNameLocal t)
             throws GFFIError
           {
@@ -903,17 +1102,17 @@ import com.io7m.junreachable.UnreachableCodeException;
       return true;
     }
 
-    @Override public GASTExpression expressionVisitBoolean(
+    @Override public GASTExpressionType expressionVisitBoolean(
       final TASTEBoolean e)
       throws GFFIError
     {
       return new GASTEBoolean(e.getValue());
     }
 
-    @Override public GASTExpression expressionVisitConditional(
-      final @Nullable GASTExpression condition,
-      final @Nullable GASTExpression left,
-      final @Nullable GASTExpression right,
+    @Override public GASTExpressionType expressionVisitConditional(
+      final @Nullable GASTExpressionType condition,
+      final @Nullable GASTExpressionType left,
+      final @Nullable GASTExpressionType right,
       final TASTEConditional e)
       throws GFFIError
     {
@@ -969,16 +1168,16 @@ import com.io7m.junreachable.UnreachableCodeException;
       // Nothing
     }
 
-    @Override public GASTExpression expressionVisitInteger(
+    @Override public GASTExpressionType expressionVisitInteger(
       final TASTEInteger e)
       throws GFFIError
     {
-      return new GASTExpression.GASTEInteger(e.getValue());
+      return new GASTEInteger(e.getValue());
     }
 
-    @Override public GASTExpression expressionVisitLet(
+    @Override public GASTExpressionType expressionVisitLet(
       final @Nullable List<TASTDValueLocal> let_bindings,
-      final @Nullable GASTExpression body,
+      final @Nullable GASTExpressionType body,
       final TASTELet e)
       throws GFFIError
     {
@@ -994,12 +1193,52 @@ import com.io7m.junreachable.UnreachableCodeException;
       return null;
     }
 
-    @Override public GASTExpression expressionVisitNew(
-      final @Nullable List<GASTExpression> arguments,
+    @Override public
+      GASTExpressionType
+      expressionVisitMatch(
+        @Nullable final GASTExpressionType discriminee,
+        @Nullable final List<Pair<GASTExpressionSwitchConstantType, GASTExpressionType>> cases,
+        @Nullable final GASTExpressionType default_case,
+        final TASTEMatchType m)
+        throws GFFIError
+    {
+      return this.wrapFunction(m);
+    }
+
+    @Override public
+      GASTExpressionSwitchConstantType
+      expressionVisitMatchCase(
+        final TASTExpressionMatchConstantType c)
+        throws GFFIError
+    {
+      return c.matchConstantVisitableAccept(new MatchConstantTransformer());
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePost()
+      throws GFFIError
+    {
+      // Nothing
+    }
+
+    @Override public void expressionVisitMatchDiscrimineePre()
+      throws GFFIError
+    {
+      // Nothing
+    }
+
+    @Override public boolean expressionVisitMatchPre(
+      final TASTEMatchType m)
+      throws GFFIError
+    {
+      return false;
+    }
+
+    @Override public GASTExpressionType expressionVisitNew(
+      final @Nullable List<GASTExpressionType> arguments,
       final TASTENew e)
       throws GFFIError
     {
-      final List<GASTExpression> as =
+      final List<GASTExpressionType> as =
         NullCheck.notNull(arguments, "Arguments");
       final GTypeName type = this.context.getTypeName(e.getType());
       return new GASTEConstruction(type, as);
@@ -1012,26 +1251,26 @@ import com.io7m.junreachable.UnreachableCodeException;
       return true;
     }
 
-    @Override public GASTExpression expressionVisitReal(
+    @Override public GASTExpressionType expressionVisitReal(
       final TASTEReal e)
       throws GFFIError
     {
-      return new GASTExpression.GASTEFloat(e.getValue());
+      return new GASTEFloat(e.getValue());
     }
 
-    @Override public GASTExpression expressionVisitRecord(
+    @Override public GASTExpressionType expressionVisitRecord(
       final TASTERecord e)
       throws GFFIError
     {
       return this.wrapFunction(e);
     }
 
-    @Override public GASTExpression expressionVisitRecordProjection(
-      final @Nullable GASTExpression body,
+    @Override public GASTExpressionType expressionVisitRecordProjection(
+      final @Nullable GASTExpressionType body,
       final TASTERecordProjection e)
       throws GFFIError
     {
-      final GASTExpression b = NullCheck.notNull(body, "Body");
+      final GASTExpressionType b = NullCheck.notNull(body, "Body");
       final String a = e.getField().getActual();
       assert a != null;
       final GFieldName field = new GFieldName(a);
@@ -1046,12 +1285,12 @@ import com.io7m.junreachable.UnreachableCodeException;
       return true;
     }
 
-    @Override public GASTExpression expressionVisitSwizzle(
-      final @Nullable GASTExpression body,
+    @Override public GASTExpressionType expressionVisitSwizzle(
+      final @Nullable GASTExpressionType body,
       final TASTESwizzle e)
       throws GFFIError
     {
-      final GASTExpression b = NullCheck.notNull(body, "Body");
+      final GASTExpressionType b = NullCheck.notNull(body, "Body");
       final TType type = e.getType();
       final List<GFieldName> fields = new ArrayList<GFieldName>();
       for (final TokenIdentifierLower f : e.getFields()) {
@@ -1069,7 +1308,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       return true;
     }
 
-    @Override public GASTExpression expressionVisitVariable(
+    @Override public GASTExpressionType expressionVisitVariable(
       final TASTEVariable e)
       throws GFFIError
     {
@@ -1110,15 +1349,15 @@ import com.io7m.junreachable.UnreachableCodeException;
       return new GASTEVariable(type, term);
     }
 
-    private GASTExpression wrapFunction(
-      final TASTExpression e)
+    private GASTExpressionType wrapFunction(
+      final TASTExpressionType e)
       throws GFFIError
     {
       /**
        * Produce the body for the target function.
        */
 
-      final GASTScope statement =
+      final GASTStatementScope statement =
         e.expressionVisitableAccept(new ExpressionStatementTransformer(
           this.context,
           this.bindings,
@@ -1160,42 +1399,38 @@ import com.io7m.junreachable.UnreachableCodeException;
 
       final GASTTermFunction function =
         new GASTTermFunction(f_name, f_returns, f_parameters, statement);
-      final Pair<GTermNameGlobal, GASTTermDeclaration> p =
-        Pair.pair(function.getName(), (GASTTermDeclaration) function);
+      final Pair<GTermNameGlobal, GASTTermDeclarationType> p =
+        Pair.pair(function.getName(), (GASTTermDeclarationType) function);
       this.declarations.add(p);
 
       /**
        * Construct an application of the function.
        */
 
-      final List<GASTExpression> application_args =
-        new ArrayList<GASTExpression>();
+      final List<GASTExpressionType> application_args =
+        new ArrayList<GASTExpressionType>();
       for (final Pair<GTermNameLocal, GTypeName> b : f_parameters) {
-        application_args.add(new GASTExpression.GASTEVariable(b.getRight(), b
-          .getLeft()));
+        application_args.add(new GASTEVariable(b.getRight(), b.getLeft()));
       }
 
       final GASTEApplication application =
-        new GASTExpression.GASTEApplication(
-          f_name,
-          e.getType(),
-          application_args);
+        new GASTEApplication(f_name, e.getType(), application_args);
 
       return application;
     }
   }
 
   @EqualityReference private static final class TermTransformer implements
-    TASTTermVisitorType<OptionType<GASTTermDeclaration>, GFFIError>
+    TASTTermVisitorType<OptionType<GASTTermDeclarationType>, GFFIError>
   {
-    private final Context                                          context;
-    private final List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations;
-    private final TASTTermNameFlat                                 name;
-    private final GVersionType                                     version;
+    private final Context                                              context;
+    private final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> declarations;
+    private final TASTTermNameFlat                                     name;
+    private final GVersionType                                         version;
 
     public TermTransformer(
       final Context in_context,
-      final List<Pair<GTermNameGlobal, GASTTermDeclaration>> in_declarations,
+      final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> in_declarations,
       final TASTTermNameFlat in_name,
       final GVersionType in_version)
     {
@@ -1206,7 +1441,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
 
     @Override public
-      OptionType<GASTTermDeclaration>
+      OptionType<GASTTermDeclarationType>
       termVisitFunctionDefined(
         final TASTDFunctionDefined f)
         throws GFFIError
@@ -1223,7 +1458,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         bindings.put(binding.getOriginal(), binding);
       }
 
-      final GASTScope statement =
+      final GASTStatementScope statement =
         f.getBody().expressionVisitableAccept(
           new ExpressionStatementTransformer(
             this.context,
@@ -1253,13 +1488,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       final GTermNameGlobal function_name =
         this.context.getGlobalTermName(this.name);
 
-      final GASTTermDeclaration result =
+      final GASTTermDeclarationType result =
         new GASTTermFunction(function_name, returns, parameters, statement);
       return Option.some(result);
     }
 
     @Override public
-      OptionType<GASTTermDeclaration>
+      OptionType<GASTTermDeclarationType>
       termVisitFunctionExternal(
         final TASTDFunctionExternal f)
         throws GFFIError
@@ -1273,11 +1508,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       return Option.none();
     }
 
-    @Override public OptionType<GASTTermDeclaration> termVisitValueDefined(
-      final TASTDValueDefined v)
-      throws GFFIError
+    @Override public
+      OptionType<GASTTermDeclarationType>
+      termVisitValueDefined(
+        final TASTDValueDefined v)
+        throws GFFIError
     {
-      final GASTExpression r =
+      final GASTExpressionType r =
         v.getExpression().expressionVisitableAccept(
           new ExpressionTransformer(
             this.context,
@@ -1288,15 +1525,17 @@ import com.io7m.junreachable.UnreachableCodeException;
       final GTermNameGlobal term_name =
         this.context.getGlobalTermName(this.name);
       final GTypeName type_name = this.context.getTypeName(v.getType());
-      final GASTTermDeclaration result =
+      final GASTTermDeclarationType result =
         new GASTTermValue(term_name, type_name, r);
       return Option.some(result);
     }
 
-    @Override public OptionType<GASTTermDeclaration> termVisitValueExternal(
-      final TASTDValueExternal v)
-      throws GFFIError,
-        UnreachableCodeException
+    @Override public
+      OptionType<GASTTermDeclarationType>
+      termVisitValueExternal(
+        final TASTDValueExternal v)
+        throws GFFIError,
+          UnreachableCodeException
     {
       final TASTDValueDefined td =
         this.context.getFFI().getValueDefinition(v, this.version);
@@ -1383,7 +1622,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static GASTShaderMainFragment makeFragmentMain(
     final Context context,
     final TASTDShaderFragment fragment,
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms,
     final GVersionType version)
     throws GFFIError
   {
@@ -1416,7 +1655,7 @@ import com.io7m.junreachable.UnreachableCodeException;
             final TASTDShaderFragmentLocalDiscard d)
             throws GFFIError
           {
-            final GASTExpression expression =
+            final GASTExpressionType expression =
               d.getExpression().expressionVisitableAccept(
                 new ExpressionTransformer(context, terms, bindings, version));
             statements.add(new GASTFragmentConditionalDiscard(expression));
@@ -1549,20 +1788,22 @@ import com.io7m.junreachable.UnreachableCodeException;
     return results;
   }
 
-  private static List<Pair<GTermNameGlobal, GASTTermDeclaration>> makeTerms(
-    final Context context,
-    final GVersionType version)
-    throws GFFIError
+  private static
+    List<Pair<GTermNameGlobal, GASTTermDeclarationType>>
+    makeTerms(
+      final Context context,
+      final GVersionType version)
+      throws GFFIError
   {
     final TASTCompilation compilation = context.getCompilation();
     final Topology topology = context.getTopology();
     final LogUsableType log = context.log;
 
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations =
-      new GLoggingArrayList<Pair<GTermNameGlobal, GASTTermDeclaration>>(
-        new FunctionType<Pair<GTermNameGlobal, GASTTermDeclaration>, String>() {
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> declarations =
+      new GLoggingArrayList<Pair<GTermNameGlobal, GASTTermDeclarationType>>(
+        new FunctionType<Pair<GTermNameGlobal, GASTTermDeclarationType>, String>() {
           @Override public String call(
-            final Pair<GTermNameGlobal, GASTTermDeclaration> x)
+            final Pair<GTermNameGlobal, GASTTermDeclarationType> x)
           {
             return x.getLeft().show();
           }
@@ -1581,18 +1822,18 @@ import com.io7m.junreachable.UnreachableCodeException;
         log.debug(s);
       }
 
-      final OptionType<GASTTermDeclaration> result =
+      final OptionType<GASTTermDeclarationType> result =
         term.termVisitableAccept(new TermTransformer(
           context,
           declarations,
           name,
           version));
 
-      result.map(new FunctionType<GASTTermDeclaration, Unit>() {
+      result.map(new FunctionType<GASTTermDeclarationType, Unit>() {
         @Override public Unit call(
-          final GASTTermDeclaration rx)
+          final GASTTermDeclarationType rx)
         {
-          final Pair<GTermNameGlobal, GASTTermDeclaration> p =
+          final Pair<GTermNameGlobal, GASTTermDeclarationType> p =
             Pair.pair(rx.getName(), rx);
           declarations.add(p);
           return Unit.unit();
@@ -1686,11 +1927,12 @@ import com.io7m.junreachable.UnreachableCodeException;
   private static GASTShaderMainVertex makeVertexMain(
     final Context context,
     final TASTDShaderVertex vertex,
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms,
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms,
     final GVersionType version)
     throws GFFIError
   {
-    final List<GASTStatement> statements = new ArrayList<GASTStatement>();
+    final List<GASTStatementType> statements =
+      new ArrayList<GASTStatementType>();
     final Map<String, Binding> bindings = new HashMap<String, Binding>();
     final List<TASTDValueLocal> locals =
       new ArrayList<TASTDeclaration.TASTDValueLocal>();
@@ -1798,14 +2040,14 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void processFragmentLocal(
     final Context context,
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> declarations,
     final List<GASTFragmentShaderStatement> statements,
     final Map<String, Binding> bindings,
     final TASTDValueLocal b,
     final GVersionType version)
     throws GFFIError
   {
-    final GASTExpression ex =
+    final GASTExpressionType ex =
       b.getExpression().expressionVisitableAccept(
         new ExpressionTransformer(context, declarations, bindings, version));
 
@@ -1825,14 +2067,14 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void processLocal(
     final Context context,
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-    final List<GASTStatement> statements,
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> declarations,
+    final List<GASTStatementType> statements,
     final Map<String, Binding> bindings,
     final TASTDValueLocal b,
     final GVersionType version)
     throws GFFIError
   {
-    final GASTExpression ex =
+    final GASTExpressionType ex =
       b.getExpression().expressionVisitableAccept(
         new ExpressionTransformer(context, declarations, bindings, version));
 
@@ -1843,8 +2085,8 @@ import com.io7m.junreachable.UnreachableCodeException;
     bindings.put(binding.getOriginal(), binding);
 
     final TValueType type = b_type;
-    final GASTLocalVariable l =
-      new GASTStatement.GASTLocalVariable(
+    final GASTStatementLocalVariable l =
+      new GASTStatementLocalVariable(
         context.getLocalFromBinding(binding),
         context.getTypeName(type),
         ex);
@@ -1861,8 +2103,8 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   private static void processLocals(
     final Context context,
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> declarations,
-    final List<GASTStatement> statements,
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> declarations,
+    final List<GASTStatementType> statements,
     final Map<String, Binding> bindings,
     final List<TASTDValueLocal> locals,
     final GVersionType version)
@@ -1939,7 +2181,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     final List<Pair<GTypeName, GASTTypeDeclaration>> types =
       GTransform.makeTypes(context);
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms =
       GTransform.makeTerms(context, version);
 
     final List<GASTShaderFragmentInput> inputs =
@@ -2022,7 +2264,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     final List<Pair<GTypeName, GASTTypeDeclaration>> types =
       GTransform.makeTypes(context);
-    final List<Pair<GTermNameGlobal, GASTTermDeclaration>> terms =
+    final List<Pair<GTermNameGlobal, GASTTermDeclarationType>> terms =
       GTransform.makeTerms(context, version);
 
     final List<GASTShaderVertexInput> inputs =

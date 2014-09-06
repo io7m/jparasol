@@ -20,7 +20,7 @@ import java.io.File;
 
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDExternal;
 
 /**

@@ -28,16 +28,15 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
-import com.io7m.jparasol.lexer.Token.TokenDiscard;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenDiscard;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 import com.io7m.jparasol.typed.TType;
 import com.io7m.jparasol.typed.TType.TFloat;
 import com.io7m.jparasol.typed.TType.TFunction;
 import com.io7m.jparasol.typed.TType.TManifestType;
 import com.io7m.jparasol.typed.TType.TRecord;
 import com.io7m.jparasol.typed.TType.TValueType;
-import com.io7m.jparasol.typed.ast.TASTExpression.TASTEVariable;
 import com.io7m.jparasol.typed.ast.TASTTermName.TASTTermNameLocal;
 import com.io7m.junreachable.UnreachableCodeException;
 
@@ -87,7 +86,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   @EqualityReference public static final class TASTDExternal
   {
-    private final OptionType<TASTExpression> emulation;
+    private final OptionType<TASTExpressionType> emulation;
     private final boolean                    fragment_shader_allowed;
     private final TokenIdentifierLower       name;
     private final boolean                    vertex_shader_allowed;
@@ -96,7 +95,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       final TokenIdentifierLower in_name,
       final boolean in_vertex_shader_allowed,
       final boolean in_fragment_shader_allowed,
-      final OptionType<TASTExpression> in_emulation)
+      final OptionType<TASTExpressionType> in_emulation)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.vertex_shader_allowed = in_vertex_shader_allowed;
@@ -104,7 +103,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       this.emulation = NullCheck.notNull(in_emulation, "Emulation");
     }
 
-    public OptionType<TASTExpression> getEmulation()
+    public OptionType<TASTExpressionType> getEmulation()
     {
       return this.emulation;
     }
@@ -195,14 +194,14 @@ import com.io7m.junreachable.UnreachableCodeException;
     TASTDFunction
   {
     private final List<TASTDFunctionArgument> arguments;
-    private final TASTExpression              body;
+    private final TASTExpressionType              body;
     private final TokenIdentifierLower        name;
     private final TFunction                   type;
 
     public TASTDFunctionDefined(
       final TokenIdentifierLower in_name,
       final List<TASTDFunctionArgument> in_arguments,
-      final TASTExpression in_body,
+      final TASTExpressionType in_body,
       final TFunction in_type)
     {
       this.name = NullCheck.notNull(in_name, "Name");
@@ -218,7 +217,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       return this.arguments;
     }
 
-    public TASTExpression getBody()
+    public TASTExpressionType getBody()
     {
       return this.body;
     }
@@ -290,9 +289,9 @@ import com.io7m.junreachable.UnreachableCodeException;
       this.external
         .getEmulation()
         .mapPartial(
-          new PartialFunctionType<TASTExpression, Unit, UnreachableCodeException>() {
+          new PartialFunctionType<TASTExpressionType, Unit, UnreachableCodeException>() {
             @Override public Unit call(
-              final TASTExpression x)
+              final TASTExpressionType x)
             {
               assert x.getType().equals(in_type.getReturnType());
               return Unit.unit();
@@ -726,11 +725,11 @@ import com.io7m.junreachable.UnreachableCodeException;
     TASTDShaderFragmentLocal
   {
     private final TokenDiscard   discard;
-    private final TASTExpression expression;
+    private final TASTExpressionType expression;
 
     public TASTDShaderFragmentLocalDiscard(
       final TokenDiscard in_discard,
-      final TASTExpression in_expression)
+      final TASTExpressionType in_expression)
     {
       this.discard = NullCheck.notNull(in_discard, "Discard");
       this.expression = NullCheck.notNull(in_expression, "Expression");
@@ -751,7 +750,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       return this.discard;
     }
 
-    public TASTExpression getExpression()
+    public TASTExpressionType getExpression()
     {
       return this.expression;
     }
@@ -1506,18 +1505,18 @@ import com.io7m.junreachable.UnreachableCodeException;
   @EqualityReference public static final class TASTDValueDefined extends
     TASTDValue
   {
-    private final TASTExpression       expression;
+    private final TASTExpressionType       expression;
     private final TokenIdentifierLower name;
 
     public TASTDValueDefined(
       final TokenIdentifierLower in_name,
-      final TASTExpression in_expression)
+      final TASTExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
-    public TASTExpression getExpression()
+    public TASTExpressionType getExpression()
     {
       return this.expression;
     }
@@ -1624,18 +1623,18 @@ import com.io7m.junreachable.UnreachableCodeException;
   @EqualityReference public static final class TASTDValueLocal extends
     TASTDTermLocal
   {
-    private final TASTExpression    expression;
+    private final TASTExpressionType    expression;
     private final TASTTermNameLocal name;
 
     public TASTDValueLocal(
       final TASTTermNameLocal in_name,
-      final TASTExpression in_expression)
+      final TASTExpressionType in_expression)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.expression = NullCheck.notNull(in_expression, "Expression");
     }
 
-    public TASTExpression getExpression()
+    public TASTExpressionType getExpression()
     {
       return this.expression;
     }

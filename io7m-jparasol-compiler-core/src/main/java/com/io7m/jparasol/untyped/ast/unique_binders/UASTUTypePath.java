@@ -21,9 +21,8 @@ import com.io7m.jfunctional.FunctionType;
 import com.io7m.jfunctional.OptionType;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jparasol.lexer.Token;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
 
 /**
  * A path to a type.
@@ -33,8 +32,8 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 
 @EqualityReference public final class UASTUTypePath
 {
-  private final OptionType<Token.TokenIdentifierUpper> module;
-  private final Token.TokenIdentifierLower             name;
+  private final OptionType<TokenIdentifierUpper> module;
+  private final TokenIdentifierLower             name;
 
   public UASTUTypePath(
     final OptionType<TokenIdentifierUpper> in_module,
@@ -44,12 +43,12 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
     this.name = NullCheck.notNull(in_name, "Name");
   }
 
-  public OptionType<Token.TokenIdentifierUpper> getModule()
+  public OptionType<TokenIdentifierUpper> getModule()
   {
     return this.module;
   }
 
-  public Token.TokenIdentifierLower getName()
+  public TokenIdentifierLower getName()
   {
     return this.name;
   }

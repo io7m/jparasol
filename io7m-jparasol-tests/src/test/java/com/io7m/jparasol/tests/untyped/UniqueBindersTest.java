@@ -42,10 +42,10 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShade
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDShaderVertexOutputAssignment;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueDefined;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUDeclaration.UASTUDValueLocal;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEInteger;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUELet;
-import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEVariable;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEInteger;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUELet;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUEVariable;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpressionType;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameLocal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UniqueName.UniqueNameNonLocal;
 import com.io7m.junreachable.UnreachableCodeException;
@@ -275,8 +275,8 @@ import com.io7m.junreachable.UnreachableCodeException;
       (UASTUDFunctionExternal) first.getTerms().get("f");
     Assert.assertEquals("f", f.getName().getActual());
     final UASTUDExternal ext = f.getExternal();
-    final Some<UASTUExpression> emu =
-      (Some<UASTUExpression>) ext.getEmulation();
+    final Some<UASTUExpressionType> emu =
+      (Some<UASTUExpressionType>) ext.getEmulation();
 
     final UASTUEVariable var = (UASTUEVariable) emu.get();
     Assert.assertEquals("x", ((UniqueNameLocal) var.getName()).getCurrent());
@@ -296,8 +296,8 @@ import com.io7m.junreachable.UnreachableCodeException;
       (UASTUDFunctionExternal) first.getTerms().get("f");
     Assert.assertEquals("f", f.getName().getActual());
     final UASTUDExternal ext = f.getExternal();
-    final Some<UASTUExpression> emu =
-      (Some<UASTUExpression>) ext.getEmulation();
+    final Some<UASTUExpressionType> emu =
+      (Some<UASTUExpressionType>) ext.getEmulation();
 
     final UASTUEVariable var = (UASTUEVariable) emu.get();
     Assert.assertEquals("y", ((UniqueNameNonLocal) var.getName())

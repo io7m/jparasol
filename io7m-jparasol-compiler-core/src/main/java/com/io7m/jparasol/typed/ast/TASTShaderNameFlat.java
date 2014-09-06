@@ -29,7 +29,7 @@ import com.io7m.jparasol.PackagePath.BuilderType;
 import com.io7m.jparasol.PackagePathFlat;
 import com.io7m.jparasol.UIError;
 import com.io7m.jparasol.lexer.Position;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
 
 /**
  * The type of flattened shader names.

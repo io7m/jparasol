@@ -23,23 +23,25 @@ import java.util.List;
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.Option;
 import com.io7m.jfunctional.OptionType;
+import com.io7m.jfunctional.Pair;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.PackagePath.BuilderType;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
-import com.io7m.jparasol.lexer.Token;
-import com.io7m.jparasol.lexer.Token.TokenDiscard;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
-import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
-import com.io7m.jparasol.lexer.Token.TokenIf;
-import com.io7m.jparasol.lexer.Token.TokenLet;
-import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
-import com.io7m.jparasol.lexer.Token.TokenLiteralIntegerDecimal;
-import com.io7m.jparasol.lexer.Token.TokenLiteralIntegerType;
-import com.io7m.jparasol.lexer.Token.TokenLiteralReal;
-import com.io7m.jparasol.lexer.Token.Type;
+import com.io7m.jparasol.lexer.TokenType;
+import com.io7m.jparasol.lexer.TokenDiscard;
+import com.io7m.jparasol.lexer.TokenIdentifierLower;
+import com.io7m.jparasol.lexer.TokenIdentifierUpper;
+import com.io7m.jparasol.lexer.TokenIf;
+import com.io7m.jparasol.lexer.TokenLet;
+import com.io7m.jparasol.lexer.TokenLiteralBoolean;
+import com.io7m.jparasol.lexer.TokenLiteralIntegerDecimal;
+import com.io7m.jparasol.lexer.TokenLiteralIntegerType;
+import com.io7m.jparasol.lexer.TokenLiteralReal;
+import com.io7m.jparasol.lexer.TokenMatch;
+import com.io7m.jparasol.lexer.TokenTypeEnum;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunction;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDFunctionArgument;
@@ -76,19 +78,21 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueDefined
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueExternal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDValueLocal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDeclarationModuleLevel;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEApplication;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEInteger;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIELet;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIENew;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEReal;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecord;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecordProjection;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIESwizzle;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
-import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIRecordFieldAssignment;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEApplication;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEBoolean;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEConditional;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEInteger;
+import com.io7m.jparasol.untyped.ast.initial.UASTIELet;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEMatch;
+import com.io7m.jparasol.untyped.ast.initial.UASTIENew;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEReal;
+import com.io7m.jparasol.untyped.ast.initial.UASTIERecord;
+import com.io7m.jparasol.untyped.ast.initial.UASTIERecordProjection;
+import com.io7m.jparasol.untyped.ast.initial.UASTIESwizzle;
+import com.io7m.jparasol.untyped.ast.initial.UASTIEVariable;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpressionMatchConstantType;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpressionType;
+import com.io7m.jparasol.untyped.ast.initial.UASTIRecordFieldAssignment;
 import com.io7m.jparasol.untyped.ast.initial.UASTIShaderPath;
 import com.io7m.jparasol.untyped.ast.initial.UASTITypePath;
 import com.io7m.jparasol.untyped.ast.initial.UASTIUnit;
@@ -104,7 +108,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   /**
    * Construct a new parser capable of parsing "internal" (standard library)
    * units.
-   * 
+   *
    * @param lexer
    *          The lexer
    * @return A new parser
@@ -124,7 +128,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Construct a new parser capable of parsing ordinary units.
-   * 
+   *
    * @param lexer
    *          The lexer
    * @return A new parser
@@ -145,7 +149,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   private final boolean       internal;
   private final Lexer         lexer;
   private final StringBuilder message;
-  private Token               token;
+  private TokenType               token;
 
   private Parser(
     final boolean in_internal,
@@ -167,31 +171,31 @@ import com.io7m.junreachable.UnreachableCodeException;
       LexerError,
       IOException
   {
-    this.parserConsumeExact(Type.TOKEN_EXTERNAL);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_EXTERNAL);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_IS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IS);
 
-    this.parserConsumeExact(Type.TOKEN_VERTEX);
-    this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_VERTEX);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_LITERAL_BOOLEAN);
     final TokenLiteralBoolean vallow = (TokenLiteralBoolean) this.token;
-    this.parserConsumeExact(Type.TOKEN_LITERAL_BOOLEAN);
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_LITERAL_BOOLEAN);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
 
-    this.parserConsumeExact(Type.TOKEN_FRAGMENT);
-    this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_FRAGMENT);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_LITERAL_BOOLEAN);
     final TokenLiteralBoolean fallow = (TokenLiteralBoolean) this.token;
-    this.parserConsumeExact(Type.TOKEN_LITERAL_BOOLEAN);
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_LITERAL_BOOLEAN);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
 
-    this.parserExpectOneOf(new Type[] { Type.TOKEN_END, Type.TOKEN_WITH, });
+    this.parserExpectOneOf(new TokenTypeEnum[] { TokenTypeEnum.TOKEN_END, TokenTypeEnum.TOKEN_WITH, });
 
     switch (this.token.getType()) {
       case TOKEN_END:
       {
-        this.parserConsumeExact(Type.TOKEN_END);
-        final OptionType<UASTIExpression> none = Option.none();
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_END);
+        final OptionType<UASTIExpressionType> none = Option.none();
         return new UASTIDExternal(
           name,
           vallow.getValue(),
@@ -200,10 +204,10 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
       case TOKEN_WITH:
       {
-        this.parserConsumeExact(Type.TOKEN_WITH);
-        final UASTIExpression e = this.expression();
-        this.parserConsumeExact(Type.TOKEN_END);
-        final OptionType<UASTIExpression> some = Option.some(e);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_WITH);
+        final UASTIExpressionType e = this.expression();
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_END);
+        final OptionType<UASTIExpressionType> some = Option.some(e);
         return new UASTIDExternal(
           name,
           vallow.getValue(),
@@ -222,11 +226,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_FRAGMENT);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_FRAGMENT);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_IS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IS);
 
     final List<UASTIDShaderFragmentParameters> decls =
       this.declarationFragmentShaderParameterDeclarations();
@@ -254,13 +258,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
     }
 
-    this.parserExpectOneOf(new Type[] { Type.TOKEN_WITH, Type.TOKEN_AS, });
+    this.parserExpectOneOf(new TokenTypeEnum[] { TokenTypeEnum.TOKEN_WITH, TokenTypeEnum.TOKEN_AS, });
 
     final List<UASTIDShaderFragmentLocal> values;
     switch (this.token.getType()) {
       case TOKEN_WITH:
       {
-        this.parserConsumeExact(Type.TOKEN_WITH);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_WITH);
         values = this.declarationFragmentShaderLocals();
         break;
       }
@@ -272,10 +276,10 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
     }
 
-    this.parserConsumeExact(Type.TOKEN_AS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_AS);
     final List<UASTIDShaderFragmentOutputAssignment> assigns =
       this.declarationFragmentShaderOutputAssignments();
-    this.parserConsumeExact(Type.TOKEN_END);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_END);
 
     return new UASTIDShaderFragment(
       name,
@@ -291,11 +295,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_IN);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IN);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_COLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
     return new UASTIDShaderFragmentInput(name, this.declarationTypePath());
   }
 
@@ -306,12 +310,12 @@ import com.io7m.junreachable.UnreachableCodeException;
         IOException,
         LexerError
   {
-    this.parserExpectExact(Type.TOKEN_DISCARD);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_DISCARD);
     final TokenDiscard discard = (TokenDiscard) this.token;
-    this.parserConsumeExact(Type.TOKEN_DISCARD);
-    this.parserConsumeExact(Type.TOKEN_ROUND_LEFT);
-    final UASTIExpression expr = this.expression();
-    this.parserConsumeExact(Type.TOKEN_ROUND_RIGHT);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_DISCARD);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_ROUND_LEFT);
+    final UASTIExpressionType expr = this.expression();
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_ROUND_RIGHT);
     return new UASTIDShaderFragmentLocalDiscard(discard, expr);
   }
 
@@ -328,11 +332,11 @@ import com.io7m.junreachable.UnreachableCodeException;
         case TOKEN_VALUE:
           locals.add(new UASTIDShaderFragmentLocalValue(this
             .declarationValueLocal()));
-          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
           break;
         case TOKEN_DISCARD:
           locals.add(this.declarationFragmentShaderLocalDiscard());
-          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
           break;
         // $CASES-OMITTED$
         default:
@@ -346,33 +350,33 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_OUT);
-    this.parserExpectOneOf(new Type[] {
-      Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_DEPTH, });
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_OUT);
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_IDENTIFIER_LOWER,
+      TokenTypeEnum.TOKEN_DEPTH, });
 
     switch (this.token.getType()) {
       case TOKEN_IDENTIFIER_LOWER:
       {
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-        this.parserConsumeExact(Type.TOKEN_COLON);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
         final UASTITypePath type = this.declarationTypePath();
-        this.parserConsumeExact(Type.TOKEN_AS);
-        this.parserExpectExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_AS);
+        this.parserExpectExact(TokenTypeEnum.TOKEN_LITERAL_INTEGER_DECIMAL);
         final TokenLiteralIntegerDecimal index =
           (TokenLiteralIntegerDecimal) this.token;
-        this.parserConsumeExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_LITERAL_INTEGER_DECIMAL);
 
         final int i = index.getValue().intValue();
         return new UASTIDShaderFragmentOutputData(name, type, i);
       }
       case TOKEN_DEPTH:
       {
-        this.parserConsumeExact(Type.TOKEN_DEPTH);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_DEPTH);
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-        this.parserConsumeExact(Type.TOKEN_COLON);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
         final UASTITypePath type = this.declarationTypePath();
 
         return new UASTIDShaderFragmentOutputDepth(name, type);
@@ -392,11 +396,11 @@ import com.io7m.junreachable.UnreachableCodeException;
         IOException,
         LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_OUT);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_OUT);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_EQUALS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_EQUALS);
     final UASTIEVariable value =
       new UASTIEVariable(this.declarationValuePath());
     return new UASTIDShaderFragmentOutputAssignment(name, value);
@@ -413,13 +417,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       new ArrayList<UASTIDShaderFragmentOutputAssignment>();
 
     assigns.add(this.declarationFragmentShaderOutputAssignment());
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
 
     for (;;) {
       switch (this.token.getType()) {
         case TOKEN_OUT:
           assigns.add(this.declarationFragmentShaderOutputAssignment());
-          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
           break;
         // $CASES-OMITTED$
         default:
@@ -433,11 +437,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_PARAMETER);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_PARAMETER);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_COLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
     return new UASTIDShaderFragmentParameter(name, this.declarationTypePath());
   }
 
@@ -448,10 +452,10 @@ import com.io7m.junreachable.UnreachableCodeException;
         IOException,
         LexerError
   {
-    this.parserExpectOneOf(new Type[] {
-      Type.TOKEN_IN,
-      Type.TOKEN_OUT,
-      Type.TOKEN_PARAMETER, });
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_IN,
+      TokenTypeEnum.TOKEN_OUT,
+      TokenTypeEnum.TOKEN_PARAMETER, });
 
     switch (this.token.getType()) {
       case TOKEN_IN:
@@ -483,7 +487,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         case TOKEN_PARAMETER:
           declarations.add(this
             .declarationFragmentShaderParameterDeclaration());
-          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
           break;
         // $CASES-OMITTED$
         default:
@@ -497,17 +501,17 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_FUNCTION);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_FUNCTION);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
 
     final List<UASTIDFunctionArgument> args =
       this.declarationFunctionArguments();
 
-    this.parserConsumeExact(Type.TOKEN_COLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
     final UASTITypePath type = this.declarationTypePath();
-    this.parserConsumeExact(Type.TOKEN_EQUALS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_EQUALS);
 
     switch (this.token.getType()) {
       case TOKEN_EXTERNAL:
@@ -539,10 +543,10 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_COLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
     return new UASTIDFunctionArgument(name, this.declarationTypePath());
   }
 
@@ -551,7 +555,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_ROUND_LEFT);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_ROUND_LEFT);
 
     final List<UASTIDFunctionArgument> args =
       new ArrayList<UASTIDFunctionArgument>();
@@ -561,7 +565,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     while (done == false) {
       switch (this.token.getType()) {
         case TOKEN_COMMA:
-          this.parserConsumeExact(Type.TOKEN_COMMA);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_COMMA);
           args.add(this.declarationFunctionArgument());
           break;
         // $CASES-OMITTED$
@@ -570,7 +574,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
     }
 
-    this.parserConsumeExact(Type.TOKEN_ROUND_RIGHT);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_ROUND_RIGHT);
     return args;
   }
 
@@ -579,19 +583,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_IMPORT);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IMPORT);
     final PackagePath path = this.declarationPackagePath();
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_UPPER);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_UPPER);
     final TokenIdentifierUpper name = (TokenIdentifierUpper) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_UPPER);
 
     switch (this.token.getType()) {
       case TOKEN_AS:
       {
-        this.parserConsumeExact(Type.TOKEN_AS);
-        this.parserExpectExact(Type.TOKEN_IDENTIFIER_UPPER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_AS);
+        this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_UPPER);
         final TokenIdentifierUpper rename = (TokenIdentifierUpper) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_UPPER);
         return new UASTIDImport(
           new ModulePath(path, name),
           Option.some(rename));
@@ -614,7 +618,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       switch (this.token.getType()) {
         case TOKEN_IMPORT:
           imports.add(this.declarationImport());
-          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
           break;
         // $CASES-OMITTED$
         default:
@@ -629,17 +633,17 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_MODULE);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_UPPER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_MODULE);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_UPPER);
     final TokenIdentifierUpper name = (TokenIdentifierUpper) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
-    this.parserConsumeExact(Type.TOKEN_IS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_UPPER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IS);
 
     final List<UASTIDImport> imports = this.declarationImports();
     final List<UASTIDeclarationModuleLevel> declarations =
       this.declarationModuleLevels();
 
-    this.parserConsumeExact(Type.TOKEN_END);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_END);
     return new UASTIDModule(new ModulePath(pack, name), imports, declarations);
   }
 
@@ -648,11 +652,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectOneOf(new Type[] {
-      Type.TOKEN_VALUE,
-      Type.TOKEN_FUNCTION,
-      Type.TOKEN_TYPE,
-      Type.TOKEN_SHADER, });
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_VALUE,
+      TokenTypeEnum.TOKEN_FUNCTION,
+      TokenTypeEnum.TOKEN_TYPE,
+      TokenTypeEnum.TOKEN_SHADER, });
 
     switch (this.token.getType()) {
       case TOKEN_VALUE:
@@ -684,7 +688,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         case TOKEN_TYPE:
         case TOKEN_SHADER:
           decls.add(this.declarationModuleLevel());
-          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
           break;
         // $CASES-OMITTED$
         default:
@@ -704,7 +708,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       switch (this.token.getType()) {
         case TOKEN_MODULE:
           modules.add(this.declarationModule(pack));
-          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
           break;
         // $CASES-OMITTED$
         default:
@@ -718,7 +722,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_PACKAGE);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_PACKAGE);
     return new UASTIDPackage(this.declarationPackagePath());
   }
 
@@ -735,10 +739,10 @@ import com.io7m.junreachable.UnreachableCodeException;
         case TOKEN_IDENTIFIER_LOWER:
         {
           builder.addComponent((TokenIdentifierLower) this.token);
-          this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
           switch (this.token.getType()) {
             case TOKEN_DOT:
-              this.parserConsumeExact(Type.TOKEN_DOT);
+              this.parserConsumeExact(TokenTypeEnum.TOKEN_DOT);
               break;
             // $CASES-OMITTED$
             default:
@@ -762,21 +766,21 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_PROGRAM);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_PROGRAM);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_IS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IS);
 
-    this.parserConsumeExact(Type.TOKEN_VERTEX);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_VERTEX);
     final UASTIShaderPath vertex = this.declarationShaderPath();
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
 
-    this.parserConsumeExact(Type.TOKEN_FRAGMENT);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_FRAGMENT);
     final UASTIShaderPath fragment = this.declarationShaderPath();
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
 
-    this.parserConsumeExact(Type.TOKEN_END);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_END);
     return new UASTIDShaderProgram(name, vertex, fragment);
   }
 
@@ -785,11 +789,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_SHADER);
-    this.parserExpectOneOf(new Type[] {
-      Type.TOKEN_VERTEX,
-      Type.TOKEN_FRAGMENT,
-      Type.TOKEN_PROGRAM, });
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SHADER);
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_VERTEX,
+      TokenTypeEnum.TOKEN_FRAGMENT,
+      TokenTypeEnum.TOKEN_PROGRAM, });
 
     switch (this.token.getType()) {
       case TOKEN_VERTEX:
@@ -809,26 +813,26 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectOneOf(new Type[] {
-      Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_IDENTIFIER_UPPER, });
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_IDENTIFIER_LOWER,
+      TokenTypeEnum.TOKEN_IDENTIFIER_UPPER, });
 
     switch (this.token.getType()) {
       case TOKEN_IDENTIFIER_LOWER:
       {
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
         final OptionType<TokenIdentifierUpper> none = Option.none();
         return new UASTIShaderPath(none, name);
       }
       case TOKEN_IDENTIFIER_UPPER:
       {
         final TokenIdentifierUpper module = (TokenIdentifierUpper) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
-        this.parserConsumeExact(Type.TOKEN_DOT);
-        this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_UPPER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_DOT);
+        this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
         return new UASTIShaderPath(Option.some(module), name);
       }
 
@@ -843,19 +847,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_TYPE);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_TYPE);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_IS);
-    this.parserExpectOneOf(new Type[] { Type.TOKEN_RECORD, });
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IS);
+    this.parserExpectOneOf(new TokenTypeEnum[] { TokenTypeEnum.TOKEN_RECORD, });
 
     switch (this.token.getType()) {
       case TOKEN_RECORD:
-        this.parserConsumeExact(Type.TOKEN_RECORD);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_RECORD);
         final List<UASTIDTypeRecordField> fields =
           this.declarationTypeRecordFields();
-        this.parserConsumeExact(Type.TOKEN_END);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_END);
         return new UASTIDTypeRecord(name, fields);
         // $CASES-OMITTED$
       default:
@@ -868,26 +872,26 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectOneOf(new Type[] {
-      Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_IDENTIFIER_UPPER, });
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_IDENTIFIER_LOWER,
+      TokenTypeEnum.TOKEN_IDENTIFIER_UPPER, });
 
     switch (this.token.getType()) {
       case TOKEN_IDENTIFIER_LOWER:
       {
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
         final OptionType<TokenIdentifierUpper> none = Option.none();
         return new UASTITypePath(none, name);
       }
       case TOKEN_IDENTIFIER_UPPER:
       {
         final TokenIdentifierUpper module = (TokenIdentifierUpper) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
-        this.parserConsumeExact(Type.TOKEN_DOT);
-        this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_UPPER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_DOT);
+        this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
         return new UASTITypePath(Option.some(module), name);
       }
 
@@ -902,10 +906,10 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_COLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
     final UASTITypePath type = this.declarationTypePath();
     return new UASTIDTypeRecordField(name, type);
   }
@@ -923,7 +927,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     while (done == false) {
       switch (this.token.getType()) {
         case TOKEN_COMMA:
-          this.parserConsumeExact(Type.TOKEN_COMMA);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_COMMA);
           args.add(this.declarationTypeRecordField());
           break;
         // $CASES-OMITTED$
@@ -940,26 +944,26 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_VALUE);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_VALUE);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     this
-      .parserExpectOneOf(new Type[] { Type.TOKEN_COLON, Type.TOKEN_EQUALS, });
+      .parserExpectOneOf(new TokenTypeEnum[] { TokenTypeEnum.TOKEN_COLON, TokenTypeEnum.TOKEN_EQUALS, });
 
     final OptionType<UASTITypePath> ascription;
-    if (this.token.getType() == Type.TOKEN_COLON) {
-      this.parserConsumeExact(Type.TOKEN_COLON);
+    if (this.token.getType() == TokenTypeEnum.TOKEN_COLON) {
+      this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
       final UASTITypePath path = this.declarationTypePath();
       ascription = Option.some(path);
     } else {
       ascription = Option.none();
     }
 
-    this.parserExpectExact(Type.TOKEN_EQUALS);
-    this.parserConsumeExact(Type.TOKEN_EQUALS);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_EQUALS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_EQUALS);
 
-    if (this.token.getType() == Type.TOKEN_EXTERNAL) {
+    if (this.token.getType() == TokenTypeEnum.TOKEN_EXTERNAL) {
 
       /**
        * If parsing an "internal" unit, then allow "external" values.
@@ -986,19 +990,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_VALUE);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_VALUE);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     this
-      .parserExpectOneOf(new Type[] { Type.TOKEN_COLON, Type.TOKEN_EQUALS, });
+      .parserExpectOneOf(new TokenTypeEnum[] { TokenTypeEnum.TOKEN_COLON, TokenTypeEnum.TOKEN_EQUALS, });
 
     switch (this.token.getType()) {
       case TOKEN_COLON:
       {
-        this.parserConsumeExact(Type.TOKEN_COLON);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
         final UASTITypePath path = this.declarationTypePath();
-        this.parserConsumeExact(Type.TOKEN_EQUALS);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_EQUALS);
         return new UASTIDValueLocal(
           name,
           Option.some(path),
@@ -1006,7 +1010,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
       case TOKEN_EQUALS:
       {
-        this.parserConsumeExact(Type.TOKEN_EQUALS);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_EQUALS);
         final OptionType<UASTITypePath> none = Option.none();
         return new UASTIDValueLocal(name, none, this.expression());
       }
@@ -1023,14 +1027,14 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     final List<UASTIDValueLocal> values = new ArrayList<UASTIDValueLocal>();
     values.add(this.declarationValueLocal());
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
 
     boolean done = false;
     while (done == false) {
       switch (this.token.getType()) {
         case TOKEN_VALUE:
           values.add(this.declarationValueLocal());
-          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
           break;
         // $CASES-OMITTED$
         default:
@@ -1046,26 +1050,26 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectOneOf(new Type[] {
-      Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_IDENTIFIER_UPPER, });
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_IDENTIFIER_LOWER,
+      TokenTypeEnum.TOKEN_IDENTIFIER_UPPER, });
 
     switch (this.token.getType()) {
       case TOKEN_IDENTIFIER_LOWER:
       {
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
         final OptionType<TokenIdentifierUpper> none = Option.none();
         return new UASTIValuePath(none, name);
       }
       case TOKEN_IDENTIFIER_UPPER:
       {
         final TokenIdentifierUpper module = (TokenIdentifierUpper) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_UPPER);
-        this.parserConsumeExact(Type.TOKEN_DOT);
-        this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_UPPER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_DOT);
+        this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
         return new UASTIValuePath(Option.some(module), name);
       }
 
@@ -1080,11 +1084,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_VERTEX);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_VERTEX);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_IS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IS);
 
     final List<UASTIDShaderVertexParameters> decls =
       this.declarationVertexShaderParameterDeclarations();
@@ -1112,13 +1116,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
     }
 
-    this.parserExpectOneOf(new Type[] { Type.TOKEN_WITH, Type.TOKEN_AS, });
+    this.parserExpectOneOf(new TokenTypeEnum[] { TokenTypeEnum.TOKEN_WITH, TokenTypeEnum.TOKEN_AS, });
 
     final List<UASTIDValueLocal> values;
     switch (this.token.getType()) {
       case TOKEN_WITH:
       {
-        this.parserConsumeExact(Type.TOKEN_WITH);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_WITH);
         values = this.declarationValueLocals();
         break;
       }
@@ -1130,10 +1134,10 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
     }
 
-    this.parserConsumeExact(Type.TOKEN_AS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_AS);
     final List<UASTIDShaderVertexOutputAssignment> assigns =
       this.declarationVertexShaderOutputAssignments();
-    this.parserConsumeExact(Type.TOKEN_END);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_END);
 
     final List<UASTIDShaderVertexLocalValue> actual_locals =
       new ArrayList<UASTIDShaderVertexLocalValue>(values.size());
@@ -1157,11 +1161,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_IN);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IN);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_COLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
     return new UASTIDShaderVertexInput(name, this.declarationTypePath());
   }
 
@@ -1170,17 +1174,17 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_OUT);
-    this.parserExpectOneOf(new Type[] {
-      Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_VERTEX, });
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_OUT);
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_IDENTIFIER_LOWER,
+      TokenTypeEnum.TOKEN_VERTEX, });
 
     switch (this.token.getType()) {
       case TOKEN_IDENTIFIER_LOWER:
       {
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-        this.parserConsumeExact(Type.TOKEN_COLON);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
         return new UASTIDShaderVertexOutput(
           name,
           this.declarationTypePath(),
@@ -1188,11 +1192,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
       case TOKEN_VERTEX:
       {
-        this.parserConsumeExact(Type.TOKEN_VERTEX);
-        this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_VERTEX);
+        this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
         final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-        this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-        this.parserConsumeExact(Type.TOKEN_COLON);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
         return new UASTIDShaderVertexOutput(
           name,
           this.declarationTypePath(),
@@ -1211,11 +1215,11 @@ import com.io7m.junreachable.UnreachableCodeException;
         IOException,
         LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_OUT);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_OUT);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_EQUALS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_EQUALS);
     final UASTIEVariable value =
       new UASTIEVariable(this.declarationValuePath());
     return new UASTIDShaderVertexOutputAssignment(name, value);
@@ -1232,13 +1236,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       new ArrayList<UASTIDShaderVertexOutputAssignment>();
 
     assigns.add(this.declarationVertexShaderOutputAssignment());
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
 
     for (;;) {
       switch (this.token.getType()) {
         case TOKEN_OUT:
           assigns.add(this.declarationVertexShaderOutputAssignment());
-          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
           break;
         // $CASES-OMITTED$
         default:
@@ -1252,11 +1256,11 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_PARAMETER);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_PARAMETER);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_COLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
     return new UASTIDShaderVertexParameter(name, this.declarationTypePath());
   }
 
@@ -1267,10 +1271,10 @@ import com.io7m.junreachable.UnreachableCodeException;
         IOException,
         LexerError
   {
-    this.parserExpectOneOf(new Type[] {
-      Type.TOKEN_IN,
-      Type.TOKEN_OUT,
-      Type.TOKEN_PARAMETER, });
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_IN,
+      TokenTypeEnum.TOKEN_OUT,
+      TokenTypeEnum.TOKEN_PARAMETER, });
 
     switch (this.token.getType()) {
       case TOKEN_IN:
@@ -1302,7 +1306,7 @@ import com.io7m.junreachable.UnreachableCodeException;
         case TOKEN_PARAMETER:
           declarations
             .add(this.declarationVertexShaderParameterDeclaration());
-          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
           break;
         // $CASES-OMITTED$
         default:
@@ -1311,7 +1315,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
-  public UASTIExpression expression()
+  public UASTIExpressionType expression()
     throws ParserError,
       IOException,
       LexerError
@@ -1319,20 +1323,21 @@ import com.io7m.junreachable.UnreachableCodeException;
     return this.expressionPost(this.expressionPre());
   }
 
-  public List<UASTIExpression> expressionApplicationArguments()
+  public List<UASTIExpressionType> expressionApplicationArguments()
     throws ParserError,
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_ROUND_LEFT);
-    final List<UASTIExpression> arguments = new ArrayList<UASTIExpression>();
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_ROUND_LEFT);
+    final List<UASTIExpressionType> arguments =
+      new ArrayList<UASTIExpressionType>();
     arguments.add(this.expression());
 
     boolean done = false;
     while (done == false) {
       switch (this.token.getType()) {
         case TOKEN_COMMA:
-          this.parserConsumeExact(Type.TOKEN_COMMA);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_COMMA);
           arguments.add(this.expression());
           break;
         // $CASES-OMITTED$
@@ -1342,7 +1347,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
     }
 
-    this.parserConsumeExact(Type.TOKEN_ROUND_RIGHT);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_ROUND_RIGHT);
     return arguments;
   }
 
@@ -1351,11 +1356,101 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_LITERAL_BOOLEAN);
     final UASTIEBoolean t =
       new UASTIEBoolean((TokenLiteralBoolean) this.token);
     this.parserConsumeAny();
     return t;
+  }
+
+  public UASTIEMatch expressionMatch()
+    throws ParserError,
+      IOException,
+      LexerError
+  {
+    this.parserExpectExact(TokenTypeEnum.TOKEN_MATCH);
+    final TokenMatch tm = (TokenMatch) this.token;
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_MATCH);
+    final UASTIExpressionType ed = this.expression();
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_WITH);
+
+    final List<Pair<UASTIExpressionMatchConstantType, UASTIExpressionType>> cases =
+      new ArrayList<Pair<UASTIExpressionMatchConstantType, UASTIExpressionType>>();
+    OptionType<UASTIExpressionType> edefault = Option.none();
+
+    {
+      this.parserConsumeExact(TokenTypeEnum.TOKEN_CASE);
+      final UASTIExpressionMatchConstantType mc =
+        this.expressionMatchCaseConstant();
+      this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
+      final UASTIExpressionType ce = this.expression();
+      cases.add(Pair.pair(mc, ce));
+    }
+
+    boolean cases_done = false;
+    while (cases_done == false) {
+      // CHECKSTYLE:OFF
+      this.parserExpectOneOf(new TokenTypeEnum[] {
+        TokenTypeEnum.TOKEN_CASE,
+        TokenTypeEnum.TOKEN_DEFAULT,
+        TokenTypeEnum.TOKEN_END });
+      // CHECKSTYLE:ON
+
+      switch (this.token.getType()) {
+        case TOKEN_CASE:
+        {
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_CASE);
+          final UASTIExpressionMatchConstantType mc =
+            this.expressionMatchCaseConstant();
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
+          final UASTIExpressionType ce = this.expression();
+          cases.add(Pair.pair(mc, ce));
+          break;
+        }
+        case TOKEN_DEFAULT:
+        {
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_DEFAULT);
+          this.parserConsumeExact(TokenTypeEnum.TOKEN_COLON);
+          final UASTIExpressionType ce = this.expression();
+          edefault = Option.some(ce);
+          cases_done = true;
+          break;
+        }
+        case TOKEN_END:
+        {
+          cases_done = true;
+          break;
+        }
+        // $CASES-OMITTED$
+        default:
+          throw new UnreachableCodeException();
+      }
+    }
+
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_END);
+    return new UASTIEMatch(tm, ed, cases, edefault);
+  }
+
+  private UASTIExpressionMatchConstantType expressionMatchCaseConstant()
+    throws ParserError,
+      LexerError,
+      IOException
+  {
+    // CHECKSTYLE:OFF
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_LITERAL_BOOLEAN,
+      TokenTypeEnum.TOKEN_LITERAL_INTEGER_DECIMAL });
+    // CHECKSTYLE:ON
+
+    switch (this.token.getType()) {
+      case TOKEN_LITERAL_BOOLEAN:
+        return this.expressionBoolean();
+      case TOKEN_LITERAL_INTEGER_DECIMAL:
+        return this.expressionInteger();
+        // $CASES-OMITTED$
+      default:
+        throw new UnreachableCodeException();
+    }
   }
 
   public UASTIEConditional expressionConditional()
@@ -1363,15 +1458,15 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectExact(Type.TOKEN_IF);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IF);
     final TokenIf tif = (TokenIf) this.token;
-    this.parserConsumeExact(Type.TOKEN_IF);
-    final UASTIExpression econd = this.expression();
-    this.parserConsumeExact(Type.TOKEN_THEN);
-    final UASTIExpression eleft = this.expression();
-    this.parserConsumeExact(Type.TOKEN_ELSE);
-    final UASTIExpression eright = this.expression();
-    this.parserConsumeExact(Type.TOKEN_END);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IF);
+    final UASTIExpressionType econd = this.expression();
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_THEN);
+    final UASTIExpressionType eleft = this.expression();
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_ELSE);
+    final UASTIExpressionType eright = this.expression();
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_END);
     return new UASTIEConditional(tif, econd, eleft, eright);
   }
 
@@ -1380,7 +1475,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_LITERAL_INTEGER_DECIMAL);
     final UASTIEInteger t =
       new UASTIEInteger((TokenLiteralIntegerType) this.token);
     this.parserConsumeAny();
@@ -1392,13 +1487,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectExact(Type.TOKEN_LET);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_LET);
     final TokenLet let = (TokenLet) this.token;
-    this.parserConsumeExact(Type.TOKEN_LET);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_LET);
     final List<UASTIDValueLocal> bindings = this.declarationValueLocals();
-    this.parserConsumeExact(Type.TOKEN_IN);
-    final UASTIExpression body = this.expression();
-    this.parserConsumeExact(Type.TOKEN_END);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IN);
+    final UASTIExpressionType body = this.expression();
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_END);
     return new UASTIELet(let, bindings, body);
   }
 
@@ -1407,13 +1502,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_NEW);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_NEW);
     final UASTITypePath path = this.declarationTypePath();
     return new UASTIENew(path, this.expressionApplicationArguments());
   }
 
-  private UASTIExpression expressionPost(
-    final UASTIExpression e)
+  private UASTIExpressionType expressionPost(
+    final UASTIExpressionType e)
     throws ParserError,
       IOException,
       LexerError
@@ -1429,21 +1524,22 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
-  private UASTIExpression expressionPre()
+  private UASTIExpressionType expressionPre()
     throws ParserError,
       IOException,
       LexerError
   {
-    this.parserExpectOneOf(new Type[] {
-      Type.TOKEN_LITERAL_INTEGER_DECIMAL,
-      Type.TOKEN_LITERAL_BOOLEAN,
-      Type.TOKEN_LITERAL_REAL,
-      Type.TOKEN_IDENTIFIER_LOWER,
-      Type.TOKEN_IDENTIFIER_UPPER,
-      Type.TOKEN_IF,
-      Type.TOKEN_LET,
-      Type.TOKEN_NEW,
-      Type.TOKEN_RECORD, });
+    this.parserExpectOneOf(new TokenTypeEnum[] {
+      TokenTypeEnum.TOKEN_LITERAL_INTEGER_DECIMAL,
+      TokenTypeEnum.TOKEN_LITERAL_BOOLEAN,
+      TokenTypeEnum.TOKEN_LITERAL_REAL,
+      TokenTypeEnum.TOKEN_IDENTIFIER_LOWER,
+      TokenTypeEnum.TOKEN_IDENTIFIER_UPPER,
+      TokenTypeEnum.TOKEN_IF,
+      TokenTypeEnum.TOKEN_LET,
+      TokenTypeEnum.TOKEN_MATCH,
+      TokenTypeEnum.TOKEN_NEW,
+      TokenTypeEnum.TOKEN_RECORD, });
 
     switch (this.token.getType()) {
       case TOKEN_LITERAL_INTEGER_DECIMAL:
@@ -1460,6 +1556,8 @@ import com.io7m.junreachable.UnreachableCodeException;
         return this.expressionConditional();
       case TOKEN_LET:
         return this.expressionLet();
+      case TOKEN_MATCH:
+        return this.expressionMatch();
       case TOKEN_NEW:
         return this.expressionNew();
       case TOKEN_RECORD:
@@ -1475,7 +1573,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectExact(Type.TOKEN_LITERAL_REAL);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_LITERAL_REAL);
     final UASTIEReal t = new UASTIEReal((TokenLiteralReal) this.token);
     this.parserConsumeAny();
     return t;
@@ -1486,14 +1584,14 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_RECORD);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_RECORD);
     final UASTITypePath path = this.declarationTypePath();
-    this.parserConsumeExact(Type.TOKEN_CURLY_LEFT);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_CURLY_LEFT);
     final List<UASTIRecordFieldAssignment> fields =
       new ArrayList<UASTIRecordFieldAssignment>();
     fields.add(this.expressionRecordFieldAssignment());
     this.expressionRecordActual(fields);
-    this.parserConsumeExact(Type.TOKEN_CURLY_RIGHT);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_CURLY_RIGHT);
     return new UASTIERecord(path, fields);
   }
 
@@ -1505,7 +1603,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     switch (this.token.getType()) {
       case TOKEN_COMMA:
-        this.parserConsumeExact(Type.TOKEN_COMMA);
+        this.parserConsumeExact(TokenTypeEnum.TOKEN_COMMA);
         fields.add(this.expressionRecordFieldAssignment());
         this.expressionRecordActual(fields);
         break;
@@ -1520,34 +1618,34 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
-    this.parserConsumeExact(Type.TOKEN_EQUALS);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_EQUALS);
     return new UASTIRecordFieldAssignment(name, this.expression());
   }
 
   public UASTIERecordProjection expressionRecordProjection(
-    final UASTIExpression e)
+    final UASTIExpressionType e)
     throws ParserError,
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_DOT);
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_DOT);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final UASTIERecordProjection r =
       new UASTIERecordProjection(e, (TokenIdentifierLower) this.token);
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     return r;
   }
 
   public UASTIESwizzle expressionSwizzle(
-    final UASTIExpression e)
+    final UASTIExpressionType e)
     throws ParserError,
       IOException,
       LexerError
   {
-    this.parserConsumeExact(Type.TOKEN_SQUARE_LEFT);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SQUARE_LEFT);
 
     final List<TokenIdentifierLower> fields =
       new ArrayList<TokenIdentifierLower>();
@@ -1565,7 +1663,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
     }
 
-    this.parserConsumeExact(Type.TOKEN_SQUARE_RIGHT);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SQUARE_RIGHT);
     return new UASTIESwizzle(e, fields);
   }
 
@@ -1574,13 +1672,13 @@ import com.io7m.junreachable.UnreachableCodeException;
       IOException,
       LexerError
   {
-    this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserExpectExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     final TokenIdentifierLower name = (TokenIdentifierLower) this.token;
-    this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_IDENTIFIER_LOWER);
     return name;
   }
 
-  public UASTIExpression expressionVariableOrApplication()
+  public UASTIExpressionType expressionVariableOrApplication()
     throws ParserError,
       IOException,
       LexerError
@@ -1605,7 +1703,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   protected void parserConsumeExact(
-    final Token.Type type)
+    final TokenTypeEnum type)
     throws ParserError,
       IOException,
       LexerError
@@ -1615,7 +1713,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   protected void parserExpectExact(
-    final Token.Type type)
+    final TokenTypeEnum type)
     throws ParserError
   {
     if (this.token.getType() != type) {
@@ -1631,10 +1729,10 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   protected void parserExpectOneOf(
-    final Token.Type[] types)
+    final TokenTypeEnum[] types)
     throws ParserError
   {
-    for (final Type want : types) {
+    for (final TokenTypeEnum want : types) {
       if (this.token.getType() == want) {
         return;
       }
@@ -1643,7 +1741,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     this.message.setLength(0);
     this.message.append("Expected one of {");
     for (int index = 0; index < types.length; ++index) {
-      final Type t = types[index];
+      final TokenTypeEnum t = types[index];
       this.message.append(t);
       if ((index + 1) != types.length) {
         this.message.append(", ");
@@ -1663,7 +1761,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       case TOKEN_IDENTIFIER_LOWER:
       {
         final TokenIdentifierLower t =
-          (Token.TokenIdentifierLower) this.token;
+          (TokenIdentifierLower) this.token;
         this.message.append("('");
         this.message.append(t.getActual());
         this.message.append("')");
@@ -1672,7 +1770,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       case TOKEN_IDENTIFIER_UPPER:
       {
         final TokenIdentifierUpper t =
-          (Token.TokenIdentifierUpper) this.token;
+          (TokenIdentifierUpper) this.token;
         this.message.append("('");
         this.message.append(t.getActual());
         this.message.append("')");
@@ -1689,7 +1787,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       LexerError,
       IOException
   {
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
   }
 
   public UASTIUnit unit()
@@ -1698,7 +1796,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       LexerError
   {
     final UASTIDPackage pack = this.declarationPackage();
-    this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+    this.parserConsumeExact(TokenTypeEnum.TOKEN_SEMICOLON);
     final List<UASTIDModule> modules =
       this.declarationModules(pack.getPath());
     return new UASTIUnit(this.lexer.getFile(), pack, modules);
