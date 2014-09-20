@@ -51,6 +51,26 @@ import com.io7m.jnull.NullCheck;
     }
   }
 
+  @EqualityReference public static final class TokenColumn extends Token
+  {
+    public TokenColumn(
+      final File file,
+      final Position position)
+
+    {
+      super(Type.TOKEN_COLUMN, file, position);
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("TokenColumn []");
+      final String r = builder.toString();
+      assert r != null;
+      return r;
+    }
+  }
+
   @EqualityReference public static final class TokenColon extends Token
   {
     public TokenColon(
@@ -542,8 +562,22 @@ import com.io7m.jnull.NullCheck;
     }
   }
 
+  @EqualityReference public static abstract class TokenLiteralInteger extends
+    Token
+  {
+    protected TokenLiteralInteger(
+      final Type in_type,
+      final File in_file,
+      final Position in_position)
+    {
+      super(in_type, in_file, in_position);
+    }
+
+    public abstract BigInteger getValue();
+  }
+
   @EqualityReference public static final class TokenLiteralIntegerDecimal extends
-    Token implements TokenLiteralIntegerType
+    TokenLiteralInteger
   {
     public static TokenLiteralIntegerDecimal newIntegerDecimal(
       final File file,
@@ -585,18 +619,12 @@ import com.io7m.jnull.NullCheck;
     }
   }
 
-  public interface TokenLiteralIntegerType
-  {
-    BigInteger getValue();
-  }
-
   @EqualityReference public static final class TokenLiteralReal extends Token
   {
     public static TokenLiteralReal newReal(
       final File file,
       final Position position,
       final String text)
-
     {
       NullCheck.notNull(text, "Text");
       return new TokenLiteralReal(file, position, new BigDecimal(text));
@@ -976,6 +1004,7 @@ import com.io7m.jnull.NullCheck;
   {
     TOKEN_AS("keyword 'as'"),
     TOKEN_COLON("colon"),
+    TOKEN_COLUMN("keyword 'column'"),
     TOKEN_COMMA("comma"),
     TOKEN_CURLY_LEFT("'{'"),
     TOKEN_CURLY_RIGHT("'}'"),

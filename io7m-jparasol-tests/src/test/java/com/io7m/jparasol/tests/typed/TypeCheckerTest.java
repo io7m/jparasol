@@ -757,6 +757,48 @@ import com.io7m.jparasol.typed.ast.TASTTermNameFlat;
 
   @Test(expected = TypeCheckerError.class) public
     void
+    testTermExpressionMatrixColumnNotMatrix_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/term-expression-matrix-column-not-matrix-0.p" },
+      Code.TYPE_ERROR_EXPRESSION_MATRIX_COLUMN_ACCESS_NOT_COLUMN);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatrixColumnOutOfBounds_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest
+      .checkMustFailWithCode(
+        new String[] { "typed/term-expression-matrix-column-out-of-bounds-0.p" },
+        Code.TYPE_ERROR_EXPRESSION_MATRIX_COLUMN_ACCESS_OUT_OF_BOUNDS);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatrixColumnOutOfBounds_1()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest
+      .checkMustFailWithCode(
+        new String[] { "typed/term-expression-matrix-column-out-of-bounds-1.p" },
+        Code.TYPE_ERROR_EXPRESSION_MATRIX_COLUMN_ACCESS_OUT_OF_BOUNDS);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
+    testTermExpressionMatrixColumnBadType_0()
+      throws TypeCheckerError
+  {
+    TypeCheckerTest.checkMustFailWithCode(
+      new String[] { "typed/term-expression-matrix-column-bad-type-0.p" },
+      Code.TYPE_ERROR_FUNCTION_BODY_RETURN_INCOMPATIBLE);
+  }
+
+  @Test(expected = TypeCheckerError.class) public
+    void
     testTermExpressionSwizzleTooMany_0()
       throws TypeCheckerError
   {

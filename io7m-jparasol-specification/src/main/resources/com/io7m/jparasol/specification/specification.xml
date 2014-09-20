@@ -17,7 +17,7 @@
   -->
 
 <s:document
-  xmlns:s="http://schemas.io7m.com/structural/2.0.0"
+  xmlns:s="http://schemas.io7m.com/structural/2.1.0"
   xmlns:xi="http://www.w3.org/2001/XInclude">
   <s:document-title>Parasol Language ${project.version} Specification</s:document-title>
   <s:document-style>specification.css</s:document-style>
@@ -842,6 +842,8 @@ name_upper =
 <s:list-item><s:term s:type="keyword">]</s:term> (<s:term s:type="constant">U+005D</s:term>)</s:list-item>
 
 <s:list-item><s:term s:type="keyword">as</s:term></s:list-item>
+<s:list-item><s:term s:type="keyword">column</s:term></s:list-item>
+<s:list-item><s:term s:type="keyword">depth</s:term></s:list-item>
 <s:list-item><s:term s:type="keyword">discard</s:term></s:list-item>
 <s:list-item><s:term s:type="keyword">else</s:term></s:list-item>
 <s:list-item><s:term s:type="keyword">end</s:term></s:list-item>
@@ -2214,6 +2216,7 @@ package_declaration =
             <s:list-item>A <s:link s:target="spec.expressions.record">record</s:link> value. For example: <s:term s:type="expression">record t { x = 23, y = 24 }</s:term></s:list-item>
             <s:list-item>A <s:link s:target="spec.expressions.record_projection">record projection</s:link>. For example: <s:term s:type="expression">e.x</s:term>, for some expression <s:term s:type="variable">e</s:term>.</s:list-item>
             <s:list-item>A vector <s:link s:target="spec.expressions.swizzle">swizzle</s:link>. For example: <s:term s:type="expression">e [x x y z]</s:term>, for some expression <s:term s:type="variable">e</s:term>.</s:list-item>
+            <s:list-item>A <s:link s:target="spec.expressions.matrix-column-access">matrix column access</s:link>. For example: <s:term s:type="expression">column m 0</s:term>, for some expression <s:term s:type="variable">m</s:term>.</s:list-item>
           </s:list-unordered>
         </s:formal-item>
       </s:subsection>
@@ -2275,12 +2278,16 @@ let_expression =
 conditional_expression =
   "if" , expression , "then" , expression , "else" , expression , "end" ;
 
+matrix_column_access_expression =
+  "column" , expression , integer_literal ;
+
 expression_pre =
     integer_literal
   | real_literal
   | boolean_literal
   | variable_or_application_expression
   | conditional_expression
+  | matrix_column_access_expression
   | let_expression
   | new_expression
   | record_expression
@@ -2711,6 +2718,50 @@ expression =
           <s:formal-item-title>Swizzle semantics (swizzle)</s:formal-item-title>
           <s:image s:source="png/op_swizzle.png">Swizzle semantics (swizzle)</s:image>
         </s:formal-item>
+      </s:subsection>
+    </s:section>
+
+    <s:section xml:id="spec.expressions.matrix-column-access">
+      <s:section-title>Matrix Column Access</s:section-title>
+      <s:subsection>
+        <s:subsection-title>Description</s:subsection-title>
+        <s:paragraph>
+          A <s:term s:type="term">matrix_column_access_expression</s:term> retrieves
+          exactly one column of a 
+          <s:link s:target="spec.types.matrix">matrix</s:link>
+          type, returning a value of an appropriate 
+          <s:term s:type="term">vector</s:term> type representing the column.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>Type rules</s:subsection-title>
+        <s:paragraph>
+          For <s:term s:type="term">matrix_column_access_expressions</s:term>, special type rules
+          apply as described in the
+          <s:link s:target="spec.types.matrix">Matrices</s:link>
+          section of the
+          <s:link s:target="spec.types">Types</s:link> section.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>Operational semantics</s:subsection-title>
+        <s:paragraph>
+          For a <s:term s:type="term">matrix_column_access_expression</s:term>
+          <s:term s:type="expression">e</s:term>,
+          the first subexpression is evaluated, by rule
+          <s:term s:type="constant">matrix_column_access_pre</s:term>, and the
+          resulting expression is a new vector value.
+        </s:paragraph>
+        <s:formal-item s:kind="specifications" s:type="specifications">
+          <s:formal-item-title>Matrix Column Access semantics (matrix_column_access)</s:formal-item-title>
+          <s:image s:source="png/op_matrix_column_access.png">Matrix Column Access semantics (matrix_column_access)</s:image>
+        </s:formal-item>
+        <s:paragraph>
+          Note that the integer constant given as the index of the column
+          to return is required by the type rules to be greater than zero
+          and less than the number of columns in the type, and therefore
+          evaluation cannot fail due to an out-of-range index.
+        </s:paragraph>
       </s:subsection>
     </s:section>
 
@@ -3253,6 +3304,21 @@ expression =
           <s:link s:target="spec.types.float">float</s:link>
           are provided.
         </s:paragraph>
+        <s:paragraph>
+          The columns of values of <s:term s:type="type">matrix_NxNf</s:term> types
+          are extracted via <s:term s:type="term">matrix_column_access</s:term> expressions. A
+          <s:term s:type="term">matrix_column_access</s:term> expression consists of an
+          expression <s:term s:type="expression">e</s:term> of a 
+          <s:term s:type="type">matrix_NxNf</s:term> type, and an integer constant
+          <s:term s:type="expression">K</s:term> where 
+          <s:term s:type="expression">0 &lt;= K &lt; N</s:term>, and evaluates to
+          a value of type <s:term s:type="type">vector_Nf</s:term> representing
+          the <s:term s:type="expression">K</s:term>th column of <s:term s:type="expression">e</s:term>.
+        </s:paragraph>
+        <s:formal-item s:kind="specifications" s:type="specifications">
+          <s:formal-item-title>Matrix Column Access type rule (matrix_column_access)</s:formal-item-title>
+          <s:image s:source="png/ty_matrix_column_access.png">Matrix Column Access type rule (matrix_column_access)</s:image>
+        </s:formal-item>
       </s:subsection>
       <s:subsection>
         <s:subsection-title>Constructors</s:subsection-title>
@@ -4620,261 +4686,7 @@ expression =
       </s:paragraph>
       <s:formal-item s:kind="specifications">
         <s:formal-item-title>EBNF Grammar</s:formal-item-title>
-        <s:verbatim><![CDATA[
-(* Terminals *)
-
-digit_nonzero =
-  "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-
-digit =
-  "0" | digit_nonzero ;
-
-letter_lower =
-  "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" |
-  "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" |
-  "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" |
-  "y" | "z" ;
-
-letter_upper =
-  "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" |
-  "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" |
-  "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" |
-  "Y" | "Z" ;
-
-letter =
-  letter_lower | letter_upper ;
-
-name_lower =
-  letter_lower , { letter | digit | "-" | "_" } ;
-
-name_upper =
-  letter_upper , { letter | digit | "-" | "_" } ;
-
-integer_literal =
-  "0" | ( ["-"] , digit_nonzero , { digit } ) ;
-
-real_literal =
-  ["-"] , digit , { digit } , "." , digit , { digit } ;
-
-boolean_literal =
-  "true" | "false" ;
-
-(* Non-terminals *)
-
-package_path =
-  name_lower , { "." , name_lower } ;
-
-package_declaration =
-  "package" , package_path ;
-
-import_path =
-  package_path , "." , name_upper ;
-
-import_declaration =
-  "import" , import_path , [ "as" , name_upper ] ;
-
-import_declarations =
-  { import_declaration , ";" } ;
-
-type_path =
-    name_lower
-  | name_upper , "." , name_lower ;
-
-term_path =
-    name_lower
-  | name_upper , "." , name_lower ;
-
-shader_path =
-    name_lower
-  | name_upper , "." , name_lower ;
-
-value_declaration =
-  "value" , name_lower , [ ":" , type_path ] , "=" , expression ;
-
-value_declarations =
-  { value_declaration , ";" } ;
-
-function_formal_parameter =
-  name_lower , ":" , type_path ;
-
-function_formal_parameters =
-  "(" , function_formal_parameter, { "," , function_formal_parameter } , ")" ;
-
-function_declaration =
-  "function" , name_lower , function_formal_parameters , ":" , type_path , "=" , expression ;
-
-term_declaration =
-  value_declaration | function_declaration ;
-
-record_type_field =
-  name_lower , ":" , type_path ;
-
-record_type_expression =
-  "record" , record_type_field , { "," , record_type_field } , "end" ;
-
-type_declaration =
-  "type" , name_lower , "is" , type_expression ;
-
-type_declarations =
-  { type_declaration , ";" } ;
-
-type_expression =
-  record_type_expression
-  ;
-
-variable_or_application_expression =
-  term_path [ "(" , expression , { "," , expression } , ")" ]
-  ;
-
-new_parameters =
-  "(" , expression , { "," , expression } , ")" ;
-
-new_expression =
-  "new" , type_path , new_parameters ;
-
-record_expression_fields =
-  "{" , name_lower , "=" , expression , { "," name_lower , "=" , expression } , "}" ;
-
-record_expression =
-  "record" , type_path , record_expression_fields ;
-
-local_declaration =
-  "value" , name_lower , [ ":" , type_path ] , "=" , expression ;
-
-local_declarations =
-  local_declaration , ";" , { local_declarations } ;
-
-let_expression =
-  "let" , local_declarations , "in" , expression , "end" ;
-
-conditional_expression =
-  "if" , expression , "then" , expression , "else" , expression , "end" ;
-
-expression_pre =
-    integer_literal
-  | real_literal
-  | boolean_literal
-  | variable_or_application_expression
-  | conditional_expression
-  | let_expression
-  | new_expression
-  | record_expression
-  ;
-
-expression_projection =
-  "." , name_lower ;
-
-expression_swizzle_names =
-  "[" , name_lower , { "," , name_lower } , "]" ;
-
-expression =
-  expression_pre , { expression_swizzle | expression_projection } ;
-
-shader_parameter_declaration =
-  "parameter" , name_lower , ":" , type_path ;
-
-shader_vertex_input_declaration =
-  "in" , name_lower , ":" , type_path ;
-
-shader_vertex_output_declaration =
-  "out" , name_lower , ":" , type_path ;
-
-shader_vertex_output_main_declaration =
-  "out" , "vertex" , name_lower , ":" , type_path ;
-
-shader_vertex_parameter =
-    shader_parameter_declaration
-  | shader_vertex_input_declaration
-  | shader_vertex_output_declaration
-  | shader_vertex_output_main_declaration ;
-
-shader_vertex_parameters =
-  { shader_vertex_parameter , ";" } ;
-
-shader_vertex_output_assignment =
-  "out" , name_lower , "=" , term_path ;
-
-shader_vertex_output_assignments =
-  shader_vertex_output_assignment , ";" , { shader_vertex_output_assignments } ;
-
-shader_vertex_declaration =
-  "vertex" , name_lower , "is" ,
-  shader_vertex_parameters ,
-  [ "with" , local_declarations ] ,
-  "as" ,
-  shader_vertex_output_assignments ,
-  "end" ;
-
-shader_fragment_input_declaration =
-  "in" , name_lower , ":" , type_path ;
-
-shader_fragment_output_declaration =
-  "out" , name_lower , ":" , type_path , "as" , integer_literal ;
-
-shader_fragment_output_depth_declaration =
-  "out" , "depth", name_lower , ":" , type_path ;
-
-shader_fragment_parameter =
-    shader_parameter_declaration
-  | shader_fragment_input_declaration
-  | shader_fragment_output_declaration
-  | shader_fragment_output_depth_declaration ;
-
-shader_fragment_parameters =
-  { shader_fragment_parameter , ";" } ;
-
-shader_fragment_discard_declaration =
-  "discard" , "(" , expression , ")" ;
-
-shader_fragment_local_declaration =
-    local_declaration
-  | shader_fragment_discard_declaration ;
-
-shader_fragment_local_declarations =
-  shader_fragment_local_declaration , ";" , { shader_fragment_local_declarations } ;
-
-shader_fragment_output_assignment =
-  "out" , name_lower , "=" , term_path ;
-
-shader_fragment_output_assignments =
-  shader_fragment_output_assignment , ";" , { shader_fragment_output_assignments } ;
-
-shader_fragment_declaration =
-  "fragment" , name_lower , "is" ,
-  shader_fragment_parameters ,
-  [ "with" , shader_fragment_local_declarations ] ,
-  "as" ,
-  shader_fragment_output_assignments ,
-  "end" ;
-
-shader_program_declaration =
-  "program" , name_lower , "is" ,
-  "vertex" , shader_path , ";" ,
-  "fragment" , shader_path , ";" ,
-  "end" ;
-
-shader_declaration =
-  "shader" , ( shader_vertex_declaration | shader_fragment_declaration | shader_program_declaration ) ;
-
-shader_declarations =
-  { shader_declaration , ";" } ;
-
-module_level_declarations =
-  { value_declarations | function_declarations | type_declarations | shader_declarations } ;
-
-module_declaration =
-  "module" , name_upper , "is" ,
-  import_declarations ,
-  module_level_declarations ,
-  "end" ;
-
-module_declarations =
-  module_declaration , ";" , { module_declaration , ";" } ;
-
-unit =
-  package_declaration , ";" ,
-  module_declarations ;
-]]></s:verbatim>
+        <s:verbatim><xi:include href="ebnf/grammar.txt" parse="text"/></s:verbatim>
       </s:formal-item>
     </s:section>
 
