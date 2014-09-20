@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -26,6 +26,7 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameExternal;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameGlobal;
 import com.io7m.jparasol.typed.TType;
+import com.io7m.jparasol.typed.TType.TVectorType;
 
 /**
  * The type of GLSL expressions.
@@ -46,7 +47,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct an expression.
-     * 
+     *
      * @param in_name
      *          The function name
      * @param in_type
@@ -137,7 +138,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct an expression.
-     * 
+     *
      * @param in_name
      *          The function name
      * @param in_type
@@ -231,7 +232,7 @@ import com.io7m.jparasol.typed.TType;
     {
       /**
        * Construct a binary op expression.
-       * 
+       *
        * @param left
        *          The left expression
        * @param right
@@ -281,7 +282,7 @@ import com.io7m.jparasol.typed.TType;
     {
       /**
        * Construct a binary op expression.
-       * 
+       *
        * @param left
        *          The left expression
        * @param right
@@ -331,7 +332,7 @@ import com.io7m.jparasol.typed.TType;
     {
       /**
        * Construct a binary op expression.
-       * 
+       *
        * @param left
        *          The left expression
        * @param right
@@ -381,7 +382,7 @@ import com.io7m.jparasol.typed.TType;
     {
       /**
        * Construct a binary op expression.
-       * 
+       *
        * @param left
        *          The left expression
        * @param right
@@ -431,7 +432,7 @@ import com.io7m.jparasol.typed.TType;
     {
       /**
        * Construct a binary op expression.
-       * 
+       *
        * @param left
        *          The left expression
        * @param right
@@ -481,7 +482,7 @@ import com.io7m.jparasol.typed.TType;
     {
       /**
        * Construct a binary op expression.
-       * 
+       *
        * @param left
        *          The left expression
        * @param right
@@ -531,7 +532,7 @@ import com.io7m.jparasol.typed.TType;
     {
       /**
        * Construct a binary op expression.
-       * 
+       *
        * @param left
        *          The left expression
        * @param right
@@ -581,7 +582,7 @@ import com.io7m.jparasol.typed.TType;
     {
       /**
        * Construct a binary op expression.
-       * 
+       *
        * @param left
        *          The left expression
        * @param right
@@ -631,7 +632,7 @@ import com.io7m.jparasol.typed.TType;
     {
       /**
        * Construct a binary op expression.
-       * 
+       *
        * @param left
        *          The left expression
        * @param right
@@ -713,7 +714,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct a constant.
-     * 
+     *
      * @param in_value
      *          The value
      */
@@ -767,7 +768,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct a new value.
-     * 
+     *
      * @param in_type
      *          The type
      * @param in_arguments
@@ -841,7 +842,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct a constant.
-     * 
+     *
      * @param in_value
      *          The value
      */
@@ -894,7 +895,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct a constant.
-     * 
+     *
      * @param in_value
      *          The value
      */
@@ -937,6 +938,93 @@ import com.io7m.jparasol.typed.TType;
   }
 
   /**
+   * The type of matrix column access expressions.
+   */
+
+  @EqualityReference public static final class GASTEMatrixColumnAccess extends
+    GASTExpression
+  {
+    private final GASTExpression body;
+    private final GASTEInteger   column;
+    private final TVectorType    type;
+
+    /**
+     * Construct a matrix column access expression.
+     *
+     * @param in_body
+     *          The body
+     * @param in_column
+     *          The column index
+     * @param in_type
+     *          The resulting type
+     */
+
+    public GASTEMatrixColumnAccess(
+      final GASTExpression in_body,
+      final GASTEInteger in_column,
+      final TVectorType in_type)
+    {
+      this.body = NullCheck.notNull(in_body, "Body");
+      this.column = NullCheck.notNull(in_column, "Column");
+      this.type = NullCheck.notNull(in_type, "Type");
+    }
+
+    @Override public
+      <A, E extends Throwable, V extends GASTExpressionVisitorType<A, E>>
+      A
+      expressionVisitableAccept(
+        final V v)
+        throws E
+    {
+      v.expressionMatrixColumnAccessVisitPre(this);
+      final A x = this.body.expressionVisitableAccept(v);
+      return v.expressionMatrixColumnAccessVisit(x, this);
+    }
+
+    /**
+     * @return The expression body
+     */
+
+    public GASTExpression getBody()
+    {
+      return this.body;
+    }
+
+    /**
+     * @return The matrix column
+     */
+
+    public GASTEInteger getColumn()
+    {
+      return this.column;
+    }
+
+    /**
+     * @return The resulting type
+     */
+
+    public TType getType()
+    {
+      return this.type;
+    }
+
+    @Override public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      builder.append("[GASTEMatrixColumnAccess ");
+      builder.append(this.body);
+      builder.append(" ");
+      builder.append(this.column);
+      builder.append(" ");
+      builder.append(this.type);
+      builder.append("]");
+      final String r = builder.toString();
+      assert r != null;
+      return r;
+    }
+  }
+
+  /**
    * The type of record projections.
    */
 
@@ -949,7 +1037,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct a record projection.
-     * 
+     *
      * @param in_body
      *          The left-hand side of the projection
      * @param in_field
@@ -1036,7 +1124,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct a swizzle expression.
-     * 
+     *
      * @param in_body
      *          The body
      * @param in_fields
@@ -1126,7 +1214,7 @@ import com.io7m.jparasol.typed.TType;
     {
       /**
        * Construct a negation.
-       * 
+       *
        * @param body
        *          The body of the expression
        */
@@ -1191,7 +1279,7 @@ import com.io7m.jparasol.typed.TType;
 
     /**
      * Construct a new variable.
-     * 
+     *
      * @param in_type
      *          The type
      * @param in_term
@@ -1250,7 +1338,7 @@ import com.io7m.jparasol.typed.TType;
 
   /**
    * Accept a generic visitor.
-   * 
+   *
    * @param v
    *          The visitor
    * @return The value returned by the visitor

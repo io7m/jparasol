@@ -41,6 +41,7 @@ main (void)
   vec4 pl_vf4 = (pl_vf0 + pl_vf1);
   vec4 pl_vf5 = (pl_vf2 + pl_vf3);
   vec4 pl_vf6 = (pl_vf4 + pl_vf5);
+  vec4 pl_vf7 = u_m4[0];
   ivec4 pl_vi0 = ivec4 (u_vi2, u_vi3.x, u_vi3.y);
   ivec4 pl_vi1 = ivec4 (u_vi4.xyz, u_int);
   ivec4 pl_vi2 = (pl_vi0 + pl_vi1);

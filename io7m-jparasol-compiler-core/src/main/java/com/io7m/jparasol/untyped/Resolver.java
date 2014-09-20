@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -82,6 +82,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREBoolean;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREConditional;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREInteger;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRELet;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREMatrixColumnAccess;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRENew;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREReal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRERecord;
@@ -133,6 +134,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEBoolea
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEConditional;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEInteger;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUELet;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEMatrixColumnAccess;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUENew;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEReal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecord;
@@ -295,6 +297,21 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
         this.module,
         this.modules,
         this.term_graph);
+    }
+
+    @Override public UASTRExpression expressionVisitMatrixColumnAccess(
+      final UASTRExpression body,
+      final UASTUEMatrixColumnAccess e)
+      throws ResolverError
+    {
+      return new UASTREMatrixColumnAccess(body, e.getColumn());
+    }
+
+    @Override public void expressionVisitMatrixColumnAccessPre(
+      final UASTUEMatrixColumnAccess e)
+      throws ResolverError
+    {
+      // Nothing
     }
 
     @Override public UASTRENew expressionVisitNew(
@@ -2332,7 +2349,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
 
   /**
    * Construct a new name resolver for the given AST.
-   * 
+   *
    * @param compilation
    *          The AST
    * @param log

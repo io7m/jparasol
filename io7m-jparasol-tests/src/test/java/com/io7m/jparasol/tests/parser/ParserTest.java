@@ -67,6 +67,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEInteger;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIELet;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEMatrixColumnAccess;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIENew;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEReal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecord;
@@ -1268,6 +1269,32 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
     Assert.assertEquals(24, ((UASTIEInteger) r.getBody())
       .getValue()
       .intValue());
+  }
+
+  @Test(expected = ParserError.class) public
+    void
+    testEMatrixColumnAccessNotOK_0()
+      throws IOException,
+        LexerError,
+        ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("column m x");
+    p.expression();
+  }
+
+  @Test public void testEMatrixColumnAccessOK_0()
+    throws IOException,
+      LexerError,
+      ParserError
+  {
+    final Parser p = ParserTest.makeStringInternalParser("column m 0");
+    final UASTIEMatrixColumnAccess r =
+      (UASTIEMatrixColumnAccess) p.expression();
+
+    Assert.assertEquals("m", ((UASTIEVariable) r.getExpression())
+      .getName()
+      .show());
+    Assert.assertEquals(0, r.getColumn().getValue().intValue());
   }
 
   @Test(expected = ParserError.class) public void testENewNotOK_0()

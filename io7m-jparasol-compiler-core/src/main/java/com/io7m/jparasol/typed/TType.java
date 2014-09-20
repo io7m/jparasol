@@ -110,7 +110,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     /**
      * Construct a new constructor.
-     * 
+     *
      * @param parameters
      *          The types of the parameters
      * @return A constructor
@@ -270,7 +270,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     /**
      * Construct a function type.
-     * 
+     *
      * @param in_arguments
      *          The list of argument types
      * @param in_return_type
@@ -361,7 +361,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     /**
      * Construct a function argument.
-     * 
+     *
      * @param in_name
      *          The name
      * @param in_type
@@ -461,7 +461,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Values of a manifest type can be used as record fields.
-   * 
+   *
    * Notably, texture samplers are not manifest types.
    */
 
@@ -494,6 +494,16 @@ import com.io7m.junreachable.UnreachableCodeException;
     private TMatrix3x3F()
     {
       this.name = new TTypeNameBuiltIn("matrix_3x3f");
+    }
+
+    @Override int getColumns()
+    {
+      return 3;
+    }
+
+    @Override TVectorType getColumnType()
+    {
+      return TVector3F.get();
     }
 
     @Override public int getComponentCount()
@@ -557,6 +567,16 @@ import com.io7m.junreachable.UnreachableCodeException;
       this.name = new TTypeNameBuiltIn("matrix_4x4f");
     }
 
+    @Override int getColumns()
+    {
+      return 4;
+    }
+
+    @Override TVectorType getColumnType()
+    {
+      return TVector4F.get();
+    }
+
     @Override public int getComponentCount()
     {
       return 4 * 4;
@@ -601,7 +621,17 @@ import com.io7m.junreachable.UnreachableCodeException;
   @EqualityReference public static abstract class TMatrixType extends
     TManifestType
   {
-    // Nothing
+    /**
+     * @return The number of matrix columns
+     */
+
+    abstract int getColumns();
+
+    /**
+     * @return The type of matrix columns
+     */
+
+    abstract TVectorType getColumnType();
   }
 
   /**
@@ -615,7 +645,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     /**
      * Construct a record type.
-     * 
+     *
      * @param in_name
      *          The name of the type
      * @param in_fields
@@ -689,7 +719,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     /**
      * Construct a record field.
-     * 
+     *
      * @param in_name
      *          The field name
      * @param in_type
@@ -850,7 +880,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   /**
    * Values of a value type can be passed around as values; they can be passed
    * to functions as arguments, returned from functions, etc.
-   * 
+   *
    * Notably, values of function types are not values.
    */
 
@@ -1587,7 +1617,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Accept a generic visitor.
-   * 
+   *
    * @param v
    *          The visitor
    * @return The value returned by the visitor

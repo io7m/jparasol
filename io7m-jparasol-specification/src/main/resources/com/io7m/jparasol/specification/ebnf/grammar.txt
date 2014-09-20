@@ -127,12 +127,16 @@ let_expression =
 conditional_expression =
   "if" , expression , "then" , expression , "else" , expression , "end" ;
 
+matrix_column_access_expression =
+  "column" , expression , integer_literal ;
+
 expression_pre =
     integer_literal
   | real_literal
   | boolean_literal
   | variable_or_application_expression
   | conditional_expression
+  | matrix_column_access_expression
   | let_expression
   | new_expression
   | record_expression

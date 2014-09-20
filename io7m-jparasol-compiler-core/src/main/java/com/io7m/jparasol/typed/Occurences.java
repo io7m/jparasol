@@ -31,6 +31,7 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTEBoolean;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEConditional;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEInteger;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTELet;
+import com.io7m.jparasol.typed.ast.TASTExpression.TASTEMatrixColumnAccess;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTENew;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEReal;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
@@ -157,6 +158,21 @@ import com.io7m.junreachable.UnreachableCodeException;
         final TASTELet e)
     {
       return new LocalChecker(this.check_names, this.found_names);
+    }
+
+    @Override public Unit expressionVisitMatrixColumnAccess(
+      final @Nullable Unit body,
+      final TASTEMatrixColumnAccess e)
+      throws UnreachableCodeException
+    {
+      return Unit.unit();
+    }
+
+    @Override public boolean expressionVisitMatrixColumnAccessPre(
+      final TASTEMatrixColumnAccess e)
+      throws UnreachableCodeException
+    {
+      return true;
     }
 
     @Override public Unit expressionVisitNew(

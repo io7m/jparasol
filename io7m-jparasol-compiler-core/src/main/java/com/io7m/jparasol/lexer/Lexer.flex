@@ -79,6 +79,7 @@ NameUpper = [A-Z] ([a-z] | [A-Z] | [0-9] | "_")*
 <YYINITIAL> ","         { return new Token.TokenComma (this.getFile(), this.position()); }
 <YYINITIAL> "{"         { return new Token.TokenCurlyLeft (this.getFile(), this.position()); }
 <YYINITIAL> "}"         { return new Token.TokenCurlyRight (this.getFile(), this.position()); }
+<YYINITIAL> "column"    { return new Token.TokenColumn (this.getFile(), this.position()); }
 <YYINITIAL> "depth"     { return new Token.TokenDepth (this.getFile(), this.position()); }
 <YYINITIAL> "discard"   { return new Token.TokenDiscard (this.getFile(), this.position()); }
 <YYINITIAL> "."         { return new Token.TokenDot (this.getFile(), this.position()); }

@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -77,6 +77,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEBoolean;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEConditional;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEInteger;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCELet;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEMatrixColumnAccess;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCENew;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEReal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCERecord;
@@ -124,6 +125,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEInteger;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIELet;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEMatrixColumnAccess;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIENew;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEReal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecord;
@@ -149,16 +151,16 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 /**
  * Reject insane modules. Specifically, reject:
- * 
+ *
  * For modules:
- * 
+ *
  * <ul>
  * <li>Module names that are restricted, according to {@link NameRestrictions}
  * .</li>
  * </ul>
- * 
+ *
  * For imports:
- * 
+ *
  * <ul>
  * <li>Duplicate imports (<code>import x.Y; import x.Y;</code>)</li>
  * <li>Duplicate renames for imports (
@@ -167,9 +169,9 @@ import com.io7m.junreachable.UnreachableCodeException;
  * <code>import x.Y as A; import x.A;</code>)</li>
  * <li>Redundant import renames (<code>import x.Y as Y;</code>)</li>
  * </ul>
- * 
+ *
  * For terms/types in modules:
- * 
+ *
  * <ul>
  * <li>Terms that have names that are restricted, according to
  * {@link NameRestrictions}.</li>
@@ -182,9 +184,9 @@ import com.io7m.junreachable.UnreachableCodeException;
  * <li>Record expressions with duplicate field names (
  * <code>{ x = 23, x = 23 }</code>)</li>
  * </ul>
- * 
+ *
  * For types in modules:
- * 
+ *
  * <ul>
  * <li>Multiple type declarations with the same name (
  * <code>type t ...; type t ...;</code>)</li>
@@ -193,9 +195,9 @@ import com.io7m.junreachable.UnreachableCodeException;
  * <li>Record type declarations with duplicate field names (
  * <code>type t is record x : int, x : int end</code>)</li>
  * </ul>
- * 
+ *
  * For shaders in modules:
- * 
+ *
  * <ul>
  * <li>Shaders with names that are restricted, according to
  * <code>NameRestrictions</code>.</li>
@@ -208,15 +210,15 @@ import com.io7m.junreachable.UnreachableCodeException;
  * <li>Multiple output assignments to the same name</li>
  * <li>Missing output assignments</li>
  * </ul>
- * 
+ *
  * For vertex shaders:
- * 
+ *
  * <ul>
  * <li>Require that exactly one "main" output exists</li>
  * </ul>
- * 
+ *
  * For fragment shaders:
- * 
+ *
  * <ul>
  * <li>Multiple outputs with the same index (
  * <code>out out0 : vector4f as 0; out out1 : vector4f as 0;</code>)</li>
@@ -226,9 +228,9 @@ import com.io7m.junreachable.UnreachableCodeException;
  * <li>Multiple fragment shader depth outputs (
  * <code>out depth out0 : float; out depth out1 : float;</code>)</li>
  * </ul>
- * 
+ *
  * For units:
- * 
+ *
  * <ul>
  * <li>Modules that import themselves (
  * <code>package x.y; module K is import x.y.K; end</code>)</li>
@@ -307,6 +309,21 @@ import com.io7m.junreachable.UnreachableCodeException;
       throws ModuleStructureError
     {
       return new LocalChecker();
+    }
+
+    @Override public UASTCExpression expressionVisitMatrixColumnAccess(
+      final UASTCExpression body,
+      final UASTIEMatrixColumnAccess e)
+      throws ModuleStructureError
+    {
+      return new UASTCEMatrixColumnAccess(body, e.getColumn());
+    }
+
+    @Override public void expressionVisitMatrixColumnAccessPre(
+      final UASTIEMatrixColumnAccess e)
+      throws ModuleStructureError
+    {
+      // Nothing
     }
 
     @Override public UASTCENew expressionVisitNew(
@@ -1483,7 +1500,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Construct a new module structure checker.
-   * 
+   *
    * @param compilation
    *          The AST
    * @param log
@@ -1529,7 +1546,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Check the current AST
-   * 
+   *
    * @return A checked AST
    * @throws ModuleStructureError
    *           If an error occurs

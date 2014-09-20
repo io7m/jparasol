@@ -1,7 +1,8 @@
 #!/bin/sh -e
 
 DPI="140"
-OUTPUT="src/main/png"
+OUTPUT="src/main/resources/com/io7m/jparasol/specification/png"
+INPUT="src/main/resources/com/io7m/jparasol/specification/svg"
 
 TYPING_RULES="
 conditional
@@ -13,6 +14,7 @@ integer_constant
 let
 matrix_new
 new_scalar
+matrix_column_access
 record_expression
 record_projection
 true_constant
@@ -40,14 +42,14 @@ do
     --export-dpi=${DPI} \
     --export-background="0xffffffff" \
     --export-png="${OUTPUT}/ty_${r}.png" \
-    src/main/svg/typing.svg
+    ${INPUT}/typing.svg
 done
 
 inkscape \
   --export-dpi=${DPI} \
   --export-background="0xffffffff" \
   --export-png="${OUTPUT}/typing.png" \
-  src/main/svg/typing.svg
+  ${INPUT}/typing.svg
 
 TYPING_EXAMPLES="
 typing_example
@@ -64,7 +66,7 @@ do
     --export-dpi=${DPI} \
     --export-background="0xffffffff" \
     --export-png="${OUTPUT}/tyex_${r}.png" \
-    src/main/svg/typing_example.svg
+    ${INPUT}/typing_example.svg
 done
 
 SEMANTICS_RULES="
@@ -73,6 +75,7 @@ expressions
 function_application
 let
 new
+matrix_column_access
 record_expression
 record_projection
 swizzle
@@ -92,30 +95,30 @@ do
     --export-dpi=${DPI} \
     --export-background="0xffffffff" \
     --export-png="${OUTPUT}/op_${r}.png" \
-    src/main/svg/semantics.svg
+    ${INPUT}/semantics.svg
 done
 
 inkscape \
   --export-dpi=${DPI} \
   --export-background="0xffffffff" \
   --export-png="${OUTPUT}/op_semantics.png" \
-  src/main/svg/semantics.svg
+  ${INPUT}/semantics.svg
 
 inkscape \
   --export-dpi=${DPI} \
   --export-background="0xffffffff" \
   --export-png="${OUTPUT}/semantics_example.png" \
-  src/main/svg/semantics_example.svg
+  ${INPUT}/semantics_example.svg
 
 inkscape \
   --export-dpi=${DPI} \
   --export-background="0xffffffff" \
   --export-png="${OUTPUT}/semantics_example2.png" \
-  src/main/svg/semantics_example2.svg
+  ${INPUT}/semantics_example2.svg
 
 inkscape \
   --export-dpi=${DPI} \
   --export-background="0xffffffff" \
   --export-png="${OUTPUT}/ex_matrix_swizzle_example.png" \
-  src/main/svg/matrix_swizzle.svg
+  ${INPUT}/matrix_swizzle.svg
 

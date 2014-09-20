@@ -71,6 +71,7 @@ import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEBoolean;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEConditional;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEInteger;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCELet;
+import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEMatrixColumnAccess;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCENew;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCEReal;
 import com.io7m.jparasol.untyped.ast.checked.UASTCExpression.UASTCERecord;
@@ -136,6 +137,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEBoolea
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEConditional;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEInteger;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUELet;
+import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEMatrixColumnAccess;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUENew;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUEReal;
 import com.io7m.jparasol.untyped.ast.unique_binders.UASTUExpression.UASTUERecord;
@@ -399,6 +401,21 @@ import com.io7m.junreachable.UnreachableCodeException;
     {
       this.context = this.context.withNew();
       return new LocalTransformer(this.context);
+    }
+
+    @Override public UASTUExpression expressionVisitMatrixColumnAccess(
+      final UASTUExpression body,
+      final UASTCEMatrixColumnAccess e)
+      throws UniqueBindersError
+    {
+      return new UASTUEMatrixColumnAccess(body, e.getColumn());
+    }
+
+    @Override public void expressionVisitMatrixColumnAccessPre(
+      final UASTCEMatrixColumnAccess e)
+      throws UniqueBindersError
+    {
+      // Nothing
     }
 
     @Override public UASTUENew expressionVisitNew(
@@ -1072,7 +1089,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Construct a new unique binding processor.
-   * 
+   *
    * @param compilation
    *          The AST
    * @param log
@@ -1100,7 +1117,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Calculate new unique bindings for the current AST
-   * 
+   *
    * @return The AST
    * @throws UniqueBindersError
    *           If an error occurs

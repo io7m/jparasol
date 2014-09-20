@@ -24,13 +24,16 @@ import java.util.Set;
 import com.io7m.jfunctional.Unit;
 import com.io7m.jparasol.CompilerError;
 import com.io7m.jparasol.lexer.Position;
+import com.io7m.jparasol.lexer.Token;
 import com.io7m.jparasol.lexer.Token.TokenDiscard;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIf;
+import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
 import com.io7m.jparasol.typed.TType.TBoolean;
 import com.io7m.jparasol.typed.TType.TConstructor;
 import com.io7m.jparasol.typed.TType.TFunctionArgument;
 import com.io7m.jparasol.typed.TType.TManifestType;
+import com.io7m.jparasol.typed.TType.TMatrixType;
 import com.io7m.jparasol.typed.TType.TRecord;
 import com.io7m.jparasol.typed.TType.TRecordField;
 import com.io7m.jparasol.typed.TType.TValueType;
@@ -86,6 +89,18 @@ public final class TypeCheckerError extends CompilerError
      */
 
     TYPE_ERROR_EXPRESSION_CONDITION_NOT_BOOLEAN,
+
+    /**
+     * Attempted to access a column of a non-matrix type.
+     */
+
+    TYPE_ERROR_EXPRESSION_MATRIX_COLUMN_ACCESS_NOT_COLUMN,
+
+    /**
+     * Matrix index is out of bounds.
+     */
+
+    TYPE_ERROR_EXPRESSION_MATRIX_COLUMN_ACCESS_OUT_OF_BOUNDS,
 
     /**
      * No available constructor for the given list of expressions.
@@ -546,6 +561,55 @@ public final class TypeCheckerError extends CompilerError
       name.getFile(),
       name.getPosition(),
       Code.TYPE_ERROR_EXPRESSION_APPLICATION_NOT_FUNCTION_TYPE,
+      r);
+  }
+
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionMatrixColumnAccessNotMatrix(
+    final TASTExpression body,
+    final Token t)
+  {
+    final StringBuilder m = new StringBuilder();
+    m
+      .append("Only expressions of matrix types can be accessed by column. The given expression is of type ");
+    m.append(body.getType().getShowName());
+
+    final String r = m.toString();
+    assert r != null;
+    return new TypeCheckerError(
+      t.getFile(),
+      t.getPosition(),
+      Code.TYPE_ERROR_EXPRESSION_MATRIX_COLUMN_ACCESS_NOT_COLUMN,
+      r);
+  }
+
+  /**
+   * @return A type error
+   */
+
+  public static TypeCheckerError termExpressionMatrixColumnAccessOutOfBounds(
+    final TokenLiteralInteger column,
+    final TMatrixType mt)
+  {
+    final StringBuilder m = new StringBuilder();
+    m.append("The given matrix column index ");
+    m.append(column.getValue());
+    m.append(" is out of bounds for the type ");
+    m.append(mt.getShowName());
+    m.append("\n");
+    m.append("The index must be in the range [0, ");
+    m.append(mt.getColumns() - 1);
+    m.append("]\n");
+
+    final String r = m.toString();
+    assert r != null;
+    return new TypeCheckerError(
+      column.getFile(),
+      column.getPosition(),
+      Code.TYPE_ERROR_EXPRESSION_MATRIX_COLUMN_ACCESS_OUT_OF_BOUNDS,
       r);
   }
 

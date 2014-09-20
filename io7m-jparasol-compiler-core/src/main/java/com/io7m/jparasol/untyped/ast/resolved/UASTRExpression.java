@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -28,7 +28,7 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIf;
 import com.io7m.jparasol.lexer.Token.TokenLet;
 import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
-import com.io7m.jparasol.lexer.Token.TokenLiteralIntegerType;
+import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
 import com.io7m.jparasol.lexer.Token.TokenLiteralReal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
 
@@ -209,10 +209,10 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
   @EqualityReference public static final class UASTREInteger extends
     UASTRExpression
   {
-    private final TokenLiteralIntegerType token;
+    private final TokenLiteralInteger token;
 
     public UASTREInteger(
-      final Token.TokenLiteralIntegerType in_token)
+      final Token.TokenLiteralInteger in_token)
     {
       this.token = NullCheck.notNull(in_token, "Token");
     }
@@ -227,7 +227,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
       return v.expressionVisitInteger(this);
     }
 
-    public TokenLiteralIntegerType getToken()
+    public TokenLiteralInteger getToken()
     {
       return this.token;
     }
@@ -308,6 +308,43 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRDeclaration.UASTRDValueLocal;
       builder.append(this.body);
       builder.append("]");
       return builder.toString();
+    }
+  }
+
+  @EqualityReference public static final class UASTREMatrixColumnAccess extends
+    UASTRExpression
+  {
+    private final TokenLiteralInteger column;
+    private final UASTRExpression         expression;
+
+    public UASTREMatrixColumnAccess(
+      final UASTRExpression in_expression,
+      final TokenLiteralInteger in_column)
+    {
+      this.expression = NullCheck.notNull(in_expression, "Expression");
+      this.column = NullCheck.notNull(in_column, "Column");
+    }
+
+    @Override public
+      <A, L, E extends Throwable, V extends UASTRExpressionVisitorType<A, L, E>>
+      A
+      expressionVisitableAccept(
+        final V v)
+        throws E
+    {
+      v.expressionVisitMatrixColumnAccessPre(this);
+      final A x = this.expression.expressionVisitableAccept(v);
+      return v.expressionVisitMatrixColumnAccess(x, this);
+    }
+
+    public TokenLiteralInteger getColumn()
+    {
+      return this.column;
+    }
+
+    public UASTRExpression getExpression()
+    {
+      return this.expression;
     }
   }
 

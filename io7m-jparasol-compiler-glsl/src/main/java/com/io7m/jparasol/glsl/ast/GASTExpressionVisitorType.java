@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -33,6 +33,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBoolean;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEConstruction;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEFloat;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEInteger;
+import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEMatrixColumnAccess;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEProjection;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTESwizzle;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEUnaryOp.GASTEUnaryOpNegate;
@@ -40,7 +41,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEVariable;
 
 /**
  * The type of GLSL expression visitors.
- * 
+ *
  * @param <A>
  *          The type of returned values
  * @param <E>
@@ -51,7 +52,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 {
   /**
    * Visit an (external) function application.
-   * 
+   *
    * @param arguments
    *          The transformed arguments
    * @param e
@@ -68,7 +69,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit an (external) function application.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -81,7 +82,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a function application.
-   * 
+   *
    * @param arguments
    *          The transformed arguments
    * @param e
@@ -98,7 +99,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit a function application.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -111,7 +112,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit an arithmetic expression.
-   * 
+   *
    * @param left
    *          The left expression
    * @param right
@@ -131,7 +132,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit an arithmetic expression.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -144,7 +145,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a comparison.
-   * 
+   *
    * @param left
    *          The left expression
    * @param right
@@ -164,7 +165,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit a comparison.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -177,7 +178,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a comparison.
-   * 
+   *
    * @param left
    *          The left expression
    * @param right
@@ -197,7 +198,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit a comparison.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -210,7 +211,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a comparison.
-   * 
+   *
    * @param left
    *          The left expression
    * @param right
@@ -230,7 +231,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit a comparison.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -243,7 +244,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a comparison.
-   * 
+   *
    * @param left
    *          The left expression
    * @param right
@@ -263,7 +264,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit a comparison.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -276,7 +277,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a comparison.
-   * 
+   *
    * @param left
    *          The left expression
    * @param right
@@ -296,7 +297,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit a comparison.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -309,7 +310,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit an arithmetic expression.
-   * 
+   *
    * @param left
    *          The left expression
    * @param right
@@ -329,7 +330,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit an arithmetic expression.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -342,7 +343,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit an arithmetic expression.
-   * 
+   *
    * @param left
    *          The left expression
    * @param right
@@ -362,7 +363,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit an arithmetic expression.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -375,7 +376,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit an arithmetic expression.
-   * 
+   *
    * @param left
    *          The left expression
    * @param right
@@ -395,7 +396,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit an arithmetic expression.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -408,7 +409,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a constant.
-   * 
+   *
    * @param e
    *          The constant
    * @return A value of <code>A</code>
@@ -422,7 +423,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a construction expression.
-   * 
+   *
    * @param e
    *          The expression
    * @return A value of <code>A</code>
@@ -437,7 +438,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit a construction expression.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -450,7 +451,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a constant.
-   * 
+   *
    * @param e
    *          The constant
    * @return A value of <code>A</code>
@@ -464,7 +465,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a constant.
-   * 
+   *
    * @param e
    *          The constant
    * @return A value of <code>A</code>
@@ -478,7 +479,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a record projection.
-   * 
+   *
    * @param body
    *          The left-hand side of the expression
    * @param e
@@ -495,7 +496,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit a record projection.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -508,7 +509,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a swizzle expression.
-   * 
+   *
    * @param body
    *          The left-hand side of the expression
    * @param e
@@ -525,7 +526,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit a swizzle expression.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -538,7 +539,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a unary negation.
-   * 
+   *
    * @param body
    *          The right-hand side of the expression
    * @param e
@@ -555,7 +556,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Prepare to visit a unary negation.
-   * 
+   *
    * @param e
    *          The expression
    * @throws E
@@ -568,7 +569,7 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   /**
    * Visit a variable.
-   * 
+   *
    * @param e
    *          The variable
    * @return A value of <code>A</code>
@@ -578,5 +579,35 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   A expressionVariableVisit(
     final GASTEVariable e)
+    throws E;
+
+  /**
+   * Visit a matrix column access expression.
+   *
+   * @param body
+   *          The left-hand side of the expression
+   * @param e
+   *          The expression
+   * @return A value of <code>A</code>
+   * @throws E
+   *           If required
+   */
+
+  A expressionMatrixColumnAccessVisit(
+    final A body,
+    final GASTEMatrixColumnAccess e)
+    throws E;
+
+  /**
+   * Prepare to visit a matrix column access expression.
+   *
+   * @param e
+   *          The expression
+   * @throws E
+   *           If required
+   */
+
+  void expressionMatrixColumnAccessVisitPre(
+    final GASTEMatrixColumnAccess e)
     throws E;
 }

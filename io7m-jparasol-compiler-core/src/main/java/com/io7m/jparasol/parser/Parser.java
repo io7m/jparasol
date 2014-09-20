@@ -36,8 +36,8 @@ import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
 import com.io7m.jparasol.lexer.Token.TokenIf;
 import com.io7m.jparasol.lexer.Token.TokenLet;
 import com.io7m.jparasol.lexer.Token.TokenLiteralBoolean;
+import com.io7m.jparasol.lexer.Token.TokenLiteralInteger;
 import com.io7m.jparasol.lexer.Token.TokenLiteralIntegerDecimal;
-import com.io7m.jparasol.lexer.Token.TokenLiteralIntegerType;
 import com.io7m.jparasol.lexer.Token.TokenLiteralReal;
 import com.io7m.jparasol.lexer.Token.Type;
 import com.io7m.jparasol.untyped.ast.initial.UASTIDeclaration.UASTIDExternal;
@@ -82,6 +82,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEInteger;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIELet;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEMatrixColumnAccess;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIENew;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEReal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecord;
@@ -104,7 +105,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   /**
    * Construct a new parser capable of parsing "internal" (standard library)
    * units.
-   * 
+   *
    * @param lexer
    *          The lexer
    * @return A new parser
@@ -124,7 +125,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Construct a new parser capable of parsing ordinary units.
-   * 
+   *
    * @param lexer
    *          The lexer
    * @return A new parser
@@ -1382,7 +1383,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     this.parserExpectExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
     final UASTIEInteger t =
-      new UASTIEInteger((TokenLiteralIntegerType) this.token);
+      new UASTIEInteger((TokenLiteralInteger) this.token);
     this.parserConsumeAny();
     return t;
   }
@@ -1400,6 +1401,17 @@ import com.io7m.junreachable.UnreachableCodeException;
     final UASTIExpression body = this.expression();
     this.parserConsumeExact(Type.TOKEN_END);
     return new UASTIELet(let, bindings, body);
+  }
+
+  public UASTIEMatrixColumnAccess expressionMatrixColumnAccess()
+    throws ParserError,
+      IOException,
+      LexerError
+  {
+    this.parserConsumeExact(Type.TOKEN_COLUMN);
+    final UASTIExpression e = this.expression();
+    final UASTIEInteger column = this.expressionInteger();
+    return new UASTIEMatrixColumnAccess(e, column.getToken());
   }
 
   public UASTIENew expressionNew()
@@ -1440,6 +1452,7 @@ import com.io7m.junreachable.UnreachableCodeException;
       Type.TOKEN_LITERAL_REAL,
       Type.TOKEN_IDENTIFIER_LOWER,
       Type.TOKEN_IDENTIFIER_UPPER,
+      Type.TOKEN_COLUMN,
       Type.TOKEN_IF,
       Type.TOKEN_LET,
       Type.TOKEN_NEW,
@@ -1464,6 +1477,8 @@ import com.io7m.junreachable.UnreachableCodeException;
         return this.expressionNew();
       case TOKEN_RECORD:
         return this.expressionRecord();
+      case TOKEN_COLUMN:
+        return this.expressionMatrixColumnAccess();
         // $CASES-OMITTED$
       default:
         throw new UnreachableCodeException();

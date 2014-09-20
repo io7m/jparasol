@@ -51,6 +51,7 @@ module M is
     value vf4 = V4.add (vf0, vf1);
     value vf5 = V4.add (vf2, vf3);
     value vf6 = V4.add (vf4, vf5);
+    value vf7 = column u_m4 0;
 
     value vi0 = new vector_4i (u_vi2, u_vi3 [x], u_vi3 [y]);
     value vi1 = new vector_4i (u_vi4 [x y z], u_int);

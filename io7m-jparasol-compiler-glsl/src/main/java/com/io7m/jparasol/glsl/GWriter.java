@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- *
+ * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -44,6 +44,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBoolean;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEConstruction;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEFloat;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEInteger;
+import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEMatrixColumnAccess;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEProjection;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTESwizzle;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEUnaryOp.GASTEUnaryOpNegate;
@@ -110,7 +111,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     @Override public String expressionApplicationExternalVisit(
       final List<String> arguments,
       final GASTEApplicationExternal e)
-
     {
       final String arg_text = GWriter.formatCommaSeparatedList(arguments);
       return String.format("%s (%s)", e.getName().show(), arg_text);
@@ -118,7 +118,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     @Override public void expressionApplicationExternalVisitPre(
       final GASTEApplicationExternal e)
-
     {
       // Nothing
     }
@@ -126,7 +125,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     @Override public String expressionApplicationVisit(
       final List<String> arguments,
       final GASTEApplication e)
-
     {
       final String arg_text = GWriter.formatCommaSeparatedList(arguments);
       return String.format("%s (%s)", e.getName().show(), arg_text);
@@ -134,7 +132,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     @Override public void expressionApplicationVisitPre(
       final GASTEApplication e)
-
     {
       // Nothing
     }
@@ -143,14 +140,12 @@ import com.io7m.junreachable.UnreachableCodeException;
       final String left,
       final String right,
       final GASTEBinaryOpDivide e)
-
     {
       return String.format("(%s / %s)", left, right);
     }
 
     @Override public void expressionBinaryOpDivideVisitPre(
       final GASTEBinaryOpDivide e)
-
     {
       // Nothing
     }
@@ -159,14 +154,12 @@ import com.io7m.junreachable.UnreachableCodeException;
       final String left,
       final String right,
       final GASTEBinaryOpEqual e)
-
     {
       return String.format("(%s == %s)", left, right);
     }
 
     @Override public void expressionBinaryOpEqualVisitPre(
       final GASTEBinaryOpEqual e)
-
     {
       // Nothing
     }
@@ -175,14 +168,12 @@ import com.io7m.junreachable.UnreachableCodeException;
       final String left,
       final String right,
       final GASTEBinaryOpGreaterThanOrEqual e)
-
     {
       return String.format("(%s >= %s)", left, right);
     }
 
     @Override public void expressionBinaryOpGreaterThanOrEqualVisitPre(
       final GASTEBinaryOpGreaterThanOrEqual e)
-
     {
       // Nothing
     }
@@ -191,14 +182,12 @@ import com.io7m.junreachable.UnreachableCodeException;
       final String left,
       final String right,
       final GASTEBinaryOpGreaterThan e)
-
     {
       return String.format("(%s > %s)", left, right);
     }
 
     @Override public void expressionBinaryOpGreaterThanVisitPre(
       final GASTEBinaryOpGreaterThan e)
-
     {
       // Nothing
     }
@@ -207,14 +196,12 @@ import com.io7m.junreachable.UnreachableCodeException;
       final String left,
       final String right,
       final GASTEBinaryOpLesserThanOrEqual e)
-
     {
       return String.format("(%s <= %s)", left, right);
     }
 
     @Override public void expressionBinaryOpLesserThanOrEqualVisitPre(
       final GASTEBinaryOpLesserThanOrEqual e)
-
     {
       // Nothing
     }
@@ -223,14 +210,12 @@ import com.io7m.junreachable.UnreachableCodeException;
       final String left,
       final String right,
       final GASTEBinaryOpLesserThan e)
-
     {
       return String.format("(%s < %s)", left, right);
     }
 
     @Override public void expressionBinaryOpLesserThanVisitPre(
       final GASTEBinaryOpLesserThan e)
-
     {
       // Nothing
     }
@@ -239,14 +224,12 @@ import com.io7m.junreachable.UnreachableCodeException;
       final String left,
       final String right,
       final GASTEBinaryOpMultiply e)
-
     {
       return String.format("(%s * %s)", left, right);
     }
 
     @Override public void expressionBinaryOpMultiplyVisitPre(
       final GASTEBinaryOpMultiply e)
-
     {
       // Nothing
     }
@@ -255,14 +238,12 @@ import com.io7m.junreachable.UnreachableCodeException;
       final String left,
       final String right,
       final GASTEBinaryOpPlus e)
-
     {
       return String.format("(%s + %s)", left, right);
     }
 
     @Override public void expressionBinaryOpPlusVisitPre(
       final GASTEBinaryOpPlus e)
-
     {
       // Nothing
     }
@@ -271,14 +252,12 @@ import com.io7m.junreachable.UnreachableCodeException;
       final String left,
       final String right,
       final GASTEBinaryOpSubtract e)
-
     {
       return String.format("(%s - %s)", left, right);
     }
 
     @Override public void expressionBinaryOpSubtractVisitPre(
       final GASTEBinaryOpSubtract e)
-
     {
       // Nothing
     }
@@ -293,7 +272,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     @Override public String expressionConstructionVisit(
       final List<String> arguments,
       final GASTEConstruction e)
-
     {
       final String arg_text = GWriter.formatCommaSeparatedList(arguments);
       return String.format("%s (%s)", e.getType().show(), arg_text);
@@ -301,14 +279,12 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     @Override public void expressionConstructionVisitPre(
       final GASTEConstruction e)
-
     {
       // Nothing
     }
 
     @Override public String expressionFloatVisit(
       final GASTEFloat e)
-
     {
       return e.getValue().toPlainString();
     }
@@ -320,17 +296,30 @@ import com.io7m.junreachable.UnreachableCodeException;
       return e.getValue().toString();
     }
 
+    @Override public String expressionMatrixColumnAccessVisit(
+      final String body,
+      final GASTEMatrixColumnAccess e)
+      throws UnreachableCodeException
+    {
+      return String.format("%s[%s]", body, e.getColumn().getValue());
+    }
+
+    @Override public void expressionMatrixColumnAccessVisitPre(
+      final GASTEMatrixColumnAccess e)
+      throws UnreachableCodeException
+    {
+      // Nothing
+    }
+
     @Override public String expressionProjectionVisit(
       final String body,
       final GASTEProjection e)
-
     {
       return String.format("%s.%s", body, e.getField().show());
     }
 
     @Override public void expressionProjectionVisitPre(
       final GASTEProjection e)
-
     {
       // Nothing
     }
@@ -338,7 +327,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     @Override public String expressionSwizzleVisit(
       final String body,
       final GASTESwizzle e)
-
     {
       final StringBuilder b = new StringBuilder();
       b.append(body);
@@ -351,7 +339,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     @Override public void expressionSwizzleVisitPre(
       final GASTESwizzle e)
-
     {
       // Nothing
     }
@@ -359,21 +346,18 @@ import com.io7m.junreachable.UnreachableCodeException;
     @Override public String expressionUnaryOpNegateVisit(
       final String body,
       final GASTEUnaryOpNegate e)
-
     {
       return String.format("(-%s)", body);
     }
 
     @Override public void expressionUnaryOpNegateVisitPre(
       final GASTEUnaryOpNegate e)
-
     {
       // Nothing
     }
 
     @Override public String expressionVariableVisit(
       final GASTEVariable e)
-
     {
       return e.getTerm().show();
     }

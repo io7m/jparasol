@@ -9,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="1408.5"
+   width="1440.5"
    height="1312.5"
    id="svg5223"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.48.5 r10040"
    sodipodi:docname="semantics.svg"
    inkscape:export-filename="/home/m0/fossil/com.io7m.cirrus/io7m-parasol/src/main/svg/semantics.png"
    inkscape:export-xdpi="120.03674"
@@ -28,10 +28,10 @@
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="1232.0034"
-     inkscape:cy="1002.8416"
+     inkscape:cx="828.23252"
+     inkscape:cy="1108.0479"
      inkscape:document-units="px"
-     inkscape:current-layer="g8230"
+     inkscape:current-layer="layer1"
      showgrid="true"
      borderlayer="true"
      inkscape:showpageshadow="false"
@@ -58,7 +58,7 @@
        spacingx="16px"
        spacingy="16px"
        originx="-16px"
-       originy="48.500006px" />
+       originy="48.500016px" />
   </sodipodi:namedview>
   <metadata
      id="metadata5228">
@@ -488,7 +488,9 @@
              x="47.5"
              y="885.86218"
              style="font-size:12px"
-             id="tspan6425">em [x<tspan
+             id="tspan6425">e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan3556">m</tspan> [x<tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan6427">0</tspan> := v<tspan
    style="font-size:65.00091553%;baseline-shift:sub"
@@ -1270,13 +1272,19 @@
            id="tspan5548"
            y="-74.637817"
            x="33"
-           sodipodi:role="line">}</tspan><tspan
-           id="tspan5550"
+           sodipodi:role="line">  column v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4360">0 </tspan>ℤ</tspan><tspan
            y="-60.887817"
+           x="33"
+           sodipodi:role="line"
+           id="tspan4362">}</tspan><tspan
+           id="tspan5550"
+           y="-47.137817"
            x="33"
            sodipodi:role="line" /><tspan
            id="tspan5579"
-           y="-47.137817"
+           y="-33.387817"
            x="33"
            sodipodi:role="line" /></text>
       <text
@@ -2273,6 +2281,87 @@
              x="47.5"
              y="1138.8622"
              style="font-size:12px">end</tspan></text>
+      </g>
+    </g>
+    <g
+       transform="translate(208.20361,-272.34426)"
+       id="matrix_column_access">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect6984-6"
+         width="335.5"
+         height="175.5"
+         x="288.5"
+         y="428.86218" />
+      <text
+         xml:space="preserve"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="304"
+         y="588.36218"
+         id="text6986-3"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan6988-4"
+           x="304"
+           y="588.36218">matrix_column_access</tspan></text>
+      <g
+         transform="translate(0.50000328,0.4999991)"
+         id="swizzle_pre-9">
+        <rect
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="rect7014-6"
+           width="304.20361"
+           height="111.65576"
+           x="303.29639"
+           y="444.20642" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text7016-5"
+           y="476.20642"
+           x="319.29639"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           xml:space="preserve"><tspan
+             style="font-size:12px"
+             y="476.20642"
+             x="319.29639"
+             id="tspan7018-5"
+             sodipodi:role="line">e<tspan
+   id="tspan7020-1"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7054-0">0</tspan>'</tspan></text>
+        <path
+           inkscape:connector-curvature="0"
+           id="path7024-1"
+           d="m 319.29639,492.20642 96,0"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           sodipodi:nodetypes="cc" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text7026-6"
+           y="508.20642"
+           x="319.29639"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           xml:space="preserve"><tspan
+             y="508.20642"
+             x="319.29639"
+             id="tspan7028-3"
+             sodipodi:role="line">column e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7038-3">0</tspan> ℤ → column e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7056-5">0</tspan>' ℤ</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           x="319.29639"
+           y="540.20642"
+           id="text7034-2"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan7036-5"
+             x="319.29639"
+             y="540.20642">matrix_column_access_pre</tspan></text>
       </g>
     </g>
   </g>

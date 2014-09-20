@@ -42,6 +42,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEApplication;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBoolean;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEConstruction;
+import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEInteger;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEProjection;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTESwizzle;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEVariable;
@@ -84,6 +85,7 @@ import com.io7m.jparasol.typed.TType;
 import com.io7m.jparasol.typed.TType.TRecord;
 import com.io7m.jparasol.typed.TType.TRecordField;
 import com.io7m.jparasol.typed.TType.TValueType;
+import com.io7m.jparasol.typed.TType.TVectorType;
 import com.io7m.jparasol.typed.TTypeNameFlat;
 import com.io7m.jparasol.typed.Topology;
 import com.io7m.jparasol.typed.ast.TASTCompilation;
@@ -122,6 +124,7 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTEBoolean;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEConditional;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEInteger;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTELet;
+import com.io7m.jparasol.typed.ast.TASTExpression.TASTEMatrixColumnAccess;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTENew;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEReal;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
@@ -608,6 +611,21 @@ import com.io7m.junreachable.UnreachableCodeException;
       return null;
     }
 
+    @Override public GASTScope expressionVisitMatrixColumnAccess(
+      final @Nullable GASTScope body,
+      final TASTEMatrixColumnAccess e)
+      throws GFFIError
+    {
+      return this.wrapReturn(e);
+    }
+
+    @Override public boolean expressionVisitMatrixColumnAccessPre(
+      final TASTEMatrixColumnAccess e)
+      throws GFFIError
+    {
+      return false;
+    }
+
     @Override public GASTScope expressionVisitNew(
       final @Nullable List<GASTScope> arguments,
       final TASTENew e)
@@ -992,6 +1010,25 @@ import com.io7m.junreachable.UnreachableCodeException;
         throws GFFIError
     {
       return null;
+    }
+
+    @Override public GASTExpression expressionVisitMatrixColumnAccess(
+      final @Nullable GASTExpression body,
+      final TASTEMatrixColumnAccess e)
+      throws GFFIError
+    {
+      final GASTExpression b = NullCheck.notNull(body, "Body");
+      final TVectorType type = e.getType();
+      final GASTEInteger column =
+        new GASTExpression.GASTEInteger(e.getColumn().getValue());
+      return new GASTExpression.GASTEMatrixColumnAccess(b, column, type);
+    }
+
+    @Override public boolean expressionVisitMatrixColumnAccessPre(
+      final TASTEMatrixColumnAccess e)
+      throws GFFIError
+    {
+      return true;
     }
 
     @Override public GASTExpression expressionVisitNew(

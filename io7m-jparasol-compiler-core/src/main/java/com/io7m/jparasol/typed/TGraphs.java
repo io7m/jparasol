@@ -66,6 +66,7 @@ import com.io7m.jparasol.typed.ast.TASTExpression.TASTEBoolean;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEConditional;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEInteger;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTELet;
+import com.io7m.jparasol.typed.ast.TASTExpression.TASTEMatrixColumnAccess;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTENew;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTEReal;
 import com.io7m.jparasol.typed.ast.TASTExpression.TASTERecord;
@@ -94,6 +95,7 @@ import com.io7m.jparasol.typed.ast.TASTTermVisitorType;
 import com.io7m.jparasol.typed.ast.TASTTypeVisitorType;
 import com.io7m.jparasol.typed.ast.TASTVertexShaderLocalVisitorType;
 import com.io7m.jparasol.typed.ast.TASTVertexShaderVisitorType;
+import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.junreachable.UnreachableCodeException;
 
 @EqualityReference final class TGraphs
@@ -1097,6 +1099,21 @@ import com.io7m.junreachable.UnreachableCodeException;
         this.graph);
     }
 
+    @Override public TASTExpression expressionVisitMatrixColumnAccess(
+      final @Nullable TASTExpression body,
+      final TASTEMatrixColumnAccess e)
+      throws UnreachableCodeException
+    {
+      return e;
+    }
+
+    @Override public boolean expressionVisitMatrixColumnAccessPre(
+      final TASTEMatrixColumnAccess e)
+      throws UnreachableCodeException
+    {
+      return true;
+    }
+
     @Override public TASTExpression expressionVisitNew(
       final @Nullable List<TASTExpression> arguments,
       final TASTENew e)
@@ -1521,6 +1538,23 @@ import com.io7m.junreachable.UnreachableCodeException;
           return v;
         }
       };
+    }
+
+    @Override public TASTExpression expressionVisitMatrixColumnAccess(
+      @Nullable final TASTExpression body,
+      final TASTEMatrixColumnAccess e)
+      throws UnreachableCodeException
+    {
+      // TODO Auto-generated method stub
+      throw new UnimplementedCodeException();
+    }
+
+    @Override public boolean expressionVisitMatrixColumnAccessPre(
+      final TASTEMatrixColumnAccess e)
+      throws UnreachableCodeException
+    {
+      // TODO Auto-generated method stub
+      throw new UnimplementedCodeException();
     }
 
     @Override public TASTExpression expressionVisitNew(

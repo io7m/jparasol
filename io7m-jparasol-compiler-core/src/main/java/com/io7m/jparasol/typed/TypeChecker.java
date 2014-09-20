@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -16,6 +16,7 @@
 
 package com.io7m.jparasol.typed;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,6 +44,7 @@ import com.io7m.jparasol.typed.TType.TFloat;
 import com.io7m.jparasol.typed.TType.TFunction;
 import com.io7m.jparasol.typed.TType.TFunctionArgument;
 import com.io7m.jparasol.typed.TType.TManifestType;
+import com.io7m.jparasol.typed.TType.TMatrixType;
 import com.io7m.jparasol.typed.TType.TRecord;
 import com.io7m.jparasol.typed.TType.TRecordField;
 import com.io7m.jparasol.typed.TType.TValueType;
@@ -135,6 +137,7 @@ import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREBoolean;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREConditional;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREInteger;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRELet;
+import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREMatrixColumnAccess;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRENew;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTREReal;
 import com.io7m.jparasol.untyped.ast.resolved.UASTRExpression.UASTRERecord;
@@ -408,6 +411,43 @@ import com.io7m.junreachable.UnreachableCodeException;
         this.module);
     }
 
+    @Override public TASTExpression expressionVisitMatrixColumnAccess(
+      final @Nullable TASTExpression body,
+      final UASTREMatrixColumnAccess e)
+      throws TypeCheckerError
+    {
+      final TASTExpression b = NullCheck.notNull(body, "Body");
+
+      if (b.getType() instanceof TMatrixType) {
+        final TMatrixType mt = (TMatrixType) b.getType();
+        final BigInteger index = e.getColumn().getValue();
+
+        final BigInteger upper = BigInteger.valueOf(mt.getColumns());
+        if ((index.compareTo(upper) < 0)
+          && (index.compareTo(BigInteger.ZERO) >= 0)) {
+          return new TASTExpression.TASTEMatrixColumnAccess(
+            mt.getColumnType(),
+            b,
+            e.getColumn());
+        }
+
+        throw TypeCheckerError.termExpressionMatrixColumnAccessOutOfBounds(
+          e.getColumn(),
+          mt);
+      }
+
+      throw TypeCheckerError.termExpressionMatrixColumnAccessNotMatrix(
+        b,
+        e.getColumn());
+    }
+
+    @Override public void expressionVisitMatrixColumnAccessPre(
+      final UASTREMatrixColumnAccess e)
+      throws TypeCheckerError
+    {
+      // Nothing
+    }
+
     @Override public TASTENew expressionVisitNew(
       final List<TASTExpression> arguments,
       final UASTRENew e)
@@ -431,6 +471,8 @@ import com.io7m.junreachable.UnreachableCodeException;
         if (c_args.size() == arguments.size()) {
           for (int index = 0; index < c_args.size(); ++index) {
             final TValueType ct = c_args.get(index);
+            assert ct != null;
+
             final TType at = arguments.get(index).getType();
             if (TTypeEquality.typesAreEqual(at, ct) == false) {
               continue check_constructors;
@@ -993,7 +1035,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     /**
      * Type-check the given module
-     * 
+     *
      * @return A typed module
      * @throws TypeCheckerError
      *           If a type error occurs
@@ -1981,7 +2023,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Construct a new type checker for the given AST.
-   * 
+   *
    * @param compilation
    *          The AST
    * @param log
@@ -2009,7 +2051,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Check the given AST.
-   * 
+   *
    * @return A typed AST
    * @throws TypeCheckerError
    *           If a type error occurs

@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -23,6 +23,7 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEBoolean;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEConditional;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEInteger;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIELet;
+import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEMatrixColumnAccess;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIENew;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEReal;
 import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIERecord;
@@ -70,6 +71,15 @@ public interface UASTIExpressionVisitorType<A, L, E extends Throwable>
 
   UASTILocalLevelVisitorType<L, E> expressionVisitLetPre(
     final UASTIELet e)
+    throws E;
+
+  A expressionVisitMatrixColumnAccess(
+    final A body,
+    final UASTIEMatrixColumnAccess e)
+    throws E;
+
+  void expressionVisitMatrixColumnAccessPre(
+    final UASTIEMatrixColumnAccess e)
     throws E;
 
   A expressionVisitNew(
