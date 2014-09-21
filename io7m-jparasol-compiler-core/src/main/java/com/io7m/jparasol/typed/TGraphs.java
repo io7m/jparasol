@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- *
+ * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -95,7 +95,6 @@ import com.io7m.jparasol.typed.ast.TASTTermVisitorType;
 import com.io7m.jparasol.typed.ast.TASTTypeVisitorType;
 import com.io7m.jparasol.typed.ast.TASTVertexShaderLocalVisitorType;
 import com.io7m.jparasol.typed.ast.TASTVertexShaderVisitorType;
-import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.junreachable.UnreachableCodeException;
 
 @EqualityReference final class TGraphs
@@ -1545,16 +1544,14 @@ import com.io7m.junreachable.UnreachableCodeException;
       final TASTEMatrixColumnAccess e)
       throws UnreachableCodeException
     {
-      // TODO Auto-generated method stub
-      throw new UnimplementedCodeException();
+      return e;
     }
 
     @Override public boolean expressionVisitMatrixColumnAccessPre(
       final TASTEMatrixColumnAccess e)
       throws UnreachableCodeException
     {
-      // TODO Auto-generated method stub
-      throw new UnimplementedCodeException();
+      return true;
     }
 
     @Override public TASTExpression expressionVisitNew(
