@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -19,6 +19,8 @@ package com.io7m.jparasol.parser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.Option;
@@ -27,6 +29,8 @@ import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.PackagePath.BuilderType;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token;
@@ -174,6 +178,54 @@ import com.io7m.junreachable.UnreachableCodeException;
     this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
     this.parserConsumeExact(Type.TOKEN_IS);
 
+    final SortedSet<GVersionES> supported_es =
+      new TreeSet<GVersionES>(GVersionES.ALL);
+    final SortedSet<GVersionFull> supported_full =
+      new TreeSet<GVersionFull>(GVersionFull.ALL);
+
+    VERTEX_AND_RESTRICT:
+    while (true) {
+      this.parserExpectOneOf(new Type[] {
+        Type.TOKEN_VERTEX,
+        Type.TOKEN_RESTRICT, });
+
+      switch (this.token.getType()) {
+        case TOKEN_VERTEX:
+        {
+          break VERTEX_AND_RESTRICT;
+        }
+        case TOKEN_RESTRICT:
+        {
+          this.parserConsumeExact(Type.TOKEN_RESTRICT);
+          this.parserExpectExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
+          final TokenLiteralIntegerDecimal number =
+            (TokenLiteralIntegerDecimal) this.token;
+          this.parserConsumeExact(Type.TOKEN_LITERAL_INTEGER_DECIMAL);
+          this.parserExpectExact(Type.TOKEN_IDENTIFIER_LOWER);
+          final TokenIdentifierLower profile =
+            (TokenIdentifierLower) this.token;
+          this.parserConsumeExact(Type.TOKEN_IDENTIFIER_LOWER);
+          this.parserConsumeExact(Type.TOKEN_SEMICOLON);
+
+          final String profile_name = profile.getActual();
+          final int version = number.getValue().intValue();
+          if ("es".equals(profile_name)) {
+            supported_es.remove(new GVersionES(version));
+          } else if ("full".equals(profile_name)) {
+            supported_full.remove(new GVersionFull(version));
+          } else {
+            throw this.unknownProfile(profile_name);
+          }
+
+          break;
+        }
+
+        // $CASES-OMITTED$
+        default:
+          throw new UnreachableCodeException();
+      }
+    }
+
     this.parserConsumeExact(Type.TOKEN_VERTEX);
     this.parserExpectExact(Type.TOKEN_LITERAL_BOOLEAN);
     final TokenLiteralBoolean vallow = (TokenLiteralBoolean) this.token;
@@ -197,7 +249,9 @@ import com.io7m.junreachable.UnreachableCodeException;
           name,
           vallow.getValue(),
           fallow.getValue(),
-          none);
+          none,
+          supported_es,
+          supported_full);
       }
       case TOKEN_WITH:
       {
@@ -209,7 +263,9 @@ import com.io7m.junreachable.UnreachableCodeException;
           name,
           vallow.getValue(),
           fallow.getValue(),
-          some);
+          some,
+          supported_es,
+          supported_full);
       }
 
       // $CASES-OMITTED$
@@ -1717,5 +1773,18 @@ import com.io7m.junreachable.UnreachableCodeException;
     final List<UASTIDModule> modules =
       this.declarationModules(pack.getPath());
     return new UASTIUnit(this.lexer.getFile(), pack, modules);
+  }
+
+  private ParserError unknownProfile(
+    final String profile_name)
+  {
+    this.message.setLength(0);
+    this.message.append("Unknown GLSL profile '");
+    this.message.append(profile_name);
+    this.message.append("'");
+    this.parserShowToken();
+    final String r = this.message.toString();
+    assert r != null;
+    return new ParserError(r, this.lexer.getFile(), this.token.getPosition());
   }
 }

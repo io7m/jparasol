@@ -45,4 +45,17 @@ module Sampler2D is
       fragment true;
     end;
 
+  function texture_with_offset (
+    t   : sampler_2d,
+    uv  : vector_2f,
+    off : vector_2i
+  ) : vector_4f =
+    external com_io7m_parasol_sampler2d_texture_with_offset is
+      restrict 110 full;
+      restrict 120 full;
+      restrict 100 es;
+      vertex   true;
+      fragment true;
+    end;
+
 end;

@@ -1531,7 +1531,9 @@ import com.io7m.junreachable.UnreachableCodeException;
           orig_ext.getName(),
           orig_ext.isVertexShaderAllowed(),
           orig_ext.isFragmentShaderAllowed(),
-          emulation);
+          emulation,
+          orig_ext.getSupportedES(),
+          orig_ext.getSupportedFull());
 
       if (emulation.isSome()) {
         final Some<TASTExpression> some = (Some<TASTExpression>) emulation;
@@ -1607,7 +1609,9 @@ import com.io7m.junreachable.UnreachableCodeException;
           original_external.getName(),
           original_external.isVertexShaderAllowed(),
           original_external.isFragmentShaderAllowed(),
-          none);
+          none,
+          original_external.getSupportedES(),
+          original_external.getSupportedFull());
 
       final TValueType type =
         (TValueType) TypeChecker.lookupType(

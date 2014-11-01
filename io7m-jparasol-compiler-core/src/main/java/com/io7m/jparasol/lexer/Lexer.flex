@@ -101,6 +101,7 @@ NameUpper = [A-Z] ([a-z] | [A-Z] | [0-9] | "_")*
 <YYINITIAL> "parameter" { return new Token.TokenParameter (this.getFile(), this.position()); }
 <YYINITIAL> "program"   { return new Token.TokenProgram (this.getFile(), this.position()); }
 <YYINITIAL> "record"    { return new Token.TokenRecord (this.getFile(), this.position()); }
+<YYINITIAL> "restrict"  { return new Token.TokenRestrict (this.getFile(), this.position()); }
 <YYINITIAL> "shader"    { return new Token.TokenShader (this.getFile(), this.position()); }
 <YYINITIAL> "("         { return new Token.TokenRoundLeft (this.getFile(), this.position()); }
 <YYINITIAL> ")"         { return new Token.TokenRoundRight (this.getFile(), this.position()); }

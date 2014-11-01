@@ -831,6 +831,54 @@ import com.io7m.junreachable.UnreachableCodeException;
       });
   }
 
+  static GFFIExpression com_io7m_parasol_sampler2d_texture_with_offset(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersionType version)
+    throws UnreachableCodeException,
+      GFFIError
+  {
+    final TFunction ft = f.getType();
+    final List<TFunctionArgument> fta = ft.getArguments();
+
+    assert arguments.size() == 3;
+    assert fta.size() == 3;
+    assert fta.get(0).getType().equals(TSampler2D.get());
+    assert fta.get(1).getType().equals(TVector2F.get());
+    assert fta.get(2).getType().equals(TVector2I.get());
+    assert ft.getReturnType().equals(TVector4F.get());
+
+    final TValueType type = ft.getReturnType();
+    return version
+      .versionAccept(new GVersionVisitorType<GFFIExpression, GFFIError>() {
+        @Override public GFFIExpression versionVisitES(
+          final GVersionES v)
+          throws GFFIError
+        {
+          if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
+            throw GFFIError.unsupportedExternal(f.getExternal(), v);
+          }
+          final GTermNameExternal name =
+            new GTermNameExternal("textureOffset");
+          return new GFFIExpression.GFFIExpressionBuiltIn(
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
+        }
+
+        @Override public GFFIExpression versionVisitFull(
+          final GVersionFull v)
+          throws GFFIError
+        {
+          if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
+            throw GFFIError.unsupportedExternal(f.getExternal(), v);
+          }
+          final GTermNameExternal name =
+            new GTermNameExternal("textureOffset");
+          return new GFFIExpression.GFFIExpressionBuiltIn(
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
+        }
+      });
+  }
+
   static GFFIExpression com_io7m_parasol_sampler2d_texture_projective_3f(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,

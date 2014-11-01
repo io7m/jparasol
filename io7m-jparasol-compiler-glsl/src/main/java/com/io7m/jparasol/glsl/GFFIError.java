@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -19,6 +19,7 @@ package com.io7m.jparasol.glsl;
 import java.io.File;
 
 import com.io7m.jparasol.CompilerError;
+import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.lexer.Position;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.typed.ast.TASTDeclaration.TASTDExternal;
@@ -37,7 +38,7 @@ public final class GFFIError extends CompilerError
 
   /**
    * An unknown external was encountered.
-   * 
+   *
    * @param external
    *          The external
    * @return An error
@@ -50,6 +51,27 @@ public final class GFFIError extends CompilerError
     final StringBuilder b = new StringBuilder();
     b.append("Unknown external ");
     b.append(name.getActual());
+    return new GFFIError(b.toString(), name.getFile(), name.getPosition());
+  }
+
+  /**
+   * An unsupported external was encountered.
+   *
+   * @param external
+   *          The external
+   * @return An error
+   */
+
+  public static GFFIError unsupportedExternal(
+    final TASTDExternal external,
+    final GVersionType version)
+  {
+    final TokenIdentifierLower name = external.getName();
+    final StringBuilder b = new StringBuilder();
+    b.append("External ");
+    b.append(name.getActual());
+    b.append(" is not supported for ");
+    b.append(version.versionGetLongName());
     return new GFFIError(b.toString(), name.getFile(), name.getPosition());
   }
 

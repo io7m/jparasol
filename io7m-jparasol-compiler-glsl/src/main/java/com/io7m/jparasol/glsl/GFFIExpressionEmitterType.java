@@ -30,7 +30,7 @@ public interface GFFIExpressionEmitterType
 {
   /**
    * Produce an expression for the given external function.
-   * 
+   *
    * @param f
    *          The function
    * @param arguments
@@ -38,10 +38,13 @@ public interface GFFIExpressionEmitterType
    * @param version
    *          The GLSL version
    * @return An expression
+   * @throws GFFIError
+   *           On FFI errors.
    */
 
   GFFIExpression emitExpression(
     final TASTDFunctionExternal f,
     final List<GASTExpression> arguments,
-    final GVersionType version);
+    final GVersionType version)
+    throws GFFIError;
 }

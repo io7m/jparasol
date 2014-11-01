@@ -30,6 +30,8 @@ import com.io7m.jfunctional.Some;
 import com.io7m.jparasol.ModulePathFlat;
 import com.io7m.jparasol.PackagePath;
 import com.io7m.jparasol.PackagePathFlat;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.lexer.Lexer;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
@@ -400,6 +402,59 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIValuePath;
       .getName()
       .getName()
       .getActual());
+  }
+
+  @Test public void testDFunctionExternal_3()
+    throws IOException,
+      LexerError,
+      ParserError
+  {
+    final StringBuilder text = new StringBuilder();
+    text.append("function f (x : integer, y : Example.t) : integer =\n");
+    text.append("  external xyz is\n");
+    text.append("    restrict 110 full;\n");
+    text.append("    restrict 120 full;\n");
+    text.append("    restrict 100 es;\n");
+    text.append("    vertex true;\n");
+    text.append("    fragment true;\n");
+    text.append("  with\n");
+    text.append("    x\n");
+    text.append("  end");
+
+    final Parser p = ParserTest.makeStringInternalParser(text.toString());
+
+    final UASTIDFunctionExternal r =
+      (UASTIDFunctionExternal) p.declarationFunction();
+    Assert.assertEquals("f", r.getName().getActual());
+    Assert.assertEquals(2, r.getArguments().size());
+
+    final UASTIDFunctionArgument arg0 = r.getArguments().get(0);
+    final UASTIDFunctionArgument arg1 = r.getArguments().get(1);
+
+    Assert.assertEquals("x", arg0.getName().getActual());
+    Assert.assertEquals("integer", arg0.getType().getName().getActual());
+    Assert.assertEquals("y", arg1.getName().getActual());
+    Assert.assertEquals("Example", ((Some<TokenIdentifierUpper>) arg1
+      .getType()
+      .getModule()).get().getActual());
+    Assert.assertEquals("t", arg1.getType().getName().getActual());
+
+    final UASTIDExternal ext = r.getExternal();
+    Assert.assertEquals("xyz", ext.getName().getActual());
+
+    Assert.assertTrue(ext.getEmulation().isSome());
+    final Some<UASTIExpression> exp =
+      (Some<UASTIExpression>) ext.getEmulation();
+    Assert.assertEquals("x", ((UASTIEVariable) exp.get())
+      .getName()
+      .getName()
+      .getActual());
+
+    Assert
+      .assertFalse(ext.getSupportedFull().contains(GVersionFull.GLSL_110));
+    Assert
+      .assertFalse(ext.getSupportedFull().contains(GVersionFull.GLSL_120));
+    Assert.assertFalse(ext.getSupportedES().contains(GVersionES.GLSL_ES_100));
   }
 
   @Test(expected = ParserError.class) public

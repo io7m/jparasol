@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -110,7 +110,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Construct a new pipeline.
-   * 
+   *
    * @param typed
    *          The typed AST.
    * @param log
@@ -263,6 +263,8 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     final GVersionsSupported supported =
       this.checker.checkFragmentShader(
+        this.typed,
+        referenced,
         f,
         required_versions_full,
         required_versions_es);
@@ -310,6 +312,8 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     final GVersionsSupported supported =
       this.checker.checkVertexShader(
+        this.typed,
+        referenced,
         v,
         required_versions_full,
         required_versions_es);
@@ -500,7 +504,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   /**
    * Transform the given set of programs to GLSL, assuming the given required
    * versions.
-   * 
+   *
    * @param program_names
    *          The set of program names.
    * @param required_versions_es

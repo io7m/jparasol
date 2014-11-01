@@ -1758,7 +1758,9 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
           ext.getName(),
           ext.isVertexShaderAllowed(),
           ext.isFragmentShaderAllowed(),
-          emulation));
+          emulation,
+          ext.getSupportedES(),
+          ext.getSupportedFull()));
     }
 
     @Override public UASTRDValueDefined termVisitValueDefined(
@@ -1815,7 +1817,9 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UniqueNameVisitorType;
           original_external.getName(),
           original_external.isVertexShaderAllowed(),
           original_external.isFragmentShaderAllowed(),
-          none);
+          none,
+          original_external.getSupportedES(),
+          original_external.getSupportedFull());
       return new UASTRDValueExternal(v.getName(), ascription, external);
     }
   }

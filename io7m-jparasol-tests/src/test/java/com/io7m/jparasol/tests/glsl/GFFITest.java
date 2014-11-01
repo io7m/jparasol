@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.junit.Assert;
@@ -345,18 +346,47 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
     }
   }
 
-  @Test public void testSamplerLib()
+  @Test public void testSamplerLibForAll()
     throws CompilerError
   {
     final GPipeline gpipe =
-      TestPipeline.makeGPipeline(new String[] { "glsl/ffi/sampler-lib.p" });
+      TestPipeline
+        .makeGPipeline(new String[] { "glsl/ffi/sampler-lib-for-all.p" });
 
     final Set<TASTShaderNameFlat> program_names =
       new HashSet<TASTShaderNameFlat>();
     program_names.add(TestPipeline.shaderName("x.y.M", "p"));
+
     final GCompilation comp =
       gpipe
         .transformPrograms(program_names, GVersionES.ALL, GVersionFull.ALL);
+  }
+
+  @Test public void testSamplerLibForSome()
+    throws CompilerError
+  {
+    final GPipeline gpipe =
+      TestPipeline
+        .makeGPipeline(new String[] { "glsl/ffi/sampler-lib-for-some.p" });
+
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    program_names.add(TestPipeline.shaderName("x.y.M", "p"));
+
+    final SortedSet<GVersionES> es = new TreeSet<GVersionES>(GVersionES.ALL);
+    es.remove(GVersionES.GLSL_ES_100);
+
+    System.out.println(es);
+
+    final SortedSet<GVersionFull> full =
+      new TreeSet<GVersionFull>(GVersionFull.ALL);
+    full.remove(GVersionFull.GLSL_110);
+    full.remove(GVersionFull.GLSL_120);
+
+    System.out.println(full);
+
+    final GCompilation comp =
+      gpipe.transformPrograms(program_names, es, full);
   }
 
   @Test(expected = GFFIError.class) public

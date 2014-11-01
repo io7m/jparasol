@@ -715,6 +715,19 @@ import com.io7m.junreachable.UnreachableCodeException;
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_sampler2d_texture_with_offset",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+          throws GFFIError
+        {
+          return GFFIExpressionEmitters
+            .com_io7m_parasol_sampler2d_texture_with_offset(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_sampler2d_texture_projective_3f",
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(
@@ -2061,7 +2074,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Construct a new FFI.
-   * 
+   *
    * @param log
    *          The log
    * @return A new FFI
@@ -2083,7 +2096,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Get an FFI expression for the given function application.
-   * 
+   *
    * @param f
    *          The function
    * @param arguments
@@ -2122,7 +2135,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Get a function declaration for the given function, if one is required.
-   * 
+   *
    * @param f
    *          The function
    * @param version
@@ -2183,7 +2196,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   /**
    * Get a value declaration for the given value, if one is required.
-   * 
+   *
    * @param v
    *          The value
    * @param version

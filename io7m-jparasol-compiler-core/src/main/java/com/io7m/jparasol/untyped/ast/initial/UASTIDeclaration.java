@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -18,12 +18,15 @@ package com.io7m.jparasol.untyped.ast.initial;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.OptionType;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jparasol.ModulePath;
 import com.io7m.jparasol.PackagePath;
+import com.io7m.jparasol.core.GVersionES;
+import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.lexer.Token.TokenDiscard;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierLower;
 import com.io7m.jparasol.lexer.Token.TokenIdentifierUpper;
@@ -79,17 +82,35 @@ import com.io7m.jparasol.untyped.ast.initial.UASTIExpression.UASTIEVariable;
     private final boolean                     fragment_shader_allowed;
     private final TokenIdentifierLower        name;
     private final boolean                     vertex_shader_allowed;
+    private final SortedSet<GVersionES>       supported_es;
+    private final SortedSet<GVersionFull>     supported_full;
+
+    public SortedSet<GVersionES> getSupportedES()
+    {
+      return this.supported_es;
+    }
+
+    public SortedSet<GVersionFull> getSupportedFull()
+    {
+      return this.supported_full;
+    }
 
     public UASTIDExternal(
       final TokenIdentifierLower in_name,
       final boolean in_vertex_shader_allowed,
       final boolean in_fragment_shader_allowed,
-      final OptionType<UASTIExpression> in_emulation)
+      final OptionType<UASTIExpression> in_emulation,
+      final SortedSet<GVersionES> in_supported_es,
+      final SortedSet<GVersionFull> in_supported_full)
     {
       this.name = NullCheck.notNull(in_name, "Name");
       this.vertex_shader_allowed = in_vertex_shader_allowed;
       this.fragment_shader_allowed = in_fragment_shader_allowed;
       this.emulation = NullCheck.notNull(in_emulation, "Emulation");
+      this.supported_es =
+        NullCheck.notNullAll(in_supported_es, "Supported ES versions");
+      this.supported_full =
+        NullCheck.notNullAll(in_supported_full, "Supported full versions");
     }
 
     public OptionType<UASTIExpression> getEmulation()
