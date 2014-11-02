@@ -197,6 +197,14 @@ module Float is
       fragment true;
     end;
 
+  function negate (
+    x : float
+  ) : float =
+    external com_io7m_parasol_float_negate is
+      vertex   true;
+      fragment true;
+    end;
+
   function power (
     x : float,
     e : float

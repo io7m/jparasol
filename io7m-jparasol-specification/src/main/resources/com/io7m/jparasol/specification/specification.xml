@@ -3743,6 +3743,14 @@ expression =
         <s:paragraph>Return the value of <s:term s:type="expression">x ✕ y</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>negate</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>negate Definition</s:formal-item-title>
+          <s:verbatim>function negate (x : float) : float</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the negation <s:term s:type="expression">-x</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>power</s:subsection-title>
         <s:formal-item s:kind="specifications">
           <s:formal-item-title>power Definition</s:formal-item-title>

@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- *
+ * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -183,7 +183,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat
             .com_io7m_parasol_float_arc_cosine(f, arguments, version);
@@ -196,7 +195,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_arc_sine(
             f,
@@ -211,7 +209,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat
             .com_io7m_parasol_float_arc_tangent(f, arguments, version);
@@ -224,7 +221,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_ceiling(
             f,
@@ -239,7 +235,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_clamp(
             f,
@@ -254,7 +249,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_cosine(
             f,
@@ -269,7 +263,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_divide(
             f,
@@ -284,7 +277,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_equals(
             f,
@@ -299,7 +291,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_floor(
             f,
@@ -314,7 +305,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_greater(
             f,
@@ -329,7 +319,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat
             .com_io7m_parasol_float_greater_or_equal(f, arguments, version);
@@ -342,7 +331,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat
             .com_io7m_parasol_float_interpolate(f, arguments, version);
@@ -355,7 +343,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat
             .com_io7m_parasol_float_is_infinite(f, arguments, version);
@@ -368,7 +355,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_is_nan(
             f,
@@ -383,7 +369,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_lesser(
             f,
@@ -398,7 +383,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat
             .com_io7m_parasol_float_lesser_or_equal(f, arguments, version);
@@ -411,7 +395,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_maximum(
             f,
@@ -426,7 +409,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_minimum(
             f,
@@ -441,7 +423,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_modulo(
             f,
@@ -456,9 +437,22 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_multiply(
+            f,
+            arguments,
+            version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_float_negate",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+        {
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_negate(
             f,
             arguments,
             version);
@@ -531,7 +525,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat
             .com_io7m_parasol_float_square_root(f, arguments, version);
@@ -544,7 +537,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_subtract(
             f,
@@ -559,7 +551,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_tangent(
             f,
@@ -574,7 +565,6 @@ import com.io7m.junreachable.UnreachableCodeException;
           final TASTDFunctionExternal f,
           final List<GASTExpression> arguments,
           final GVersionType version)
-
         {
           return GFFIExpressionEmittersFloat.com_io7m_parasol_float_truncate(
             f,
