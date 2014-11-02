@@ -132,6 +132,21 @@ import com.io7m.junreachable.UnreachableCodeException;
      */
 
     GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_boolean_or",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+        {
+          return GFFIExpressionEmittersBoolean.com_io7m_parasol_boolean_or(
+            f,
+            arguments,
+            version);
+        }
+      });
+
+    GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_float_absolute",
       new GFFIExpressionEmitterType() {
         @Override public GFFIExpression emitExpression(

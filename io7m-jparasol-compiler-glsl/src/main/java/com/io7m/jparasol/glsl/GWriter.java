@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -38,6 +38,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpGrea
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpLesserThan;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpLesserThanOrEqual;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpMultiply;
+import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpOr;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpPlus;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpSubtract;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBoolean;
@@ -230,6 +231,22 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     @Override public void expressionBinaryOpMultiplyVisitPre(
       final GASTEBinaryOpMultiply e)
+    {
+      // Nothing
+    }
+
+    @Override public String expressionBinaryOpOrVisit(
+      final String left,
+      final String right,
+      final GASTEBinaryOpOr e)
+      throws UnreachableCodeException
+    {
+      return String.format("(%s || %s)", left, right);
+    }
+
+    @Override public void expressionBinaryOpOrVisitPre(
+      final GASTEBinaryOpOr e)
+      throws UnreachableCodeException
     {
       // Nothing
     }

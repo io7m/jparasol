@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- *
+ * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -27,6 +27,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpGrea
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpLesserThan;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpLesserThanOrEqual;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpMultiply;
+import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpOr;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpPlus;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBinaryOp.GASTEBinaryOpSubtract;
 import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEBoolean;
@@ -50,6 +51,7 @@ import com.io7m.jparasol.glsl.ast.GASTExpression.GASTEVariable;
 
 public interface GASTExpressionVisitorType<A, E extends Throwable>
 {
+
   /**
    * Visit an (external) function application.
    *
@@ -342,6 +344,39 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
     throws E;
 
   /**
+   * Visit a logical expression.
+   *
+   * @param left
+   *          The left expression
+   * @param right
+   *          The right expression
+   * @param e
+   *          The expression
+   * @return A value of <code>A</code>
+   * @throws E
+   *           If required
+   */
+
+  A expressionBinaryOpOrVisit(
+    final A left,
+    final A right,
+    final GASTEBinaryOpOr e)
+    throws E;
+
+  /**
+   * Prepare to visit a logical expression.
+   *
+   * @param e
+   *          The expression
+   * @throws E
+   *           If required
+   */
+
+  void expressionBinaryOpOrVisitPre(
+    final GASTEBinaryOpOr e)
+    throws E;
+
+  /**
    * Visit an arithmetic expression.
    *
    * @param left
@@ -478,6 +513,36 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
     throws E;
 
   /**
+   * Visit a matrix column access expression.
+   *
+   * @param body
+   *          The left-hand side of the expression
+   * @param e
+   *          The expression
+   * @return A value of <code>A</code>
+   * @throws E
+   *           If required
+   */
+
+  A expressionMatrixColumnAccessVisit(
+    final A body,
+    final GASTEMatrixColumnAccess e)
+    throws E;
+
+  /**
+   * Prepare to visit a matrix column access expression.
+   *
+   * @param e
+   *          The expression
+   * @throws E
+   *           If required
+   */
+
+  void expressionMatrixColumnAccessVisitPre(
+    final GASTEMatrixColumnAccess e)
+    throws E;
+
+  /**
    * Visit a record projection.
    *
    * @param body
@@ -579,35 +644,5 @@ public interface GASTExpressionVisitorType<A, E extends Throwable>
 
   A expressionVariableVisit(
     final GASTEVariable e)
-    throws E;
-
-  /**
-   * Visit a matrix column access expression.
-   *
-   * @param body
-   *          The left-hand side of the expression
-   * @param e
-   *          The expression
-   * @return A value of <code>A</code>
-   * @throws E
-   *           If required
-   */
-
-  A expressionMatrixColumnAccessVisit(
-    final A body,
-    final GASTEMatrixColumnAccess e)
-    throws E;
-
-  /**
-   * Prepare to visit a matrix column access expression.
-   *
-   * @param e
-   *          The expression
-   * @throws E
-   *           If required
-   */
-
-  void expressionMatrixColumnAccessVisitPre(
-    final GASTEMatrixColumnAccess e)
     throws E;
 }

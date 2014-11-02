@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -53,6 +53,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 
   static {
     STANDARD_LIBRARY = new HashSet<String>();
+    CorePipeline.STANDARD_LIBRARY.add("Boolean.p");
     CorePipeline.STANDARD_LIBRARY.add("Float.p");
     CorePipeline.STANDARD_LIBRARY.add("Fragment.p");
     CorePipeline.STANDARD_LIBRARY.add("Integer.p");
@@ -70,7 +71,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 
   /**
    * Construct a new compiler pipeline.
-   * 
+   *
    * @param log
    *          The log interface
    * @return A new pipeline
@@ -94,7 +95,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 
   /**
    * Add an input to the pipeline.
-   * 
+   *
    * @param input
    *          An input
    */
@@ -133,7 +134,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 
   /**
    * Close the pipeline, closing all inputs.
-   * 
+   *
    * @throws IOException
    *           If an I/O error occurs
    */
@@ -148,7 +149,7 @@ import com.io7m.jparasol.untyped.ast.unique_binders.UASTUCompilation;
 
   /**
    * Run the compiler.
-   * 
+   *
    * @return A type-checked AST.
    * @throws CompilerError
    *           If an error occurs at any stage in the pipeline; the precise

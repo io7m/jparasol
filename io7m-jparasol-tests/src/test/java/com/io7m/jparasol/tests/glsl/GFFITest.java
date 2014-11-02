@@ -1,10 +1,10 @@
 /*
  * Copyright © 2013 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -194,6 +194,20 @@ import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
   {
     final GPipeline gpipe =
       TestPipeline.makeGPipeline(new String[] { "glsl/ffi/float-lib.p" });
+
+    final Set<TASTShaderNameFlat> program_names =
+      new HashSet<TASTShaderNameFlat>();
+    program_names.add(TestPipeline.shaderName("x.y.M", "p"));
+    final GCompilation comp =
+      gpipe
+        .transformPrograms(program_names, GVersionES.ALL, GVersionFull.ALL);
+  }
+
+  @Test public void testBooleanLib()
+    throws CompilerError
+  {
+    final GPipeline gpipe =
+      TestPipeline.makeGPipeline(new String[] { "glsl/ffi/boolean-lib.p" });
 
     final Set<TASTShaderNameFlat> program_names =
       new HashSet<TASTShaderNameFlat>();
