@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -140,7 +140,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_absolute(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_absolute(
             f,
             arguments,
             version);
@@ -155,7 +155,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_add(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_add(
             f,
             arguments,
             version);
@@ -170,10 +170,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_arc_cosine(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersFloat
+            .com_io7m_parasol_float_arc_cosine(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -185,7 +183,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_arc_sine(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_arc_sine(
             f,
             arguments,
             version);
@@ -200,10 +198,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_arc_tangent(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersFloat
+            .com_io7m_parasol_float_arc_tangent(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -215,7 +211,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_ceiling(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_ceiling(
             f,
             arguments,
             version);
@@ -230,7 +226,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_clamp(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_clamp(
             f,
             arguments,
             version);
@@ -245,7 +241,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_cosine(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_cosine(
             f,
             arguments,
             version);
@@ -260,7 +256,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_divide(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_divide(
             f,
             arguments,
             version);
@@ -275,7 +271,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_equals(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_equals(
             f,
             arguments,
             version);
@@ -290,7 +286,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_floor(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_floor(
             f,
             arguments,
             version);
@@ -305,7 +301,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_greater(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_greater(
             f,
             arguments,
             version);
@@ -320,7 +316,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersFloat
             .com_io7m_parasol_float_greater_or_equal(f, arguments, version);
         }
       });
@@ -333,10 +329,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_interpolate(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersFloat
+            .com_io7m_parasol_float_interpolate(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -348,10 +342,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_is_infinite(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersFloat
+            .com_io7m_parasol_float_is_infinite(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -363,7 +355,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_is_nan(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_is_nan(
             f,
             arguments,
             version);
@@ -378,7 +370,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_lesser(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_lesser(
             f,
             arguments,
             version);
@@ -393,7 +385,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersFloat
             .com_io7m_parasol_float_lesser_or_equal(f, arguments, version);
         }
       });
@@ -406,7 +398,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_maximum(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_maximum(
             f,
             arguments,
             version);
@@ -421,7 +413,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_minimum(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_minimum(
             f,
             arguments,
             version);
@@ -436,7 +428,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_modulo(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_modulo(
             f,
             arguments,
             version);
@@ -451,7 +443,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_multiply(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_multiply(
             f,
             arguments,
             version);
@@ -466,7 +458,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_power(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_power(
             f,
             arguments,
             version);
@@ -481,7 +473,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_round(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_round(
             f,
             arguments,
             version);
@@ -496,7 +488,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_sign(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_sign(
             f,
             arguments,
             version);
@@ -511,7 +503,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_sine(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_sine(
             f,
             arguments,
             version);
@@ -526,10 +518,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_square_root(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersFloat
+            .com_io7m_parasol_float_square_root(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -541,7 +531,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_subtract(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_subtract(
             f,
             arguments,
             version);
@@ -556,7 +546,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_tangent(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_tangent(
             f,
             arguments,
             version);
@@ -571,7 +561,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_float_truncate(
+          return GFFIExpressionEmittersFloat.com_io7m_parasol_float_truncate(
             f,
             arguments,
             version);
@@ -586,7 +576,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_integer_add(
+          return GFFIExpressionEmittersInteger.com_io7m_parasol_integer_add(
             f,
             arguments,
             version);
@@ -601,10 +591,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_integer_divide(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersInteger
+            .com_io7m_parasol_integer_divide(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -616,10 +604,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_integer_multiply(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersInteger
+            .com_io7m_parasol_integer_multiply(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -631,10 +617,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_integer_subtract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersInteger
+            .com_io7m_parasol_integer_subtract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -646,10 +630,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_matrix3x3f_multiply(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersMatrix3x3
+            .com_io7m_parasol_matrix3x3f_multiply(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -661,7 +643,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersMatrix3x3
             .com_io7m_parasol_matrix3x3f_multiply_vector(
               f,
               arguments,
@@ -677,10 +659,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_matrix4x4f_multiply(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersMatrix4x4
+            .com_io7m_parasol_matrix4x4f_multiply(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -692,7 +672,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersMatrix4x4
             .com_io7m_parasol_matrix4x4f_multiply_vector(
               f,
               arguments,
@@ -708,10 +688,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_sampler2d_texture(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersSampler2D
+            .com_io7m_parasol_sampler2d_texture(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -723,8 +701,11 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
           throws GFFIError
         {
-          return GFFIExpressionEmitters
-            .com_io7m_parasol_sampler2d_texture_with_offset(f, arguments, version);
+          return GFFIExpressionEmittersSampler2D
+            .com_io7m_parasol_sampler2d_texture_with_offset(
+              f,
+              arguments,
+              version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -736,7 +717,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersSampler2D
             .com_io7m_parasol_sampler2d_texture_projective_3f(
               f,
               arguments,
@@ -752,7 +733,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersSampler2D
             .com_io7m_parasol_sampler2d_texture_projective_4f(
               f,
               arguments,
@@ -768,7 +749,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersSamplerCube
             .com_io7m_parasol_sampler_cube_texture(f, arguments, version);
         }
       });
@@ -781,10 +762,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_add(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_add(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -796,10 +775,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_add_scalar(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_add_scalar(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -811,10 +788,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_dot(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_dot(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -826,7 +801,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector2F
             .com_io7m_parasol_vector2f_interpolate(f, arguments, version);
         }
       });
@@ -839,12 +814,38 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_magnitude(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_magnitude(f, arguments, version);
         }
       });
+
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector2f_maximum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_maximum(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector2f_minimum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_minimum(f, arguments, version);
+        }
+      });
+
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector2f_multiply",
       new GFFIExpressionEmitterType() {
@@ -854,10 +855,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_multiply(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_multiply(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -869,7 +868,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector2F
             .com_io7m_parasol_vector2f_multiply_scalar(f, arguments, version);
         }
       });
@@ -882,10 +881,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_negate(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_negate(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -897,10 +894,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_normalize(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_normalize(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -912,10 +907,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_reflect(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_reflect(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -927,10 +920,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_refract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_refract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -942,10 +933,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_subtract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_subtract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -957,10 +946,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_add(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_add(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -972,10 +959,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_add_scalar(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_add_scalar(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -987,10 +972,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_dot(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_dot(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1002,8 +985,34 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector2I
             .com_io7m_parasol_vector2i_interpolate(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector2i_maximum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_maximum(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector2i_minimum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_minimum(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1015,10 +1024,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_magnitude(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_magnitude(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1030,10 +1037,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_multiply(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_multiply(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1045,7 +1050,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector2I
             .com_io7m_parasol_vector2i_multiply_scalar(f, arguments, version);
         }
       });
@@ -1058,10 +1063,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_negate(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_negate(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1073,10 +1076,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_normalize(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_normalize(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1088,10 +1089,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_reflect(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_reflect(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1103,10 +1102,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_refract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_refract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1118,10 +1115,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_subtract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_subtract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1133,10 +1128,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_add(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_add(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1148,10 +1141,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_add_scalar(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_add_scalar(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1163,10 +1154,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_cross(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_cross(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1178,10 +1167,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_dot(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_dot(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1193,8 +1180,34 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector3F
             .com_io7m_parasol_vector3f_interpolate(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector3f_maximum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_maximum(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector3f_minimum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_minimum(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1206,10 +1219,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_magnitude(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_magnitude(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1221,10 +1232,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_multiply(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_multiply(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1236,7 +1245,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector3F
             .com_io7m_parasol_vector3f_multiply_scalar(f, arguments, version);
         }
       });
@@ -1249,10 +1258,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_negate(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_negate(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1264,10 +1271,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_normalize(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_normalize(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1279,10 +1284,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_reflect(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_reflect(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1294,10 +1297,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_refract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_refract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1309,10 +1310,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_subtract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_subtract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1324,10 +1323,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_add(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_add(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1339,10 +1336,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_add_scalar(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_add_scalar(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1354,10 +1349,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_dot(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_dot(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1369,8 +1362,34 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector3I
             .com_io7m_parasol_vector3i_interpolate(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector3i_maximum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_maximum(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector3i_minimum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_minimum(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1382,10 +1401,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_magnitude(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_magnitude(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1397,10 +1414,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_multiply(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_multiply(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1412,7 +1427,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector3I
             .com_io7m_parasol_vector3i_multiply_scalar(f, arguments, version);
         }
       });
@@ -1425,10 +1440,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_negate(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_negate(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1440,10 +1453,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_normalize(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_normalize(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1455,10 +1466,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_reflect(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_reflect(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1470,10 +1479,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_refract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_refract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1485,10 +1492,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_subtract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_subtract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1500,10 +1505,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_add(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_add(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1515,10 +1518,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_add_scalar(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_add_scalar(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1530,10 +1531,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_dot(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_dot(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1545,8 +1544,34 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector4F
             .com_io7m_parasol_vector4f_interpolate(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector4f_maximum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_maximum(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector4f_minimum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_minimum(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1558,10 +1583,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_magnitude(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_magnitude(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1573,10 +1596,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_multiply(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_multiply(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1588,7 +1609,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector4F
             .com_io7m_parasol_vector4f_multiply_scalar(f, arguments, version);
         }
       });
@@ -1601,10 +1622,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_negate(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_negate(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1616,10 +1635,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_normalize(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_normalize(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1631,10 +1648,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_reflect(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_reflect(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1646,10 +1661,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_refract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_refract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1661,10 +1674,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final GVersionType version)
 
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_subtract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_subtract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1675,10 +1686,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_add(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_add(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1689,10 +1698,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_add_scalar(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_add_scalar(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1703,10 +1710,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_dot(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_dot(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1717,8 +1722,34 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector4I
             .com_io7m_parasol_vector4i_interpolate(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector4i_maximum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_maximum(f, arguments, version);
+        }
+      });
+    GFFI.EXPRESSION_EMITTERS.put(
+      "com_io7m_parasol_vector4i_minimum",
+      new GFFIExpressionEmitterType() {
+        @Override public GFFIExpression emitExpression(
+          final TASTDFunctionExternal f,
+          final List<GASTExpression> arguments,
+          final GVersionType version)
+
+        {
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_minimum(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1729,12 +1760,11 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_magnitude(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_magnitude(f, arguments, version);
         }
       });
+
     GFFI.EXPRESSION_EMITTERS.put(
       "com_io7m_parasol_vector4i_multiply",
       new GFFIExpressionEmitterType() {
@@ -1743,10 +1773,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_multiply(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_multiply(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1757,7 +1785,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector4I
             .com_io7m_parasol_vector4i_multiply_scalar(f, arguments, version);
         }
       });
@@ -1769,10 +1797,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_negate(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_negate(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1783,10 +1809,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_normalize(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_normalize(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1797,10 +1821,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_reflect(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_reflect(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1811,10 +1833,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_refract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_refract(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1825,10 +1845,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_subtract(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_subtract(f, arguments, version);
         }
       });
 
@@ -1840,7 +1858,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector4I
             .com_io7m_parasol_vector4i_subtract_scalar(f, arguments, version);
         }
       });
@@ -1852,7 +1870,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector4F
             .com_io7m_parasol_vector4f_subtract_scalar(f, arguments, version);
         }
       });
@@ -1865,7 +1883,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector3I
             .com_io7m_parasol_vector3i_subtract_scalar(f, arguments, version);
         }
       });
@@ -1877,7 +1895,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector3F
             .com_io7m_parasol_vector3f_subtract_scalar(f, arguments, version);
         }
       });
@@ -1890,7 +1908,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector2I
             .com_io7m_parasol_vector2i_subtract_scalar(f, arguments, version);
         }
       });
@@ -1902,7 +1920,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector2F
             .com_io7m_parasol_vector2f_subtract_scalar(f, arguments, version);
         }
       });
@@ -1915,10 +1933,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2f_divide(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2F
+            .com_io7m_parasol_vector2f_divide(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1929,10 +1945,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector2i_divide(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector2I
+            .com_io7m_parasol_vector2i_divide(f, arguments, version);
         }
       });
 
@@ -1944,10 +1958,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3f_divide(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3F
+            .com_io7m_parasol_vector3f_divide(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1958,10 +1970,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector3i_divide(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector3I
+            .com_io7m_parasol_vector3i_divide(f, arguments, version);
         }
       });
 
@@ -1973,10 +1983,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4f_divide(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4F
+            .com_io7m_parasol_vector4f_divide(f, arguments, version);
         }
       });
     GFFI.EXPRESSION_EMITTERS.put(
@@ -1987,10 +1995,8 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters.com_io7m_parasol_vector4i_divide(
-            f,
-            arguments,
-            version);
+          return GFFIExpressionEmittersVector4I
+            .com_io7m_parasol_vector4i_divide(f, arguments, version);
         }
       });
 
@@ -2002,7 +2008,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector2F
             .com_io7m_parasol_vector2f_divide_scalar(f, arguments, version);
         }
       });
@@ -2014,7 +2020,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector2I
             .com_io7m_parasol_vector2i_divide_scalar(f, arguments, version);
         }
       });
@@ -2027,7 +2033,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector3F
             .com_io7m_parasol_vector3f_divide_scalar(f, arguments, version);
         }
       });
@@ -2039,7 +2045,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector3I
             .com_io7m_parasol_vector3i_divide_scalar(f, arguments, version);
         }
       });
@@ -2052,7 +2058,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector4F
             .com_io7m_parasol_vector4f_divide_scalar(f, arguments, version);
         }
       });
@@ -2064,7 +2070,7 @@ import com.io7m.junreachable.UnreachableCodeException;
           final List<GASTExpression> arguments,
           final GVersionType version)
         {
-          return GFFIExpressionEmitters
+          return GFFIExpressionEmittersVector4I
             .com_io7m_parasol_vector4i_divide_scalar(f, arguments, version);
         }
       });

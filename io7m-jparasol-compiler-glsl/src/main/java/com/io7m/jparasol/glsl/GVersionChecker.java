@@ -427,80 +427,6 @@ import com.io7m.junreachable.UnreachableCodeException;
   @EqualityReference private static final class CheckFunctionVersionSupport implements
     CheckType
   {
-    @EqualityReference private static final class TermChecker implements
-      TASTTermVisitorType<Unit, UnreachableCodeException>
-    {
-      private final GVersionsSupported exclusions;
-
-      private TermChecker(
-        final GVersionsSupported in_exclusions)
-      {
-        this.exclusions = in_exclusions;
-      }
-
-      @Override public Unit termVisitFunctionDefined(
-        final TASTDFunctionDefined f)
-      {
-        return Unit.unit();
-      }
-
-      @Override public Unit termVisitFunctionExternal(
-        final TASTDFunctionExternal f)
-      {
-        final TASTDExternal ee = f.getExternal();
-
-        final SortedSet<GVersionES> supported_es = ee.getSupportedES();
-        final SortedSet<GVersionFull> supported_full = ee.getSupportedFull();
-
-        final TokenIdentifierLower name = f.getName();
-        for (final GVersionES v : GVersionES.ALL) {
-          assert v != null;
-          if (supported_es.contains(v) == false) {
-            final StringBuilder m = new StringBuilder();
-            m.append("Function '");
-            m.append(name.getActual());
-            m.append("' unavailable on this GLSL version");
-            final String r = m.toString();
-            assert r != null;
-            this.exclusions.excludeES(v, new GVersionCheckExclusionReason(
-              name.getFile(),
-              name.getPosition(),
-              r));
-          }
-        }
-
-        for (final GVersionFull v : GVersionFull.ALL) {
-          assert v != null;
-          if (supported_full.contains(v) == false) {
-            final StringBuilder m = new StringBuilder();
-            m.append("Function '");
-            m.append(name.getActual());
-            m.append("' unavailable on this GLSL version");
-            final String r = m.toString();
-            assert r != null;
-            this.exclusions.excludeFull(v, new GVersionCheckExclusionReason(
-              name.getFile(),
-              name.getPosition(),
-              r));
-          }
-        }
-
-        return Unit.unit();
-      }
-
-      @Override public Unit termVisitValueDefined(
-        final TASTDValueDefined v)
-      {
-        return Unit.unit();
-      }
-
-      @Override public Unit termVisitValueExternal(
-        final TASTDValueExternal v)
-      {
-        return Unit.unit();
-      }
-    }
-
     @EqualityReference private static final class ExpressionChecker implements
       TASTExpressionVisitorType<Unit, Unit, UnreachableCodeException>
     {
@@ -717,9 +643,9 @@ import com.io7m.junreachable.UnreachableCodeException;
     @EqualityReference private static final class FragmentShaderChecker implements
       TASTFragmentShaderVisitorType<Unit, Unit, Unit, Unit, Unit, Unit, UnreachableCodeException>
     {
+      private final Referenced         referenced;
       private final GVersionsSupported supported;
       private final TASTCompilation    typed;
-      private final Referenced         referenced;
 
       private FragmentShaderChecker(
         final GVersionsSupported in_supported,
@@ -797,12 +723,86 @@ import com.io7m.junreachable.UnreachableCodeException;
       }
     }
 
+    @EqualityReference private static final class TermChecker implements
+      TASTTermVisitorType<Unit, UnreachableCodeException>
+    {
+      private final GVersionsSupported exclusions;
+
+      private TermChecker(
+        final GVersionsSupported in_exclusions)
+      {
+        this.exclusions = in_exclusions;
+      }
+
+      @Override public Unit termVisitFunctionDefined(
+        final TASTDFunctionDefined f)
+      {
+        return Unit.unit();
+      }
+
+      @Override public Unit termVisitFunctionExternal(
+        final TASTDFunctionExternal f)
+      {
+        final TASTDExternal ee = f.getExternal();
+
+        final SortedSet<GVersionES> supported_es = ee.getSupportedES();
+        final SortedSet<GVersionFull> supported_full = ee.getSupportedFull();
+
+        final TokenIdentifierLower name = f.getName();
+        for (final GVersionES v : GVersionES.ALL) {
+          assert v != null;
+          if (supported_es.contains(v) == false) {
+            final StringBuilder m = new StringBuilder();
+            m.append("Function '");
+            m.append(name.getActual());
+            m.append("' unavailable on this GLSL version");
+            final String r = m.toString();
+            assert r != null;
+            this.exclusions.excludeES(v, new GVersionCheckExclusionReason(
+              name.getFile(),
+              name.getPosition(),
+              r));
+          }
+        }
+
+        for (final GVersionFull v : GVersionFull.ALL) {
+          assert v != null;
+          if (supported_full.contains(v) == false) {
+            final StringBuilder m = new StringBuilder();
+            m.append("Function '");
+            m.append(name.getActual());
+            m.append("' unavailable on this GLSL version");
+            final String r = m.toString();
+            assert r != null;
+            this.exclusions.excludeFull(v, new GVersionCheckExclusionReason(
+              name.getFile(),
+              name.getPosition(),
+              r));
+          }
+        }
+
+        return Unit.unit();
+      }
+
+      @Override public Unit termVisitValueDefined(
+        final TASTDValueDefined v)
+      {
+        return Unit.unit();
+      }
+
+      @Override public Unit termVisitValueExternal(
+        final TASTDValueExternal v)
+      {
+        return Unit.unit();
+      }
+    }
+
     @EqualityReference private static final class VertexShaderChecker implements
       TASTVertexShaderVisitorType<Unit, Unit, Unit, Unit, Unit, Unit, UnreachableCodeException>
     {
+      private final Referenced         referenced;
       private final GVersionsSupported supported;
       private final TASTCompilation    typed;
-      private final Referenced         referenced;
 
       private VertexShaderChecker(
         final GVersionsSupported in_supported,

@@ -82,6 +82,24 @@ module Vector3f is
       fragment true;
     end;
 
+  function maximum (
+    v0 : vector_3f,
+    v1 : vector_3f
+  ) : vector_3f =
+    external com_io7m_parasol_vector3f_maximum is
+      vertex   true;
+      fragment true;
+    end;
+
+  function minimum (
+    v0 : vector_3f,
+    v1 : vector_3f
+  ) : vector_3f =
+    external com_io7m_parasol_vector3f_minimum is
+      vertex   true;
+      fragment true;
+    end;
+
   function magnitude (v : vector_3f) : float =
     external com_io7m_parasol_vector3f_magnitude is
       vertex   true;

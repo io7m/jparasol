@@ -73,6 +73,24 @@ module Vector4f is
       fragment true;
     end;
 
+  function maximum (
+    v0 : vector_4f,
+    v1 : vector_4f
+  ) : vector_4f =
+    external com_io7m_parasol_vector4f_maximum is
+      vertex   true;
+      fragment true;
+    end;
+
+  function minimum (
+    v0 : vector_4f,
+    v1 : vector_4f
+  ) : vector_4f =
+    external com_io7m_parasol_vector4f_minimum is
+      vertex   true;
+      fragment true;
+    end;
+
   function magnitude (v : vector_4f) : float =
     external com_io7m_parasol_vector4f_magnitude is
       vertex   true;

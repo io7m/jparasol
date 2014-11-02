@@ -73,6 +73,24 @@ module Vector2f is
       fragment true;
     end;
 
+  function maximum (
+    v0 : vector_2f,
+    v1 : vector_2f
+  ) : vector_2f =
+    external com_io7m_parasol_vector2f_maximum is
+      vertex   true;
+      fragment true;
+    end;
+
+  function minimum (
+    v0 : vector_2f,
+    v1 : vector_2f
+  ) : vector_2f =
+    external com_io7m_parasol_vector2f_minimum is
+      vertex   true;
+      fragment true;
+    end;
+
   function magnitude (v : vector_2f) : float =
     external com_io7m_parasol_vector2f_magnitude is
       vertex   true;
