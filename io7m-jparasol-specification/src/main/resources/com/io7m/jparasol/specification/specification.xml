@@ -3542,6 +3542,24 @@ expression =
   <s:part xml:id="spec.stdlib">
     <s:part-title>Standard Library Reference</s:part-title>
     <s:part-contents/>
+
+    <s:section xml:id="spec.stdlib.com.io7m.parasol.Boolean">
+      <s:section-title>Module com.io7m.parasol.Boolean</s:section-title>
+      <s:section-contents/>
+      <s:subsection>
+        <s:subsection-title>or</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>or Definition</s:formal-item-title>
+          <s:verbatim>function or (x : boolean, y : boolean) : boolean</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>
+          Return the <s:term s:type="constant">true</s:term> iff
+          <s:term s:type="expression">x == true</s:term> or
+          <s:term s:type="expression">y == true</s:term>.
+        </s:paragraph>
+      </s:subsection>
+    </s:section>
+
     <s:section xml:id="spec.stdlib.com.io7m.parasol.Float">
       <s:section-title>Module com.io7m.parasol.Float</s:section-title>
       <s:section-contents/>
