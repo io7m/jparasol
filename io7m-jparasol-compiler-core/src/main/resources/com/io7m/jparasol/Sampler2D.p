@@ -58,4 +58,17 @@ module Sampler2D is
       fragment true;
     end;
 
+  function texture_with_lod (
+    t   : sampler_2d,
+    uv  : vector_2f,
+    lod : float
+  ) : vector_4f =
+    external com_io7m_parasol_sampler2d_texture_with_lod is
+      restrict 110 full;
+      restrict 120 full;
+      restrict 100 es;
+      vertex   true;
+      fragment true;
+    end;
+
 end;

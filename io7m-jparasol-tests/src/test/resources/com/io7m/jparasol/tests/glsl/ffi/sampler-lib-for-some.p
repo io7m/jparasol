@@ -9,6 +9,7 @@ module M is
     v4f  : vector_4f,
     t2   : vector_4f,
     t2o  : vector_4f,
+    t2l  : vector_4f,
     tc   : vector_4f,
     t2p3 : vector_4f,
     t2p4 : vector_4f
@@ -23,6 +24,7 @@ module M is
       v4f  = new vector_4f (x, x, x, x),
       t2   = S2.texture (t2, new vector_2f (x, x)),
       t2o  = S2.texture_with_offset (t2, new vector_2f (x, x), new vector_2i (0, 0)),
+      t2l  = S2.texture_with_lod (t2, new vector_2f (x, x), 0.0),
       tc   = SC.texture (tc, new vector_3f (x, x, x)),
       t2p3 = S2.texture_projective_3f (t2, new vector_3f (x, x, x)),
       t2p4 = S2.texture_projective_4f (t2, new vector_4f (x, x, x, x))

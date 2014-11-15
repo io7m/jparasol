@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -25,6 +25,7 @@ import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.GVersionVisitorType;
 import com.io7m.jparasol.glsl.ast.GASTExpression;
 import com.io7m.jparasol.glsl.ast.GTermName.GTermNameExternal;
+import com.io7m.jparasol.typed.TType.TFloat;
 import com.io7m.jparasol.typed.TType.TFunction;
 import com.io7m.jparasol.typed.TType.TFunctionArgument;
 import com.io7m.jparasol.typed.TType.TSampler2D;
@@ -252,6 +253,52 @@ import com.io7m.junreachable.UnreachableCodeException;
           }
           final GTermNameExternal name =
             new GTermNameExternal("textureOffset");
+          return new GFFIExpression.GFFIExpressionBuiltIn(
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
+        }
+      });
+  }
+
+  static GFFIExpression com_io7m_parasol_sampler2d_texture_with_lod(
+    final TASTDFunctionExternal f,
+    final List<GASTExpression> arguments,
+    final GVersionType version)
+    throws UnreachableCodeException,
+      GFFIError
+  {
+    final TFunction ft = f.getType();
+    final List<TFunctionArgument> fta = ft.getArguments();
+
+    assert arguments.size() == 3;
+    assert fta.size() == 3;
+    assert fta.get(0).getType().equals(TSampler2D.get());
+    assert fta.get(1).getType().equals(TVector2F.get());
+    assert fta.get(2).getType().equals(TFloat.get());
+    assert ft.getReturnType().equals(TVector4F.get());
+
+    final TValueType type = ft.getReturnType();
+    return version
+      .versionAccept(new GVersionVisitorType<GFFIExpression, GFFIError>() {
+        @Override public GFFIExpression versionVisitES(
+          final GVersionES v)
+          throws GFFIError
+        {
+          if (v.compareTo(GVersionES.GLSL_ES_300) < 0) {
+            throw GFFIError.unsupportedExternal(f.getExternal(), v);
+          }
+          final GTermNameExternal name = new GTermNameExternal("textureLod");
+          return new GFFIExpression.GFFIExpressionBuiltIn(
+            new GASTExpression.GASTEApplicationExternal(name, type, arguments));
+        }
+
+        @Override public GFFIExpression versionVisitFull(
+          final GVersionFull v)
+          throws GFFIError
+        {
+          if (v.compareTo(GVersionFull.GLSL_120) <= 0) {
+            throw GFFIError.unsupportedExternal(f.getExternal(), v);
+          }
+          final GTermNameExternal name = new GTermNameExternal("textureLod");
           return new GFFIExpression.GFFIExpressionBuiltIn(
             new GASTExpression.GASTEApplicationExternal(name, type, arguments));
         }

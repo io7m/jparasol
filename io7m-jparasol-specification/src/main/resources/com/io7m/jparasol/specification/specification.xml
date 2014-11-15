@@ -3916,13 +3916,30 @@ expression =
       <s:subsection>
         <s:subsection-title>texture_with_offset</s:subsection-title>
         <s:formal-item s:kind="specifications">
-          <s:formal-item-title>texture Definition</s:formal-item-title>
-          <s:verbatim>function texture (t : sampler_2d, uv : vector_2f, o : vector_2i) : vector_4f</s:verbatim>
+          <s:formal-item-title>texture_with_offset Definition</s:formal-item-title>
+          <s:verbatim>function texture_with_offset (t : sampler_2d, uv : vector_2f, o : vector_2i) : vector_4f</s:verbatim>
         </s:formal-item>
         <s:paragraph>
           Retrieve a texel from the texture <s:term s:type="variable">t</s:term>
           from the texture coordinate <s:term s:type="variable">uv</s:term> using
           texel offsets <s:term s:type="variable">o</s:term>.
+        </s:paragraph>
+        <s:paragraph>
+          This function is not available on GLSL versions <s:term s:type="expression">&lt;= 120</s:term>,
+          and GLSL ES version <s:term s:type="expression">100</s:term>, and no software
+          emulation is possible.
+        </s:paragraph>
+      </s:subsection>
+      <s:subsection>
+        <s:subsection-title>texture_with_lod</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>texture_with_lod Definition</s:formal-item-title>
+          <s:verbatim>function texture_with_lod (t : sampler_2d, uv : vector_2f, lod : float) : vector_4f</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>
+          Retrieve a texel from the texture <s:term s:type="variable">t</s:term>
+          from the texture coordinate <s:term s:type="variable">uv</s:term> using
+          an explicit level-of-detail <s:term s:type="variable">lod</s:term>.
         </s:paragraph>
         <s:paragraph>
           This function is not available on GLSL versions <s:term s:type="expression">&lt;= 120</s:term>,
