@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.io7m.jparasol</groupId>
     <artifactId>io7m-jparasol</artifactId>
-    <version>0.10.5</version>
+    <version>0.10.6</version>
   </parent>
   <artifactId>io7m-jparasol-specification</artifactId>
 
