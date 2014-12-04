@@ -1,10 +1,10 @@
 /*
  * Copyright © 2013 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -556,10 +556,45 @@ import com.io7m.junreachable.UnreachableCodeException;
 
     System.out.println(topo);
 
-    Assert.assertEquals("x.y.Q", topo.get(0).getActual());
-    Assert.assertEquals("x.y.N", topo.get(1).getActual());
-    Assert.assertEquals("x.y.P", topo.get(2).getActual());
-    Assert.assertEquals("x.y.M", topo.get(3).getActual());
+    final ModulePathFlat mq = new ModulePathFlat("x.y.Q");
+    final ModulePathFlat mn = new ModulePathFlat("x.y.N");
+    final ModulePathFlat mp = new ModulePathFlat("x.y.P");
+    final ModulePathFlat mm = new ModulePathFlat("x.y.M");
+
+    final int iq = topo.indexOf(mq);
+    final int im = topo.indexOf(mm);
+    final int in = topo.indexOf(mn);
+    final int ip = topo.indexOf(mp);
+
+    Assert.assertNotEquals(-1, iq);
+    Assert.assertNotEquals(-1, im);
+    Assert.assertNotEquals(-1, in);
+    Assert.assertNotEquals(-1, ip);
+
+    /**
+     * M is imported by P, so M > P.
+     */
+
+    Assert.assertTrue(im > ip);
+
+    /**
+     * M is imported by P, so M > P.
+     */
+
+    Assert.assertTrue(im > ip);
+
+    /**
+     * M is imported by N, so M > N.
+     */
+
+    Assert.assertTrue(im > in);
+
+    /**
+     * P is imported by Q, so P > Q. Therefore, M > Q.
+     */
+
+    Assert.assertTrue(ip > iq);
+    Assert.assertTrue(im > iq);
   }
 
   @Test public void testModuleTypeTopology0()

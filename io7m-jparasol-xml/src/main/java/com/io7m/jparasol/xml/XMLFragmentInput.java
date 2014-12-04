@@ -57,6 +57,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   /**
+   * @param e The XML element.
    * @return A fragment input from the given XML element.
    */
 
@@ -91,6 +92,7 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   /**
+   * @param i The fragment input.
    * @return The current input as XML
    */
 

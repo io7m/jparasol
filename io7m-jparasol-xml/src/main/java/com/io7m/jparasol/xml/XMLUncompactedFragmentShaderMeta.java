@@ -36,12 +36,14 @@ import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
- * Functions to convert {@link UncompactedFragmentShaderMeta} to/from XML.
+ * Functions to convert {@link JPUncompactedFragmentShaderMeta} to/from XML.
  */
 
 @EqualityReference public final class XMLUncompactedFragmentShaderMeta
 {
   /**
+   * @param e
+   *          An XML element.
    * @return A fragment shader from the given XML element.
    * @throws JPXMLValidityException
    *           On parse errors.
@@ -105,6 +107,8 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   /**
+   * @param f
+   *          Metadata.
    * @return The given metadata as XML
    */
 
