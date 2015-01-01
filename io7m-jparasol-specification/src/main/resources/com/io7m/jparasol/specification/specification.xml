@@ -3711,6 +3711,14 @@ expression =
         <s:paragraph>Return <s:term s:type="constant">true</s:term> iff <s:term s:type="expression">x &lt;= y</s:term>.</s:paragraph>
       </s:subsection>
       <s:subsection>
+        <s:subsection-title>log2</s:subsection-title>
+        <s:formal-item s:kind="specifications">
+          <s:formal-item-title>log2 Definition</s:formal-item-title>
+          <s:verbatim>function log2 (x : float) : float</s:verbatim>
+        </s:formal-item>
+        <s:paragraph>Return the base 2 logarithm of <s:term s:type="expression">x</s:term>.</s:paragraph>
+      </s:subsection>
+      <s:subsection>
         <s:subsection-title>maximum</s:subsection-title>
         <s:formal-item s:kind="specifications">
           <s:formal-item-title>maximum Definition</s:formal-item-title>

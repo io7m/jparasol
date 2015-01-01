@@ -161,6 +161,14 @@ module Float is
       fragment true;
     end;
 
+  function log2 (
+    x : float
+  ) : float =
+    external com_io7m_parasol_float_log2 is
+      vertex   true;
+      fragment true;
+    end;
+
   function maximum (
     v0 : float,
     v1 : float
