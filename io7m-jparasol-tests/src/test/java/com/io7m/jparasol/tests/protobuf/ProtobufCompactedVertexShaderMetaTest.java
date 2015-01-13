@@ -1,10 +1,10 @@
 /*
  * Copyright © 2013 <code@io7m.com> http://io7m.com
- *
+ * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -29,6 +29,7 @@ import com.io7m.jparasol.core.GVersionES;
 import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.JPCompactedVertexShaderMeta;
 import com.io7m.jparasol.core.JPCompiledShaderMetaType;
+import com.io7m.jparasol.core.JPVertexShaderMetaType;
 import com.io7m.jparasol.metaserializer.JPMetaDeserializerType;
 import com.io7m.jparasol.metaserializer.JPMetaSerializerType;
 import com.io7m.jparasol.metaserializer.JPSerializerException;
@@ -71,6 +72,24 @@ import com.io7m.junreachable.UnreachableCodeException;
     } catch (final IOException e) {
       throw new UnreachableCodeException(e);
     }
+  }
+
+  @Test public void testGeneral_0()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPProtobufMetaDeserializer.newDeserializer();
+    final InputStream stream0 =
+      ProtobufCompactedVertexShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-vertex.ppsm");
+    final JPVertexShaderMetaType v0 = d.metaDeserializeVertexShader(stream0);
+
+    final InputStream stream1 =
+      ProtobufCompactedVertexShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-vertex-compacted.ppsm");
+    final JPVertexShaderMetaType v1 = d.metaDeserializeVertexShader(stream1);
+
+    Assert.assertEquals(v0.getName(), v1.getName());
   }
 
   @Test public void testRoundTrip_0()
@@ -215,5 +234,16 @@ import com.io7m.junreachable.UnreachableCodeException;
       ProtobufCompactedVertexShaderMetaTest.class
         .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-fragment-compacted.ppsm");
     d.metaDeserializeVertexShaderUncompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_4()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPProtobufMetaDeserializer.newDeserializer();
+    final InputStream stream =
+      ProtobufCompactedVertexShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-fragment.ppsm");
+    d.metaDeserializeVertexShader(stream);
   }
 }

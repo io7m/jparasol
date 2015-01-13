@@ -18,6 +18,7 @@ package com.io7m.jparasol.metaserializer.protobuf;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import com.io7m.jparasol.core.JPCompiledShaderMetaType;
 import com.io7m.jparasol.core.JPFragmentInput;
 import com.io7m.jparasol.core.JPFragmentOutput;
 import com.io7m.jparasol.core.JPFragmentParameter;
+import com.io7m.jparasol.core.JPFragmentShaderMetaType;
 import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
@@ -47,6 +49,7 @@ import com.io7m.jparasol.core.JPUncompactedVertexShaderMeta;
 import com.io7m.jparasol.core.JPVertexInput;
 import com.io7m.jparasol.core.JPVertexOutput;
 import com.io7m.jparasol.core.JPVertexParameter;
+import com.io7m.jparasol.core.JPVertexShaderMetaType;
 import com.io7m.jparasol.metaserializer.JPMetaDeserializerType;
 import com.io7m.jparasol.metaserializer.JPSerializerException;
 import com.io7m.jparasol.metaserializer.protobuf.types.ProgramMeta;
@@ -372,17 +375,20 @@ import com.io7m.junreachable.UnreachableCodeException;
   }
 
   private static JPCompiledShaderMetaType unpackShader(
-    final OptionType<Meta.ActualCase> expected,
+    final OptionType<EnumSet<Meta.ActualCase>> expected,
     final Meta m)
     throws JPSerializerException
   {
     if (expected.isSome()) {
-      final Some<ActualCase> some = (Some<Meta.ActualCase>) expected;
-      if (m.getActualCase().equals(some.get()) == false) {
+      final Some<EnumSet<Meta.ActualCase>> some =
+        (Some<EnumSet<Meta.ActualCase>>) expected;
+      final EnumSet<ActualCase> set = some.get();
+
+      if (set.contains(m.getActualCase()) == false) {
         final StringBuilder s = new StringBuilder();
         s.append("Wrong type of shader metadata.\n");
-        s.append("  Expected: ");
-        s.append(some.get());
+        s.append("  Expected one of: ");
+        s.append(set);
         s.append("\n");
         s.append("  Got: ");
         s.append(m.getActualCase());
@@ -587,6 +593,21 @@ import com.io7m.junreachable.UnreachableCodeException;
 
   }
 
+  @Override public JPFragmentShaderMetaType metaDeserializeFragmentShader(
+    final InputStream in)
+    throws IOException,
+      JPSerializerException
+  {
+    NullCheck.notNull(in);
+    final Meta m = JPProtobufMetaDeserializer.parse(in);
+    final OptionType<EnumSet<ActualCase>> wanted =
+      Option.some(EnumSet.of(
+        ActualCase.FRAGMENT_COMPACTED,
+        ActualCase.FRAGMENT_UNCOMPACTED));
+    return (JPFragmentShaderMetaType) JPProtobufMetaDeserializer
+      .unpackShader(wanted, m);
+  }
+
   @Override public
     JPCompactedFragmentShaderMeta
     metaDeserializeFragmentShaderCompacted(
@@ -596,10 +617,10 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     NullCheck.notNull(in);
     final Meta m = JPProtobufMetaDeserializer.parse(in);
-    final OptionType<ActualCase> anything =
-      Option.some(ActualCase.FRAGMENT_COMPACTED);
+    final OptionType<EnumSet<ActualCase>> wanted =
+      Option.some(EnumSet.of(ActualCase.FRAGMENT_COMPACTED));
     return (JPCompactedFragmentShaderMeta) JPProtobufMetaDeserializer
-      .unpackShader(anything, m);
+      .unpackShader(wanted, m);
   }
 
   @Override public
@@ -611,10 +632,10 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     NullCheck.notNull(in);
     final Meta m = JPProtobufMetaDeserializer.parse(in);
-    final OptionType<ActualCase> anything =
-      Option.some(ActualCase.FRAGMENT_UNCOMPACTED);
+    final OptionType<EnumSet<ActualCase>> wanted =
+      Option.some(EnumSet.of(ActualCase.FRAGMENT_UNCOMPACTED));
     return (JPUncompactedFragmentShaderMeta) JPProtobufMetaDeserializer
-      .unpackShader(anything, m);
+      .unpackShader(wanted, m);
   }
 
   @Override public
@@ -626,9 +647,10 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     NullCheck.notNull(in);
     final Meta m = JPProtobufMetaDeserializer.parse(in);
-    final OptionType<ActualCase> anything = Option.some(ActualCase.PROGRAM);
+    final OptionType<EnumSet<ActualCase>> wanted =
+      Option.some(EnumSet.of(ActualCase.PROGRAM));
     return (JPUncompactedProgramShaderMeta) JPProtobufMetaDeserializer
-      .unpackShader(anything, m);
+      .unpackShader(wanted, m);
   }
 
   @Override public JPCompiledShaderMetaType metaDeserializeShader(
@@ -638,8 +660,24 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     NullCheck.notNull(in);
     final Meta m = JPProtobufMetaDeserializer.parse(in);
-    final OptionType<ActualCase> anything = Option.none();
-    return JPProtobufMetaDeserializer.unpackShader(anything, m);
+    final OptionType<EnumSet<ActualCase>> wanted = Option.none();
+    return JPProtobufMetaDeserializer.unpackShader(wanted, m);
+  }
+
+  @Override public JPVertexShaderMetaType metaDeserializeVertexShader(
+    final InputStream in)
+    throws IOException,
+      JPSerializerException
+  {
+    NullCheck.notNull(in);
+    final Meta m = JPProtobufMetaDeserializer.parse(in);
+    final OptionType<EnumSet<ActualCase>> wanted =
+      Option.some(EnumSet.of(
+        ActualCase.VERTEX_COMPACTED,
+        ActualCase.VERTEX_UNCOMPACTED));
+    return (JPVertexShaderMetaType) JPProtobufMetaDeserializer.unpackShader(
+      wanted,
+      m);
   }
 
   @Override public
@@ -651,10 +689,10 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     NullCheck.notNull(in);
     final Meta m = JPProtobufMetaDeserializer.parse(in);
-    final OptionType<ActualCase> anything =
-      Option.some(ActualCase.VERTEX_COMPACTED);
+    final OptionType<EnumSet<ActualCase>> wanted =
+      Option.some(EnumSet.of(ActualCase.VERTEX_COMPACTED));
     return (JPCompactedVertexShaderMeta) JPProtobufMetaDeserializer
-      .unpackShader(anything, m);
+      .unpackShader(wanted, m);
   }
 
   @Override public
@@ -666,9 +704,9 @@ import com.io7m.junreachable.UnreachableCodeException;
   {
     NullCheck.notNull(in);
     final Meta m = JPProtobufMetaDeserializer.parse(in);
-    final OptionType<ActualCase> anything =
-      Option.some(ActualCase.VERTEX_UNCOMPACTED);
+    final OptionType<EnumSet<ActualCase>> wanted =
+      Option.some(EnumSet.of(ActualCase.VERTEX_UNCOMPACTED));
     return (JPUncompactedVertexShaderMeta) JPProtobufMetaDeserializer
-      .unpackShader(anything, m);
+      .unpackShader(wanted, m);
   }
 }

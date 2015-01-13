@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- *
+ * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -26,10 +26,12 @@ import com.io7m.jparasol.core.JPCompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.JPCompactedVertexShaderMeta;
 import com.io7m.jparasol.core.JPCompiledShaderMetaType;
 import com.io7m.jparasol.core.JPCompiledShaderMetaVisitorType;
+import com.io7m.jparasol.core.JPFragmentShaderMetaType;
 import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
 import com.io7m.jparasol.core.JPUncompactedVertexShaderMeta;
+import com.io7m.jparasol.core.JPVertexShaderMetaType;
 import com.io7m.jparasol.metaserializer.JPMetaDeserializerType;
 import com.io7m.jparasol.metaserializer.JPSerializerException;
 
@@ -56,6 +58,55 @@ import com.io7m.jparasol.metaserializer.JPSerializerException;
     final LogUsableType in_log)
   {
     this.log = NullCheck.notNull(in_log);
+  }
+
+  @Override public JPFragmentShaderMetaType metaDeserializeFragmentShader(
+    final InputStream in)
+    throws IOException,
+      JPSerializerException
+  {
+    return this
+      .metaDeserializeShader(in)
+      .matchMeta(
+        new JPCompiledShaderMetaVisitorType<JPFragmentShaderMetaType, JPSerializerException>() {
+          @Override public JPFragmentShaderMetaType compactedFragment(
+            final JPCompactedFragmentShaderMeta m)
+            throws JPSerializerException
+          {
+            return m;
+          }
+
+          @Override public JPFragmentShaderMetaType compactedVertex(
+            final JPCompactedVertexShaderMeta m)
+            throws JPSerializerException
+          {
+            throw new JPSerializerException(
+              "Expected a fragment shader, but got an uncompacted vertex shader");
+          }
+
+          @Override public JPFragmentShaderMetaType uncompactedFragment(
+            final JPUncompactedFragmentShaderMeta m)
+            throws JPSerializerException
+          {
+            return m;
+          }
+
+          @Override public JPFragmentShaderMetaType uncompactedProgram(
+            final JPUncompactedProgramShaderMeta m)
+            throws JPSerializerException
+          {
+            throw new JPSerializerException(
+              "Expected a fragment shader, but got an uncompacted program");
+          }
+
+          @Override public JPFragmentShaderMetaType uncompactedVertex(
+            final JPUncompactedVertexShaderMeta m)
+            throws JPSerializerException
+          {
+            throw new JPSerializerException(
+              "Expected a fragment shader, but got an uncompacted vertex shader");
+          }
+        });
   }
 
   @Override public
@@ -136,7 +187,7 @@ import com.io7m.jparasol.metaserializer.JPSerializerException;
             throws JPSerializerException
           {
             throw new JPSerializerException(
-              "Expected an uncompacted fragment shader, but got an uncompacted vertex shader");
+              "Expected an uncompacted fragment shader, but got a compacted vertex shader");
           }
 
           @Override public
@@ -163,7 +214,7 @@ import com.io7m.jparasol.metaserializer.JPSerializerException;
             throws JPSerializerException
           {
             throw new JPSerializerException(
-              "Expected an uncompacted fragment shader, but got an uncompacted program");
+              "Expected an uncompacted fragment shader, but got an uncompacted vertex shader");
           }
         });
   }
@@ -237,6 +288,55 @@ import com.io7m.jparasol.metaserializer.JPSerializerException;
     }
   }
 
+  @Override public JPVertexShaderMetaType metaDeserializeVertexShader(
+    final InputStream in)
+    throws IOException,
+      JPSerializerException
+  {
+    return this
+      .metaDeserializeShader(in)
+      .matchMeta(
+        new JPCompiledShaderMetaVisitorType<JPVertexShaderMetaType, JPSerializerException>() {
+          @Override public JPVertexShaderMetaType compactedFragment(
+            final JPCompactedFragmentShaderMeta m)
+            throws JPSerializerException
+          {
+            throw new JPSerializerException(
+              "Expected a vertex shader, but got an compacted fragment shader");
+          }
+
+          @Override public JPVertexShaderMetaType compactedVertex(
+            final JPCompactedVertexShaderMeta m)
+            throws JPSerializerException
+          {
+            return m;
+          }
+
+          @Override public JPVertexShaderMetaType uncompactedFragment(
+            final JPUncompactedFragmentShaderMeta m)
+            throws JPSerializerException
+          {
+            throw new JPSerializerException(
+              "Expected a vertex shader, but got an uncompacted fragment shader");
+          }
+
+          @Override public JPVertexShaderMetaType uncompactedProgram(
+            final JPUncompactedProgramShaderMeta m)
+            throws JPSerializerException
+          {
+            throw new JPSerializerException(
+              "Expected a vertex shader, but got an uncompacted program");
+          }
+
+          @Override public JPVertexShaderMetaType uncompactedVertex(
+            final JPUncompactedVertexShaderMeta m)
+            throws JPSerializerException
+          {
+            return m;
+          }
+        });
+  }
+
   @Override public
     JPCompactedVertexShaderMeta
     metaDeserializeVertexShaderCompacted(
@@ -244,8 +344,6 @@ import com.io7m.jparasol.metaserializer.JPSerializerException;
       throws IOException,
         JPSerializerException
   {
-    NullCheck.notNull(in);
-
     return this
       .metaDeserializeShader(in)
       .matchMeta(
@@ -298,8 +396,6 @@ import com.io7m.jparasol.metaserializer.JPSerializerException;
       throws IOException,
         JPSerializerException
   {
-    NullCheck.notNull(in);
-
     return this
       .metaDeserializeShader(in)
       .matchMeta(

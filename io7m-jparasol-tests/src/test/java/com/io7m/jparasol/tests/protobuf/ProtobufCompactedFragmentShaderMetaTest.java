@@ -1,10 +1,10 @@
 /*
  * Copyright © 2013 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -31,6 +31,7 @@ import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.JPCompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.JPCompiledShaderMetaType;
+import com.io7m.jparasol.core.JPFragmentShaderMetaType;
 import com.io7m.jparasol.metaserializer.JPMetaDeserializerType;
 import com.io7m.jparasol.metaserializer.JPMetaSerializerType;
 import com.io7m.jparasol.metaserializer.JPSerializerException;
@@ -40,20 +41,6 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @SuppressWarnings({ "null", "resource", "static-method" }) public final class ProtobufCompactedFragmentShaderMetaTest
 {
-  private static void serialize(
-    final OutputStream bao,
-    final JPCompactedFragmentShaderMeta meta)
-  {
-    try {
-      final JPMetaSerializerType s = JPProtobufMetaSerializer.newSerializer();
-      s.metaSerializeCompactedFragmentShader(meta, bao);
-      bao.flush();
-      bao.close();
-    } catch (final IOException e) {
-      throw new UnreachableCodeException(e);
-    }
-  }
-
   private static JPCompiledShaderMetaType fromStream(
     final InputStream stream)
     throws JPSerializerException,
@@ -74,6 +61,20 @@ import com.io7m.junreachable.UnreachableCodeException;
     return ProtobufCompactedFragmentShaderMetaTest.fromStream(stream);
   }
 
+  private static void serialize(
+    final OutputStream bao,
+    final JPCompactedFragmentShaderMeta meta)
+  {
+    try {
+      final JPMetaSerializerType s = JPProtobufMetaSerializer.newSerializer();
+      s.metaSerializeCompactedFragmentShader(meta, bao);
+      bao.flush();
+      bao.close();
+    } catch (final IOException e) {
+      throw new UnreachableCodeException(e);
+    }
+  }
+
   public static String sourceCodeName(
     final JPCompiledShaderMetaType meta,
     final GVersionType v)
@@ -82,48 +83,24 @@ import com.io7m.junreachable.UnreachableCodeException;
     return r.get();
   }
 
-  @Test(expected = JPSerializerException.class) public void testWrongType_0()
+  @Test public void testGeneral_0()
     throws Exception
   {
     final JPMetaDeserializerType d =
       JPProtobufMetaDeserializer.newDeserializer();
-    final InputStream stream =
+    final InputStream stream0 =
       ProtobufCompactedFragmentShaderMetaTest.class
         .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-fragment.ppsm");
-    d.metaDeserializeFragmentShaderCompacted(stream);
-  }
+    final JPFragmentShaderMetaType v0 =
+      d.metaDeserializeFragmentShader(stream0);
 
-  @Test(expected = JPSerializerException.class) public void testWrongType_1()
-    throws Exception
-  {
-    final JPMetaDeserializerType d =
-      JPProtobufMetaDeserializer.newDeserializer();
-    final InputStream stream =
+    final InputStream stream1 =
       ProtobufCompactedFragmentShaderMetaTest.class
-        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-program.ppsm");
-    d.metaDeserializeFragmentShaderCompacted(stream);
-  }
+        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-fragment-compacted.ppsm");
+    final JPFragmentShaderMetaType v1 =
+      d.metaDeserializeFragmentShader(stream1);
 
-  @Test(expected = JPSerializerException.class) public void testWrongType_2()
-    throws Exception
-  {
-    final JPMetaDeserializerType d =
-      JPProtobufMetaDeserializer.newDeserializer();
-    final InputStream stream =
-      ProtobufCompactedFragmentShaderMetaTest.class
-        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-vertex-compacted.ppsm");
-    d.metaDeserializeFragmentShaderCompacted(stream);
-  }
-
-  @Test(expected = JPSerializerException.class) public void testWrongType_3()
-    throws Exception
-  {
-    final JPMetaDeserializerType d =
-      JPProtobufMetaDeserializer.newDeserializer();
-    final InputStream stream =
-      ProtobufCompactedFragmentShaderMetaTest.class
-        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-vertex.ppsm");
-    d.metaDeserializeFragmentShaderCompacted(stream);
+    Assert.assertEquals(v0.getName(), v1.getName());
   }
 
   @Test public void testRoundTrip_0()
@@ -223,5 +200,60 @@ import com.io7m.junreachable.UnreachableCodeException;
       Assert.assertEquals(meta, meta_next);
       meta = meta_next;
     }
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_0()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPProtobufMetaDeserializer.newDeserializer();
+    final InputStream stream =
+      ProtobufCompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-fragment.ppsm");
+    d.metaDeserializeFragmentShaderCompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_1()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPProtobufMetaDeserializer.newDeserializer();
+    final InputStream stream =
+      ProtobufCompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-program.ppsm");
+    d.metaDeserializeFragmentShaderCompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_2()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPProtobufMetaDeserializer.newDeserializer();
+    final InputStream stream =
+      ProtobufCompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-vertex-compacted.ppsm");
+    d.metaDeserializeFragmentShaderCompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_3()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPProtobufMetaDeserializer.newDeserializer();
+    final InputStream stream =
+      ProtobufCompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-vertex.ppsm");
+    d.metaDeserializeFragmentShaderCompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_5()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPProtobufMetaDeserializer.newDeserializer();
+    final InputStream stream =
+      ProtobufCompactedVertexShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/protobuf/t-actual-vertex.ppsm");
+    d.metaDeserializeFragmentShader(stream);
   }
 }

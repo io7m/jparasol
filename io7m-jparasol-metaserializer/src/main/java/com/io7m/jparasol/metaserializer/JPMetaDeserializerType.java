@@ -22,9 +22,11 @@ import java.io.InputStream;
 import com.io7m.jparasol.core.JPCompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.JPCompactedVertexShaderMeta;
 import com.io7m.jparasol.core.JPCompiledShaderMetaType;
+import com.io7m.jparasol.core.JPFragmentShaderMetaType;
 import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
 import com.io7m.jparasol.core.JPUncompactedVertexShaderMeta;
+import com.io7m.jparasol.core.JPVertexShaderMetaType;
 
 /**
  * The interface exposed by metadata deserializers.
@@ -32,6 +34,24 @@ import com.io7m.jparasol.core.JPUncompactedVertexShaderMeta;
 
 public interface JPMetaDeserializerType
 {
+  /**
+   * Deserialize shader metadata from the given stream.
+   *
+   * @param in
+   *          The input stream
+   * @return Parsed metadata
+   *
+   * @throws IOException
+   *           On I/O errors
+   * @throws JPSerializerException
+   *           On deserialization errors
+   */
+
+  JPFragmentShaderMetaType metaDeserializeFragmentShader(
+    InputStream in)
+    throws IOException,
+      JPSerializerException;
+
   /**
    * Deserialize shader metadata from the given stream.
    *
@@ -100,6 +120,24 @@ public interface JPMetaDeserializerType
    */
 
   JPCompiledShaderMetaType metaDeserializeShader(
+    InputStream in)
+    throws IOException,
+      JPSerializerException;
+
+  /**
+   * Deserialize shader metadata from the given stream.
+   *
+   * @param in
+   *          The input stream
+   * @return Parsed metadata
+   *
+   * @throws IOException
+   *           On I/O errors
+   * @throws JPSerializerException
+   *           On deserialization errors
+   */
+
+  JPVertexShaderMetaType metaDeserializeVertexShader(
     InputStream in)
     throws IOException,
       JPSerializerException;
