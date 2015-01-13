@@ -48,7 +48,10 @@ import com.io7m.jequality.validator.ValidatorResult;
     final FilterBuilder filter =
       new FilterBuilder()
         .include(FilterBuilder.prefix("com.io7m.jparasol"))
-        .exclude(FilterBuilder.prefix("com.io7m.jparasol.tests"));
+        .exclude(FilterBuilder.prefix("com.io7m.jparasol.tests"))
+        .exclude(
+          FilterBuilder
+            .prefix("com.io7m.jparasol.metaserializer.protobuf.types"));
 
     final Set<URL> urls =
       ClasspathHelper.forClassLoader(classLoadersList

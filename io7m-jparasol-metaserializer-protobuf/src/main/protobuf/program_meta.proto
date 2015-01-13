@@ -1,0 +1,117 @@
+//
+// Copyright © 2014 <code@io7m.com> http://io7m.com
+// 
+// Permission to use, copy, modify, and/or distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+// SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+// IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+//
+
+package com.io7m.jparasol.metaserializer.protobuf.types;
+
+option optimize_for = LITE_RUNTIME;
+
+enum PGLSLApi {
+  PGLSL_FULL = 0;
+  PGLSL_ES   = 1;
+}
+
+message PGLSLVersion {
+  required fixed32  number = 1;
+  required PGLSLApi api    = 2;
+}
+
+message PVersionHash {
+  required fixed32  number = 1;
+  required PGLSLApi api    = 2;
+  required string   value  = 3;
+}
+
+message PFragmentShaderParameter {
+  required string name = 1;
+  required string type = 2;
+}
+
+message PFragmentShaderInput {
+  required string name = 1;
+  required string type = 2;
+}
+
+message PFragmentShaderOutput {
+  required string  name  = 1;
+  required string  type  = 2;
+  required fixed32 index = 3;
+}
+
+message PFragmentShaderCommon {
+  required string                   program_name = 1;
+  repeated PGLSLVersion             supports     = 2;
+  repeated PFragmentShaderParameter parameters   = 3;
+  repeated PFragmentShaderInput     inputs       = 4;
+  repeated PFragmentShaderOutput    outputs      = 5;
+}
+
+message PFragmentShaderUncompacted {
+  required PFragmentShaderCommon common = 1;
+}
+
+message PFragmentShaderCompacted {
+  required PFragmentShaderCommon common = 1;
+  repeated PVersionHash          hashes = 2;
+}
+
+message PVertexShaderParameter {
+  required string name = 1;
+  required string type = 2;
+}
+
+message PVertexShaderInput {
+  required string name = 1;
+  required string type = 2;
+}
+
+message PVertexShaderOutput {
+  required string name = 1;
+  required string type = 2;
+}
+
+message PVertexShaderCommon {
+  required string                 program_name = 1;
+  repeated PGLSLVersion           supports     = 2;
+  repeated PVertexShaderParameter parameters   = 3;
+  repeated PVertexShaderInput     inputs       = 4;
+  repeated PVertexShaderOutput    outputs      = 5;
+}
+
+message PVertexShaderUncompacted {
+  required PVertexShaderCommon common = 1;
+}
+
+message PVertexShaderCompacted {
+  required PVertexShaderCommon common = 1;
+  repeated PVersionHash        hashes = 2;
+}
+
+message PProgramShader {
+  required string       program_name    = 1;
+  repeated PGLSLVersion supports        = 2;
+  repeated string       vertex_shaders  = 3;
+  required string       fragment_shader = 4;
+}
+
+message Meta {
+  oneof actual {
+    PFragmentShaderUncompacted fragment_uncompacted = 1;
+    PFragmentShaderCompacted   fragment_compacted   = 2;
+    PVertexShaderUncompacted   vertex_uncompacted   = 3;
+    PVertexShaderCompacted     vertex_compacted     = 4;
+    PProgramShader             program              = 5;
+  }
+}

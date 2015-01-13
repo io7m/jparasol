@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -20,14 +20,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
-
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.Serializer;
 
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.None;
@@ -40,20 +36,12 @@ import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.GVersionVisitorType;
 import com.io7m.jparasol.core.JPCompactedFragmentShader;
-import com.io7m.jparasol.core.JPCompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.JPCompactedVertexShader;
-import com.io7m.jparasol.core.JPCompactedVertexShaderMeta;
 import com.io7m.jparasol.core.JPHashedLines;
 import com.io7m.jparasol.core.JPUncompactedFragmentShader;
-import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
 import com.io7m.jparasol.core.JPUncompactedVertexShader;
-import com.io7m.jparasol.core.JPUncompactedVertexShaderMeta;
-import com.io7m.jparasol.xml.XMLCompactedFragmentShaderMeta;
-import com.io7m.jparasol.xml.XMLCompactedVertexShaderMeta;
-import com.io7m.jparasol.xml.XMLUncompactedFragmentShaderMeta;
-import com.io7m.jparasol.xml.XMLUncompactedProgramShaderMeta;
-import com.io7m.jparasol.xml.XMLUncompactedVertexShaderMeta;
+import com.io7m.jparasol.metaserializer.JPMetaSerializerType;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -81,121 +69,21 @@ import com.io7m.junreachable.UnreachableCodeException;
   /**
    * Construct a new serializer that will write shaders to the given base
    * directory.
-   * 
+   *
    * @param in_base
    *          The base directory.
    * @param in_replace
    *          Whether or not writing should replace existing files.
-   * 
+   *
    * @return A new serializer.
    */
 
   public static GSerializerType newSerializer(
+    final JPMetaSerializerType in_meta_serial,
     final File in_base,
     final boolean in_replace)
   {
-    return new GSerializerFile(in_base, in_replace);
-  }
-
-  private static void serializeCompactedFragmentShaderMeta(
-    final JPCompactedFragmentShaderMeta meta,
-    final File out_dir)
-    throws FileNotFoundException,
-      UnsupportedEncodingException,
-      IOException
-  {
-    final File out_meta = new File(out_dir, "meta.xml");
-    final FileOutputStream out_meta_stream = new FileOutputStream(out_meta);
-    try {
-      final Element root =
-        XMLCompactedFragmentShaderMeta.serializeToXML(meta);
-      GSerializerFile.serializeDocument(out_meta_stream, root);
-    } finally {
-      out_meta_stream.close();
-    }
-  }
-
-  private static void serializeCompactedVertexShaderMeta(
-    final JPCompactedVertexShaderMeta meta,
-    final File out_dir)
-    throws FileNotFoundException,
-      UnsupportedEncodingException,
-      IOException
-  {
-    final File out_meta = new File(out_dir, "meta.xml");
-    final FileOutputStream out_meta_stream = new FileOutputStream(out_meta);
-    try {
-      final Element root = XMLCompactedVertexShaderMeta.serializeToXML(meta);
-      GSerializerFile.serializeDocument(out_meta_stream, root);
-    } finally {
-      out_meta_stream.close();
-    }
-  }
-
-  private static void serializeDocument(
-    final FileOutputStream out_meta_stream,
-    final Element root)
-    throws UnsupportedEncodingException,
-      IOException
-  {
-    final Document doc = new Document(root);
-    final Serializer s = new Serializer(out_meta_stream, "UTF-8");
-    s.setIndent(2);
-    s.setMaxLength(160);
-    s.write(doc);
-    s.flush();
-  }
-
-  private static void serializeUncompactedFragmentShaderMeta(
-    final JPUncompactedFragmentShaderMeta meta,
-    final File out_dir)
-    throws FileNotFoundException,
-      UnsupportedEncodingException,
-      IOException
-  {
-    final File out_meta = new File(out_dir, "meta.xml");
-    final FileOutputStream out_meta_stream = new FileOutputStream(out_meta);
-    try {
-      final Element root =
-        XMLUncompactedFragmentShaderMeta.serializeToXML(meta);
-      GSerializerFile.serializeDocument(out_meta_stream, root);
-    } finally {
-      out_meta_stream.close();
-    }
-  }
-
-  private static void serializeUncompactedProgramShaderMeta(
-    final JPUncompactedProgramShaderMeta meta,
-    final File out_dir)
-    throws IOException
-  {
-    final File out_meta = new File(out_dir, "meta.xml");
-    final FileOutputStream out_meta_stream = new FileOutputStream(out_meta);
-    try {
-      final Element root =
-        XMLUncompactedProgramShaderMeta.serializeToXML(meta);
-      GSerializerFile.serializeDocument(out_meta_stream, root);
-    } finally {
-      out_meta_stream.close();
-    }
-  }
-
-  private static void serializeUncompactedVertexShaderMeta(
-    final JPUncompactedVertexShaderMeta meta,
-    final File out_dir)
-    throws FileNotFoundException,
-      UnsupportedEncodingException,
-      IOException
-  {
-    final File out_meta = new File(out_dir, "meta.xml");
-    final FileOutputStream out_meta_stream = new FileOutputStream(out_meta);
-    try {
-      final Element root =
-        XMLUncompactedVertexShaderMeta.serializeToXML(meta);
-      GSerializerFile.serializeDocument(out_meta_stream, root);
-    } finally {
-      out_meta_stream.close();
-    }
+    return new GSerializerFile(in_meta_serial, in_base, in_replace);
   }
 
   private static String sourceNameForHash(
@@ -282,13 +170,16 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
-  private final File    base;
-  private final boolean replace;
+  private final File                 base;
+  private final boolean              replace;
+  private final JPMetaSerializerType serial;
 
   private GSerializerFile(
+    final JPMetaSerializerType in_meta_serial,
     final File in_base,
     final boolean in_replace)
   {
+    this.serial = NullCheck.notNull(in_meta_serial, "Meta serializer");
     this.base = NullCheck.notNull(in_base, "Base directory");
     this.replace = in_replace;
   }
@@ -308,9 +199,18 @@ import com.io7m.junreachable.UnreachableCodeException;
     final File out_dir = new File(this.base, shader.getName());
     GSerializerFile.createOutputDirectory(this.replace, out_dir);
 
-    GSerializerFile.serializeCompactedFragmentShaderMeta(
-      shader.getMeta(),
-      out_dir);
+    OutputStream out = null;
+    try {
+      out =
+        new FileOutputStream(new File(
+          out_dir,
+          this.serial.metaGetSuggestedFilename()));
+      this.serial.metaSerializeCompactedFragmentShader(shader.getMeta(), out);
+    } finally {
+      if (out != null) {
+        out.close();
+      }
+    }
 
     GSerializerFile.writeCompactedSources(
       out_dir,
@@ -327,9 +227,18 @@ import com.io7m.junreachable.UnreachableCodeException;
     final File out_dir = new File(this.base, shader.getName());
     GSerializerFile.createOutputDirectory(this.replace, out_dir);
 
-    GSerializerFile.serializeCompactedVertexShaderMeta(
-      shader.getMeta(),
-      out_dir);
+    OutputStream out = null;
+    try {
+      out =
+        new FileOutputStream(new File(
+          out_dir,
+          this.serial.metaGetSuggestedFilename()));
+      this.serial.metaSerializeCompactedVertexShader(shader.getMeta(), out);
+    } finally {
+      if (out != null) {
+        out.close();
+      }
+    }
 
     GSerializerFile.writeCompactedSources(
       out_dir,
@@ -346,9 +255,20 @@ import com.io7m.junreachable.UnreachableCodeException;
     final File out_dir = new File(this.base, shader.getName());
     GSerializerFile.createOutputDirectory(this.replace, out_dir);
 
-    GSerializerFile.serializeUncompactedFragmentShaderMeta(
-      shader.getMeta(),
-      out_dir);
+    OutputStream out = null;
+    try {
+      out =
+        new FileOutputStream(new File(
+          out_dir,
+          this.serial.metaGetSuggestedFilename()));
+      this.serial.metaSerializeUncompactedFragmentShader(
+        shader.getMeta(),
+        out);
+    } finally {
+      if (out != null) {
+        out.close();
+      }
+    }
 
     GSerializerFile
       .writeUncompactedSources(out_dir, shader.getSources(), "f");
@@ -377,7 +297,19 @@ import com.io7m.junreachable.UnreachableCodeException;
       });
 
     GSerializerFile.createOutputDirectory(this.replace, out_dir);
-    GSerializerFile.serializeUncompactedProgramShaderMeta(meta, out_dir);
+
+    OutputStream out = null;
+    try {
+      out =
+        new FileOutputStream(new File(
+          out_dir,
+          this.serial.metaGetSuggestedFilename()));
+      this.serial.metaSerializeUncompactedProgram(meta, out);
+    } finally {
+      if (out != null) {
+        out.close();
+      }
+    }
   }
 
   @Override public void serializeUncompactedVertexShader(
@@ -389,9 +321,18 @@ import com.io7m.junreachable.UnreachableCodeException;
     final File out_dir = new File(this.base, shader.getName());
     GSerializerFile.createOutputDirectory(this.replace, out_dir);
 
-    GSerializerFile.serializeUncompactedVertexShaderMeta(
-      shader.getMeta(),
-      out_dir);
+    OutputStream out = null;
+    try {
+      out =
+        new FileOutputStream(new File(
+          out_dir,
+          this.serial.metaGetSuggestedFilename()));
+      this.serial.metaSerializeUncompactedVertexShader(shader.getMeta(), out);
+    } finally {
+      if (out != null) {
+        out.close();
+      }
+    }
 
     GSerializerFile
       .writeUncompactedSources(out_dir, shader.getSources(), "v");

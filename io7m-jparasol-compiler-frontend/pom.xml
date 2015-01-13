@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.io7m.jparasol</groupId>
     <artifactId>io7m-jparasol</artifactId>
-    <version>0.10.7</version>
+    <version>0.11.0</version>
   </parent>
   <artifactId>io7m-jparasol-compiler-frontend</artifactId>
 
@@ -89,7 +89,12 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>io7m-jparasol-xml</artifactId>
+      <artifactId>io7m-jparasol-metaserializer-xml</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>io7m-jparasol-metaserializer-protobuf</artifactId>
       <version>${project.version}</version>
     </dependency>
 

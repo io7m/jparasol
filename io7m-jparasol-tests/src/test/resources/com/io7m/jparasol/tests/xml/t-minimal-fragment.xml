@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<g:meta-fragment g:version="4" xmlns:g="http://schemas.io7m.com/parasol/glsl-meta">
+<g:meta-fragment g:version="5" xmlns:g="http://schemas.io7m.com/parasol/glsl-meta">
   <g:program-name>com.io7m.example.p</g:program-name>
   <g:supports>
     <g:version g:number="110" g:api="glsl"/>

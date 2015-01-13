@@ -25,10 +25,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.Serializer;
-
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jfunctional.None;
 import com.io7m.jfunctional.OptionType;
@@ -51,11 +47,7 @@ import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.JPUncompactedProgramShaderMeta;
 import com.io7m.jparasol.core.JPUncompactedVertexShader;
 import com.io7m.jparasol.core.JPUncompactedVertexShaderMeta;
-import com.io7m.jparasol.xml.XMLCompactedFragmentShaderMeta;
-import com.io7m.jparasol.xml.XMLCompactedVertexShaderMeta;
-import com.io7m.jparasol.xml.XMLUncompactedFragmentShaderMeta;
-import com.io7m.jparasol.xml.XMLUncompactedProgramShaderMeta;
-import com.io7m.jparasol.xml.XMLUncompactedVertexShaderMeta;
+import com.io7m.jparasol.metaserializer.JPMetaSerializerType;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -68,34 +60,21 @@ import com.io7m.junreachable.UnreachableCodeException;
   /**
    * Construct a new serializer that will write shaders to the root of the
    * given zip file stream.
-   * 
+   *
    * @param in_stream
    *          The zip output stream.
    * @param in_log
    *          A log interface.
-   * 
+   *
    * @return A new serializer.
    */
 
   public static GSerializerType newSerializer(
+    final JPMetaSerializerType in_meta_serial,
     final ZipOutputStream in_stream,
     final LogUsableType in_log)
   {
-    return new GSerializerZip(in_stream, in_log);
-  }
-
-  private static void serializeDocument(
-    final ZipOutputStream stream,
-    final Element root)
-    throws UnsupportedEncodingException,
-      IOException
-  {
-    final Document doc = new Document(root);
-    final Serializer s = new Serializer(stream, "UTF-8");
-    s.setIndent(2);
-    s.setMaxLength(160);
-    s.write(doc);
-    s.flush();
+    return new GSerializerZip(in_meta_serial, in_stream, in_log);
   }
 
   private static String sourceNameForHash(
@@ -133,13 +112,16 @@ import com.io7m.junreachable.UnreachableCodeException;
       });
   }
 
-  private final LogType         log;
-  private final ZipOutputStream stream;
+  private final LogType              log;
+  private final ZipOutputStream      stream;
+  private final JPMetaSerializerType serial;
 
   private GSerializerZip(
+    final JPMetaSerializerType in_meta_serial,
     final ZipOutputStream in_stream,
     final LogUsableType in_log)
   {
+    this.serial = NullCheck.notNull(in_meta_serial, "Meta serializer");
     this.stream = NullCheck.notNull(in_stream, "Stream");
     this.log = NullCheck.notNull(in_log, "Log").with("serializer-zip");
   }
@@ -187,17 +169,18 @@ import com.io7m.junreachable.UnreachableCodeException;
       UnsupportedEncodingException,
       IOException
   {
-    final String name = String.format("%s/meta.xml", meta.getName());
+    final String name =
+      String.format(
+        "%s/%s",
+        meta.getName(),
+        this.serial.metaGetSuggestedFilename());
     assert name != null;
     this.announceFile(name);
 
     final ZipEntry entry = new ZipEntry(name);
     entry.setMethod(ZipEntry.DEFLATED);
     this.stream.putNextEntry(entry);
-
-    final Element root = XMLCompactedFragmentShaderMeta.serializeToXML(meta);
-    GSerializerZip.serializeDocument(this.stream, root);
-
+    this.serial.metaSerializeCompactedFragmentShader(meta, this.stream);
     this.stream.closeEntry();
   }
 
@@ -218,17 +201,18 @@ import com.io7m.junreachable.UnreachableCodeException;
     final JPCompactedVertexShaderMeta meta)
     throws IOException
   {
-    final String name = String.format("%s/meta.xml", meta.getName());
+    final String name =
+      String.format(
+        "%s/%s",
+        meta.getName(),
+        this.serial.metaGetSuggestedFilename());
     assert name != null;
     this.announceFile(name);
 
     final ZipEntry entry = new ZipEntry(name);
     entry.setMethod(ZipEntry.DEFLATED);
     this.stream.putNextEntry(entry);
-
-    final Element root = XMLCompactedVertexShaderMeta.serializeToXML(meta);
-    GSerializerZip.serializeDocument(this.stream, root);
-
+    this.serial.metaSerializeCompactedVertexShader(meta, this.stream);
     this.stream.closeEntry();
   }
 
@@ -250,18 +234,18 @@ import com.io7m.junreachable.UnreachableCodeException;
       UnsupportedEncodingException,
       IOException
   {
-    final String name = String.format("%s/meta.xml", meta.getName());
+    final String name =
+      String.format(
+        "%s/%s",
+        meta.getName(),
+        this.serial.metaGetSuggestedFilename());
     assert name != null;
     this.announceFile(name);
 
     final ZipEntry entry = new ZipEntry(name);
     entry.setMethod(ZipEntry.DEFLATED);
     this.stream.putNextEntry(entry);
-
-    final Element root =
-      XMLUncompactedFragmentShaderMeta.serializeToXML(meta);
-    GSerializerZip.serializeDocument(this.stream, root);
-
+    this.serial.metaSerializeUncompactedFragmentShader(meta, this.stream);
     this.stream.closeEntry();
   }
 
@@ -296,15 +280,18 @@ import com.io7m.junreachable.UnreachableCodeException;
       UnsupportedEncodingException,
       IOException
   {
-    final String name = String.format("%s/meta.xml", program_name);
+    final String name =
+      String.format(
+        "%s/%s",
+        program_name,
+        this.serial.metaGetSuggestedFilename());
     assert name != null;
     this.announceFile(name);
 
     final ZipEntry entry = new ZipEntry(name);
     entry.setMethod(ZipEntry.DEFLATED);
     this.stream.putNextEntry(entry);
-    final Element root = XMLUncompactedProgramShaderMeta.serializeToXML(meta);
-    GSerializerZip.serializeDocument(this.stream, root);
+    this.serial.metaSerializeUncompactedProgram(meta, this.stream);
     this.stream.closeEntry();
   }
 
@@ -326,17 +313,18 @@ import com.io7m.junreachable.UnreachableCodeException;
       UnsupportedEncodingException,
       IOException
   {
-    final String name = String.format("%s/meta.xml", meta.getName());
+    final String name =
+      String.format(
+        "%s/%s",
+        meta.getName(),
+        this.serial.metaGetSuggestedFilename());
     assert name != null;
     this.announceFile(name);
 
     final ZipEntry entry = new ZipEntry(name);
     entry.setMethod(ZipEntry.DEFLATED);
     this.stream.putNextEntry(entry);
-
-    final Element root = XMLUncompactedVertexShaderMeta.serializeToXML(meta);
-    GSerializerZip.serializeDocument(this.stream, root);
-
+    this.serial.metaSerializeUncompactedVertexShader(meta, this.stream);
     this.stream.closeEntry();
   }
 

@@ -34,10 +34,13 @@ import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.JPCompactedVertexShaderMeta;
 import com.io7m.jparasol.core.JPCompiledShaderMetaType;
 import com.io7m.jparasol.core.JPMissingHash;
+import com.io7m.jparasol.metaserializer.JPMetaDeserializerType;
+import com.io7m.jparasol.metaserializer.JPSerializerException;
+import com.io7m.jparasol.metaserializer.xml.JPXMLException;
+import com.io7m.jparasol.metaserializer.xml.JPXMLMetaDeserializer;
+import com.io7m.jparasol.metaserializer.xml.XMLCompactedVertexShaderMeta;
+import com.io7m.jparasol.metaserializer.xml.XMLMeta;
 import com.io7m.jparasol.tests.TestUtilities;
-import com.io7m.jparasol.xml.JPXMLException;
-import com.io7m.jparasol.xml.XMLCompactedVertexShaderMeta;
-import com.io7m.jparasol.xml.XMLMeta;
 import com.io7m.junreachable.UnreachableCodeException;
 
 @SuppressWarnings({ "null", "resource", "static-method" }) public final class XMLCompactedVertexShaderMetaTest
@@ -53,7 +56,7 @@ import com.io7m.junreachable.UnreachableCodeException;
     }
   }
 
-  private static JPCompiledShaderMetaType getXML(
+  public static JPCompiledShaderMetaType getXML(
     final String name)
     throws JPMissingHash
   {
@@ -184,5 +187,49 @@ import com.io7m.junreachable.UnreachableCodeException;
       Assert.assertEquals(meta, meta_next);
       meta = meta_next;
     }
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_0()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLCompactedVertexShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-fragment.xml");
+    d.metaDeserializeVertexShaderUncompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_1()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLCompactedVertexShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-program.xml");
+    d.metaDeserializeVertexShaderUncompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_2()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLCompactedVertexShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-vertex-compacted.xml");
+    d.metaDeserializeVertexShaderUncompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_3()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLCompactedVertexShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-fragment-compacted.xml");
+    d.metaDeserializeVertexShaderUncompacted(stream);
   }
 }

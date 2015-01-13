@@ -1,10 +1,10 @@
 /*
  * Copyright © 2013 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -35,10 +35,13 @@ import com.io7m.jparasol.core.GVersionType;
 import com.io7m.jparasol.core.JPCompiledShaderMetaType;
 import com.io7m.jparasol.core.JPMissingHash;
 import com.io7m.jparasol.core.JPUncompactedFragmentShaderMeta;
+import com.io7m.jparasol.metaserializer.JPMetaDeserializerType;
+import com.io7m.jparasol.metaserializer.JPSerializerException;
+import com.io7m.jparasol.metaserializer.xml.JPXMLException;
+import com.io7m.jparasol.metaserializer.xml.JPXMLMetaDeserializer;
+import com.io7m.jparasol.metaserializer.xml.XMLMeta;
+import com.io7m.jparasol.metaserializer.xml.XMLUncompactedFragmentShaderMeta;
 import com.io7m.jparasol.tests.TestUtilities;
-import com.io7m.jparasol.xml.JPXMLException;
-import com.io7m.jparasol.xml.XMLMeta;
-import com.io7m.jparasol.xml.XMLUncompactedFragmentShaderMeta;
 import com.io7m.junreachable.UnreachableCodeException;
 
 @SuppressWarnings({ "null", "resource", "static-method" }) public final class XMLUncompactedFragmentShaderMetaTest
@@ -132,5 +135,49 @@ import com.io7m.junreachable.UnreachableCodeException;
       Assert.assertEquals(meta, meta_next);
       meta = meta_next;
     }
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_0()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLUncompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-vertex.xml");
+    d.metaDeserializeFragmentShaderUncompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_1()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLUncompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-program.xml");
+    d.metaDeserializeFragmentShaderUncompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_2()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLUncompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-vertex-compacted.xml");
+    d.metaDeserializeFragmentShaderUncompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_3()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLUncompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-fragment-compacted.xml");
+    d.metaDeserializeFragmentShaderUncompacted(stream);
   }
 }

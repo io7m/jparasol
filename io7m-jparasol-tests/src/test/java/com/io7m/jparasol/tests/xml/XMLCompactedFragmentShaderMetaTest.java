@@ -33,10 +33,13 @@ import com.io7m.jparasol.core.GVersionFull;
 import com.io7m.jparasol.core.JPCompactedFragmentShaderMeta;
 import com.io7m.jparasol.core.JPCompiledShaderMetaType;
 import com.io7m.jparasol.core.JPMissingHash;
+import com.io7m.jparasol.metaserializer.JPMetaDeserializerType;
+import com.io7m.jparasol.metaserializer.JPSerializerException;
+import com.io7m.jparasol.metaserializer.xml.JPXMLException;
+import com.io7m.jparasol.metaserializer.xml.JPXMLMetaDeserializer;
+import com.io7m.jparasol.metaserializer.xml.XMLCompactedFragmentShaderMeta;
+import com.io7m.jparasol.metaserializer.xml.XMLMeta;
 import com.io7m.jparasol.tests.TestUtilities;
-import com.io7m.jparasol.xml.JPXMLException;
-import com.io7m.jparasol.xml.XMLCompactedFragmentShaderMeta;
-import com.io7m.jparasol.xml.XMLMeta;
 import com.io7m.junreachable.UnreachableCodeException;
 
 @SuppressWarnings({ "null", "resource", "static-method" }) public final class XMLCompactedFragmentShaderMetaTest
@@ -181,5 +184,49 @@ import com.io7m.junreachable.UnreachableCodeException;
       Assert.assertEquals(meta, meta_next);
       meta = meta_next;
     }
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_0()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLCompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-fragment.xml");
+    d.metaDeserializeFragmentShaderCompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_1()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLCompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-program.xml");
+    d.metaDeserializeFragmentShaderCompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_2()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLCompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-vertex-compacted.xml");
+    d.metaDeserializeFragmentShaderCompacted(stream);
+  }
+
+  @Test(expected = JPSerializerException.class) public void testWrongType_3()
+    throws Exception
+  {
+    final JPMetaDeserializerType d =
+      JPXMLMetaDeserializer.newDeserializer(TestUtilities.getLog());
+    final InputStream stream =
+      XMLCompactedFragmentShaderMetaTest.class
+        .getResourceAsStream("/com/io7m/jparasol/tests/xml/t-actual-vertex.xml");
+    d.metaDeserializeFragmentShaderCompacted(stream);
   }
 }

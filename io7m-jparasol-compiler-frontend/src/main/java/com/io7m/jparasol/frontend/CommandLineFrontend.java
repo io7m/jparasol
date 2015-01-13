@@ -64,6 +64,8 @@ import com.io7m.jparasol.glsl.serialization.GSerializerType;
 import com.io7m.jparasol.glsl.serialization.GSerializerZip;
 import com.io7m.jparasol.lexer.LexerError;
 import com.io7m.jparasol.lexer.Position;
+import com.io7m.jparasol.metaserializer.JPMetaSerializerType;
+import com.io7m.jparasol.metaserializer.xml.JPXMLMetaSerializer;
 import com.io7m.jparasol.parser.ParserError;
 import com.io7m.jparasol.typed.ast.TASTShaderNameFlat;
 import com.io7m.jproperties.JProperties;
@@ -425,6 +427,9 @@ public final class CommandLineFrontend
       throws ZipException,
         IOException
   {
+    final JPMetaSerializerType meta_serializer =
+      JPXMLMetaSerializer.newSerializer();
+
     final GSerializerType serializer;
     if (line.hasOption("zip")) {
       final ZipOutputStream zip_stream;
@@ -438,9 +443,11 @@ public final class CommandLineFrontend
       }
 
       assert zip_stream != null;
-      serializer = GSerializerZip.newSerializer(zip_stream, log);
+      serializer =
+        GSerializerZip.newSerializer(meta_serializer, zip_stream, log);
     } else {
-      serializer = GSerializerFile.newSerializer(output, true);
+      serializer =
+        GSerializerFile.newSerializer(meta_serializer, output, true);
     }
     assert serializer != null;
     return serializer;
@@ -472,7 +479,7 @@ public final class CommandLineFrontend
 
   /**
    * Construct and execute the frontend.
-   * 
+   *
    * @param args
    *          Command line arguments.
    * @throws Exception
