@@ -32,22 +32,8 @@ import com.io7m.jparasol.core.JPVertexShaderMetaType;
  * The interface exposed by metadata serializers.
  */
 
-public interface JPMetaSerializerType
+public interface JPMetaSerializerType extends JPMetaNamesType
 {
-  /**
-   * @return The suggested filename to use for data produced by this
-   *         serializer.
-   */
-
-  String metaGetSuggestedFilename();
-
-  /**
-   * @return The suggested filename suffix to use for data produced by this
-   *         serializer.
-   */
-
-  String metaGetSuggestedFilenameSuffix();
-
   /**
    * Serialize compacted fragment shader metadata to the given stream.
    *
