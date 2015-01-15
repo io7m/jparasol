@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -47,7 +47,7 @@ public final class CopyZip
    * Rename the zip file at <code>file</code> to <code>file.tmp</code>, copy
    * the contents of <code>file.tmp</code> to <code>file</code> and return a
    * stream that allows new items to be appended to <code>file</code>.
-   * 
+   *
    * @param log
    *          A log interface
    * @param file
@@ -98,6 +98,9 @@ public final class CopyZip
     }
 
     in_zip.close();
+
+    log.debug(String.format("removing '%s'", in_zip_tmp));
+    in_zip_tmp.delete();
     return out_zip_stream;
   }
 
