@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 1.7. Type rules</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">1.6. Types</td><td class="st200_navbar_up_title_cell">1. Notational Conventions</td><td class="st200_navbar_next_title_cell">1.8. Operational Semantics</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p1s6.xhtml#st200_p1s6">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p1.xhtml#st200_p1">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p1s8.xhtml#st200_p1s8">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p1s7" href="#st200_p1s7">1.7</a></div><div class="st200_section_title">Type rules</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s7pg1" href="#st200_p1s7pg1">1</a></div><div class="st200_paragraph">
+        Declarative type rules describe the precise rules for assigning
+        <span class="st200_term term">types</span> to <span class="st200_term term">terms</span>.
+        If no type rule matches a term, then that term is considered ill-typed.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s7pg2" href="#st200_p1s7pg2">2</a></div><div class="st200_paragraph">
+        Type rules are given as zero or more <span class="st200_term term">premises</span>,
+        and a single <span class="st200_term term">conclusion</span>, separated by a horizontal
+        line. For a given rule, when all of the <span class="st200_term term">premises</span>
+        are true, then the <span class="st200_term term">conclusion</span> is true. If a rule
+        has no <span class="st200_term term">premises</span> then the rule is taken as an
+        <span class="st200_term term">axiom</span>.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s7pg3" href="#st200_p1s7pg3">3</a></div><div class="st200_paragraph">
+        The <span class="st200_term term">gamma</span> symbol <span class="st200_term constant">Γ</span>
+        (<span class="st200_term constant">U+0393</span>)
+        represents the current <span class="st200_term term">typing environment</span> and
+        can be thought of as a mapping from distinct variables to their types, with
+        the set of variables in environment denoted by <span class="st200_term expression">dom(Γ)</span>
+        (the domain of <span class="st200_term constant">Γ</span>). The notation
+        <span class="st200_term expression">Γ ⊢ P</span> reads "<span class="st200_term expression">Γ</span>
+        <span class="st200_term term">implies</span>
+        <span class="st200_term expression">P</span>" and is used in type rules to assign types to terms.
+        The empty typing environment is represented by <span class="st200_term constant">∅</span>
+        (<span class="st200_term constant">U+2205</span>). The <span class="st200_term term">diamond</span> symbol
+        <span class="st200_term constant">◇</span> (<span class="st200_term constant">U+25C7</span>)
+        should be read as "is well-formed", so <span class="st200_term expression">Γ ⊢ ◇</span>
+        should be read as "the current typing environment is well-formed". The concept
+        of well-formedness is often type-system-specific and is usually described when
+        the rules are given. A summary of the notation is as follows:
+      </div></div><div class="st200_formal_item notations"><div class="st200_formal_item_title notations"><a id="st200_p1s7fo1" href="#st200_p1s7fo1">1.7.1. Type rule notation</a></div><table class="st200_table" summary="Type rule notation"><thead class="st200_table_head"><tr><th class="st200_table_column_name">Notation</th><th class="st200_table_column_name">Description</th><th class="st200_table_column_name">Example</th></tr></thead><tbody class="st200_table_body"><tr class="st200_table_row"><td class="st200_table_cell"><span class="st200_term constant">Γ</span></td><td class="st200_table_cell">The current typing environment</td><td class="st200_table_cell"><span class="st200_term expression">Γ</span></td></tr><tr class="st200_table_row"><td class="st200_table_cell"><span class="st200_term constant">∅</span></td><td class="st200_table_cell">The empty typing environment</td><td class="st200_table_cell"><span class="st200_term expression">∅</span></td></tr><tr class="st200_table_row"><td class="st200_table_cell"><span class="st200_term expression">Γ, x</span></td><td class="st200_table_cell">The typing environment <span class="st200_term constant">Γ</span>
+                extended with the variable <span class="st200_term expression">x</span>
+                <span class="st200_footnote_reference"><a id="st200_fn_3_ref" href="#st200_fn_3">[3]</a></span>
+              </td><td class="st200_table_cell"><span class="st200_term expression">Γ, x</span> where <span class="st200_term expression">x ∉ dom(Γ)</span></td></tr><tr class="st200_table_row"><td class="st200_table_cell"><span class="st200_term expression">dom(Γ)</span></td><td class="st200_table_cell">The set of distinct variables in <span class="st200_term constant">Γ</span></td><td class="st200_table_cell"><span class="st200_term expression">dom((∅, x, y)) = { x, y }</span></td></tr><tr class="st200_table_row"><td class="st200_table_cell"><span class="st200_term expression">Γ ⊢ P</span></td><td class="st200_table_cell">The environment <span class="st200_term constant">Γ</span> implies <span class="st200_term expression">P</span></td><td class="st200_table_cell"><span class="st200_term expression">Γ ⊢ 23 : ℕ</span> (in the current typing environment, <span class="st200_term expression">23</span> is of type <span class="st200_term expression">ℕ</span>)</td></tr><tr class="st200_table_row"><td class="st200_table_cell"><span class="st200_term expression">Γ ⊢ ◇</span></td><td class="st200_table_cell">The environment <span class="st200_term constant">Γ</span> is <span class="st200_term term">well-formed</span></td><td class="st200_table_cell"><span class="st200_term expression">∅ ⊢ ◇</span> (the empty typing environment is well-formed)</td></tr></tbody></table></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s7pg4" href="#st200_p1s7pg4">4</a></div><div class="st200_paragraph">
+        An example of typing rules for natural number addition:
+      </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p1s7fo2" href="#st200_p1s7fo2">1.7.2. Natural number addition typing</a></div><img class="st200_image" alt="Natural number addition typing" src="png/tyex_typing_example.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s7pg5" href="#st200_p1s7pg5">5</a></div><div class="st200_paragraph">
+        The <span class="st200_term element">empty</span> rule states that the empty
+        typing environment is well-formed. Because there are no premises above
+        the horizontal line, this is taken as an <span class="st200_term term">axiom</span>.
+        The <span class="st200_term element">extension</span> rule states that adding
+        a term to the typing environment that is not already in that environment,
+        results in a well-formed environment.
+        The <span class="st200_term element">natural_intro</span> rule states that,
+        given a well-formed typing environment, any expression that is
+        syntactically a natural number (represented by
+        <span class="st200_term variable">ℕ</span>) has type
+        <span class="st200_term type">natural</span>. The
+        <span class="st200_term element">natural_plus</span> rule states that, if variables
+        <span class="st200_term variable">m</span> and <span class="st200_term variable">n</span>
+        have type <span class="st200_term type">natural</span> in the current typing
+        environment, then <span class="st200_term expression">m + n</span> has type
+        <span class="st200_term type">natural</span>. When checking the type of the
+        expression <span class="st200_term expression">m + n</span>, the rules are used
+        to construct a <span class="st200_term term">derivation tree</span> as follows:
+      </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p1s7fo3" href="#st200_p1s7fo3">1.7.3. Natural number addition derivation</a></div><img class="st200_image" alt="Natural number addition derivation" src="png/tyex_typing_example_derivation.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s7pg6" href="#st200_p1s7pg6">6</a></div><div class="st200_paragraph">
+        Intuitively, a term only has a valid type if there is a sequence of rules
+        from the empty environment that can assign a type to the term.
+      </div></div></div><div class="st200_footnotes"><hr/><div class="st200_footnote_container"><div class="st200_footnote_number">[<a id="st200_fn_3" href="#st200_fn_3_ref">3</a>]</div><div class="st200_footnote_body">
+                  Usually accompanied with a side condition that
+                  <span class="st200_term variable">x</span> does not appear in
+                  <span class="st200_term expression">dom(Γ)</span>)
+                </div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p1s6.xhtml#st200_p1s6">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p1.xhtml#st200_p1">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p1s8.xhtml#st200_p1s8">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">1.6. Types</td><td class="st200_navbar_up_title_cell">1. Notational Conventions</td><td class="st200_navbar_next_title_cell">1.8. Operational Semantics</td></tr></table></div></div></body></html>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 3.5. Vertex shaders</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">3.4. Shaders</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.6. Fragment shaders</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p3s4.xhtml#st200_p3s4">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s6.xhtml#st200_p3s6">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p3s5" href="#st200_p3s5">3.5</a></div><div class="st200_section_title">Vertex shaders</div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s5ss1" href="#st200_p3s5ss1">3.5.1</a></div><div class="st200_subsection_title">Description</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s5ss1pg1" href="#st200_p3s5ss1pg1">1</a></div><div class="st200_paragraph">
+          <span class="st200_term term">Vertex shaders</span> are programs that
+          process data on a per-vertex basis in OpenGL.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s5ss2" href="#st200_p3s5ss2">3.5.2</a></div><div class="st200_subsection_title">Declarations</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s5ss2pg1" href="#st200_p3s5ss2pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">shader_vertex_declaration</span> declares a set
+          of <a class="st200_link" href="p3s4.xhtml#st200_p3s4ss4">inputs,
+          outputs, and parameters</a>, as well as a sequence of zero or more
+          <span class="st200_term term">local_value_declarations</span>, similar
+          in semantics and typing to that found in a
+          <a class="st200_link" href="p4s9.xhtml#st200_p4s9">let expression</a>,
+          and a sequence of assignments of values to the declared
+          <span class="st200_term term">outputs</span>. A vertex shader must also define exactly
+          one output of type <a class="st200_link" href="p5s6.xhtml#st200_p5s6">vector_4f</a>,
+          indicated with the <span class="st200_term keyword">vertex</span> keyword,
+          to which must be assigned a value representing the current homogeneous vertex
+          position.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s5ss2pg2" href="#st200_p3s5ss2pg2">2</a></div><div class="st200_paragraph">
+          It is required that there be exactly one
+          <span class="st200_term term">shader_vertex_output_assignment</span> for each
+          <span class="st200_term term">shader_vertex_output_declaration</span>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s5ss3" href="#st200_p3s5ss3">3.5.3</a></div><div class="st200_subsection_title">Type rules</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s5ss3pg1" href="#st200_p3s5ss3pg1">1</a></div><div class="st200_paragraph">
+          Each
+          <span class="st200_term term">shader_parameter_declaration</span> and
+          <span class="st200_term term">shader_vertex_input_declaration</span> introduces
+          a new term of the given type into the environment, accessible only
+          within the scope of the shader definition,
+          as shown by the <span class="st200_term constant">shader_vertex_inputs_parameters</span> rule:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s5ss3fo1" href="#st200_p3s5ss3fo1">3.5.3.1. Vertex shader inputs/parameters (shader_vertex_inputs_parameters)</a></div><img class="st200_image" alt="Vertex shader inputs/parameters (shader_vertex_inputs_parameters)" src="png/ty_shader_vertex_inputs_parameters.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s5ss3pg2" href="#st200_p3s5ss3pg2">2</a></div><div class="st200_paragraph">
+          Each <span class="st200_term term">local_value_declaration</span> introduces
+          a new term of the given type into the environment, accessible in each
+          successive <span class="st200_term term">local_value_declaration</span> and
+          in the <span class="st200_term term">shader_vertex_output_assignments</span>,
+          as shown by the
+          <span class="st200_term constant">shader_vertex_values</span> rule:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s5ss3fo2" href="#st200_p3s5ss3fo2">3.5.3.2. Vertex shader values (shader_vertex_values)</a></div><img class="st200_image" alt="Vertex shader values (shader_vertex_values)" src="png/ty_shader_vertex_values.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s5ss3pg3" href="#st200_p3s5ss3pg3">3</a></div><div class="st200_paragraph">
+          Finally, each output assigned in a <span class="st200_term term">shader_vertex_output_assignment</span>
+          must be of the correct type, as shown by the
+          <span class="st200_term constant">shader_vertex_output_assignment</span> rule:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s5ss3fo3" href="#st200_p3s5ss3fo3">3.5.3.3. Vertex shader output assignments (shader_vertex_output)</a></div><img class="st200_image" alt="Vertex shader output assignments (shader_vertex_output)" src="png/ty_shader_vertex_output.png"/></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s5ss4" href="#st200_p3s5ss4">3.5.4</a></div><div class="st200_subsection_title">Operational Semantics</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s5ss4pg1" href="#st200_p3s5ss4pg1">1</a></div><div class="st200_paragraph">
+          The <span class="st200_term term">local_value_declarations</span> are evaluated from
+          top-to-bottom, in an identical manner to
+          <a class="st200_link" href="p4s9.xhtml#st200_p4s9">let expressions</a>,
+          as shown by the
+          <span class="st200_term variable">shader_vertex_values</span> rule:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s5ss4fo1" href="#st200_p3s5ss4fo1">3.5.4.1. Vertex shader local declarations (shader_vertex_values)</a></div><img class="st200_image" alt="Vertex shader local declarations (shader_vertex_values)" src="png/op_shader_vertex_values.png"/></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s5ss5" href="#st200_p3s5ss5">3.5.5</a></div><div class="st200_subsection_title">Examples</div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s5ss5fo1" href="#st200_p3s5ss5fo1">3.5.5.1. Examples</a></div><pre class="st200_verbatim">
+shader vertex v is
+  parameter mm_modelview  : matrix_4x4f;
+  parameter mm_projection : matrix_4x4f;
+  parameter mm_normal     : matrix_3x3f;
+  in position             : vector_4f;
+  in normal               : vector_3f;
+  out vertex r_position   : vector_4f;
+  out r_normal            : vector_3f;
+with
+  value p_result = M4.multiply_vector (M4.multiply (mm_projection, mm_modelview), position);
+  value n_result = M3.multiply_vector (mm_normal, normal);
+as
+  out r_position = p_result;
+  out r_normal   = n_result;
+end;</pre></div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p3s4.xhtml#st200_p3s4">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s6.xhtml#st200_p3s6">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">3.4. Shaders</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.6. Fragment shaders</td></tr></table></div></div></body></html>

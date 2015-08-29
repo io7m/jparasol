@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 3.6. Fragment shaders</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">3.5. Vertex shaders</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.7. Programs</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p3s5.xhtml#st200_p3s5">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s7.xhtml#st200_p3s7">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p3s6" href="#st200_p3s6">3.6</a></div><div class="st200_section_title">Fragment shaders</div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s6ss1" href="#st200_p3s6ss1">3.6.1</a></div><div class="st200_subsection_title">Description</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss1pg1" href="#st200_p3s6ss1pg1">1</a></div><div class="st200_paragraph">
+          <span class="st200_term term">Fragment shaders</span> are programs that
+          process data on a per-fragment basis in OpenGL.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s6ss2" href="#st200_p3s6ss2">3.6.2</a></div><div class="st200_subsection_title">Declarations</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss2pg1" href="#st200_p3s6ss2pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">shader_fragment_declaration</span> declares a set
+          of <a class="st200_link" href="p3s4.xhtml#st200_p3s4ss4">inputs,
+          outputs, and parameters</a>, as well as a sequence of zero or more
+          <span class="st200_term term">shader_fragment_local_declaration</span>, and a sequence
+          of assignments of values to the declared
+          <span class="st200_term term">outputs</span>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss2pg2" href="#st200_p3s6ss2pg2">2</a></div><div class="st200_paragraph">
+          A fragment shader may optionally define at most
+          one output of type <a class="st200_link" href="p5s4.xhtml#st200_p5s4">float</a>,
+          indicated with the <span class="st200_term keyword">depth</span> keyword,
+          to which must be assigned a value representing the current desired fragment depth (overriding
+          the depth value typically calculated by the graphics system's rasterizer).
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss2pg3" href="#st200_p3s6ss2pg3">3</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">shader_fragment_local_declaration</span> is
+          either a <span class="st200_term term">local_value_declaration</span>, similar
+          in semantics and typing to that found in a
+          <a class="st200_link" href="p4s9.xhtml#st200_p4s9">let expression</a>,
+          or a
+          <a class="st200_link" href="p3s6.xhtml#st200_p3s6ss3">shader_fragment_discard_declaration</a>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s6ss3" href="#st200_p3s6ss3">3.6.3</a></div><div class="st200_subsection_title">Discard</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss3pg1" href="#st200_p3s6ss3pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">shader_fragment_discard_declaration</span> statement
+          halts evaluation of the current fragment shader iff the given
+          <span class="st200_term term">expression</span> evaluates to
+          <span class="st200_term constant">true</span>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s6ss4" href="#st200_p3s6ss4">3.6.4</a></div><div class="st200_subsection_title">Type rules</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss4pg1" href="#st200_p3s6ss4pg1">1</a></div><div class="st200_paragraph">
+          Each
+          <span class="st200_term term">shader_parameter_declaration</span> and
+          <span class="st200_term term">shader_fragment_input_declaration</span> introduces
+          a new term of the given type into the environment, accessible only
+          within the scope of the shader definition,
+          as shown by the <span class="st200_term constant">shader_fragment_inputs_parameters</span> rule:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s6ss4fo1" href="#st200_p3s6ss4fo1">3.6.4.1. Fragment shader inputs/parameters (shader_fragment_inputs_parameters)</a></div><img class="st200_image" alt="Vertex shader inputs/parameters (shader_fragment_inputs_parameters)" src="png/ty_shader_fragment_inputs_parameters.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss4pg2" href="#st200_p3s6ss4pg2">2</a></div><div class="st200_paragraph">
+          Each <span class="st200_term term">local_value_declaration</span> introduces
+          a new term of the given type into the environment, accessible in each
+          successive <span class="st200_term term">local_value_declaration</span> and
+          in the <span class="st200_term term">shader_fragment_output_assignments</span>,
+          as shown by the
+          <span class="st200_term constant">shader_fragment_values</span> rule:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s6ss4fo2" href="#st200_p3s6ss4fo2">3.6.4.2. Fragment shader values (shader_fragment_values)</a></div><img class="st200_image" alt="Vertex shader values (shader_fragment_values)" src="png/ty_shader_fragment_values.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss4pg3" href="#st200_p3s6ss4pg3">3</a></div><div class="st200_paragraph">
+          Each output assigned in a <span class="st200_term term">shader_fragment_output_assignment</span>
+          must be of the correct type, as shown by the
+          <span class="st200_term constant">shader_fragment_output_assignment</span> rule:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s6ss4fo3" href="#st200_p3s6ss4fo3">3.6.4.3. Fragment shader output assignments (shader_fragment_output)</a></div><img class="st200_image" alt="Vertex shader output assignments (shader_fragment_output)" src="png/ty_shader_fragment_output.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss4pg4" href="#st200_p3s6ss4pg4">4</a></div><div class="st200_paragraph">
+          Finally, the expression passed to a <span class="st200_term term">shader_fragment_discard_declaration</span>
+          must be of a <a class="st200_link" href="p5s5.xhtml#st200_p5s5">boolean</a> type
+          as shown by the <span class="st200_term constant">shader_fragment_discard</span> rule <span class="st200_footnote_reference"><a id="st200_fn_5_ref" href="#st200_fn_5">[5]</a></span>:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s6ss4fo4" href="#st200_p3s6ss4fo4">3.6.4.4. Fragment shader discard (shader_fragment_discard)</a></div><img class="st200_image" alt="Fragment shader discard (shader_fragment_discard)" src="png/ty_shader_fragment_discard.png"/></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s6ss5" href="#st200_p3s6ss5">3.6.5</a></div><div class="st200_subsection_title">Operational Semantics</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss5pg1" href="#st200_p3s6ss5pg1">1</a></div><div class="st200_paragraph">
+          The <span class="st200_term term">shader_fragment_local_declaration</span> are evaluated from
+          top-to-bottom, in an identical manner to
+          <a class="st200_link" href="p4s9.xhtml#st200_p4s9">let expressions</a>,
+          as shown by the
+          <span class="st200_term variable">shader_fragment_values</span> rule:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s6ss5fo1" href="#st200_p3s6ss5fo1">3.6.5.1. Fragment shader local declarations (shader_fragment_values)</a></div><img class="st200_image" alt="Fragment shader local declarations (shader_fragment_values)" src="png/op_shader_fragment_values.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s6ss5pg2" href="#st200_p3s6ss5pg2">2</a></div><div class="st200_paragraph">
+          Evaluation halts immediately upon evaluating any
+          <span class="st200_term term">shader_fragment_discard_declaration</span> where
+          the condition evaluates to <span class="st200_term constant">true</span>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s6ss6" href="#st200_p3s6ss6">3.6.6</a></div><div class="st200_subsection_title">Examples</div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s6ss6fo1" href="#st200_p3s6ss6fo1">3.6.6.1. Examples</a></div><pre class="st200_verbatim">
+shader fragment f is
+  parameter texture_0 : sampler_2d;
+  in uv               : vector_2f;
+  out out0            : vector_4f as 0;
+with
+  value rgba = T.texture (texture_0, uv);
+as
+  out out0 = rgba;
+end;</pre></div></div></div><div class="st200_footnotes"><hr/><div class="st200_footnote_container"><div class="st200_footnote_number">[<a id="st200_fn_5" href="#st200_fn_5_ref">5</a>]</div><div class="st200_footnote_body">
+            The <span class="st200_term term">shader_fragment_discard_declaration</span> is described
+            as having type <a class="st200_link" href="p5s5.xhtml#st200_p5s5">boolean</a>, but
+            the result of the expression is effectively consumed by the
+            <span class="st200_term package">parasol</span> language runtime and so this is
+            not observable in practice.
+          </div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p3s5.xhtml#st200_p3s5">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s7.xhtml#st200_p3s7">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">3.5. Vertex shaders</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.7. Programs</td></tr></table></div></div></body></html>

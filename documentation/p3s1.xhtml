@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>io7m-jparasol 0.11.3 Documentation: 3.1. jparasol-c</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="documentation.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">3. Tools reference</td><td class="st200_navbar_up_title_cell">3. Tools reference</td><td class="st200_navbar_next_title_cell">4. API Reference</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p3.xhtml#st200_p3">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p4.xhtml#st200_p4">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p3s1" href="#st200_p3s1">3.1</a></div><div class="st200_section_title">jparasol-c</div><ul class="st200_contents st200_section_contents_outer st200_section_contents"><li class="st200_contents_item st200_contents_item1 st200_contents_item_subsection"><a href="p3s1.xhtml#st200_p3s1ss1">3.1.1. Overview</a></li><li class="st200_contents_item st200_contents_item1 st200_contents_item_subsection"><a href="p3s1.xhtml#st200_p3s1ss2">3.1.2. Compile</a></li><li class="st200_contents_item st200_contents_item1 st200_contents_item_subsection"><a href="p3s1.xhtml#st200_p3s1ss3">3.1.3. Check</a></li><li class="st200_contents_item st200_contents_item1 st200_contents_item_subsection"><a href="p3s1.xhtml#st200_p3s1ss4">3.1.4. Compile Batch</a></li><li class="st200_contents_item st200_contents_item1 st200_contents_item_subsection"><a href="p3s1.xhtml#st200_p3s1ss5">3.1.5. Zip</a></li><li class="st200_contents_item st200_contents_item1 st200_contents_item_subsection"><a href="p3s1.xhtml#st200_p3s1ss6">3.1.6. Compaction</a></li><li class="st200_contents_item st200_contents_item1 st200_contents_item_subsection"><a href="p3s1.xhtml#st200_p3s1ss7">3.1.7. Range notation</a></li><li class="st200_contents_item st200_contents_item1 st200_contents_item_subsection"><a href="p3s1.xhtml#st200_p3s1ss8">3.1.8. Batches</a></li><li class="st200_contents_item st200_contents_item1 st200_contents_item_subsection"><a href="p3s1.xhtml#st200_p3s1ss9">3.1.9. Logging</a></li></ul><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s1ss1" href="#st200_p3s1ss1">3.1.1</a></div><div class="st200_subsection_title">Overview</div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s1ss1fo1" href="#st200_p3s1ss1fo1">3.1.1.1. Options</a></div><pre class="st200_verbatim">parasol-c: [options] --compile-one output shader file0 [file1 ... fileN]
+  or [options] --compile-batch output batch-list source-list
+  or [options] --check file0 [file1 ... fileN]
+  or [options] --show-versions
+  or [options] --version</pre></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s1ss2" href="#st200_p3s1ss2">3.1.2</a></div><div class="st200_subsection_title">Compile</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss2pg1" href="#st200_p3s1ss2pg1">1</a></div><div class="st200_paragraph">
+          The <span class="st200_term command">--compile-one</span> command accepts an output directory 
+          (or archive, see <a class="st200_link" href="p3s1.xhtml#st200_p3s1ss5">--zip</a>)
+          <span class="st200_term variable">o</span>,
+          the fully-qualified name of a program <span class="st200_term variable">p</span>, 
+          and a list of one or more <span class="st200_term package">Parasol</span> source files. 
+          The files are parsed and type-checked and then 
+          <span class="st200_term variable">p</span>, 
+          and the constituent shaders of <span class="st200_term variable">p</span>,
+          are transformed to GLSL and written
+          to <span class="st200_term variable">o</span> (creating the directory if it does not
+          already exist).
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss2pg2" href="#st200_p3s1ss2pg2">2</a></div><div class="st200_paragraph">
+          The <span class="st200_term command">--require-glsl</span> and
+          <span class="st200_term command">--require-glsl-es</span> options specify the GLSL
+          and GLSL ES versions for which the compiler <span class="st200_term term">must</span>
+          generate code. The compiler will raise an error if the program cannot
+          be supported on one or more versions. The 
+          <a class="st200_link" href="p3s1.xhtml#st200_p3s1ss7">notation</a> for specifying versions
+          is described below. If these options are not specified, the compiler will 
+          attempt to generate code for all versions but will not raise an error if 
+          code cannot be generated for one or more versions.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s1ss3" href="#st200_p3s1ss3">3.1.3</a></div><div class="st200_subsection_title">Check</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss3pg1" href="#st200_p3s1ss3pg1">1</a></div><div class="st200_paragraph">
+          The <span class="st200_term command">--check</span> command accepts a list of one or more 
+          <span class="st200_term package">Parasol</span> source files. 
+          The files are parsed and type-checked and any errors are printed on the
+          standard error stream.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s1ss4" href="#st200_p3s1ss4">3.1.4</a></div><div class="st200_subsection_title">Compile Batch</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss4pg1" href="#st200_p3s1ss4pg1">1</a></div><div class="st200_paragraph">
+          The <span class="st200_term command">--compile-batch</span> command accepts a base directory 
+          <span class="st200_term variable">b</span>,
+          a file <span class="st200_term variable">f</span> containing a list of 
+          <a class="st200_link" href="p3s1.xhtml#st200_p3s1ss8">batches</a>, 
+          and a file <span class="st200_term variable">s</span> containing a list of
+          source files with one file per line.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss4pg2" href="#st200_p3s1ss4pg2">2</a></div><div class="st200_paragraph">
+          For each program <span class="st200_term variable">p</span> in the list
+          of batches, the compiler will produce a GLSL program in <span class="st200_term file">b/p</span>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss4pg3" href="#st200_p3s1ss4pg3">3</a></div><div class="st200_paragraph">
+          The <span class="st200_term command">--require-glsl</span> and
+          <span class="st200_term command">--require-glsl-es</span> options specify the GLSL
+          and GLSL ES versions for which the compiler <span class="st200_term term">must</span>
+          generate code. The compiler will raise an error if the program cannot
+          be supported on one or more versions. The 
+          <a class="st200_link" href="p3s1.xhtml#st200_p3s1ss7">notation</a> for specifying versions
+          is described below. If these options are not specified, the compiler will 
+          attempt to generate code for all versions but will not raise an error if 
+          code cannot be generated for one or more versions.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss4pg4" href="#st200_p3s1ss4pg4">4</a></div><div class="st200_paragraph">
+          The command is intended to be used to process thousands of
+          programs. The compiler supports multi-threaded program processing
+          and can, after parsing and type-checking, produce multiple GLSL
+          programs from the resulting typed AST in parallel. The
+          <span class="st200_term command">--threads</span> option specifies
+          the number of threads that should be used during batch compilation,
+          with <span class="st200_term constant">1</span> thread being the default.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s1ss5" href="#st200_p3s1ss5">3.1.5</a></div><div class="st200_subsection_title">Zip</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss5pg1" href="#st200_p3s1ss5pg1">1</a></div><div class="st200_paragraph">
+          When the <span class="st200_term parameter">--zip</span> parameter is
+          specified, the output path is instead assumed to be an archive
+          that will be created and populated with the resulting shading 
+          programs.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss5pg2" href="#st200_p3s1ss5pg2">2</a></div><div class="st200_paragraph">
+          By default, any file that exists at the named output path will
+          be replaced. When the <span class="st200_term parameter">--zip-append</span>
+          option is specified, the output path is assumed to refer to an
+          existing zip archive, which will be updated with the generated
+          files.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s1ss6" href="#st200_p3s1ss6">3.1.6</a></div><div class="st200_subsection_title">Compaction</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss6pg1" href="#st200_p3s1ss6pg1">1</a></div><div class="st200_paragraph">
+          Normally, one source file will be emitted per version of GLSL. Often,
+          these different source files will actually be identical in content
+          apart from a <span class="st200_term keyword">#version</span> directive on
+          the first line of the file.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss6pg2" href="#st200_p3s1ss6pg2">2</a></div><div class="st200_paragraph">
+          When the <span class="st200_term parameter">--compact</span> parameter is
+          specified, shaders will be written in so-called 
+          <span class="st200_term term">compacted</span> form. Essentially, source
+          files are stripped of their version directives and then hashed with
+          <span class="st200_term function">SHA256</span>. Then, each source file
+          is renamed to its <span class="st200_term function">SHA256</span> hash
+          with the addition of its original suffix, and a set of mappings
+          from GLSL versions to <span class="st200_term function">SHA256</span> hashes
+          are written into the program's <span class="st200_term function">meta.xml</span>
+          file. The user is responsible for re-inserting the correct version
+          directive upon passing the program to a GLSL compiler.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss6pg3" href="#st200_p3s1ss6pg3">3</a></div><div class="st200_paragraph">
+          The storage space savings of compaction are typically in the range 
+          60-70%. In rendering systems that use thousands of shaders, this can
+          be significant!
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s1ss7" href="#st200_p3s1ss7">3.1.7</a></div><div class="st200_subsection_title">Range notation</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss7pg1" href="#st200_p3s1ss7pg1">1</a></div><div class="st200_paragraph">
+          The notation for ranges is given by the following EBNF:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s1ss7fo1" href="#st200_p3s1ss7fo1">3.1.7.1. Range notation EBNF</a></div><pre class="st200_verbatim">
+version-set     := version-segment ( ',' version-segment )*
+version-segment := version-exact | version-range
+version-exact   := integer
+version-range   := ('(' | '[') integer? ',' integer? (')' | ']')</pre></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss7pg2" href="#st200_p3s1ss7pg2">2</a></div><div class="st200_paragraph">
+          The <span class="st200_term expression">[</span> and
+          <span class="st200_term expression">]</span> characters indicate
+          inclusive bounds. The <span class="st200_term expression">(</span> and
+          <span class="st200_term expression">)</span> characters indicate
+          exclusive bounds.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss7pg3" href="#st200_p3s1ss7pg3">3</a></div><div class="st200_paragraph">
+          Some examples from the <span class="st200_term command">jparasol-c</span>
+          command line help, with <span class="st200_term keyword">x ⊢ y</span>
+          indicating that the notation <span class="st200_term expression">x</span>
+          denotes the set of versions <span class="st200_term expression">y</span>.
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s1ss7fo2" href="#st200_p3s1ss7fo2">3.1.7.2. Range notation examples</a></div><pre class="st200_verbatim">
+130               ⊢ {130}
+[120, 150]        ⊢ {120, 130, 140, 150}
+(120, 150]        ⊢ {130, 140, 150}
+120,[140,330],430 ⊢ {120, 140, 150, 330, 430}</pre></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s1ss8" href="#st200_p3s1ss8">3.1.8</a></div><div class="st200_subsection_title">Batches</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss8pg1" href="#st200_p3s1ss8pg1">1</a></div><div class="st200_paragraph">
+          The syntax for batches is given by the following EBNF:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s1ss8fo1" href="#st200_p3s1ss8fo1">3.1.8.1. Batches EBNF</a></div><pre class="st200_verbatim">batch := [ name ] , ":" , program_name</pre></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss8pg2" href="#st200_p3s1ss8pg2">2</a></div><div class="st200_paragraph">
+          Where <span class="st200_term variable">name</span> is an optional
+          output name, and
+          <span class="st200_term variable">program_name</span> is the
+          fully qualified name of a program (consisting of a package, module,
+          and program name). An example
+          <span class="st200_term variable">program_name</span> would
+          be <span class="st200_term variable">com.io7m.examples.Example.p</span>,
+          where <span class="st200_term variable">com.io7m.examples</span> is
+          the package, <span class="st200_term variable">Example</span> is the
+          module, and <span class="st200_term variable">p</span> is the program.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss8pg3" href="#st200_p3s1ss8pg3">3</a></div><div class="st200_paragraph">
+          A batch file contains a list of batches, one per line.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s1ss9" href="#st200_p3s1ss9">3.1.9</a></div><div class="st200_subsection_title">Logging</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss9pg1" href="#st200_p3s1ss9pg1">1</a></div><div class="st200_paragraph">
+          By default, the compiler remains silent except in the case of
+          errors. It is possible to enable more logging for the purposes
+          of debugging by providing a configuration file with
+          the <span class="st200_term command">--log-properties</span> option.
+          The configuration file is a set of Java properties that configure
+          the <a class="st200_link_external" href="http://io7m.com/software/jlog">jlog</a>
+          package used internally by the compiler and so the documentation
+          of that package should be examined for the precise formats of the
+          properties.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss9pg2" href="#st200_p3s1ss9pg2">2</a></div><div class="st200_paragraph">
+          To save some time, an example file that enables absolutely all
+          logging:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s1ss9fo1" href="#st200_p3s1ss9fo1">3.1.9.1. Maximum logging</a></div><pre class="st200_verbatim">
+com.io7m.jparasol.logs.compiler = true
+com.io7m.jparasol.level         = LOG_DEBUG</pre></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s1ss9pg3" href="#st200_p3s1ss9pg3">3</a></div><div class="st200_paragraph">
+          An example file that enables the minimum debug messages for
+          the frontend by disabling logging for all of the main compiler
+          components but leaving other messages enabled:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s1ss9fo2" href="#st200_p3s1ss9fo2">3.1.9.2. Minimal logging</a></div><pre class="st200_verbatim">
+com.io7m.jparasol.logs.compiler                 = true
+com.io7m.jparasol.logs.compiler.pipeline        = false
+com.io7m.jparasol.logs.compiler.gpipeline       = false
+com.io7m.jparasol.logs.compiler.compactor       = false
+com.io7m.jparasol.logs.compiler.serializer-zip  = false
+com.io7m.jparasol.logs.compiler.serializer-file = false
+com.io7m.jparasol.level                         = LOG_DEBUG</pre></div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p3.xhtml#st200_p3">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p4.xhtml#st200_p4">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">3. Tools reference</td><td class="st200_navbar_up_title_cell">3. Tools reference</td><td class="st200_navbar_next_title_cell">4. API Reference</td></tr></table></div></div></body></html>

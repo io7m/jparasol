@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 5.1. Overview</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">5. Types</td><td class="st200_navbar_up_title_cell">5. Types</td><td class="st200_navbar_next_title_cell">5.2. Constructors</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p5.xhtml#st200_p5">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p5.xhtml#st200_p5">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p5s2.xhtml#st200_p5s2">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p5s1" href="#st200_p5s1">5.1</a></div><div class="st200_section_title">Overview</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p5s1pg1" href="#st200_p5s1pg1">1</a></div><div class="st200_paragraph">
+        A <span class="st200_term term">type</span> classifies a set of
+        values. Types in the <span class="st200_term package">parasol</span>
+        language have <span class="st200_term term">by-name equivalence</span>
+        (that is, two types are equal iff they have the same name) and
+        the types of all terms are checked <span class="st200_term term">statically</span>.
+        All well-typed <span class="st200_term term">terms</span> in the
+        language have exactly one <span class="st200_term term">type</span>.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p5s1pg2" href="#st200_p5s1pg2">2</a></div><div class="st200_paragraph">
+        The language defines a set of <span class="st200_term term">basic types</span>,
+        and allows the declaration of new types. The set of basic types is:
+      </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p5s1fo1" href="#st200_p5s1fo1">5.1.1. Basic types</a></div><ul class="st200_list_unordered"><li class="st200_list_item"><a class="st200_link" href="p5s3.xhtml#st200_p5s3">integer</a></li><li class="st200_list_item"><a class="st200_link" href="p5s4.xhtml#st200_p5s4">float</a></li><li class="st200_list_item"><a class="st200_link" href="p5s5.xhtml#st200_p5s5">boolean</a></li><li class="st200_list_item"><a class="st200_link" href="p5s6.xhtml#st200_p5s6">vector_2i</a></li><li class="st200_list_item"><a class="st200_link" href="p5s6.xhtml#st200_p5s6">vector_3i</a></li><li class="st200_list_item"><a class="st200_link" href="p5s6.xhtml#st200_p5s6">vector_4i</a></li><li class="st200_list_item"><a class="st200_link" href="p5s6.xhtml#st200_p5s6">vector_2f</a></li><li class="st200_list_item"><a class="st200_link" href="p5s6.xhtml#st200_p5s6">vector_3f</a></li><li class="st200_list_item"><a class="st200_link" href="p5s6.xhtml#st200_p5s6">vector_4f</a></li><li class="st200_list_item"><a class="st200_link" href="p5s7.xhtml#st200_p5s7">matrix_3x3f</a></li><li class="st200_list_item"><a class="st200_link" href="p5s7.xhtml#st200_p5s7">matrix_4x4f</a></li><li class="st200_list_item"><a class="st200_link" href="p5s8.xhtml#st200_p5s8">sampler_2d</a></li><li class="st200_list_item"><a class="st200_link" href="p5s8.xhtml#st200_p5s8">sampler_cube</a></li></ul></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p5s1pg3" href="#st200_p5s1pg3">3</a></div><div class="st200_paragraph">
+        Values of the basic types may be introduced via certain
+        <a class="st200_link" href="p4.xhtml#st200_p4">literal expressions</a>,
+        or via the use of the <span class="st200_term keyword">new</span>
+        keyword, which invokes an appropriate
+        <a class="st200_link" href="p5s2.xhtml#st200_p5s2">constructor function</a>
+        for the given type. The <span class="st200_term term">constructor function</span>
+        chosen is based upon the n-tuple of arguments presented to the
+        <span class="st200_term keyword">new</span> keyword, and if no appropriate function
+        exists, the expression is rejected as ill-typed.
+      </div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p5.xhtml#st200_p5">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p5.xhtml#st200_p5">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p5s2.xhtml#st200_p5s2">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">5. Types</td><td class="st200_navbar_up_title_cell">5. Types</td><td class="st200_navbar_next_title_cell">5.2. Constructors</td></tr></table></div></div></body></html>

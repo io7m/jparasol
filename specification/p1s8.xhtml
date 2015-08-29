@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 1.8. Operational Semantics</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">1.7. Type rules</td><td class="st200_navbar_up_title_cell">1. Notational Conventions</td><td class="st200_navbar_next_title_cell">1.9. OpenGL</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p1s7.xhtml#st200_p1s7">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p1.xhtml#st200_p1">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p1s9.xhtml#st200_p1s9">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p1s8" href="#st200_p1s8">1.8</a></div><div class="st200_section_title">Operational Semantics</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg1" href="#st200_p1s8pg1">1</a></div><div class="st200_paragraph">
+        Operational semantics describe the precise rules for the evaluation
+        of expressions in a given language. The rules make up the description
+        of an <span class="st200_term term">abstract machine</span> which passes
+        through different states, one rule (or <span class="st200_term term">step</span>)
+        at a time, until the machine <span class="st200_term term">halts</span>
+        and produces a <span class="st200_term term">value</span>.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg2" href="#st200_p1s8pg2">2</a></div><div class="st200_paragraph">
+        Typically, operational semantics begin by first giving a set of
+        <span class="st200_term term">values</span>, indicating the final results
+        of evaluation, and a set of identifiers syntactically identifying
+        the set of evaluable <span class="st200_term term">expressions</span>. The
+        evaluation rules themselves are given in a style similar to
+        <a class="st200_link" href="p1s7.xhtml#st200_p1s7">type rules</a>,
+        where a rule applies if the
+        <span class="st200_term term">premises</span> above the horizontal line are
+        true, and the <span class="st200_term term">conclusion</span> indicates how
+        the state of the abstract machine changes when the rule is applied.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg3" href="#st200_p1s8pg3">3</a></div><div class="st200_paragraph">
+        As an example, assume a language of conditional expressions.
+        An example expression in this language would be:
+      </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p1s8fo1" href="#st200_p1s8fo1">1.8.1. Conditionals example</a></div><pre class="st200_verbatim">if true then
+  if false then
+    true
+  else
+    if
+      if true then
+        false
+      else
+        true
+      end
+    then
+      false
+    else
+      true
+    end
+  end
+else
+  true
+end</pre></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg4" href="#st200_p1s8pg4">4</a></div><div class="st200_paragraph">
+        The <span class="st200_term term">values</span> of this language are
+        <span class="st200_term constant">true</span> and <span class="st200_term constant">false</span>.
+        The <span class="st200_term term">expressions</span> in this language
+        include the <span class="st200_term term">values</span>, and the form
+        <span class="st200_term expression">if e₀ then e₁ else e₂ end</span>, where
+        <span class="st200_term expression">e₀</span>,
+        <span class="st200_term expression">e₁</span> and
+        <span class="st200_term expression">e₂</span> are expressions. There
+        are clearly multiple ways to evaluate expressions in this language,
+        but in order to produce an algorithm that will execute on a computer,
+        the evaluation rules should be:
+      </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p1s8fo2" href="#st200_p1s8fo2">1.8.2. Evaluation characteristics</a></div><ul class="st200_list_unordered"><li class="st200_list_item">
+            Deterministic. That is, given a non-<span class="st200_term term">value</span> expression
+            <span class="st200_term expression">e</span>,
+            there must be <span class="st200_term term">at most</span> one evaluation rule that
+            applies in order to work towards producing a value from
+            <span class="st200_term expression">e</span>. If multiple rules apply, then
+            evaluation is nondeterministic.
+          </li><li class="st200_list_item">
+            Complete. That is, given a non-<span class="st200_term term">value</span> expression
+            <span class="st200_term expression">e</span>,
+            there must be <span class="st200_term term">at least</span> one evaluation rule that
+            applies in order to work towards producing a value from
+            <span class="st200_term expression">e</span>. If no rule applies, then
+            evaluation is said to be <span class="st200_term term">stuck</span>.
+          </li></ul></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg5" href="#st200_p1s8pg5">5</a></div><div class="st200_paragraph">
+        The operational semantics for the language could be written as
+        follows:
+      </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p1s8fo3" href="#st200_p1s8fo3">1.8.3. Conditional semantics</a></div><img class="st200_image" alt="Conditional semantics" src="png/semantics_example.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg6" href="#st200_p1s8pg6">6</a></div><div class="st200_paragraph">
+        Expressions are assigned the identifiers
+        <span class="st200_term expression">e₀</span> to
+        <span class="st200_term expression">eₙ</span>, so terms of those forms
+        are assumed to be evaluable expressions when they appear in rules.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg7" href="#st200_p1s8pg7">7</a></div><div class="st200_paragraph">
+        The notation <span class="st200_term expression">e → e'</span> should be
+        read "<span class="st200_term expression">e</span> evaluates to <span class="st200_term expression">e'</span>
+        in a single step".
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg8" href="#st200_p1s8pg8">8</a></div><div class="st200_paragraph">
+        The <span class="st200_term variable">if_true</span> rule states that
+        if the condition of an <span class="st200_term keyword">if</span> expression
+        is exactly <span class="st200_term constant">true</span>, then the expression
+        evaluates to the expression given in the left branch, in one step.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg9" href="#st200_p1s8pg9">9</a></div><div class="st200_paragraph">
+        The <span class="st200_term variable">if_false</span> rule states that
+        if the condition of an <span class="st200_term keyword">if</span> expression
+        is exactly <span class="st200_term constant">false</span>, then the expression
+        evaluates to the expression given in the right branch, in one step.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg10" href="#st200_p1s8pg10">10</a></div><div class="st200_paragraph">
+        The <span class="st200_term variable">if_condition</span> rule states that
+        if the condition of an <span class="st200_term keyword">if</span> expression
+        is not a value, then the condition is evaluated first.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg11" href="#st200_p1s8pg11">11</a></div><div class="st200_paragraph">
+        The example expression given earlier can now be evaluated completely
+        and deterministically by following the given rules:
+      </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p1s8fo4" href="#st200_p1s8fo4">1.8.4. Conditionals example evaluation</a></div><pre class="st200_verbatim">if true then
+  if false then
+    true
+  else
+    if
+      if true then
+        false
+      else
+        true
+      end
+    then
+      false
+    else
+      true
+    end
+  end
+else
+  true
+end
+
+→ by if_true to:
+
+if false then
+  true
+else
+  if
+    if true then
+      false
+    else
+      true
+    end
+  then
+    false
+  else
+    true
+  end
+end
+
+→ by if_false to:
+
+if
+  if true then
+    false
+  else
+    true
+  end
+then
+  false
+else
+  true
+end
+
+→ by if_condition to:
+
+if
+  false
+then
+  false
+else
+  true
+end
+
+→ by if_false to:
+
+true
+</pre></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg12" href="#st200_p1s8pg12">12</a></div><div class="st200_paragraph">
+        The <span class="st200_term term">substitution</span> notation
+        <span class="st200_term expression">e [x := y]</span> denotes
+        the expression <span class="st200_term expression">e</span> where all
+        occurences (if any) of the variable <span class="st200_term variable">x</span>
+        have been replaced with <span class="st200_term variable">y</span>. This
+        is used, for example, to describe function evaluation:
+      </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p1s8fo5" href="#st200_p1s8fo5">1.8.5. Function semantics</a></div><img class="st200_image" alt="Function semantics" src="png/semantics_example2.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg13" href="#st200_p1s8pg13">13</a></div><div class="st200_paragraph">
+        The <span class="st200_term variable">function_eval_0</span> and
+        <span class="st200_term variable">function_eval_1</span> rules state that
+        expressions are evaluated from left-to-right when applying
+        <span class="st200_term expression">f</span> to a pair of arguments.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p1s8pg14" href="#st200_p1s8pg14">14</a></div><div class="st200_paragraph">
+        The <span class="st200_term variable">function_eval_2</span> rule states
+        that when all of the expressions passed to <span class="st200_term expression">f</span>
+        have been reduced to values, the expression as a whole evaluates to
+        the body of <span class="st200_term expression">f</span>, called
+        <span class="st200_term expression">e</span>, with occurrences of
+        the arguments <span class="st200_term variable">x</span> and
+        <span class="st200_term variable">y</span> in
+        <span class="st200_term expression">e</span> substituted with their
+        values.
+      </div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p1s7.xhtml#st200_p1s7">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p1.xhtml#st200_p1">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p1s9.xhtml#st200_p1s9">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">1.7. Type rules</td><td class="st200_navbar_up_title_cell">1. Notational Conventions</td><td class="st200_navbar_next_title_cell">1.9. OpenGL</td></tr></table></div></div></body></html>

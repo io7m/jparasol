@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 2.5. Tokens</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">2.4. Comments</td><td class="st200_navbar_up_title_cell">2. Lexical Conventions</td><td class="st200_navbar_next_title_cell">3. Declarations</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p2s4.xhtml#st200_p2s4">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p2.xhtml#st200_p2">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3.xhtml#st200_p3">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p2s5" href="#st200_p2s5">2.5</a></div><div class="st200_section_title">Tokens</div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p2s5ss1" href="#st200_p2s5ss1">2.5.1</a></div><div class="st200_subsection_title">Integer literals</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p2s5ss1pg1" href="#st200_p2s5ss1pg1">1</a></div><div class="st200_paragraph">
+        An <span class="st200_term term">integer_literal</span> is a sequence
+        of one or more digits, optionally preceded by a minus sign
+        (<span class="st200_term constant">U+002D</span>), representing
+        a decimal integer. The precise syntax is given by the following EBNF:
+      </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p2s5ss1fo1" href="#st200_p2s5ss1fo1">2.5.1.1. Integer literals</a></div><pre class="st200_verbatim">digit_nonzero =
+  "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+digit =
+  "0" | digit_nonzero ;
+
+integer =
+  "0" | ( ["-"] , digit_nonzero , { digit } ) ;</pre></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p2s5ss2" href="#st200_p2s5ss2">2.5.2</a></div><div class="st200_subsection_title">Real literals</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p2s5ss2pg1" href="#st200_p2s5ss2pg1">1</a></div><div class="st200_paragraph">
+        A <span class="st200_term term">real_literal</span> consists of
+        an integral and fractional part, separated by a dot
+        (<span class="st200_term constant">U+002E</span>) and optionally
+        preceded by a minus sign (<span class="st200_term constant">U+002D</span>),
+        and represents a real number. The precise syntax is given by
+        the following EBNF:
+      </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p2s5ss2fo1" href="#st200_p2s5ss2fo1">2.5.2.1. Real literals</a></div><pre class="st200_verbatim">real =
+  ["-"] , digit , { digit } , "." , digit , { digit } ;</pre></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p2s5ss3" href="#st200_p2s5ss3">2.5.3</a></div><div class="st200_subsection_title">Boolean literals</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p2s5ss3pg1" href="#st200_p2s5ss3pg1">1</a></div><div class="st200_paragraph">
+        A <span class="st200_term term">boolean_literal</span> is either
+        <span class="st200_term constant">true</span> or
+        <span class="st200_term constant">false</span>. The precise syntax is
+        given by  the following EBNF:
+      </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p2s5ss3fo1" href="#st200_p2s5ss3fo1">2.5.3.1. Boolean literals</a></div><pre class="st200_verbatim">boolean_literal =
+  "true" | "false" ;</pre></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p2s5ss4" href="#st200_p2s5ss4">2.5.4</a></div><div class="st200_subsection_title">Identifiers</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p2s5ss4pg1" href="#st200_p2s5ss4pg1">1</a></div><div class="st200_paragraph">
+        Identifiers are sequences of uppercase letters
+        (<span class="st200_term constant">[U+0041, U+005A]</span>), lowercase
+        letters (<span class="st200_term constant">[U+0061, U+007A]</span>),
+        and underscores (<span class="st200_term constant">U+005F</span>). An
+        identifier is uppercase iff its first character is an uppercase
+        letter, or lowercase iff its first character is a lowercase letter.
+        Identifiers cannot begin with underscores or digits. The precise
+        syntax is given by the following EBNF:
+      </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p2s5ss4fo1" href="#st200_p2s5ss4fo1">2.5.4.1. Identifiers</a></div><pre class="st200_verbatim">letter_lower =
+  "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" |
+  "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" |
+  "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" |
+  "y" | "z" ;
+
+letter_upper =
+  "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" |
+  "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" |
+  "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" |
+  "Y" | "Z" ;
+
+letter =
+  letter_lower | letter_upper ;
+
+name_lower =
+  letter_lower , { letter | digit | "-" | "_" } ;
+
+name_upper =
+  letter_upper , { letter | digit | "-" | "_" } ;</pre></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p2s5ss5" href="#st200_p2s5ss5">2.5.5</a></div><div class="st200_subsection_title">Keywords</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p2s5ss5pg1" href="#st200_p2s5ss5pg1">1</a></div><div class="st200_paragraph">
+        All of the following character sequences are reserved as keywords
+        and cannot be used otherwise:
+      </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p2s5ss5fo1" href="#st200_p2s5ss5fo1">2.5.5.1. Keywords</a></div><ul class="st200_list_unordered"><li class="st200_list_item"><span class="st200_term keyword">:</span> (<span class="st200_term constant">U+003A</span>)</li><li class="st200_list_item"><span class="st200_term keyword">,</span> (<span class="st200_term constant">U+002C</span>)</li><li class="st200_list_item"><span class="st200_term keyword">{</span> (<span class="st200_term constant">U+007B</span>)</li><li class="st200_list_item"><span class="st200_term keyword">}</span> (<span class="st200_term constant">U+007D</span>)</li><li class="st200_list_item"><span class="st200_term keyword">.</span> (<span class="st200_term constant">U+002E</span>)</li><li class="st200_list_item"><span class="st200_term keyword">=</span> (<span class="st200_term constant">U+003D</span>)</li><li class="st200_list_item"><span class="st200_term keyword">(</span> (<span class="st200_term constant">U+0028</span>)</li><li class="st200_list_item"><span class="st200_term keyword">)</span> (<span class="st200_term constant">U+0029</span>)</li><li class="st200_list_item"><span class="st200_term keyword">;</span> (<span class="st200_term constant">U+003B</span>)</li><li class="st200_list_item"><span class="st200_term keyword">[</span> (<span class="st200_term constant">U+005B</span>)</li><li class="st200_list_item"><span class="st200_term keyword">]</span> (<span class="st200_term constant">U+005D</span>)</li><li class="st200_list_item"><span class="st200_term keyword">as</span></li><li class="st200_list_item"><span class="st200_term keyword">column</span></li><li class="st200_list_item"><span class="st200_term keyword">depth</span></li><li class="st200_list_item"><span class="st200_term keyword">discard</span></li><li class="st200_list_item"><span class="st200_term keyword">else</span></li><li class="st200_list_item"><span class="st200_term keyword">end</span></li><li class="st200_list_item"><span class="st200_term keyword">false</span></li><li class="st200_list_item"><span class="st200_term keyword">fragment</span></li><li class="st200_list_item"><span class="st200_term keyword">function</span></li><li class="st200_list_item"><span class="st200_term keyword">if</span></li><li class="st200_list_item"><span class="st200_term keyword">import</span></li><li class="st200_list_item"><span class="st200_term keyword">in</span></li><li class="st200_list_item"><span class="st200_term keyword">is</span></li><li class="st200_list_item"><span class="st200_term keyword">let</span></li><li class="st200_list_item"><span class="st200_term keyword">module</span></li><li class="st200_list_item"><span class="st200_term keyword">new</span></li><li class="st200_list_item"><span class="st200_term keyword">out</span></li><li class="st200_list_item"><span class="st200_term keyword">package</span></li><li class="st200_list_item"><span class="st200_term keyword">parameter</span></li><li class="st200_list_item"><span class="st200_term keyword">program</span></li><li class="st200_list_item"><span class="st200_term keyword">record</span></li><li class="st200_list_item"><span class="st200_term keyword">shader</span></li><li class="st200_list_item"><span class="st200_term keyword">then</span></li><li class="st200_list_item"><span class="st200_term keyword">true</span></li><li class="st200_list_item"><span class="st200_term keyword">type</span></li><li class="st200_list_item"><span class="st200_term keyword">value</span></li><li class="st200_list_item"><span class="st200_term keyword">vertex</span></li><li class="st200_list_item"><span class="st200_term keyword">with</span></li></ul></div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p2s4.xhtml#st200_p2s4">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p2.xhtml#st200_p2">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3.xhtml#st200_p3">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">2.4. Comments</td><td class="st200_navbar_up_title_cell">2. Lexical Conventions</td><td class="st200_navbar_next_title_cell">3. Declarations</td></tr></table></div></div></body></html>
