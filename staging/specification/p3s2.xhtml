@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 3.2. Terms</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">3.1. Overview</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.3. Types</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p3s1.xhtml#st200_p3s1">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s3.xhtml#st200_p3s3">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p3s2" href="#st200_p3s2">3.2</a></div><div class="st200_section_title">Terms</div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss1" href="#st200_p3s2ss1">3.2.1</a></div><div class="st200_subsection_title">Description</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss1pg1" href="#st200_p3s2ss1pg1">1</a></div><div class="st200_paragraph">
+          <span class="st200_term term">Terms</span> are the computational elements
+          of the <span class="st200_term package">parasol</span> language. They consist
+          of <a class="st200_link" href="p3s2.xhtml#st200_p3s2ss6">values</a>,
+          which effectively give names to expressions, and
+          <a class="st200_link" href="p3s2.xhtml#st200_p3s2ss7">functions</a>,
+          which are named computational rules in the mathematical sense.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss2" href="#st200_p3s2ss2">3.2.2</a></div><div class="st200_subsection_title">Declarations</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss2pg1" href="#st200_p3s2ss2pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">term_declaration</span> may either be a
+          <a class="st200_link" href="p3s2.xhtml#st200_p3s2ss6">value_declaration</a>
+          or a
+          <a class="st200_link" href="p3s2.xhtml#st200_p3s2ss7">function_declaration</a>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss3" href="#st200_p3s2ss3">3.2.3</a></div><div class="st200_subsection_title">Names</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss3pg1" href="#st200_p3s2ss3pg1">1</a></div><div class="st200_paragraph">
+          The names selected for terms must be unique with respect to
+          other terms within the <a class="st200_link" href="p3s8.xhtml#st200_p3s8">module</a>
+          in which they are defined. That is, there cannot be two terms with the same name
+          in the same module. Terms do not share a name space with
+          <a class="st200_link" href="p3s3.xhtml#st200_p3s3">types</a>
+          or <a class="st200_link" href="p3s4.xhtml#st200_p3s4">shaders</a>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss3pg2" href="#st200_p3s2ss3pg2">2</a></div><div class="st200_paragraph">
+          The following restrictions apply when naming terms:
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p3s2ss3fo1" href="#st200_p3s2ss3fo1">3.2.3.1. Name restrictions</a></div><ul class="st200_list_unordered"><li class="st200_list_item">
+              Term names must begin with a <span class="st200_term term">lowercase</span>
+              letter. This is directly implied by the
+              <a class="st200_link" href="p3s2.xhtml#st200_p3s2ss10">grammar</a>.
+            </li><li class="st200_list_item">
+              Names cannot contain two adjacent underscores (<span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot end with underscores (<span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot start with the character sequence "<span class="st200_term constant">gl_</span>"
+              (<span class="st200_term constant">U+0067</span>,
+               <span class="st200_term constant">U+006C</span>,
+               <span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot match any of the keywords or reserved words defined in
+              any version of the OpenGL shading language. See the
+              <a class="st200_link" href="p8s4.xhtml#st200_p8s4">GLSL identifiers</a>
+              section for the complete list.
+            </li></ul></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss4" href="#st200_p3s2ss4">3.2.4</a></div><div class="st200_subsection_title">Recursion</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss4pg1" href="#st200_p3s2ss4pg1">1</a></div><div class="st200_paragraph">
+          No <span class="st200_term term">term_declaration</span> can be <span class="st200_term term">recursive</span>
+          with respect to itself or any other <span class="st200_term term">term_declaration</span>
+          in the <a class="st200_link" href="p3s8.xhtml#st200_p3s8">module</a>
+          in which it appears.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss4pg2" href="#st200_p3s2ss4pg2">2</a></div><div class="st200_paragraph">
+          A term <span class="st200_term variable">d₀</span> is said to
+          <span class="st200_term term">refer statically</span> to a
+          term <span class="st200_term variable">d₁</span> if
+          the <span class="st200_term term">free variables</span> of <span class="st200_term variable">d₀</span>
+          contain the name of <span class="st200_term variable">d₁</span>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss4pg3" href="#st200_p3s2ss4pg3">3</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">term_declaration</span> <span class="st200_term variable">d</span>
+          is (mutually) <span class="st200_term term">recursive</span> iff:
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p3s2ss4fo1" href="#st200_p3s2ss4fo1">3.2.4.1. Recursion conditions</a></div><ul class="st200_list_unordered"><li class="st200_list_item">
+              <span class="st200_term variable">d</span> refers statically to itself.
+            </li><li class="st200_list_item">
+              There is a sequence of terms <span class="st200_term expression">t₀, t₁, ..., tₙ</span>
+              such that <span class="st200_term variable">d</span> refers statically to
+              <span class="st200_term variable">t₀</span>, and
+              for all <span class="st200_term variable">m</span> where <span class="st200_term expression">0 &lt;= m &lt; n</span>,
+              <span class="st200_term variable">tₘ</span> refers statically
+              <span class="st200_term expression">t₍ₘ₊₁₎</span>, and
+              <span class="st200_term variable">tₙ</span> refers statically to
+              <span class="st200_term variable">d</span>.
+            </li></ul></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss5" href="#st200_p3s2ss5">3.2.5</a></div><div class="st200_subsection_title">Order of declarations</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss5pg1" href="#st200_p3s2ss5pg1">1</a></div><div class="st200_paragraph">
+          For the purposes of sorting term declarations based on their
+          dependencies, terms can be <span class="st200_term term">partially ordered</span>
+          based on the terms to which they refer statically. That is, if
+          a term <span class="st200_term variable">t₀</span> refers statically to
+          term <span class="st200_term variable">t₁</span>, then
+          <span class="st200_term expression">t₁ &lt; t₀</span>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss5pg2" href="#st200_p3s2ss5pg2">2</a></div><div class="st200_paragraph">
+          Terms do not have to be declared in any given order. That is,
+          if a term <span class="st200_term variable">t₀</span> refers statically
+          to term <span class="st200_term variable">t₁</span> in the same module,
+          there is no requirement that <span class="st200_term variable">t₁</span>
+          be declared before <span class="st200_term variable">t₀</span>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss5pg3" href="#st200_p3s2ss5pg3">3</a></div><div class="st200_paragraph">
+          Terms are sorted topologically prior to any evaluation based
+          on the given partial order relation, and the
+          restrictions on
+          <a class="st200_link" href="p3s2.xhtml#st200_p3s2ss4">recursion</a>
+          ensure that it is always possible to sort terms in the order
+          of their dependencies.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss6" href="#st200_p3s2ss6">3.2.6</a></div><div class="st200_subsection_title">Values</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss6pg1" href="#st200_p3s2ss6pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">value_declaration</span> binds an
+          <a class="st200_link" href="p4.xhtml#st200_p4">expression</a>
+          to a name.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss6pg2" href="#st200_p3s2ss6pg2">2</a></div><div class="st200_paragraph">
+          The <a class="st200_link" href="p5.xhtml#st200_p5">type</a> of
+          the <span class="st200_term term">value_declaration</span> will be inferred
+          from the given expression, but the declaration can be optionally ascribed
+          with the name of a type, in which case the type of the expression will be
+          checked against the ascription and an error raised in the case of a
+          mismatch.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss7" href="#st200_p3s2ss7">3.2.7</a></div><div class="st200_subsection_title">Functions</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss7pg1" href="#st200_p3s2ss7pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">function_declaration</span> binds an
+          <a class="st200_link" href="p4.xhtml#st200_p4">expression</a>
+          <span class="st200_term variable">e</span> to a name along with a given
+          <span class="st200_term term">return type</span>
+          <span class="st200_term variable">t</span>
+          and a set of <span class="st200_term term">formal parameters</span>,
+          where <span class="st200_term variable">e</span> contains zero or more
+          variables bound by the formal parameters and which, when
+          evaluated, will result in a value of type <span class="st200_term variable">t</span>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss8" href="#st200_p3s2ss8">3.2.8</a></div><div class="st200_subsection_title">Type rules</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss8pg1" href="#st200_p3s2ss8pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">value_declaration</span> of type
+          <span class="st200_term variable">t</span> introduces a term of type
+          <span class="st200_term variable">t</span> into the environment:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s2ss8fo1" href="#st200_p3s2ss8fo1">3.2.8.1. Value declaration type rule (value_declaration)</a></div><img class="st200_image" alt="Value declaration type rule (value_declaration)" src="png/ty_value_declaration.png"/></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s2ss8fo2" href="#st200_p3s2ss8fo2">3.2.8.2. Value declaration (ascribed) type rule (value_declaration_ascribed)</a></div><img class="st200_image" alt="Value declaration (ascribed) type rule (value_declaration_ascribed)" src="png/ty_value_declaration_ascribed.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss8pg2" href="#st200_p3s2ss8pg2">2</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">function_declaration</span> with parameters of type
+          <span class="st200_term expression">(s₀ ✕ s₁ ✕ ... sₙ)</span> that returns type
+          <span class="st200_term variable">u</span> introduces a term of type
+          <span class="st200_term variable">(s₀ ✕ s₁ ✕ ... sₙ) → u</span> into the environment:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s2ss8fo3" href="#st200_p3s2ss8fo3">3.2.8.3. Function declaration type rule (function_declaration)</a></div><img class="st200_image" alt="Function declaration type rule (function_declaration)" src="png/ty_function_declaration.png"/></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss9" href="#st200_p3s2ss9">3.2.9</a></div><div class="st200_subsection_title">Operational semantics</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss9pg1" href="#st200_p3s2ss9pg1">1</a></div><div class="st200_paragraph">
+          With terms sorted according to their
+          <a class="st200_link" href="p3s2.xhtml#st200_p3s2ss5">partial order</a>,
+          evaluation of <span class="st200_term term">value_declarations</span>
+          in the current <a class="st200_link" href="p3s8.xhtml#st200_p3s8">module</a>
+          proceeds from top-to-bottom, with the value of each evaluated
+          <span class="st200_term term">value_declaration</span> being
+          substituted into the terms that follow it:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s2ss9fo1" href="#st200_p3s2ss9fo1">3.2.9.1. Top level evaluation (top_level)</a></div><img class="st200_image" alt="Top level evaluation (top_level)" src="png/op_top_level.png"/></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss10" href="#st200_p3s2ss10">3.2.10</a></div><div class="st200_subsection_title">Syntax</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s2ss10pg1" href="#st200_p3s2ss10pg1">1</a></div><div class="st200_paragraph">
+          The precise syntax of <span class="st200_term term">term_declarations</span>
+          is given by the following EBNF:
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p3s2ss10fo1" href="#st200_p3s2ss10fo1">3.2.10.1. Term declaration syntax</a></div><pre class="st200_verbatim">type_path =
+    name_lower
+  | name_upper , "." , name_lower ;
+
+value_declaration =
+  "value" , name_lower , [ ":" , type_path ] , "=" , expression ;
+
+function_formal_parameter =
+  name_lower , ":" , type_path ;
+
+function_formal_parameters =
+  "(" , function_formal_parameter, { "," , function_formal_parameter } , ")" ;
+
+function_declaration =
+  "function" , name_lower , function_formal_parameters , ":" , type_path , "=" , expression ;
+
+term_declaration =
+  value_declaration | function_declaration ;</pre></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s2ss11" href="#st200_p3s2ss11">3.2.11</a></div><div class="st200_subsection_title">Examples</div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s2ss11fo1" href="#st200_p3s2ss11fo1">3.2.11.1. Examples</a></div><pre class="st200_verbatim">value x = 23;
+
+value y = I.plus x 24;
+
+function identity (
+  x : integer
+) : integer = x;</pre></div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p3s1.xhtml#st200_p3s1">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s3.xhtml#st200_p3s3">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">3.1. Overview</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.3. Types</td></tr></table></div></div></body></html>

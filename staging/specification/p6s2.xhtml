@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 6.2. Lifecycle</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">6.1. Overview</td><td class="st200_navbar_up_title_cell">6. Compilation and Execution</td><td class="st200_navbar_next_title_cell">7. Standard Library Reference</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p6s1.xhtml#st200_p6s1">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p6.xhtml#st200_p6">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p7.xhtml#st200_p7">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p6s2" href="#st200_p6s2">6.2</a></div><div class="st200_section_title">Lifecycle</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p6s2pg1" href="#st200_p6s2pg1">1</a></div><div class="st200_paragraph">
+        First, the intended program is <span class="st200_term term">compiled</span>:
+      </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p6s2fo1" href="#st200_p6s2fo1">6.2.1. Compilation</a></div><ol class="st200_list_ordered"><li class="st200_list_item">
+            The user submits a series of <a class="st200_link" href="p2s1.xhtml#st200_p2s1">units</a>,
+            in no particular order, to the
+            <span class="st200_term package">parasol</span> implementation compiler, along with the
+            fully-qualified name of a
+            <a class="st200_link" href="p3s7.xhtml#st200_p3s7">program</a>.
+          </li><li class="st200_list_item">
+            The compiler combines the <span class="st200_term term">units</span>, checks
+            for <a class="st200_link" href="p3s8.xhtml#st200_p3s8">module</a>
+            name collisions, checks the sanity of the submitted modules,
+            resolves all names, and checks the
+            <a class="st200_link" href="p5.xhtml#st200_p5">types</a>
+            of all
+            <a class="st200_link" href="p3s2.xhtml#st200_p3s2">terms</a>.
+          </li><li class="st200_list_item">
+            The compiler then erases all <span class="st200_term term">module_declarations</span> from
+            the environment, renaming all <span class="st200_term term">terms</span> to result in a set
+            of <span class="st200_term term">terms</span> with unique names.
+          </li><li class="st200_list_item">
+            The compiler then determines all <span class="st200_term term">terms</span> upon which
+            the <a class="st200_link" href="p3s7.xhtml#st200_p3s7">program</a>
+            depends, removing all unused <span class="st200_term term">terms</span> and sorting
+            the resulting <span class="st200_term term">terms</span> topologically.
+          </li></ol></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p6s2pg2" href="#st200_p6s2pg2">2</a></div><div class="st200_paragraph">
+        At this point,
+        the environment contains a
+        <a class="st200_link" href="p3s5.xhtml#st200_p3s5">vertex shader</a>
+        <span class="st200_term expression">V</span>
+        with an associated ordered set of <span class="st200_term term">terms</span>
+        <span class="st200_term expression">T</span>, and
+        <a class="st200_link" href="p3s6.xhtml#st200_p3s6">fragment shader</a>
+        <span class="st200_term expression">F</span>
+        with an associated ordered set of <span class="st200_term term">terms</span>
+        <span class="st200_term expression">U</span>.
+      </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p6s2pg3" href="#st200_p6s2pg3">3</a></div><div class="st200_paragraph">
+        <span class="st200_term term">Execution</span> then proceeds as follows:
+      </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p6s2fo2" href="#st200_p6s2fo2">6.2.2. Execution</a></div><ol class="st200_list_ordered"><li class="st200_list_item">
+            Execution of <span class="st200_term expression">V</span> begins.
+          </li><li class="st200_list_item">
+            The <span class="st200_term term">terms</span> in <span class="st200_term expression">T</span> are
+            evaluated in the order given.
+          </li><li class="st200_list_item">
+            The operational semantics imply that the values of the terms in
+            <span class="st200_term expression">T</span> have been substituted into the
+            <a class="st200_link" href="p3s5.xhtml#st200_p3s5ss2">local declarations</a>
+            of <span class="st200_term expression">V</span>. The
+            local declarations defined in <span class="st200_term expression">V</span> are evaluated.
+          </li><li class="st200_list_item">
+            The values resulting from evaluation are written to the
+            outputs of <span class="st200_term expression">V</span>.
+          </li><li class="st200_list_item">
+            Execution of <span class="st200_term expression">F</span> begins.
+          </li><li class="st200_list_item">
+            The <span class="st200_term term">terms</span> in <span class="st200_term expression">U</span> are
+            evaluated in the order given.
+          </li><li class="st200_list_item">
+            The operational semantics imply that the values of the terms in
+            <span class="st200_term expression">U</span> have been substituted into the
+            <a class="st200_link" href="p3s6.xhtml#st200_p3s6ss2">local declarations</a>
+            of <span class="st200_term expression">F</span>. The
+            local declarations defined in <span class="st200_term expression">F</span> are evaluated.
+          </li><li class="st200_list_item">
+            If <span class="st200_term expression">F</span> contains a
+            <a class="st200_link" href="p3s6.xhtml#st200_p3s6ss3">discard</a>
+            declaration, and the condition evaluates to <span class="st200_term constant">true</span>,
+            execution of <span class="st200_term expression">F</span> halts and no
+            output is produced.
+          </li><li class="st200_list_item">
+            The values resulting from evaluation are written to the
+            outputs of <span class="st200_term expression">F</span>.
+          </li></ol></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p6s1.xhtml#st200_p6s1">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p6.xhtml#st200_p6">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p7.xhtml#st200_p7">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">6.1. Overview</td><td class="st200_navbar_up_title_cell">6. Compilation and Execution</td><td class="st200_navbar_next_title_cell">7. Standard Library Reference</td></tr></table></div></div></body></html>

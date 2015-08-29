@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 4.13. Matrix Column Access</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">4.12. Swizzle</td><td class="st200_navbar_up_title_cell">4. Expressions</td><td class="st200_navbar_next_title_cell">4.14. New</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p4s12.xhtml#st200_p4s12">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p4.xhtml#st200_p4">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p4s14.xhtml#st200_p4s14">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p4s13" href="#st200_p4s13">4.13</a></div><div class="st200_section_title">Matrix Column Access</div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p4s13ss1" href="#st200_p4s13ss1">4.13.1</a></div><div class="st200_subsection_title">Description</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p4s13ss1pg1" href="#st200_p4s13ss1pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">matrix_column_access_expression</span> retrieves
+          exactly one column of a 
+          <a class="st200_link" href="p5s7.xhtml#st200_p5s7">matrix</a>
+          type, returning a value of an appropriate 
+          <span class="st200_term term">vector</span> type representing the column.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p4s13ss2" href="#st200_p4s13ss2">4.13.2</a></div><div class="st200_subsection_title">Type rules</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p4s13ss2pg1" href="#st200_p4s13ss2pg1">1</a></div><div class="st200_paragraph">
+          For <span class="st200_term term">matrix_column_access_expressions</span>, special type rules
+          apply as described in the
+          <a class="st200_link" href="p5s7.xhtml#st200_p5s7">Matrices</a>
+          section of the
+          <a class="st200_link" href="p5.xhtml#st200_p5">Types</a> section.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p4s13ss3" href="#st200_p4s13ss3">4.13.3</a></div><div class="st200_subsection_title">Operational semantics</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p4s13ss3pg1" href="#st200_p4s13ss3pg1">1</a></div><div class="st200_paragraph">
+          For a <span class="st200_term term">matrix_column_access_expression</span>
+          <span class="st200_term expression">e</span>,
+          the first subexpression is evaluated, by rule
+          <span class="st200_term constant">matrix_column_access_pre</span>, and the
+          resulting expression is a new vector value.
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p4s13ss3fo1" href="#st200_p4s13ss3fo1">4.13.3.1. Matrix Column Access semantics (matrix_column_access)</a></div><img class="st200_image" alt="Matrix Column Access semantics (matrix_column_access)" src="png/op_matrix_column_access.png"/></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p4s13ss3pg2" href="#st200_p4s13ss3pg2">2</a></div><div class="st200_paragraph">
+          Note that the integer constant given as the index of the column
+          to return is required by the type rules to be greater than zero
+          and less than the number of columns in the type, and therefore
+          evaluation cannot fail due to an out-of-range index.
+        </div></div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p4s12.xhtml#st200_p4s12">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p4.xhtml#st200_p4">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p4s14.xhtml#st200_p4s14">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">4.12. Swizzle</td><td class="st200_navbar_up_title_cell">4. Expressions</td><td class="st200_navbar_next_title_cell">4.14. New</td></tr></table></div></div></body></html>

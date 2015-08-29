@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 3.8. Modules</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">3.7. Programs</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.9. Packages</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p3s7.xhtml#st200_p3s7">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s9.xhtml#st200_p3s9">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p3s8" href="#st200_p3s8">3.8</a></div><div class="st200_section_title">Modules</div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s8ss1" href="#st200_p3s8ss1">3.8.1</a></div><div class="st200_subsection_title">Description</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss1pg1" href="#st200_p3s8ss1pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">module</span> is a organizational unit
+          containing
+          <a class="st200_link" href="p3s2.xhtml#st200_p3s2">terms</a>,
+          <a class="st200_link" href="p3s3.xhtml#st200_p3s3">types</a>, and
+          <a class="st200_link" href="p3s4.xhtml#st200_p3s4">shaders</a>.
+          Modules exist solely to partition the namespace into separate sections
+          to allow for ease of code re-use across projects.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s8ss2" href="#st200_p3s8ss2">3.8.2</a></div><div class="st200_subsection_title">Declarations</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss2pg1" href="#st200_p3s8ss2pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">module_declaration</span> declares
+          a new <span class="st200_term term">module</span>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s8ss3" href="#st200_p3s8ss3">3.8.3</a></div><div class="st200_subsection_title">Names</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss3pg1" href="#st200_p3s8ss3pg1">1</a></div><div class="st200_paragraph">
+          The names selected for modules must be unique with respect to
+          other modules within the <a class="st200_link" href="p3s9.xhtml#st200_p3s9">package</a>
+          in which they are defined. That is, there cannot be two modules with the same name
+          in the same package.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss3pg2" href="#st200_p3s8ss3pg2">2</a></div><div class="st200_paragraph">
+          The following restrictions apply when naming modules:
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p3s8ss3fo1" href="#st200_p3s8ss3fo1">3.8.3.1. Name restrictions</a></div><ul class="st200_list_unordered"><li class="st200_list_item">
+              Module names must begin with an <span class="st200_term term">uppercase</span>
+              letter. This is directly implied by the
+              <a class="st200_link" href="p3s8.xhtml#st200_p3s8ss6">grammar</a>.
+            </li><li class="st200_list_item">
+              Names cannot contain two adjacent underscores (<span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot end with underscores (<span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot start with the character sequence "<span class="st200_term constant">GL_</span>"
+              (<span class="st200_term constant">U+0047</span>,
+               <span class="st200_term constant">U+004C</span>,
+               <span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot match any of the keywords or reserved words defined in
+              any version of the OpenGL shading language. See the
+              <a class="st200_link" href="p8s4.xhtml#st200_p8s4">GLSL identifiers</a>
+              section for the complete list.
+            </li></ul></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s8ss4" href="#st200_p3s8ss4">3.8.4</a></div><div class="st200_subsection_title">Imports</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss4pg1" href="#st200_p3s8ss4pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">module</span> may <span class="st200_term term">import</span>
+          any number of modules via <span class="st200_term term">import_declarations</span>. An
+          <span class="st200_term term">import_declaration</span>, given in module
+          <span class="st200_term variable">X</span>,
+          specifies a name of a module <span class="st200_term variable">Y</span>
+          prefixed with the name of the
+          <a class="st200_link" href="p3s9.xhtml#st200_p3s9">package</a>
+          in which the module <span class="st200_term variable">Y</span> was defined. The
+          <span class="st200_term term">terms</span>, <span class="st200_term term">types</span>, and
+          <span class="st200_term term">shaders</span> of <span class="st200_term variable">Y</span>
+          are then accessible in
+          <span class="st200_term variable">X</span> by qualifying
+          their names with <span class="st200_term variable">Y</span>. As an example:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s8ss4fo1" href="#st200_p3s8ss4fo1">3.8.4.1. Module import example</a></div><pre class="st200_verbatim">package com.example;
+
+module Y is
+  value k = 23;
+end;
+
+module X is
+  import com.example.Y;
+  value z = Y.k;
+end;</pre></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss4pg2" href="#st200_p3s8ss4pg2">2</a></div><div class="st200_paragraph">
+          The value of <span class="st200_term expression">X.z</span> is
+          <span class="st200_term expression">23</span>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss4pg3" href="#st200_p3s8ss4pg3">3</a></div><div class="st200_paragraph">
+          Because two modules defined in different packages can have the
+          same names, it is possible for imports to <span class="st200_term term">collide</span>:
+          If a <span class="st200_term variable">X</span> imports both
+          modules <span class="st200_term expression">com.example_0.Y</span> and
+          <span class="st200_term expression">com.example_1.Y</span>, then
+          the name <span class="st200_term expression">Y</span> will be introduced twice.
+          An <span class="st200_term term">import_declaration</span> may therefore provide
+          an optional name to disambiguate imported modules:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s8ss4fo2" href="#st200_p3s8ss4fo2">3.8.4.2. Module import renaming</a></div><pre class="st200_verbatim">package com.example;
+
+module X is
+  import com.example_0.Y;
+  import com.example_1.Y as Z;
+
+  value z = Y.k;
+  value q = Z.p;
+end;</pre></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss4pg4" href="#st200_p3s8ss4pg4">4</a></div><div class="st200_paragraph">
+          If a module <span class="st200_term variable">X</span>
+          imports a module
+          <span class="st200_term variable">Y</span> as <span class="st200_term variable">Z</span>,
+          the
+          <span class="st200_term term">terms</span>, <span class="st200_term term">types</span>, and
+          <span class="st200_term term">shaders</span> of <span class="st200_term variable">Y</span>
+          are then accessible in
+          <span class="st200_term variable">X</span> by qualifying
+          their names with <span class="st200_term variable">Z</span>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss4pg5" href="#st200_p3s8ss4pg5">5</a></div><div class="st200_paragraph">
+          The imported names of modules are <span class="st200_term emphasis">not</span>
+          visible outside of the module in which they are imported. For example, if
+          a module <span class="st200_term variable">X</span> imports a module
+          <span class="st200_term variable">Y</span>, and <span class="st200_term variable">Y</span>
+          imports a module <span class="st200_term variable">Z</span>, the module
+          <span class="st200_term variable">Z</span> is
+          <span class="st200_term emphasis">not</span>
+          visible as
+          <span class="st200_term variable">Y.Z</span>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s8ss5" href="#st200_p3s8ss5">3.8.5</a></div><div class="st200_subsection_title">Recursion</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss5pg1" href="#st200_p3s8ss5pg1">1</a></div><div class="st200_paragraph">
+          No <span class="st200_term term">module_declaration</span> can be <span class="st200_term term">recursive</span>
+          with respect to itself or any other <span class="st200_term term">module_declaration</span>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss5pg2" href="#st200_p3s8ss5pg2">2</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">module_declaration</span> <span class="st200_term variable">d</span>
+          is (mutually) <span class="st200_term term">recursive</span> iff:
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p3s8ss5fo1" href="#st200_p3s8ss5fo1">3.8.5.1. Recursion conditions</a></div><ul class="st200_list_unordered"><li class="st200_list_item">
+              <span class="st200_term variable">d</span> imports itself.
+            </li><li class="st200_list_item">
+              There is a sequence of modules <span class="st200_term expression">d₀, d₁, ..., dₙ</span>
+              such that <span class="st200_term variable">d</span> imports
+              <span class="st200_term variable">d₀</span>, and
+              for all <span class="st200_term variable">m</span> where <span class="st200_term expression">0 &lt;= m &lt; n</span>,
+              <span class="st200_term variable">dₘ</span> imports
+              <span class="st200_term expression">d₍ₘ₊₁₎</span>, and
+              <span class="st200_term variable">dₙ</span> imports
+              <span class="st200_term variable">d</span>.
+            </li></ul></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s8ss6" href="#st200_p3s8ss6">3.8.6</a></div><div class="st200_subsection_title">Syntax</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s8ss6pg1" href="#st200_p3s8ss6pg1">1</a></div><div class="st200_paragraph">
+          The precise syntax of module declarations is given by the following
+          EBNF:
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p3s8ss6fo1" href="#st200_p3s8ss6fo1">3.8.6.1. Module declaration syntax</a></div><pre class="st200_verbatim">package_path =
+  name_lower , { "." , name_lower } ;
+
+import_path =
+  package_path , "." , name_upper ;
+
+import_declaration =
+  "import" , import_path , [ "as" , name_upper ] ;
+
+import_declarations =
+  { import_declaration , ";" } ;
+
+module_level_declarations =
+  { value_declarations | function_declarations | type_declarations | shader_declarations } ;
+
+module_declaration =
+  "module" , name_upper , "is" ,
+  import_declarations ,
+  module_level_declarations ,
+  "end" ;
+
+module_declarations =
+  module_declaration , ";" , { module_declaration , ";" } ;</pre></div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p3s7.xhtml#st200_p3s7">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s9.xhtml#st200_p3s9">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">3.7. Programs</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.9. Packages</td></tr></table></div></div></body></html>

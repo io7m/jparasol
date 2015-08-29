@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 4.11. Record</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">4.10. Record Projection</td><td class="st200_navbar_up_title_cell">4. Expressions</td><td class="st200_navbar_next_title_cell">4.12. Swizzle</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p4s10.xhtml#st200_p4s10">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p4.xhtml#st200_p4">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p4s12.xhtml#st200_p4s12">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p4s11" href="#st200_p4s11">4.11</a></div><div class="st200_section_title">Record</div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p4s11ss1" href="#st200_p4s11ss1">4.11.1</a></div><div class="st200_subsection_title">Description</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p4s11ss1pg1" href="#st200_p4s11ss1pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">record_expression</span> constructs
+          a new value of a
+          <a class="st200_link" href="p5s9.xhtml#st200_p5s9">record</a>
+          type.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p4s11ss2" href="#st200_p4s11ss2">4.11.2</a></div><div class="st200_subsection_title">Type rules</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p4s11ss2pg1" href="#st200_p4s11ss2pg1">1</a></div><div class="st200_paragraph">
+          If a record type <span class="st200_term type">t</span> exists in the current
+          environment, then a record expression creates a new value of type
+          <span class="st200_term type">t</span>. Note that the type rule implies that
+          all <span class="st200_term term">fields</span> of the corresponding
+          record type must be specified exactly once.
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p4s11ss2fo1" href="#st200_p4s11ss2fo1">4.11.2.1. Record expression type rule (record_expression)</a></div><img class="st200_image" alt="Record expression type rule (record_expression)" src="png/ty_record_expression.png"/></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p4s11ss3" href="#st200_p4s11ss3">4.11.3</a></div><div class="st200_subsection_title">Operational semantics</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p4s11ss3pg1" href="#st200_p4s11ss3pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">record_expression</span> is
+          a set of distinct
+          <a class="st200_link" href="p5s9.xhtml#st200_p5s9">record</a>
+          field labels with associated expressions. The expressions
+          associated with each field are evaluated in the order that they appear
+          in the source code, by rules
+          <span class="st200_term constant">record_expression_0</span> and
+          <span class="st200_term constant">record_expression_1</span>, resulting in
+          a new value of type <span class="st200_term type">t</span>.
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p4s11ss3fo1" href="#st200_p4s11ss3fo1">4.11.3.1. Record expression semantics (record_expression)</a></div><img class="st200_image" alt="Record expression semantics (record_expression)" src="png/op_record_expression.png"/></div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p4s10.xhtml#st200_p4s10">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p4.xhtml#st200_p4">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p4s12.xhtml#st200_p4s12">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">4.10. Record Projection</td><td class="st200_navbar_up_title_cell">4. Expressions</td><td class="st200_navbar_next_title_cell">4.12. Swizzle</td></tr></table></div></div></body></html>

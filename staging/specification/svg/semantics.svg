@@ -1,0 +1,2368 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1440.5"
+   height="1312.5"
+   id="svg5223"
+   version="1.1"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="semantics.svg"
+   inkscape:export-filename="/home/m0/fossil/com.io7m.cirrus/io7m-parasol/src/main/svg/semantics.png"
+   inkscape:export-xdpi="120.03674"
+   inkscape:export-ydpi="120.03674">
+  <defs
+     id="defs5225" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#f0f0f0"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="828.23252"
+     inkscape:cy="1108.0479"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     borderlayer="true"
+     inkscape:showpageshadow="false"
+     inkscape:window-width="1378"
+     inkscape:window-height="844"
+     inkscape:window-x="22"
+     inkscape:window-y="8"
+     inkscape:window-maximized="0"
+     inkscape:snap-to-guides="false"
+     inkscape:snap-bbox="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid5231"
+       empspacing="8"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       spacingx="16px"
+       spacingy="16px"
+       originx="-16px"
+       originy="48.500016px" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5228">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-16,211.63782)">
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+       x="32"
+       y="460.36218"
+       id="text5276"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="0"
+         y="0"
+         id="tspan5284"><tspan
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono Bold"
+           id="tspan5494" /></tspan></text>
+    <g
+       id="record_projection"
+       transform="translate(640.70361,-79.844232)">
+      <rect
+         y="428.86218"
+         x="288.5"
+         height="271.34424"
+         width="318.79639"
+         id="rect6016"
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text6036"
+         y="684.20642"
+         x="303.29639"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="684.20642"
+           x="303.29639"
+           id="tspan6038"
+           sodipodi:role="line">record_projection</tspan></text>
+      <g
+         id="record_projection_value"
+         transform="translate(0.5,64.5)">
+        <rect
+           transform="translate(-640.70361,60.20642)"
+           y="448"
+           x="944"
+           height="79.5"
+           width="287.5"
+           id="rect6934"
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 318.79639,523.70642 256,0"
+           id="path6040"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="319.29639"
+           y="540.20642"
+           id="text6042"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan6044"
+             x="319.29639"
+             y="540.20642"
+             style="font-size:12px">{ v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5123">0</tspan>, ..., k = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5125">k</tspan>, ..., v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5127">n</tspan> }.k ⇒ v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5129">k</tspan></tspan></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text6936"
+           y="572.20642"
+           x="319.29639"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           xml:space="preserve"><tspan
+             y="572.20642"
+             x="319.29639"
+             id="tspan6938"
+             sodipodi:role="line">record_projection_value</tspan></text>
+      </g>
+      <g
+         id="record_projection_pre"
+         transform="translate(0.50000328,0.4999991)">
+        <rect
+           y="444.20642"
+           x="303.29639"
+           height="112"
+           width="160"
+           id="rect6952"
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="319.29639"
+           y="476.20642"
+           id="text6018"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan6020"
+             x="319.29639"
+             y="476.20642"
+             style="font-size:12px">e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5115">0</tspan> → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7060">0</tspan>'</tspan></text>
+        <path
+           sodipodi:nodetypes="cc"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 319.29639,492.20642 96,0"
+           id="path6022"
+           inkscape:connector-curvature="0" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="319.29639"
+           y="508.20642"
+           id="text6024"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan6026"
+             x="319.29639"
+             y="508.20642"
+             style="font-size:12px">e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5119">0</tspan>.k → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7058">0</tspan>'.k</tspan></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text6954"
+           y="540.20642"
+           x="319.29639"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           xml:space="preserve"><tspan
+             y="540.20642"
+             x="319.29639"
+             id="tspan6956"
+             sodipodi:role="line">record_projection_pre</tspan></text>
+      </g>
+    </g>
+    <g
+       id="conditional"
+       transform="translate(0.5,-399.5)">
+      <rect
+         y="508.36218"
+         x="16"
+         height="400"
+         width="464"
+         id="rect5313"
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect5999"
+         width="432"
+         height="112"
+         x="32"
+         y="748.36218" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text5315-0-2"
+         y="780.36218"
+         x="48"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:Sans"
+         xml:space="preserve"><tspan
+           y="780.36218"
+           x="48"
+           id="tspan5317-6-1"
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;baseline-shift:baseline;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono">e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5805">0</tspan> → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5807">0</tspan>'</tspan></text>
+      <path
+         inkscape:connector-curvature="0"
+         id="path5401"
+         d="m 48,796.36218 400,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         sodipodi:nodetypes="cc" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text5403"
+         y="812.36218"
+         x="48"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:Sans"
+         xml:space="preserve"><tspan
+           id="tspan5407"
+           y="812.36218"
+           x="48"
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono">if e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5831">0</tspan> then e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5833">1</tspan> else e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5835">2</tspan> end → if e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5837">0</tspan>' then e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5839">1</tspan> else e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5841">2</tspan> end</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text5421"
+         y="892.36218"
+         x="32"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:Sans"
+         xml:space="preserve"><tspan
+           y="892.36218"
+           x="32"
+           id="tspan5423"
+           sodipodi:role="line">conditional</tspan></text>
+      <g
+         id="if_true">
+        <rect
+           transform="translate(0,300.36218)"
+           y="224"
+           x="32"
+           height="96"
+           width="256"
+           id="rect5944"
+           style="fill:#ffffff;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="572.36218"
+           id="text5315"
+           sodipodi:linespacing="125%"><tspan
+             style="font-size:12px"
+             sodipodi:role="line"
+             id="tspan5317"
+             x="48"
+             y="572.36218">if true then e<tspan
+   id="tspan5815"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> else e<tspan
+   id="tspan5817"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> end → e<tspan
+   id="tspan5819"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan></tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 47.5,555.86218 224,0"
+           id="path5053"
+           inkscape:connector-curvature="0" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text5940"
+           y="604.36218"
+           x="48"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           xml:space="preserve"><tspan
+             style="fill:#999999"
+             y="604.36218"
+             x="48"
+             id="tspan5942"
+             sodipodi:role="line">if_true</tspan></text>
+      </g>
+      <g
+         id="if_false">
+        <rect
+           style="fill:#ffffff;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="rect5946"
+           width="256"
+           height="96"
+           x="32.5"
+           y="636.86218" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="684.36218"
+           id="text5315-0"
+           sodipodi:linespacing="125%"><tspan
+             style="font-size:12px"
+             sodipodi:role="line"
+             id="tspan5317-6"
+             x="48"
+             y="684.36218">if false then e<tspan
+   id="tspan5809"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> else e<tspan
+   id="tspan5811"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> end → e<tspan
+   id="tspan5813"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan></tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 48,667.36218 224,0"
+           id="path5053-4"
+           inkscape:connector-curvature="0" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           x="46.963379"
+           y="713.76794"
+           id="text5948"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5950"
+             x="46.963379"
+             y="713.76794"
+             style="fill:#999999">if_false</tspan></text>
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="48"
+         y="844.36218"
+         id="text6001"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan6003"
+           x="48"
+           y="844.36218">if_condition</tspan></text>
+    </g>
+    <g
+       transform="translate(480,-944)"
+       id="let">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect5669"
+         width="447.5"
+         height="351.5"
+         x="16.5"
+         y="732.86218" />
+      <text
+         xml:space="preserve"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:Sans"
+         x="32"
+         y="1052.3622"
+         id="text5671"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan5673"
+           x="32"
+           y="1052.3622">let</tspan></text>
+      <g
+         id="g5727"
+         transform="translate(0,-32.000003)" />
+      <g
+         id="let_body"
+         transform="translate(240.5,0.49998899)">
+        <rect
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="rect6319"
+           width="175.5"
+           height="239.5"
+           x="512"
+           y="32.000004"
+           transform="translate(-480,716.36218)" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="47.5"
+           y="795.86218"
+           id="text6321"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan6323"
+             x="47.5"
+             y="795.86218"
+             style="font-size:12px">let value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6325">0</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6327">0</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="810.86218"
+             id="tspan6329"
+             style="font-size:12px">    value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6331">1</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6333">1</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="825.86218"
+             id="tspan6335"
+             style="font-size:12px">    ...</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="840.86218"
+             id="tspan6337"
+             style="font-size:12px">    value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6339">n</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6341">n</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="855.86218"
+             id="tspan6369"
+             style="font-size:12px">in e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6345">m</tspan> end →</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="870.86218"
+             style="font-size:12px"
+             id="tspan6423" /><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="885.86218"
+             style="font-size:12px"
+             id="tspan6425">e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan3556">m</tspan> [x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6427">0</tspan> := v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6429">0</tspan>,</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="900.86218"
+             style="font-size:12px"
+             id="tspan6439">    x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6431">1</tspan> := v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6433">1</tspan>,</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="915.86218"
+             style="font-size:12px"
+             id="tspan6445">    ...,</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="930.86218"
+             style="font-size:12px"
+             id="tspan6449">    x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6435">n</tspan> := v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6437">n</tspan>]</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 48,764.36218 144,0"
+           id="path6373"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="780.36218"
+           id="text6375"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan6377"
+             x="48"
+             y="780.36218"
+             style="font-size:12px" /></text>
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           x="47.5"
+           y="971.86218"
+           id="text6383"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan6385"
+             x="47.5"
+             y="971.86218">let_body</tspan></text>
+      </g>
+      <g
+         id="let_body-1"
+         transform="translate(0.5,0.49999019)">
+        <rect
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="rect6319-5"
+           width="223.5"
+           height="319.5"
+           x="512"
+           y="32.000004"
+           transform="translate(-480,716.36218)" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="47.5"
+           y="779.86218"
+           id="text6321-5"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan6323-1"
+             x="47.5"
+             y="779.86218"
+             style="font-size:12px">let</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="794.86218"
+             style="font-size:12px"
+             id="tspan4822">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6325-1">0</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6327-6">0</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="809.86218"
+             id="tspan6329-3"
+             style="font-size:12px">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6331-8">1</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6333-8">1</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="824.86218"
+             id="tspan6335-2"
+             style="font-size:12px">  ...</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="839.86218"
+             id="tspan6337-1"
+             style="font-size:12px">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6339-7">n</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6341-2">n</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="854.86218"
+             style="font-size:12px"
+             id="tspan6449-5">in e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6345-8">m</tspan> end</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="869.86218"
+             style="font-size:12px"
+             id="tspan4826" /><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="884.86218"
+             style="font-size:12px"
+             id="tspan4828">x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4834">0</tspan> ∉ { x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4830">1</tspan> ... x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4832">n</tspan> }</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 47.5,907.86218 192,0"
+           id="path6373-4"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="780.36218"
+           id="text6375-2"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan6377-4"
+             x="48"
+             y="780.36218"
+             style="font-size:12px" /></text>
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           x="47.5"
+           y="1051.8622"
+           id="text6383-1"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan6385-7"
+             x="47.5"
+             y="1051.8622">let_locals</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="47.5"
+           y="939.86218"
+           id="text6321-5-7"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan6323-1-7"
+             x="47.5"
+             y="939.86218"
+             style="font-size:12px">let</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="954.86218"
+             style="font-size:12px"
+             id="tspan4822-5">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6325-1-0">0</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6327-6-0">0</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="969.86218"
+             id="tspan6329-3-3"
+             style="font-size:12px">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6331-8-3">1</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4916">1</tspan> [x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4914">0</tspan> := v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4918">0</tspan>];</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="984.86218"
+             id="tspan6335-2-2"
+             style="font-size:12px">  ...</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="999.86218"
+             id="tspan6337-1-8"
+             style="font-size:12px">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6339-7-1">n</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8410">n</tspan> [x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4920">0</tspan> := v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4922">0</tspan>];</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="1014.8622"
+             style="font-size:12px"
+             id="tspan4828-3">in e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6345-8-9">m</tspan> end</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g5326"
+       transform="translate(0,-208)">
+      <g
+         id="function_application">
+        <rect
+           style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="rect5458"
+           width="431.5"
+           height="447.5"
+           x="16.5"
+           y="732.86218" />
+        <text
+           xml:space="preserve"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:Sans"
+           x="32"
+           y="1164.3622"
+           id="text5602"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5604"
+             x="32"
+             y="1164.3622">function_application</tspan></text>
+        <g
+           id="function_application_left_0">
+          <rect
+             style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+             id="rect6005"
+             width="336"
+             height="112"
+             x="32"
+             y="640"
+             transform="translate(0,108.36218)" />
+          <text
+             sodipodi:linespacing="125%"
+             id="text5137"
+             y="812.36218"
+             x="48"
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+             xml:space="preserve"><tspan
+               style="font-size:12px"
+               y="812.36218"
+               x="48"
+               id="tspan5139"
+               sodipodi:role="line">f (e<tspan
+   id="tspan5845"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>, ..., e<tspan
+   id="tspan5847"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>) → f (e<tspan
+   id="tspan5849"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>', ..., e<tspan
+   id="tspan5851"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>)</tspan></text>
+          <path
+             sodipodi:nodetypes="cc"
+             inkscape:connector-curvature="0"
+             id="path5135"
+             d="m 48,796.36218 304,0"
+             style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          <text
+             sodipodi:linespacing="125%"
+             id="text5111"
+             y="780.36218"
+             x="48"
+             style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+             xml:space="preserve"><tspan
+               y="780.36218"
+               x="48"
+               id="tspan5113"
+               sodipodi:role="line">e<tspan
+   id="tspan5131"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> → e<tspan
+   id="tspan5799"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>'</tspan></text>
+          <text
+             xml:space="preserve"
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+             x="48"
+             y="844.36218"
+             id="text6019"
+             sodipodi:linespacing="125%"><tspan
+               sodipodi:role="line"
+               id="tspan6021"
+               x="48"
+               y="844.36218">function_application_left_0</tspan></text>
+        </g>
+        <g
+           id="function_application_left_1">
+          <rect
+             style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+             id="rect6052"
+             width="335.5"
+             height="111.5"
+             x="32.5"
+             y="876.86218" />
+          <text
+             sodipodi:linespacing="125%"
+             id="text5182"
+             y="940.36218"
+             x="48"
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+             xml:space="preserve"><tspan
+               style="font-size:12px"
+               id="tspan5186"
+               y="940.36218"
+               x="48"
+               sodipodi:role="line">f (v<tspan
+   id="tspan5859"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>, v<tspan
+   id="tspan5861"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan>, ..., e<tspan
+   id="tspan5863"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>) → f (v<tspan
+   id="tspan5865"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>, v<tspan
+   id="tspan5867"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan>, ..., e<tspan
+   id="tspan5869"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>')</tspan></text>
+          <path
+             sodipodi:nodetypes="cc"
+             inkscape:connector-curvature="0"
+             id="path5180"
+             d="m 48,924.36218 304,0"
+             style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          <text
+             sodipodi:linespacing="125%"
+             id="text5111-7"
+             y="908.36218"
+             x="48"
+             style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+             xml:space="preserve"><tspan
+               y="908.36218"
+               x="48"
+               id="tspan5113-8"
+               sodipodi:role="line">e<tspan
+   id="tspan5176"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> → e<tspan
+   id="tspan5843"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>'</tspan></text>
+          <text
+             xml:space="preserve"
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+             x="48"
+             y="972.36218"
+             id="text6054"
+             sodipodi:linespacing="125%"><tspan
+               sodipodi:role="line"
+               id="tspan6056"
+               x="48"
+               y="972.36218">function_application_left_1</tspan></text>
+        </g>
+        <g
+           id="function_application_body">
+          <rect
+             style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+             id="rect6077"
+             width="400"
+             height="128"
+             x="32"
+             y="896"
+             transform="translate(0,108.36218)" />
+          <text
+             sodipodi:linespacing="125%"
+             id="text5206"
+             y="1036.3622"
+             x="48"
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+             xml:space="preserve"><tspan
+               y="1036.3622"
+               x="48"
+               id="tspan5208"
+               sodipodi:role="line">f = function (x<tspan
+   id="tspan5210"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>, x<tspan
+   id="tspan5212"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan>, ..., x<tspan
+   id="tspan5214"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>) = e<tspan
+   id="tspan5216"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan></tspan></text>
+          <path
+             sodipodi:nodetypes="cc"
+             inkscape:connector-curvature="0"
+             id="path5218"
+             d="m 48,1052.3622 368,0"
+             style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          <text
+             sodipodi:linespacing="125%"
+             id="text5220"
+             y="1084.3622"
+             x="48"
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+             xml:space="preserve"><tspan
+               y="1084.3622"
+               x="48"
+               id="tspan5222"
+               sodipodi:role="line">f (v<tspan
+   id="tspan5224"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>, v<tspan
+   id="tspan5226"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan>, ..., v<tspan
+   id="tspan5232"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>) → e<tspan
+   id="tspan5246"
+   style="font-size:65.00091553%;baseline-shift:sub">0 </tspan>[x<tspan
+   id="tspan5234"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> := v<tspan
+   id="tspan5236"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>, x<tspan
+   id="tspan5238"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> := v<tspan
+   id="tspan5240"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan>, ..., x<tspan
+   id="tspan5242"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> := v<tspan
+   id="tspan5244"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>]</tspan></text>
+          <text
+             xml:space="preserve"
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+             x="48"
+             y="1116.3622"
+             id="text6079"
+             sodipodi:linespacing="125%"><tspan
+               sodipodi:role="line"
+               id="tspan6081"
+               x="48"
+               y="1116.3622">function_application_body</tspan></text>
+        </g>
+      </g>
+    </g>
+    <g
+       id="new"
+       transform="translate(0,96.000017)">
+      <rect
+         y="252.86217"
+         x="496.5"
+         height="303.5"
+         width="415.5"
+         id="rect5458-7"
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text5602-1"
+         y="540.36218"
+         x="512"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:Sans"
+         xml:space="preserve"><tspan
+           y="540.36218"
+           x="512"
+           id="tspan5604-2"
+           sodipodi:role="line">new</tspan></text>
+      <g
+         transform="translate(480,-480.00001)"
+         id="new_left_0">
+        <rect
+           transform="translate(0,108.36218)"
+           y="640"
+           x="32"
+           height="112"
+           width="336"
+           id="rect6005-0"
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="812.36218"
+           id="text5137-6"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5139-8"
+             x="48"
+             y="812.36218"
+             style="font-size:12px">new t (e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5845-6">0</tspan>, ..., e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5847-9">n</tspan>) → new t (e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5849-0">0</tspan>', ..., e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5851-3">n</tspan>)</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 48,796.36218 304,0"
+           id="path5135-7"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="780.36218"
+           id="text5111-4"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5113-9"
+             x="48"
+             y="780.36218">e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5131-3">0</tspan> → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5799-4">0</tspan>'</tspan></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text6019-1"
+           y="844.36218"
+           x="48"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           xml:space="preserve"><tspan
+             y="844.36218"
+             x="48"
+             id="tspan6021-2"
+             sodipodi:role="line">new_left_0</tspan></text>
+      </g>
+      <g
+         transform="translate(480,-480.00001)"
+         id="new_left_1">
+        <rect
+           y="876.86218"
+           x="32.5"
+           height="111.5"
+           width="383.5"
+           id="rect6052-3"
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="940.36218"
+           id="text5182-8"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             x="48"
+             y="940.36218"
+             id="tspan5186-6"
+             style="font-size:12px">new t (v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5859-0">0</tspan>, v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5861-4">1</tspan>, ..., e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5863-7">n</tspan>) → new t (v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5865-7">0</tspan>, v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5867-0">1</tspan>, ..., e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5869-9">n</tspan>')</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 48,924.36218 352,0"
+           id="path5180-8"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="908.36218"
+           id="text5111-7-4"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5113-8-8"
+             x="48"
+             y="908.36218">e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5176-7">n</tspan> → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5843-7">n</tspan>'</tspan></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text6054-2"
+           y="972.36218"
+           x="48"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           xml:space="preserve"><tspan
+             y="972.36218"
+             x="48"
+             id="tspan6056-1"
+             sodipodi:role="line">new_left_1</tspan></text>
+      </g>
+    </g>
+    <g
+       transform="translate(640,208.00001)"
+       id="swizzle">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect6984"
+         width="335.5"
+         height="175.5"
+         x="288.5"
+         y="428.86218" />
+      <text
+         xml:space="preserve"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="304"
+         y="588.36218"
+         id="text6986"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan6988"
+           x="304"
+           y="588.36218">swizzle</tspan></text>
+      <g
+         transform="translate(0.50000328,0.4999991)"
+         id="swizzle_pre">
+        <rect
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="rect7014"
+           width="304.20361"
+           height="111.65576"
+           x="303.29639"
+           y="444.20642" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text7016"
+           y="476.20642"
+           x="319.29639"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           xml:space="preserve"><tspan
+             style="font-size:12px"
+             y="476.20642"
+             x="319.29639"
+             id="tspan7018"
+             sodipodi:role="line">e<tspan
+   id="tspan7020"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7054">0</tspan>'</tspan></text>
+        <path
+           inkscape:connector-curvature="0"
+           id="path7024"
+           d="m 319.29639,492.20642 96,0"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           sodipodi:nodetypes="cc" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text7026"
+           y="508.20642"
+           x="319.29639"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           xml:space="preserve"><tspan
+             y="508.20642"
+             x="319.29639"
+             id="tspan7028"
+             sodipodi:role="line">e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7038">0</tspan> [F<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7042">0</tspan>, F<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7044">1</tspan>, ..., F<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7046">N</tspan>] → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7056">0</tspan>' [F<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7048">0</tspan>, F<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7050">1</tspan>, ..., F<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7052">N</tspan>]</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           x="319.29639"
+           y="540.20642"
+           id="text7034"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan7036"
+             x="319.29639"
+             y="540.20642">swizzle_pre</tspan></text>
+      </g>
+    </g>
+    <g
+       id="values"
+       transform="translate(0,-2.6171876e-6)">
+      <rect
+         y="-211.13782"
+         x="16.5"
+         height="191.5"
+         width="335.5"
+         id="rect5456"
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text5031"
+         y="-184.63782"
+         x="33"
+         style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+         xml:space="preserve"><tspan
+           y="-184.63782"
+           x="33"
+           id="tspan5033"
+           sodipodi:role="line">v = {</tspan><tspan
+           id="tspan5581"
+           y="-170.88782"
+           x="33"
+           sodipodi:role="line">  true,</tspan><tspan
+           id="tspan5583"
+           y="-157.13782"
+           x="33"
+           sodipodi:role="line">  false,</tspan><tspan
+           id="tspan5585"
+           y="-143.38782"
+           x="33"
+           sodipodi:role="line">  ℤ,</tspan><tspan
+           id="tspan5542"
+           y="-129.63782"
+           x="33"
+           sodipodi:role="line">  ℝ,</tspan><tspan
+           id="tspan5615"
+           y="-115.88782"
+           x="33"
+           sodipodi:role="line">  new t (v<tspan
+   id="tspan5619"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>, v<tspan
+   id="tspan5621"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan>, ... v<tspan
+   id="tspan5623"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>),</tspan><tspan
+           id="tspan5617"
+           y="-102.13782"
+           x="33"
+           sodipodi:role="line">  record t { F<tspan
+   id="tspan5625"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> = v<tspan
+   id="tspan5627"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>, F<tspan
+   id="tspan5629"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> = v<tspan
+   id="tspan5631"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan>, ... F<tspan
+   id="tspan5633"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> = v<tspan
+   id="tspan5635"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> },</tspan><tspan
+           id="tspan6972"
+           y="-88.387817"
+           x="33"
+           sodipodi:role="line">  v<tspan
+   id="tspan6980"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> [F<tspan
+   id="tspan6974"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>, F<tspan
+   id="tspan6976"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan>, ..., F<tspan
+   id="tspan6978"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>]</tspan><tspan
+           id="tspan5548"
+           y="-74.637817"
+           x="33"
+           sodipodi:role="line">  column v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4360">0 </tspan>ℤ</tspan><tspan
+           y="-60.887817"
+           x="33"
+           sodipodi:role="line"
+           id="tspan4362">}</tspan><tspan
+           id="tspan5550"
+           y="-47.137817"
+           x="33"
+           sodipodi:role="line" /><tspan
+           id="tspan5579"
+           y="-33.387817"
+           x="33"
+           sodipodi:role="line" /></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text8600"
+         y="-35.807743"
+         x="31.642578"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="-35.807743"
+           x="31.642578"
+           id="tspan8602"
+           sodipodi:role="line">values</tspan></text>
+    </g>
+    <g
+       id="expressions">
+      <rect
+         y="-3.13782"
+         x="16.5"
+         height="79.5"
+         width="271.5"
+         id="rect8604"
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text8600-0"
+         y="57.866085"
+         x="31.337891"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="57.866085"
+           x="31.337891"
+           id="tspan8602-6"
+           sodipodi:role="line">expressions <tspan
+   id="tspan8640"
+   style="font-size:65.00091553%;baseline-shift:sub">(see grammar for expression forms)</tspan></tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text8636"
+         y="26.405149"
+         x="31.337891"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="26.405149"
+           x="31.337891"
+           id="tspan8638"
+           sodipodi:role="line">e = { ... }</tspan></text>
+    </g>
+    <g
+       id="top_level"
+       transform="translate(0,208.00001)">
+      <rect
+         transform="translate(16,-211.63782)"
+         y="832"
+         x="912"
+         height="272"
+         width="496"
+         id="rect4418"
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <g
+         id="value_top_level_0">
+        <rect
+           style="fill:#ffffff;fill-opacity:1;stroke:#b3b3b3;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="rect4420"
+           width="223.5"
+           height="207.5"
+           x="944.5"
+           y="636.86218" />
+        <text
+           xml:space="preserve"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="960"
+           y="668.36218"
+           id="text4422"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan4424"
+             x="960"
+             y="668.36218"
+             style="font-size:11px">value d<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4432">0</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4436">0</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="960"
+             y="682.11218"
+             style="font-size:11px"
+             id="tspan4426">value d<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4434">1</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4438">0</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="960"
+             y="695.86218"
+             style="font-size:11px"
+             id="tspan4430">...</tspan><tspan
+             sodipodi:role="line"
+             x="960"
+             y="709.61218"
+             style="font-size:11px"
+             id="tspan4428">value d<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4440">n</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4442">n</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="960"
+             y="723.36218"
+             style="font-size:11px"
+             id="tspan4446">d<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4452">0</tspan> ∉ { d<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4448">1</tspan> ... d<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4450">n</tspan> }</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 960.5,747.86218 192,0"
+           id="path4444"
+           inkscape:connector-curvature="0" />
+        <text
+           xml:space="preserve"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           x="960"
+           y="764.36218"
+           id="text4454"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan4456"
+             x="960"
+             y="764.36218"
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono">value d<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4478">1</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4482">0</tspan> [d<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4486">0</tspan> := v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4490">0</tspan>];</tspan><tspan
+             sodipodi:role="line"
+             x="960"
+             y="778.11218"
+             id="tspan4458"
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono">...</tspan><tspan
+             sodipodi:role="line"
+             x="960"
+             y="791.86218"
+             id="tspan4460"
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono">value d<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4480">n</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4484">0</tspan> [d<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4488">0</tspan> := v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4492">0</tspan>];</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           x="960"
+           y="828.36218"
+           id="text4494"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan4496"
+             x="960"
+             y="828.36218"
+             style="fill:#999999;stroke:none">value_top_level_0</tspan></text>
+      </g>
+      <g
+         transform="translate(240,-5.6171875e-6)"
+         id="value_top_level_1">
+        <rect
+           y="636.86218"
+           x="944.5"
+           height="207.5"
+           width="223.5"
+           id="rect4545"
+           style="fill:#ffffff;fill-opacity:1;stroke:#b3b3b3;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text4547"
+           y="668.36218"
+           x="960"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           xml:space="preserve"><tspan
+             style="font-size:11px"
+             y="668.36218"
+             x="960"
+             id="tspan4549"
+             sodipodi:role="line">value d<tspan
+   id="tspan4551"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> = v<tspan
+   id="tspan4553"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>;</tspan><tspan
+             id="tspan4555"
+             style="font-size:11px"
+             y="682.11218"
+             x="960"
+             sodipodi:role="line">function f<tspan
+   id="tspan4557"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> p<tspan
+   id="tspan4607"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> = e<tspan
+   id="tspan4559"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>;</tspan><tspan
+             id="tspan4561"
+             style="font-size:11px"
+             y="695.86218"
+             x="960"
+             sodipodi:role="line">...</tspan><tspan
+             id="tspan4563"
+             style="font-size:11px"
+             y="709.61218"
+             x="960"
+             sodipodi:role="line">function f<tspan
+   id="tspan4565"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> p<tspan
+   id="tspan4609"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> = e<tspan
+   id="tspan4567"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>;</tspan><tspan
+             id="tspan4569"
+             style="font-size:11px"
+             y="723.36218"
+             x="960"
+             sodipodi:role="line" /></text>
+        <path
+           sodipodi:nodetypes="cc"
+           inkscape:connector-curvature="0"
+           id="path4577"
+           d="m 960,732.36218 192,0"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text4579"
+           y="748.36218"
+           x="960"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           xml:space="preserve"><tspan
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+             y="748.36218"
+             x="960"
+             id="tspan4581"
+             sodipodi:role="line">function f<tspan
+   id="tspan4583"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> p<tspan
+   id="tspan4613"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> = e<tspan
+   id="tspan4585"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> [d<tspan
+   id="tspan4587"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> := v<tspan
+   id="tspan4589"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>];</tspan><tspan
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+             id="tspan4591"
+             y="762.11218"
+             x="960"
+             sodipodi:role="line">...</tspan><tspan
+             style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+             id="tspan4593"
+             y="775.86218"
+             x="960"
+             sodipodi:role="line">function f<tspan
+   id="tspan4595"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> p<tspan
+   id="tspan4611"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> = e<tspan
+   id="tspan4597"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> [d<tspan
+   id="tspan4599"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> := v<tspan
+   id="tspan4601"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>];</tspan></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text4603"
+           y="828.36218"
+           x="960"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           xml:space="preserve"><tspan
+             style="fill:#999999;stroke:none"
+             y="828.36218"
+             x="960"
+             id="tspan4605"
+             sodipodi:role="line">value_top_level_1</tspan></text>
+      </g>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4615"
+         y="876.36218"
+         x="944"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="876.36218"
+           x="944"
+           id="tspan4617"
+           sodipodi:role="line">top_level</tspan></text>
+    </g>
+    <g
+       id="record_expression"
+       transform="translate(0,96.000017)">
+      <rect
+         y="572.86218"
+         x="496.5"
+         height="303.5"
+         width="399.5"
+         id="rect5821"
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080" />
+      <g
+         transform="translate(672,-288.00001)"
+         id="record_expression_1"
+         inkscape:label="#record_expression_1">
+        <rect
+           y="876.86218"
+           x="32.5"
+           height="239.5"
+           width="175.5"
+           id="rect6052-3-4-2"
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="940.36218"
+           id="text5182-8-7-8"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             x="48"
+             y="940.36218"
+             id="tspan5186-6-8-4"
+             style="font-size:12px">record t { x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6806-9">0</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5859-0-1-1">0</tspan>,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="955.36218"
+             style="font-size:12px"
+             id="tspan6772-3">           x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6808-3">1</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5861-4-6-3">1</tspan>,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="970.36218"
+             style="font-size:12px"
+             id="tspan6779-0">           ...,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="985.36218"
+             style="font-size:12px"
+             id="tspan6785-4">           x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6810-1">n</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5863-7-1-6">n</tspan>) →</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="1000.3622"
+             style="font-size:12px"
+             id="tspan6818-9" /><tspan
+             sodipodi:role="line"
+             x="48"
+             y="1015.3622"
+             style="font-size:12px"
+             id="tspan6791-1">record t { x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6812-2">0</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5865-7-5-8">0</tspan>,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="1030.3622"
+             style="font-size:12px"
+             id="tspan6796-0">           x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6814-3">1</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5867-0-5-4">1</tspan>,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="1045.3622"
+             style="font-size:12px"
+             id="tspan6800-3">           ...,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="1060.3622"
+             style="font-size:12px"
+             id="tspan6803-8">           x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6816-9">n</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5869-9-1-6">n</tspan>' }</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 48,924.36218 144,0"
+           id="path5180-8-4-5"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="908.36218"
+           id="text5111-7-4-0-2"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5113-8-8-3-0"
+             x="48"
+             y="908.36218">e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5176-7-6-3">n</tspan> → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5843-7-1-3">n</tspan>'</tspan></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text6054-2-0-2"
+           y="1097.7679"
+           x="47.000977"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           xml:space="preserve"><tspan
+             y="1097.7679"
+             x="47.000977"
+             id="tspan6056-1-5-8"
+             sodipodi:role="line">record_expression_1</tspan></text>
+      </g>
+      <g
+         transform="translate(480,-288.00001)"
+         id="record_expression_0"
+         inkscape:label="#record_expression_0">
+        <rect
+           y="876.86218"
+           x="32.5"
+           height="239.5"
+           width="175.5"
+           id="rect6052-3-4"
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="940.36218"
+           id="text5182-8-7"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             x="48"
+             y="940.36218"
+             id="tspan5186-6-8"
+             style="font-size:12px">record t { x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6806">0</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5859-0-1">0</tspan>,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="955.36218"
+             style="font-size:12px"
+             id="tspan6772">           x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6808">1</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5861-4-6">1</tspan>,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="970.36218"
+             style="font-size:12px"
+             id="tspan6779">           ...,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="985.36218"
+             style="font-size:12px"
+             id="tspan6785">           x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6810">n</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5863-7-1">n</tspan>) →</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="1000.3622"
+             style="font-size:12px"
+             id="tspan6818" /><tspan
+             sodipodi:role="line"
+             x="48"
+             y="1015.3622"
+             style="font-size:12px"
+             id="tspan6791">record t { x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6812">0</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6932">0</tspan>',</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="1030.3622"
+             style="font-size:12px"
+             id="tspan6796">           x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6814">1</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5867-0-5">1</tspan>,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="1045.3622"
+             style="font-size:12px"
+             id="tspan6800">           ...,</tspan><tspan
+             sodipodi:role="line"
+             x="48"
+             y="1060.3622"
+             style="font-size:12px"
+             id="tspan6803">           x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6816">n</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan5283">n </tspan>}</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 48,924.36218 144,0"
+           id="path5180-8-4"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="908.36218"
+           id="text5111-7-4-0"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5113-8-8-3"
+             x="48"
+             y="908.36218">e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6930">0</tspan> → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan6928">0</tspan>'</tspan></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text6054-2-0"
+           y="1097.7679"
+           x="47.000977"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           xml:space="preserve"><tspan
+             y="1097.7679"
+             x="47.000977"
+             id="tspan6056-1-5"
+             sodipodi:role="line">record_expression_0</tspan></text>
+      </g>
+      <text
+         sodipodi:linespacing="125%"
+         id="text5823"
+         y="860.36218"
+         x="512"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="860.36218"
+           x="512"
+           id="tspan5825"
+           sodipodi:role="line">record_expression</tspan></text>
+    </g>
+    <g
+       id="g8230"
+       transform="translate(944,-943.99999)">
+      <rect
+         y="732.86218"
+         x="16.5"
+         height="479.49997"
+         width="495.5"
+         id="rect8232"
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text8234"
+         y="1052.3622"
+         x="32"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:Sans"
+         xml:space="preserve"><tspan
+           y="1052.3622"
+           x="32"
+           id="tspan8236"
+           sodipodi:role="line">let</tspan></text>
+      <g
+         transform="translate(0,-32.000003)"
+         id="g8238" />
+      <g
+         transform="translate(0.5,0.49999019)"
+         id="shader_vertex_values">
+        <rect
+           transform="translate(-480,716.36218)"
+           y="32.000004"
+           x="512"
+           height="447.5"
+           width="223.5"
+           id="rect8304"
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text8306"
+           y="779.86218"
+           x="47.5"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           xml:space="preserve"><tspan
+             style="font-size:12px"
+             y="779.86218"
+             x="47.5"
+             id="tspan8308"
+             sodipodi:role="line">shader vertex v is</tspan><tspan
+             style="font-size:12px"
+             y="794.86218"
+             x="47.5"
+             sodipodi:role="line"
+             id="tspan8388">  ...</tspan><tspan
+             style="font-size:12px"
+             y="809.86218"
+             x="47.5"
+             sodipodi:role="line"
+             id="tspan8390">with</tspan><tspan
+             id="tspan8310"
+             style="font-size:12px"
+             y="824.86218"
+             x="47.5"
+             sodipodi:role="line">  value x<tspan
+   id="tspan8312"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> = v<tspan
+   id="tspan8314"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>;</tspan><tspan
+             style="font-size:12px"
+             id="tspan8316"
+             y="839.86218"
+             x="47.5"
+             sodipodi:role="line">  value x<tspan
+   id="tspan8318"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> = e<tspan
+   id="tspan8320"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan>;</tspan><tspan
+             style="font-size:12px"
+             id="tspan8322"
+             y="854.86218"
+             x="47.5"
+             sodipodi:role="line">  ...</tspan><tspan
+             style="font-size:12px"
+             id="tspan8324"
+             y="869.86218"
+             x="47.5"
+             sodipodi:role="line">  value x<tspan
+   id="tspan8326"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> = e<tspan
+   id="tspan8328"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan>;</tspan><tspan
+             id="tspan8330"
+             style="font-size:12px"
+             y="884.86218"
+             x="47.5"
+             sodipodi:role="line">as</tspan><tspan
+             style="font-size:12px"
+             y="899.86218"
+             x="47.5"
+             sodipodi:role="line"
+             id="tspan8392">  ...</tspan><tspan
+             style="font-size:12px"
+             y="914.86218"
+             x="47.5"
+             sodipodi:role="line"
+             id="tspan8394">end</tspan><tspan
+             id="tspan8334"
+             style="font-size:12px"
+             y="929.86218"
+             x="47.5"
+             sodipodi:role="line" /><tspan
+             id="tspan8336"
+             style="font-size:12px"
+             y="944.86218"
+             x="47.5"
+             sodipodi:role="line">x<tspan
+   id="tspan8338"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> ∉ { x<tspan
+   id="tspan8340"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> ... x<tspan
+   id="tspan8342"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> }</tspan></text>
+        <path
+           sodipodi:nodetypes="cc"
+           inkscape:connector-curvature="0"
+           id="path8344"
+           d="m 47.5,971.86218 192,0"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text8346"
+           y="780.36218"
+           x="48"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           xml:space="preserve"><tspan
+             style="font-size:12px"
+             y="780.36218"
+             x="48"
+             id="tspan8348"
+             sodipodi:role="line" /></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text8350"
+           y="1177.2679"
+           x="46.463379"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           xml:space="preserve"><tspan
+             y="1177.2679"
+             x="46.463379"
+             sodipodi:role="line"
+             id="tspan8414">shader_vertex_values</tspan></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text8354"
+           y="1003.8622"
+           x="47.5"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           xml:space="preserve"><tspan
+             style="font-size:12px"
+             y="1003.8622"
+             x="47.5"
+             id="tspan8356"
+             sodipodi:role="line">shader vertex v is</tspan><tspan
+             style="font-size:12px"
+             y="1018.8622"
+             x="47.5"
+             sodipodi:role="line"
+             id="tspan8398">  ...</tspan><tspan
+             style="font-size:12px"
+             y="1033.8622"
+             x="47.5"
+             sodipodi:role="line"
+             id="tspan8402">with</tspan><tspan
+             id="tspan8358"
+             style="font-size:12px"
+             y="1048.8622"
+             x="47.5"
+             sodipodi:role="line">  value x<tspan
+   id="tspan8360"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> = v<tspan
+   id="tspan8362"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>;</tspan><tspan
+             style="font-size:12px"
+             id="tspan8364"
+             y="1063.8622"
+             x="47.5"
+             sodipodi:role="line">  value x<tspan
+   id="tspan8366"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> = e<tspan
+   id="tspan8368"
+   style="font-size:65.00091553%;baseline-shift:sub">1</tspan> [x<tspan
+   id="tspan8370"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> := v<tspan
+   id="tspan8372"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>];</tspan><tspan
+             style="font-size:12px"
+             id="tspan8374"
+             y="1078.8622"
+             x="47.5"
+             sodipodi:role="line">  ...</tspan><tspan
+             style="font-size:12px"
+             id="tspan8376"
+             y="1093.8622"
+             x="47.5"
+             sodipodi:role="line">  value x<tspan
+   id="tspan8378"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8408">n</tspan> [x<tspan
+   id="tspan8380"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> := v<tspan
+   id="tspan8382"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan>];</tspan><tspan
+             id="tspan8384"
+             style="font-size:12px"
+             y="1108.8622"
+             x="47.5"
+             sodipodi:role="line">as</tspan><tspan
+             style="font-size:12px"
+             y="1123.8622"
+             x="47.5"
+             sodipodi:role="line"
+             id="tspan8404">  ...</tspan><tspan
+             style="font-size:12px"
+             y="1138.8622"
+             x="47.5"
+             sodipodi:role="line"
+             id="tspan8406">end</tspan></text>
+      </g>
+      <g
+         id="shader_fragment_values"
+         transform="translate(240.5,0.49998019)">
+        <rect
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="rect8422"
+           width="223.5"
+           height="447.5"
+           x="512"
+           y="32.000004"
+           transform="translate(-480,716.36218)" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="47.5"
+           y="779.86218"
+           id="text8424"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan8426"
+             x="47.5"
+             y="779.86218"
+             style="font-size:12px">shader fragment f is</tspan><tspan
+             id="tspan8428"
+             sodipodi:role="line"
+             x="47.5"
+             y="794.86218"
+             style="font-size:12px">  ...</tspan><tspan
+             id="tspan8430"
+             sodipodi:role="line"
+             x="47.5"
+             y="809.86218"
+             style="font-size:12px">with</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="824.86218"
+             style="font-size:12px"
+             id="tspan8432">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8434">0</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8436">0</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="839.86218"
+             id="tspan8438"
+             style="font-size:12px">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8440">1</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8442">1</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="854.86218"
+             id="tspan8444"
+             style="font-size:12px">  ...</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="869.86218"
+             id="tspan8446"
+             style="font-size:12px">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8448">n</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8450">n</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="884.86218"
+             style="font-size:12px"
+             id="tspan8452">as</tspan><tspan
+             id="tspan8454"
+             sodipodi:role="line"
+             x="47.5"
+             y="899.86218"
+             style="font-size:12px">  ...</tspan><tspan
+             id="tspan8456"
+             sodipodi:role="line"
+             x="47.5"
+             y="914.86218"
+             style="font-size:12px">end</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="929.86218"
+             style="font-size:12px"
+             id="tspan8458" /><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="944.86218"
+             style="font-size:12px"
+             id="tspan8460">x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8462">0</tspan> ∉ { x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8464">1</tspan> ... x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8466">n</tspan> }</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 47.5,971.86218 192,0"
+           id="path8468"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="48"
+           y="780.36218"
+           id="text8470"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan8472"
+             x="48"
+             y="780.36218"
+             style="font-size:12px" /></text>
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           x="46.463379"
+           y="1177.2679"
+           id="text8474"
+           sodipodi:linespacing="125%"><tspan
+             id="tspan8476"
+             sodipodi:role="line"
+             x="46.463379"
+             y="1177.2679">shader_fragment_values</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           x="47.5"
+           y="1003.8622"
+           id="text8478"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan8480"
+             x="47.5"
+             y="1003.8622"
+             style="font-size:12px">shader fragment f is</tspan><tspan
+             id="tspan8482"
+             sodipodi:role="line"
+             x="47.5"
+             y="1018.8622"
+             style="font-size:12px">  ...</tspan><tspan
+             id="tspan8484"
+             sodipodi:role="line"
+             x="47.5"
+             y="1033.8622"
+             style="font-size:12px">with</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="1048.8622"
+             style="font-size:12px"
+             id="tspan8486">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8488">0</tspan> = v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8490">0</tspan>;</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="1063.8622"
+             id="tspan8492"
+             style="font-size:12px">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8494">1</tspan> = e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8496">1</tspan> [x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8498">0</tspan> := v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8500">0</tspan>];</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="1078.8622"
+             id="tspan8502"
+             style="font-size:12px">  ...</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="1093.8622"
+             id="tspan8504"
+             style="font-size:12px">  value x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8506">n</tspan> = e<tspan
+   id="tspan8508"
+   style="font-size:65.00091553%;baseline-shift:sub">n</tspan> [x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8510">0</tspan> := v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan8512">0</tspan>];</tspan><tspan
+             sodipodi:role="line"
+             x="47.5"
+             y="1108.8622"
+             style="font-size:12px"
+             id="tspan8514">as</tspan><tspan
+             id="tspan8516"
+             sodipodi:role="line"
+             x="47.5"
+             y="1123.8622"
+             style="font-size:12px">  ...</tspan><tspan
+             id="tspan8518"
+             sodipodi:role="line"
+             x="47.5"
+             y="1138.8622"
+             style="font-size:12px">end</tspan></text>
+      </g>
+    </g>
+    <g
+       transform="translate(208.20361,-272.34426)"
+       id="matrix_column_access">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect6984-6"
+         width="335.5"
+         height="175.5"
+         x="288.5"
+         y="428.86218" />
+      <text
+         xml:space="preserve"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="304"
+         y="588.36218"
+         id="text6986-3"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan6988-4"
+           x="304"
+           y="588.36218">matrix_column_access</tspan></text>
+      <g
+         transform="translate(0.50000328,0.4999991)"
+         id="swizzle_pre-9">
+        <rect
+           style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="rect7014-6"
+           width="304.20361"
+           height="111.65576"
+           x="303.29639"
+           y="444.20642" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text7016-5"
+           y="476.20642"
+           x="319.29639"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           xml:space="preserve"><tspan
+             style="font-size:12px"
+             y="476.20642"
+             x="319.29639"
+             id="tspan7018-5"
+             sodipodi:role="line">e<tspan
+   id="tspan7020-1"
+   style="font-size:65.00091553%;baseline-shift:sub">0</tspan> → e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7054-0">0</tspan>'</tspan></text>
+        <path
+           inkscape:connector-curvature="0"
+           id="path7024-1"
+           d="m 319.29639,492.20642 96,0"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           sodipodi:nodetypes="cc" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text7026-6"
+           y="508.20642"
+           x="319.29639"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+           xml:space="preserve"><tspan
+             y="508.20642"
+             x="319.29639"
+             id="tspan7028-3"
+             sodipodi:role="line">column e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7038-3">0</tspan> ℤ → column e<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan7056-5">0</tspan>' ℤ</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+           x="319.29639"
+           y="540.20642"
+           id="text7034-2"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan7036-5"
+             x="319.29639"
+             y="540.20642">matrix_column_access_pre</tspan></text>
+      </g>
+    </g>
+  </g>
+</svg>

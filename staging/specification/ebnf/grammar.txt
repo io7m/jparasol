@@ -1,0 +1,258 @@
+(* Terminals *)
+
+digit_nonzero =
+  "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+digit =
+  "0" | digit_nonzero ;
+
+letter_lower =
+  "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" |
+  "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" |
+  "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" |
+  "y" | "z" ;
+
+letter_upper =
+  "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" |
+  "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" |
+  "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" |
+  "Y" | "Z" ;
+
+letter =
+  letter_lower | letter_upper ;
+
+name_lower =
+  letter_lower , { letter | digit | "-" | "_" } ;
+
+name_upper =
+  letter_upper , { letter | digit | "-" | "_" } ;
+
+integer_literal =
+  "0" | ( ["-"] , digit_nonzero , { digit } ) ;
+
+real_literal =
+  ["-"] , digit , { digit } , "." , digit , { digit } ;
+
+boolean_literal =
+  "true" | "false" ;
+
+(* Non-terminals *)
+
+package_path =
+  name_lower , { "." , name_lower } ;
+
+package_declaration =
+  "package" , package_path ;
+
+import_path =
+  package_path , "." , name_upper ;
+
+import_declaration =
+  "import" , import_path , [ "as" , name_upper ] ;
+
+import_declarations =
+  { import_declaration , ";" } ;
+
+type_path =
+    name_lower
+  | name_upper , "." , name_lower ;
+
+term_path =
+    name_lower
+  | name_upper , "." , name_lower ;
+
+shader_path =
+    name_lower
+  | name_upper , "." , name_lower ;
+
+value_declaration =
+  "value" , name_lower , [ ":" , type_path ] , "=" , expression ;
+
+value_declarations =
+  { value_declaration , ";" } ;
+
+function_formal_parameter =
+  name_lower , ":" , type_path ;
+
+function_formal_parameters =
+  "(" , function_formal_parameter, { "," , function_formal_parameter } , ")" ;
+
+function_declaration =
+  "function" , name_lower , function_formal_parameters , ":" , type_path , "=" , expression ;
+
+term_declaration =
+  value_declaration | function_declaration ;
+
+record_type_field =
+  name_lower , ":" , type_path ;
+
+record_type_expression =
+  "record" , record_type_field , { "," , record_type_field } , "end" ;
+
+type_declaration =
+  "type" , name_lower , "is" , type_expression ;
+
+type_declarations =
+  { type_declaration , ";" } ;
+
+type_expression =
+  record_type_expression
+  ;
+
+variable_or_application_expression =
+  term_path [ "(" , expression , { "," , expression } , ")" ]
+  ;
+
+new_parameters =
+  "(" , expression , { "," , expression } , ")" ;
+
+new_expression =
+  "new" , type_path , new_parameters ;
+
+record_expression_fields =
+  "{" , name_lower , "=" , expression , { "," name_lower , "=" , expression } , "}" ;
+
+record_expression =
+  "record" , type_path , record_expression_fields ;
+
+local_declaration =
+  "value" , name_lower , [ ":" , type_path ] , "=" , expression ;
+
+local_declarations =
+  local_declaration , ";" , { local_declarations } ;
+
+let_expression =
+  "let" , local_declarations , "in" , expression , "end" ;
+
+conditional_expression =
+  "if" , expression , "then" , expression , "else" , expression , "end" ;
+
+matrix_column_access_expression =
+  "column" , expression , integer_literal ;
+
+expression_pre =
+    integer_literal
+  | real_literal
+  | boolean_literal
+  | variable_or_application_expression
+  | conditional_expression
+  | matrix_column_access_expression
+  | let_expression
+  | new_expression
+  | record_expression
+  ;
+
+expression_projection =
+  "." , name_lower ;
+
+expression_swizzle_names =
+  "[" , name_lower , { "," , name_lower } , "]" ;
+
+expression =
+  expression_pre , { expression_swizzle | expression_projection } ;
+
+shader_parameter_declaration =
+  "parameter" , name_lower , ":" , type_path ;
+
+shader_vertex_input_declaration =
+  "in" , name_lower , ":" , type_path ;
+
+shader_vertex_output_declaration =
+  "out" , name_lower , ":" , type_path ;
+
+shader_vertex_output_main_declaration =
+  "out" , "vertex" , name_lower , ":" , type_path ;
+
+shader_vertex_parameter =
+    shader_parameter_declaration
+  | shader_vertex_input_declaration
+  | shader_vertex_output_declaration
+  | shader_vertex_output_main_declaration ;
+
+shader_vertex_parameters =
+  { shader_vertex_parameter , ";" } ;
+
+shader_vertex_output_assignment =
+  "out" , name_lower , "=" , term_path ;
+
+shader_vertex_output_assignments =
+  shader_vertex_output_assignment , ";" , { shader_vertex_output_assignments } ;
+
+shader_vertex_declaration =
+  "vertex" , name_lower , "is" ,
+  shader_vertex_parameters ,
+  [ "with" , local_declarations ] ,
+  "as" ,
+  shader_vertex_output_assignments ,
+  "end" ;
+
+shader_fragment_input_declaration =
+  "in" , name_lower , ":" , type_path ;
+
+shader_fragment_output_declaration =
+  "out" , name_lower , ":" , type_path , "as" , integer_literal ;
+
+shader_fragment_output_depth_declaration =
+  "out" , "depth", name_lower , ":" , type_path ;
+
+shader_fragment_parameter =
+    shader_parameter_declaration
+  | shader_fragment_input_declaration
+  | shader_fragment_output_declaration
+  | shader_fragment_output_depth_declaration ;
+
+shader_fragment_parameters =
+  { shader_fragment_parameter , ";" } ;
+
+shader_fragment_discard_declaration =
+  "discard" , "(" , expression , ")" ;
+
+shader_fragment_local_declaration =
+    local_declaration
+  | shader_fragment_discard_declaration ;
+
+shader_fragment_local_declarations =
+  shader_fragment_local_declaration , ";" , { shader_fragment_local_declarations } ;
+
+shader_fragment_output_assignment =
+  "out" , name_lower , "=" , term_path ;
+
+shader_fragment_output_assignments =
+  shader_fragment_output_assignment , ";" , { shader_fragment_output_assignments } ;
+
+shader_fragment_declaration =
+  "fragment" , name_lower , "is" ,
+  shader_fragment_parameters ,
+  [ "with" , shader_fragment_local_declarations ] ,
+  "as" ,
+  shader_fragment_output_assignments ,
+  "end" ;
+
+shader_program_declaration =
+  "program" , name_lower , "is" ,
+  "vertex" , shader_path , ";" ,
+  "fragment" , shader_path , ";" ,
+  "end" ;
+
+shader_declaration =
+  "shader" , ( shader_vertex_declaration | shader_fragment_declaration | shader_program_declaration ) ;
+
+shader_declarations =
+  { shader_declaration , ";" } ;
+
+module_level_declarations =
+  { value_declarations | function_declarations | type_declarations | shader_declarations } ;
+
+module_declaration =
+  "module" , name_upper , "is" ,
+  import_declarations ,
+  module_level_declarations ,
+  "end" ;
+
+module_declarations =
+  module_declaration , ";" , { module_declaration , ";" } ;
+
+unit =
+  package_declaration , ";" ,
+  module_declarations ;
+

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 3.7. Programs</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">3.6. Fragment shaders</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.8. Modules</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p3s6.xhtml#st200_p3s6">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s8.xhtml#st200_p3s8">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p3s7" href="#st200_p3s7">3.7</a></div><div class="st200_section_title">Programs</div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s7ss1" href="#st200_p3s7ss1">3.7.1</a></div><div class="st200_subsection_title">Description</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s7ss1pg1" href="#st200_p3s7ss1pg1">1</a></div><div class="st200_paragraph">
+          <span class="st200_term term">Programs</span> aggregate
+          <a class="st200_link" href="p3s5.xhtml#st200_p3s5">vertex</a> and
+          <a class="st200_link" href="p3s6.xhtml#st200_p3s6">fragment</a>
+          shaders into single entities that are executed on the
+          targeted graphics hardware.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s7ss2" href="#st200_p3s7ss2">3.7.2</a></div><div class="st200_subsection_title">Declarations</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s7ss2pg1" href="#st200_p3s7ss2pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">shader_program_declaration</span> declares a dependency
+          on a <a class="st200_link" href="p3s5.xhtml#st200_p3s5">vertex shader</a>
+          and a <a class="st200_link" href="p3s6.xhtml#st200_p3s6">fragment shader</a>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s7ss3" href="#st200_p3s7ss3">3.7.3</a></div><div class="st200_subsection_title">Compatibility</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s7ss3pg1" href="#st200_p3s7ss3pg1">1</a></div><div class="st200_paragraph">
+          In order for a given <span class="st200_term term">vertex shader</span> and
+          <span class="st200_term term">fragment shader</span> to be used in a
+          <span class="st200_term term">program</span>, the set of
+          <span class="st200_term term">inputs</span> <span class="st200_term expression">I</span> of the
+          fragment shader must be <span class="st200_term term">compatible</span> with the set of
+          <span class="st200_term term">outputs</span>
+          <span class="st200_term expression">O</span> of
+          the vertex shader. Specifically, for each
+          <span class="st200_term expression">0 &lt;= s &lt;= |I| - 1</span>, there must be some
+          <span class="st200_term expression">0 &lt;= t &lt;= |O| - 1</span> such that
+          the <span class="st200_term term">name</span> and
+          <span class="st200_term term">type</span> of
+          <span class="st200_term expression">Iₛ</span> matches that of
+          <span class="st200_term expression">Oₜ</span>:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s7ss3fo1" href="#st200_p3s7ss3fo1">3.7.3.1. Input/output compatibility</a></div><pre class="st200_verbatim">∀s. 0 &lt;= s &lt;= |I| - 1 ⇒
+  ∃t. (0 &lt;= t &lt;= |O| - 1 ⋀ ((name(Iₛ) = name(Oₜ) ⋀  type(Iₛ) = type(Oₜ)))</pre></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s7ss3pg2" href="#st200_p3s7ss3pg2">2</a></div><div class="st200_paragraph">
+          The set of <span class="st200_term term">parameters</span>
+          <span class="st200_term expression">P</span> of the given
+          given vertex shader, and the set of
+          <span class="st200_term term">parameters</span>
+          <span class="st200_term expression">Q</span> of the given
+          fragment shader must be type-compatible if they
+          share any of the same names. That is, for each
+          <span class="st200_term expression">0 &lt;= s &lt;= |P| - 1</span>,
+          if there is some
+          <span class="st200_term expression">0 &lt;= t &lt;= |Q| - 1</span> such that
+          the name of <span class="st200_term expression">Pₛ</span> equals
+          that of <span class="st200_term expression">Qₜ</span>, then the
+          type of <span class="st200_term expression">Pₛ</span> must equal
+          that of <span class="st200_term expression">Qₜ</span>.
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s7ss3fo2" href="#st200_p3s7ss3fo2">3.7.3.2. Input/output compatibility</a></div><pre class="st200_verbatim">∀s. 0 &lt;= s &lt;= |P| - 1 ⇒
+  ∃t. (0 &lt;= t &lt;= |Q| - 1 ⋀ name(Iₛ) = name(Oₜ)) ⇒
+    type(Iₛ) = type(Oₜ)</pre></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s7ss4" href="#st200_p3s7ss4">3.7.4</a></div><div class="st200_subsection_title">Examples</div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s7ss4fo1" href="#st200_p3s7ss4fo1">3.7.4.1. Examples</a></div><pre class="st200_verbatim">
+shader program p is
+  vertex p;
+  fragment f;
+end;</pre></div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p3s6.xhtml#st200_p3s6">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s8.xhtml#st200_p3s8">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">3.6. Fragment shaders</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.8. Modules</td></tr></table></div></div></body></html>

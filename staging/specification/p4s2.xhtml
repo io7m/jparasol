@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 4.2. Syntax</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">4.1. Description</td><td class="st200_navbar_up_title_cell">4. Expressions</td><td class="st200_navbar_next_title_cell">4.3. Integer literal</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p4s1.xhtml#st200_p4s1">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p4.xhtml#st200_p4">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p4s3.xhtml#st200_p4s3">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p4s2" href="#st200_p4s2">4.2</a></div><div class="st200_section_title">Syntax</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p4s2pg1" href="#st200_p4s2pg1">1</a></div><div class="st200_paragraph">
+        The precise syntax of expressions is given by the following
+        EBNF:
+      </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p4s2fo1" href="#st200_p4s2fo1">4.2.1. Expression syntax</a></div><pre class="st200_verbatim">term_path =
+    name_lower
+  | name_upper , "." , name_lower ;
+
+type_path =
+    name_lower
+  | name_upper , "." , name_lower ;
+
+variable_or_application_expression =
+  term_path [ "(" , expression , { "," , expression } , ")" ]
+  ;
+
+new_parameters =
+  "(" , expression , { "," , expression } , ")" ;
+
+new_expression =
+  "new" , type_path , new_parameters ;
+
+record_expression_fields =
+  "{" , name_lower , "=" , expression , { "," name_lower , "=" , expression } , "}" ;
+
+record_expression =
+  "record" , type_path , record_expression_fields ;
+
+local_declaration =
+  "value" , name_lower , [ ":" , type_path ] , "=" , expression ;
+
+local_declarations =
+  local_declaration , ";" , { local_declarations } ;
+
+let_expression =
+  "let" , local_declarations , "in" , expression , "end" ;
+
+conditional_expression =
+  "if" , expression , "then" , expression , "else" , expression , "end" ;
+
+matrix_column_access_expression =
+  "column" , expression , integer_literal ;
+
+expression_pre =
+    integer_literal
+  | real_literal
+  | boolean_literal
+  | variable_or_application_expression
+  | conditional_expression
+  | matrix_column_access_expression
+  | let_expression
+  | new_expression
+  | record_expression
+  ;
+
+expression_projection =
+  "." , name_lower ;
+
+expression_swizzle_names =
+  "[" , name_lower , { "," , name_lower } , "]" ;
+
+expression =
+  expression_pre , { expression_swizzle | expression_projection } ;
+</pre></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p4s1.xhtml#st200_p4s1">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p4.xhtml#st200_p4">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p4s3.xhtml#st200_p4s3">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">4.1. Description</td><td class="st200_navbar_up_title_cell">4. Expressions</td><td class="st200_navbar_next_title_cell">4.3. Integer literal</td></tr></table></div></div></body></html>

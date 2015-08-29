@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Parasol Language 0.11.3 Specification: 3.4. Shaders</title><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-layout.css"/><link rel="stylesheet" type="text/css" href="jstructural-2.0.0-colour.css"/><link rel="stylesheet" type="text/css" href="specification.css"/></head><body><div class="st200_body"><div class="brand">
+  <div class="brand_left">
+    <a href="http://io7m.com/">io7m</a>
+  </div>
+  <div class="brand_right">
+    <a href="http://io7m.github.io/jparasol/">io7m-jparasol</a> 0.11.3
+  </div>
+</div><div class="st200_navbar st200_navbar_top"><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_title_cell">3.3. Types</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.5. Vertex shaders</td></tr><tr><td class="st200_navbar_prev_file_cell"><a href="p3s3.xhtml#st200_p3s3">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s5.xhtml#st200_p3s5">Next</a></td></tr></table><hr class="st200_hr"/></div><div class="st200_section_container"><div class="st200_section_title_number"><a id="st200_p3s4" href="#st200_p3s4">3.4</a></div><div class="st200_section_title">Shaders</div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s4ss1" href="#st200_p3s4ss1">3.4.1</a></div><div class="st200_subsection_title">Description</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss1pg1" href="#st200_p3s4ss1pg1">1</a></div><div class="st200_paragraph">
+          <span class="st200_term term">Shaders</span> represent programs
+          that will execute on the targeted graphics hardware. They
+          are divided into
+          <a class="st200_link" href="p3s5.xhtml#st200_p3s5">vertex shaders</a>,
+          <a class="st200_link" href="p3s6.xhtml#st200_p3s6">fragment shaders</a>,
+          and
+          <a class="st200_link" href="p3s7.xhtml#st200_p3s7">programs</a>,
+          (which essentially aggregate other shaders into usable programs).
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s4ss2" href="#st200_p3s4ss2">3.4.2</a></div><div class="st200_subsection_title">Declarations</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss2pg1" href="#st200_p3s4ss2pg1">1</a></div><div class="st200_paragraph">
+          A <span class="st200_term term">shader_declaration</span> may either be a
+          <a class="st200_link" href="p3s5.xhtml#st200_p3s5">shader_vertex_declaration</a>,
+          a
+          <a class="st200_link" href="p3s6.xhtml#st200_p3s6">shader_fragment_declaration</a>,
+          or a
+          <a class="st200_link" href="p3s7.xhtml#st200_p3s7">shader_program_declaration</a>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s4ss3" href="#st200_p3s4ss3">3.4.3</a></div><div class="st200_subsection_title">Names</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss3pg1" href="#st200_p3s4ss3pg1">1</a></div><div class="st200_paragraph">
+          The names selected for shaders must be unique with respect to
+          other shaders within the <a class="st200_link" href="p3s8.xhtml#st200_p3s8">module</a>
+          in which they are defined. That is, there cannot be two shaders with the same name
+          in the same module. Shaders do not share a name space with
+          <a class="st200_link" href="p3s2.xhtml#st200_p3s2">terms</a>
+          or <a class="st200_link" href="p3s3.xhtml#st200_p3s3">types</a>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss3pg2" href="#st200_p3s4ss3pg2">2</a></div><div class="st200_paragraph">
+          The following restrictions apply when naming shaders:
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p3s4ss3fo1" href="#st200_p3s4ss3fo1">3.4.3.1. Name restrictions</a></div><ul class="st200_list_unordered"><li class="st200_list_item">
+              Shader names must begin with a <span class="st200_term term">lowercase</span>
+              letter. This is directly implied by the
+              <a class="st200_link" href="p3s4.xhtml#st200_p3s4ss6">grammar</a>.
+            </li><li class="st200_list_item">
+              Names cannot contain two adjacent underscores (<span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot end with underscores (<span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot start with the character sequence "<span class="st200_term constant">gl_</span>"
+              (<span class="st200_term constant">U+0067</span>,
+               <span class="st200_term constant">U+006C</span>,
+               <span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot match any of the keywords or reserved words defined in
+              any version of the OpenGL shading language. See the
+              <a class="st200_link" href="p8s4.xhtml#st200_p8s4">GLSL identifiers</a>
+              section for the complete list.
+            </li></ul></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s4ss4" href="#st200_p3s4ss4">3.4.4</a></div><div class="st200_subsection_title">Inputs/Outputs/Parameters</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss4pg1" href="#st200_p3s4ss4pg1">1</a></div><div class="st200_paragraph">
+          Shaders consume data from <span class="st200_term term">inputs</span>
+          and <span class="st200_term term">parameters</span>, and produce data
+          on <span class="st200_term term">outputs</span>.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss4pg2" href="#st200_p3s4ss4pg2">2</a></div><div class="st200_paragraph">
+          <span class="st200_term term">Inputs</span> are data sources that produce
+          values that may change every time the shader is executed (once
+          per vertex for <span class="st200_term term">vertex shaders</span> and
+          once per fragment for
+          <span class="st200_term term">fragment shaders</span>).
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss4pg3" href="#st200_p3s4ss4pg3">3</a></div><div class="st200_paragraph">
+          <span class="st200_term term">Parameters</span> are data sources that
+          produce values that may be constant over the entire lifetime
+          of the program.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss4pg4" href="#st200_p3s4ss4pg4">4</a></div><div class="st200_paragraph">
+          <span class="st200_term term">Outputs</span> are data sinks that, when
+          assigned values, pass those values to the next stage of the
+          rendering pipeline. Typically,
+          <span class="st200_term term">vertex shaders</span> linearly interpolate
+          values written to <span class="st200_term term">outputs</span> and pass
+          them on to the <span class="st200_term term">fragment shader</span>,
+          and <span class="st200_term term">fragment shaders</span> send values
+          written to <span class="st200_term term">outputs</span> to the
+          <span class="st200_term term">framebuffer</span> for display.
+        </div></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss4pg5" href="#st200_p3s4ss4pg5">5</a></div><div class="st200_paragraph">
+          The following restrictions apply when naming
+          <span class="st200_term term">inputs</span>, <span class="st200_term term">outputs</span>,
+          and <span class="st200_term term">parameters</span>:
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p3s4ss4fo1" href="#st200_p3s4ss4fo1">3.4.4.1. Name restrictions</a></div><ul class="st200_list_unordered"><li class="st200_list_item">
+              Names must begin with a <span class="st200_term term">lowercase</span>
+              letter. This is directly implied by the
+              <a class="st200_link" href="p3s4.xhtml#st200_p3s4ss6">grammar</a>.
+            </li><li class="st200_list_item">
+              Names cannot contain two adjacent underscores (<span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot end with underscores (<span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot start with the character sequence "<span class="st200_term constant">gl_</span>"
+              (<span class="st200_term constant">U+0067</span>,
+               <span class="st200_term constant">U+006C</span>,
+               <span class="st200_term constant">U+005F</span>).
+            </li><li class="st200_list_item">
+              Names cannot match any of the keywords or reserved words defined in
+              any version of the OpenGL shading language. See the
+              <a class="st200_link" href="p8s4.xhtml#st200_p8s4">GLSL identifiers</a>
+              section for the complete list.
+            </li></ul></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s4ss5" href="#st200_p3s4ss5">3.4.5</a></div><div class="st200_subsection_title">Type rules</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss5pg1" href="#st200_p3s4ss5pg1">1</a></div><div class="st200_paragraph">
+          Only a subset of the available types are permitted
+          for <span class="st200_term term">inputs</span>, and
+          <span class="st200_term term">outputs</span>:
+        </div></div><div class="st200_formal_item"><div class="st200_formal_item_title"><a id="st200_p3s4ss5fo1" href="#st200_p3s4ss5fo1">3.4.5.1. Input/Output types</a></div><ul class="st200_list_unordered"><li class="st200_list_item"><a class="st200_link" href="p5s3.xhtml#st200_p5s3">integer</a></li><li class="st200_list_item"><a class="st200_link" href="p5s4.xhtml#st200_p5s4">float</a></li><li class="st200_list_item"><a class="st200_link" href="p5s6.xhtml#st200_p5s6">vector_NT</a></li></ul></div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss5pg2" href="#st200_p3s4ss5pg2">2</a></div><div class="st200_paragraph">
+          <span class="st200_term term">Parameters</span> may be of any type
+          <span class="st200_footnote_reference"><a id="st200_fn_4_ref" href="#st200_fn_4">[4]</a></span>.
+        </div></div></div><div class="st200_subsection_container"><div class="st200_subsection_title_number"><a id="st200_p3s4ss6" href="#st200_p3s4ss6">3.4.6</a></div><div class="st200_subsection_title">Syntax</div><div class="st200_paragraph_container"><div class="st200_paragraph_number"><a id="st200_p3s4ss6pg1" href="#st200_p3s4ss6pg1">1</a></div><div class="st200_paragraph">
+          The precise syntax of shader declarations is given by the following
+          EBNF:
+        </div></div><div class="st200_formal_item specifications"><div class="st200_formal_item_title specifications"><a id="st200_p3s4ss6fo1" href="#st200_p3s4ss6fo1">3.4.6.1. Shader declaration syntax</a></div><pre class="st200_verbatim">shader_parameter_declaration =
+  "parameter" , name_lower , ":" , type_path ;
+
+shader_vertex_input_declaration =
+  "in" , name_lower , ":" , type_path ;
+
+shader_vertex_output_declaration =
+  "out" , name_lower , ":" , type_path ;
+
+shader_vertex_output_declaration =
+  "out" , "vertex" , name_lower , ":" , type_path ;
+
+shader_vertex_parameter =
+    shader_parameter_declaration
+  | shader_vertex_input_declaration
+  | shader_vertex_output_declaration
+  | shader_vertex_output_main_declaration ;
+
+shader_vertex_parameters =
+  { shader_vertex_parameter , ";" } ;
+
+shader_vertex_output_assignment =
+  "out" , name_lower , "=" , term_path ;
+
+shader_vertex_output_assignments =
+  shader_vertex_output_assignment , ";" , { shader_vertex_output_assignments } ;
+
+shader_vertex_declaration =
+  "vertex" , name_lower , "is" ,
+  shader_vertex_parameters ,
+  [ "with" , local_declarations ] ,
+  "as" ,
+  shader_vertex_output_assignments ,
+  "end" ;
+
+shader_fragment_input_declaration =
+  "in" , name_lower , ":" , type_path ;
+
+shader_fragment_output_declaration =
+  "out" , name_lower , ":" , type_path , "as" , integer_literal ;
+
+shader_fragment_parameter =
+    shader_parameter_declaration
+  | shader_fragment_input_declaration
+  | shader_fragment_output_declaration ;
+
+shader_fragment_parameters =
+  { shader_fragment_parameter , ";" } ;
+
+shader_fragment_discard_declaration =
+  "discard" , "(" , expression , ")" ;
+
+shader_fragment_local_declaration =
+    local_declaration
+  | shader_fragment_discard_declaration ;
+
+shader_fragment_local_declarations =
+  shader_fragment_local_declaration , ";" , { shader_fragment_local_declarations } ;
+
+shader_fragment_output_assignment =
+  "out" , name_lower , "=" , term_path ;
+
+shader_fragment_output_assignments =
+  shader_fragment_output_assignment , ";" , { shader_fragment_output_assignments } ;
+
+shader_fragment_declaration =
+  "fragment" , name_lower , "is" ,
+  shader_fragment_parameters ,
+  [ "with" , shader_fragment_local_declarations ] ,
+  "as" ,
+  shader_fragment_output_assignments ,
+  "end" ;
+
+shader_program_declaration =
+  "program" , name_lower , "is" ,
+  "vertex" , shader_path , ";" ,
+  "fragment" , shader_path , ";" ,
+  "end" ;
+
+shader_declaration =
+  "shader" , ( shader_vertex_declaration | shader_fragment_declaration | shader_program_declaration ) ;
+
+shader_declarations =
+  { shader_declaration , ";" } ;</pre></div></div></div><div class="st200_footnotes"><hr/><div class="st200_footnote_container"><div class="st200_footnote_number">[<a id="st200_fn_4" href="#st200_fn_4_ref">4</a>]</div><div class="st200_footnote_body">
+            Notably, <span class="st200_term term">parameters</span> are the
+            <span class="st200_term emphasis">only</span> means by which values
+            of the <a class="st200_link" href="p5s8.xhtml#st200_p5s8">sampler</a>
+            types can be introduced into a program.
+          </div></div></div><div class="st200_navbar st200_navbar_bottom"><hr class="st200_hr"/><table class="st200_navbar_table" summary="Navigation bar"><tr><td class="st200_navbar_prev_file_cell"><a href="p3s3.xhtml#st200_p3s3">Previous</a></td><td class="st200_navbar_up_file_cell"><a href="p3.xhtml#st200_p3">Up</a></td><td class="st200_navbar_next_file_cell"><a href="p3s5.xhtml#st200_p3s5">Next</a></td></tr><tr><td class="st200_navbar_prev_title_cell">3.3. Types</td><td class="st200_navbar_up_title_cell">3. Declarations</td><td class="st200_navbar_next_title_cell">3.5. Vertex shaders</td></tr></table></div></div></body></html>
